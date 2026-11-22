@@ -1,4 +1,5 @@
 from localization import tr
+from log import fail
 import json
 import re
 import subprocess
@@ -23,6 +24,7 @@ COLORIZER_ID = "luisbocanegra.panel.colorizer"
 COLORIZER_SRC = offline("plasmoids") / COLORIZER_ID
 MAC_TASKS_ID = "org.kde.mac.tahoe.liquid.icontasks"
 DEFAULT_TASKS_ID = "org.kde.plasma.icontasks"
+_retired_panel_ids: set[int] = set()
 
 
 def _colorizer_dirs() -> list[Path]:
@@ -534,6 +536,49 @@ def _reset_plasmashellrc() -> bool:
     return True
 
 
+def _saved_panel_ids() -> set[int]:
+    appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    try:
+        config = appletsrc.read_text(encoding="utf-8")
+    except OSError:
+        return set()
+    entries = re.findall(r"^\[Containments\]\[(\d+)\]\n([^\[]*)", config, re.MULTILINE)
+    return {int(panel_id) for panel_id, body in entries
+            if "plugin=org.kde.panel" in body.splitlines()}
+
+
+def finish_reset() -> None:
+    """Finish removal of panels retired by this reset after Plasma restarts."""
+    # Plasma can restore a retired containment with no applets. Use the
+    # transaction's original panel IDs so a user's new empty panel is safe.
+    script = """
+    (function () {
+        const retired = RETIRED;
+        const panelsToRemove = panels().filter(panel => retired.includes(panel.id));
+        if (panelsToRemove.some(panel => panel.widgetIds.length !== 0)) {
+            throw new Error("A panel from before the layout reset is still active");
+        }
+        panelsToRemove.forEach(panel => panel.remove());
+        if (panels().some(panel => retired.includes(panel.id))) {
+            throw new Error("A retired panel could not be removed");
+        }
+        // A retired panel can have been selected to reserve this screen edge.
+        // Reapply normal visibility so Plasma updates the surviving bar's strut.
+        for (const bar of panels()) {
+            if (bar.location === "top" && bar.hiding === "none" &&
+                    bar.widgets().some(w => w.type === "org.kde.mac.tahoe.liquid.globalmenu")) {
+                bar.hiding = "windowsgobelow";
+                bar.hiding = "none";
+            }
+        }
+    })();
+    """.replace("RETIRED", json.dumps(sorted(_retired_panel_ids)))
+    if not _evaluate_layout_script(script) or _retired_panel_ids & _saved_panel_ids():
+        fail(tr('layout failed — set layout manually'))
+        return
+    _retired_panel_ids.clear()
+
+
 def install() -> None:
     # A failed rebuild must leave is_installed() false so cli.py retries after
     # Plasma restarts instead of trusting a marker from the previous run.
@@ -544,10 +589,12 @@ def install() -> None:
         warn(tr('Layout script not found — skipping'))
         return
     pins = _capture_pinned_launchers()
+    previous_panels = _saved_panel_ids()
     applied = _evaluate_layout_with_launchers(
         LAYOUT_SCRIPT, pins, MAC_TASKS_ID,
     )
     if applied and _wait_for_layout_install():
+        _retired_panel_ids.update(previous_panels)
         record_applied_edition(HOME, edition_name())
         _mark_layout_installed()
         ok(tr("Layout installed (kept {count} pinned apps)", count=len(pins)) if pins

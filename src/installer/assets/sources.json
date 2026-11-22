@@ -2925,5 +2925,35 @@
     "sha256": "b01d56293e69baed6dfb83fa2f256390e91a3cfd029670f162808900d163716b",
     "file": "exuma-b01d56293e69.jpg",
     "crop": null
+  },
+  "desktop-widgets-off.jpg": {
+    "source": "candidate-off.png",
+    "source_sha256": "a18ab571c1a75c2f5ecf22ec17a7e79e93224f24f1a96a677b213b164bb1df29",
+    "crop": null,
+    "sha256": "119f0f4665b02576d148c3b333e0c9f2fbf5e33b2920982f7f9fade0496b4ce2",
+    "file": "desktop-widgets-off-119f0f4665b0.jpg",
+    "kind": "installer-desktop-widgets",
+    "edition": "golden-gate",
+    "source_commit": "18d37f4a42cb4d01bad7454012936c028fdfc7c2",
+    "archive_sha256": "3f11de54fa641fce310ca399882c930ac5077e74108cce4621954104799d2cd9",
+    "capture": "KDE neon Plasma 6.8.1 Wayland at 2x, with and without the installer-placed starter widgets on the left.",
+    "desktop_source_commit": "e797a1576bd853a5be391bf6a1d0e6c5c296241f",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "placement_source_sha256": "aecf3b1477085683d5f67cfa6533fafff90121d997918a8aa631b378f99f3df8"
+  },
+  "desktop-widgets-on.jpg": {
+    "source": "candidate-left.png",
+    "source_sha256": "01c15d3180d177d0cafba99979bdecbd6ac4957ec48443939e1d7ee27980e2c2",
+    "crop": null,
+    "sha256": "1a24c14b407ae21b4572d377f45b9bcb20c6a8259634d9331f150276720b52a9",
+    "file": "desktop-widgets-on-1a24c14b407a.jpg",
+    "kind": "installer-desktop-widgets",
+    "edition": "golden-gate",
+    "source_commit": "18d37f4a42cb4d01bad7454012936c028fdfc7c2",
+    "archive_sha256": "3f11de54fa641fce310ca399882c930ac5077e74108cce4621954104799d2cd9",
+    "capture": "KDE neon Plasma 6.8.1 Wayland at 2x, with and without the installer-placed starter widgets on the left.",
+    "desktop_source_commit": "e797a1576bd853a5be391bf6a1d0e6c5c296241f",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "placement_source_sha256": "aecf3b1477085683d5f67cfa6533fafff90121d997918a8aa631b378f99f3df8"
   }
 }

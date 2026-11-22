@@ -1195,6 +1195,10 @@ def _run_install_steps(feat: dict[str, object]) -> int:
             step('Retrying Layout')
             note(tr('Retries the panel layout after Plasma reloads new plasmoids'))
             run_phase("layout", "install")
+        if feat.get("layout", True) and step_exists("layout"):
+            run_phase("layout", "finish_reset")
+        if feat.get("plasmoids", True) and step_exists("plasmoids"):
+            run_phase("plasmoids", "place_desktop_widgets")
         if not keep_layout and not feat.get("layout", True) and step_exists("layout"):
             run_phase("layout", "migrate_dock_preset")
         if step_exists("layout") and (feat.get("layout", True) or _layout_is_installed()):

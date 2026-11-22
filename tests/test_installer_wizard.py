@@ -289,6 +289,7 @@ assert window.page == 'welcome' and not calls
 window.updating = False
 window.express.click(); app.processEvents()
 assert window.page == 'summary' and window.choices == window.defaults and not calls
+assert window.choices['desktop_widgets'] is True
 assert not window.express.isVisible()
 window.express_install()
 assert window.page == 'summary' and not calls
@@ -322,6 +323,21 @@ cards = window.content.findChildren(ChoiceCard)
 assert cards[0].y() == cards[1].y()
 assert cards[0].height() == cards[1].height()
 assert abs(window.dots.mapTo(window, window.dots.rect().center()).x() - window.width()/2) <= 2
+window.page = 'wallpaper'; window.render(); window.advance(); app.processEvents()
+assert window.page == 'desktop_widgets' and window.choices['desktop_widgets'] is True
+skip, install = window.content.findChildren(ChoiceCard)
+assert all(card.photo and not card.photo.pixmap.isNull() for card in (skip, install))
+assert install.isChecked() and not skip.isChecked()
+install.setFocus(); QTest.keyClick(install, Qt.Key.Key_Left)
+assert skip.isChecked() and window.choices['desktop_widgets'] is False
+window.advance(); assert window.page == 'launcher'
+window.previous(); assert window.page == 'desktop_widgets' and window.choices['desktop_widgets'] is False
+window.page = 'summary'; window.render()
+window.content.findChild(QPushButton, 'edit-desktop_widgets').click()
+assert window.page == 'desktop_widgets'
+window.content.findChild(ChoiceCard, 'choice-desktop_widgets-True').click()
+window.advance()
+assert window.page == 'summary' and window.choices['desktop_widgets'] is True
 window.page = 'window_controls'; window.render(); app.processEvents()
 window.content.findChild(ChoiceCard, 'choice-window_controls-glassy').click()
 assert window.choices['window_controls'] == 'glassy'
