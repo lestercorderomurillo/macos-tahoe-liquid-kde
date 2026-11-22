@@ -513,7 +513,8 @@ PlasmaCore.ToolTipArea {
         }
 
         imagePath: "widgets/tasks"
-        property bool isHovered: task.highlighted && Plasmoid.configuration.taskHoverEffect
+        property bool isHovered: (task.inPopup || !task.tasksRoot.iconsOnly)
+            && task.highlighted && Plasmoid.configuration.taskHoverEffect
         property string basePrefix: "normal"
         prefix: isHovered ? TaskTools.taskPrefixHovered(basePrefix, Plasmoid.location) : TaskTools.taskPrefix(basePrefix, Plasmoid.location)
 

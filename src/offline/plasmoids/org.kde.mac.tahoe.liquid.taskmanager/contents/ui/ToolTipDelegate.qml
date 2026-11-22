@@ -63,7 +63,25 @@ Loader {
     active: !blockingUpdates && rootIndex !== undefined && ((parentTask && parentTask.containsMouse) || Window.visibility !== Window.Hidden)
     asynchronous: true
 
-    sourceComponent: isGroup ? groupToolTip : singleTooltip
+    sourceComponent: isLauncher && parentTask?.tasksRoot.iconsOnly && !playerData
+        ? dockLauncherLabel : isGroup ? groupToolTip : singleTooltip
+
+    Component {
+        id: dockLauncherLabel
+
+        Item {
+            // Each 24 px cap extends 12 px beyond the tooltip's content margin.
+            implicitHeight: Math.max(24, label.implicitHeight)
+            implicitWidth: Math.max(24, label.implicitWidth)
+
+            PlasmaComponents3.Label {
+                id: label
+                anchors.centerIn: parent
+                text: toolTipDelegate.parentTask?.dockRoleLabel || toolTipDelegate.appName || toolTipDelegate.display
+                textFormat: Text.PlainText
+            }
+        }
+    }
 
     Component {
         id: singleTooltip

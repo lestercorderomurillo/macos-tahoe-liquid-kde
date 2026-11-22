@@ -18,7 +18,8 @@ KSvg.SvgItem {
         horizontalCenter: iconBox.horizontalCenter
     }
 
-    visible: parent.model.IsGroupParent
+    // The icon-only Dock already paints the running dot in its task frame.
+    visible: parent.model.IsGroupParent && !parent.tasksRoot.iconsOnly
 
     states: [
         State {
