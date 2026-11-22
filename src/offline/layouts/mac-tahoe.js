@@ -177,21 +177,18 @@ for (var screen = 0; screen < screenCount; screen++) {
         ["org.kde.discover.desktop", "org.gnome.Software.desktop"],
         ["systemsettings.desktop"]
     ];
-    var dockCategories = ["files", "browser", "mail", "photos", "calendar", "notes", "video", "music", "store", "settings"];
     var dockLaunchers = [];
-    var resolvedDockCategories = [];
     for (var app = 0; app < dockApplications.length; app++) {
         for (var candidate = 0; candidate < dockApplications[app].length; candidate++) {
             var desktopId = dockApplications[app][candidate];
             if (applicationExists(desktopId)) {
                 dockLaunchers.push("applications:" + desktopId);
-                resolvedDockCategories.push(dockCategories[app]);
                 break;
             }
         }
     }
     if (typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")) {
-        dockLaunchers.splice(resolvedDockCategories[0] === "files" ? 1 : 0, 0, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop");
+        dockLaunchers.splice(1, 0, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop");
     }
     tasks.writeConfig("launchers", dockLaunchers);
     tasks.writeConfig("macOSDockIcons", dockIconChoices[dock.screen] || false);

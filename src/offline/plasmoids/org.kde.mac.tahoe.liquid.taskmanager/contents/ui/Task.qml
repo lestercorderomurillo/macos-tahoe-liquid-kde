@@ -57,8 +57,6 @@ PlasmaCore.ToolTipArea {
     readonly property bool appsButton: !inPopup && tasksRoot.hasAppsPin
         && (String(model.LauncherUrlWithoutIcon) === tasksRoot.appsPin
             || appId === "org.kde.mac-tahoe-liquid-kde.apps")
-    readonly property bool protectedFilesPin: !inPopup && tasksRoot.hasAppsPin
-        && DockRoles.roleFor(model.LauncherUrlWithoutIcon, model.AppId) === "files"
     readonly property int pid: model.AppPid
     readonly property string appName: model.AppName
     readonly property string dockRole: tasksRoot.iconsOnly && Plasmoid.configuration.macOSDockIcons
