@@ -60,7 +60,7 @@ PlasmoidItem {
             height: root.vertical ? 1 : Math.round(parent.height * 0.62)
             // A midtone hairline stays visible over both the light glass
             // and the dark parts of the edition wallpapers.
-            color: Kirigami.ColorUtils.mixColors(Kirigami.Theme.textColor, Kirigami.Theme.backgroundColor, 0.35)
+            color: Kirigami.ColorUtils.linearInterpolation(Kirigami.Theme.textColor, Kirigami.Theme.backgroundColor, 0.35)
             opacity: 0.65
         }
     }
