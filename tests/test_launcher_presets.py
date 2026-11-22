@@ -760,6 +760,7 @@ Item {
     QtObject { id: plasmoid; property int formFactor: root.vertical ? PlasmaCore.Types.Vertical : PlasmaCore.Types.Horizontal }
     component DockApplet: Item {
         id: cell
+        readonly property bool usesAppsPin: false // This fixture measures the standalone launcher cell.
         NativeLauncher.DockCell { id: dockCell; applet: cell; vertical: root.vertical }
         Layout.fillWidth: true; Layout.fillHeight: true
         APPLET_HINTS
