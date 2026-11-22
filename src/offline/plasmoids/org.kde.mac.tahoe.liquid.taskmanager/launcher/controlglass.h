@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void windowMoveStarted() { m_ink.moved(); }
     Q_INVOKABLE QColor foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const;
     Q_INVOKABLE QColor animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
+    Q_INVOKABLE QColor animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
     Q_INVOKABLE QColor backdropAt(QPointF point) const;
 Q_SIGNALS:
     void backdropChanged();

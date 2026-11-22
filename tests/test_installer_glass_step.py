@@ -48,9 +48,9 @@ for key, material, blur, variant in [('classic', '1', 3.75, '0'), ('tinted', '1'
     preset = {'classic': 'tahoe-clear', 'official': 'golden-gate-official', 'tinted': 'tahoe-frosted', 'water': 'water'}[key]
     actual = card.photo.pixmap.toImage()
     light = picture(f'glass-preset-{preset}-light.png', 360, 116, cover=True,
-                    crop=(1566, 512, 1520, 490)).toImage()
+                    crop=(1788, 565, 1320, 425)).toImage()
     dark = picture(f'glass-preset-{preset}-dark.png', 360, 116, cover=True,
-                   crop=(1566, 512, 1520, 490)).toImage()
+                   crop=(1788, 565, 1320, 425)).toImage()
     if sys.argv[2] == 'auto':
         # Away from the separator: light on the left, dark on the right.
         for x, expected in [(60, light), (600, dark)]:

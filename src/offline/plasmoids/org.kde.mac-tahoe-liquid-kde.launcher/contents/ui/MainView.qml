@@ -141,7 +141,7 @@ Item {
     Tahoe.PopupBackdrop { id: appBackdrop; window: root }
     Tahoe.PopupBackdrop { id: searchBackdrop; window: searchPopup }
     Tahoe.GlassSettings { id: searchMaterial; component: "search" }
-    function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor) {
+    function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth) {
         if (!root.glassSettings.dynamicTinting) return fallback;
         const sampler = detached ? searchBackdrop : appBackdrop;
         const settings = detached ? searchMaterial : root.glassSettings;
@@ -154,8 +154,10 @@ Item {
         const saved = isDarkTheme ? settings.darkOpacity : settings.lightOpacity;
         const alpha = saved >= 0 ? saved : isDarkTheme ? (goldenGateEdition ? 0.12 : 0.48) : 0.55;
         const tint = isDarkTheme ? 0 : 1;
-        // Only the backdrop under the glyphs determines their polarity.
-        return sampler.animatedForegroundAt(item, point, Qt.size(0, 0),
+        // Keep samples inside the visible text, including short labels and elided names.
+        const span = Math.max(0, Math.min(textWidth, sampleX * 2, (item.width - sampleX) * 2));
+        const radius = Qt.size(span * 0.4, Math.min(item.height, item.font.pixelSize > 0 ? item.font.pixelSize : item.height / 2) * 0.22);
+        return sampler.animatedLabelForeground(item, point, radius,
                                       fallback, Qt.tint(Qt.rgba(tint, tint, tint, alpha), overlay));
     }
 	readonly property color textColor: Contrast.preferredText(glassPalette.Kirigami.Theme.textColor)

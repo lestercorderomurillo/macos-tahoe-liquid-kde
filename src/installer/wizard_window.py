@@ -1454,7 +1454,7 @@ class InstallerWindow(OpaqueSurface):
             stem = "glass-preset-" + preset["photo"]
             preview = picture(f"{stem}-{mode}.png", 360, 116,
                               f"{stem}-dark.png" if automatic else None,
-                              cover=True, crop=(1566, 512, 1520, 490))
+                              cover=True, crop=(1788, 565, 1320, 425))
             items.append((preset["choice"], preset["title"], "", preview))
         self.cards("glass_style", items, columns=2, compact=True)
 

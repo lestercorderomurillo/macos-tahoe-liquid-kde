@@ -56,6 +56,36 @@ QColor PopupBackdrop::animatedForegroundAt(QObject *item, QPointF point, QSizeF 
     return m_ink.color(item, base, foregroundAt(point, radius, base, fill));
 }
 
+QColor PopupBackdrop::animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill)
+{
+    QColor target = base;
+    if (!m_backdropGrid.isEmpty()) {
+        const double themeInk = GlassInk::luminance(base);
+        const bool lightThemeInk = themeInk > 0.179;
+        const QColor alternate = lightThemeInk ? Qt::black : Qt::white;
+        const auto ratio = [](double ink, double surface) {
+            return (std::max(ink, surface) + .05) / (std::min(ink, surface) + .05);
+        };
+        int votes = 0;
+        for (int row = -1; row <= 1; ++row) {
+            for (int col = -2; col <= 2; ++col) {
+                const QPointF offset(col * radius.width() / 2, row * radius.height());
+                const double surface = GlassInk::luminance(GlassInk::composite(backdropAt(point + offset), fill));
+                const double preferred = ratio(themeInk, surface);
+                const double other = ratio(lightThemeInk ? 0. : 1., surface);
+                if (preferred < 4.5 && other >= 4.5 && other >= 1.25 * preferred) ++votes;
+            }
+        }
+        // Require broad agreement to leave the theme, and a majority to stay away.
+        const int required = m_ink.target(item, base).rgb() == alternate.rgb() ? 8 : 12;
+        if (votes >= required) {
+            target = alternate;
+            target.setAlphaF(base.alphaF());
+        }
+    }
+    return m_ink.color(item, base, target);
+}
+
 QRegion ControlGlass::regionFor(const QVariantList &surfaces, bool glassOnly)
 {
     QRegion result;

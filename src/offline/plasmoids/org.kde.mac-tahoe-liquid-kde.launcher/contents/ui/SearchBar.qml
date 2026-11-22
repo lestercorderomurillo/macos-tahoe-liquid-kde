@@ -16,7 +16,8 @@ RowLayout {
         textField.leftPadding + Math.min(Math.max(0, textField.width - textField.leftPadding - textField.rightPadding),
             textField.text.length ? Math.max(1, textField.contentWidth) : placeholderMetrics.advanceWidth) / 2,
         "transparent", detachedWindow,
-        goldenGateCapsule ? "white" : main.textColor)
+        goldenGateCapsule ? "white" : main.textColor,
+        textField.text.length ? textField.contentWidth : placeholderMetrics.advanceWidth)
     TextMetrics {
         id: placeholderMetrics
         font: textField.font
