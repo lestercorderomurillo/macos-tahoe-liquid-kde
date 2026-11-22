@@ -1,32 +1,36 @@
 {
-  "version": "0.82.8",
+  "version": "0.82.9",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "d8e1509c9fae5875ec99d4cfe6722bafa9c6fbe9",
-  "scope": "Restore the Tahoe launcher Favorites category and enable real-time wallpaper sampling by default for bundled desktop glass widgets.",
-  "approval": "The maintainer approved the paired release after reviewing the live glass preview and the Tahoe Favorites preview, and asked to leave README files untouched.",
+  "implementation_commit": "5ac5844ed4ef815cf4a758dee1f7278c42ea7343",
+  "scope": "Keep one Dock Apps button when Launchpad opens and one Finder pin that follows the default file manager.",
+  "approval": "The maintainer replied yes to publishing the paired Dock fix after receiving the Tahoe and Golden Gate previews and their coverage limits.",
   "checks": [
     {
-      "command": "Four isolated native launcher cases passed on Tahoe with both presets in light and dark. Favorites opens the full saved list and toggles back to All Apps.",
+      "command": "QT_QPA_PLATFORM=offscreen python3 -m pytest -q tests/test_launcher_presets.py tests/test_dock_appearance.py tests/test_dock_defaults.py tests/test_desktop_widgets.py: 173 passed on the v0.82.8-based candidate, covering both editions, both appearance modes, both launcher presets, and the retained Finder pin.",
       "result": "passed"
     },
     {
-      "command": "Five isolated desktop-widget packaging and installer checks passed. The bundled archive comparison found exactly 14 realtimeRefraction default changes.",
+      "command": "The pinned Apps visibility regression failed on v0.82.7 and passed with the fix.",
       "result": "passed"
     },
     {
-      "command": "KDE neon Plasma 6.8.1 Wayland: installed the shared candidate and captured Tahoe Favorites. The bundled calendar, analog clock and timer updated their rendered wallpaper samples through light, dark and light in the same Plasma session.",
+      "command": "Golden Gate on KDE neon Plasma 6.8.1 Wayland: installed the v0.82.8-based candidate, coalesced Dolphin and Nautilus pins, opened two Dolphin windows without a second Finder task, and opened one Apps popup with the backing applet hidden.",
       "result": "passed"
     },
     {
-      "command": "Verified installed configuration and launcher SHA-256 values against the release sources and regenerated the component fingerprints.",
+      "command": "Tahoe on the same Plasma and Wayland stack: tested the same Dock implementation staged against v0.82.7. Two Nautilus windows shared one Finder task, and opening Apps left one button and one popup.",
+      "result": "passed"
+    },
+    {
+      "command": "Verified the component fingerprint ledger and checked the release diff with git diff --check.",
       "result": "passed"
     }
   ],
   "captures": [],
   "approved_preview_sha256": {
-    "realtime-glass-preview.png": "cd4b35417f7dfb144331b6cb79226d45d547be04bbab5d2854ba0bbfecefce9a",
-    "favorites-preview.png": "8e1814ab65faea9a7283ec9ba6126c825e9bf5d86278e0f79ba44df9d8ed8e30"
+    "tahoe-preview.png": "6f8b557ebf99f7151fd02fd6d07732ff308a96db7e8ef76aab370ad7dcde4b6e",
+    "golden-gate-preview.png": "52215cb92e8093f8ba14ba3075ca943d49e7df92829e679d359bd79a1a82c9f5"
   },
-  "coverage_limits": "KDE neon Plasma 6.8.1 Wayland with one display. Golden Gate uses the same desktop widget package. The launcher change is scoped to Tahoe style.",
-  "source_sha256": "339fa7c00b38d7a5fe38c61843aa8533395dcec9811d68f948768d3b4680e591"
+  "coverage_limits": "The live previews used one output on KDE neon Plasma 6.8.1 Wayland. The Tahoe capture used Breeze application icons and the identical Dock implementation on v0.82.7. A VM interruption prevented recapture on the v0.82.8 baseline. The focused suite passed on the v0.82.8-based candidate. Historical galleries retain their provenance.",
+  "source_sha256": "e90e987f4b43c9baaa4763393bc24107fee0b5456f334769d1ec03442cef4a24"
 }
