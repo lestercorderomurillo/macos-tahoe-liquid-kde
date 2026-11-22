@@ -1,0 +1,14 @@
+{
+    "KPackageStructure": "KWin/Effect",
+    "KPlugin": {
+        "Authors": [{ "Name": "Lester Cordero Murillo" }],
+        "Category": "Appearance",
+        "Description": "Lowers the floating Dock onto the screen edge while a maximized window shares its screen, keeping its rounded corners.",
+        "EnabledByDefault": true,
+        "Id": "mttkde_dock_flush",
+        "License": "GPL-3.0-or-later",
+        "Name": "Dock Flush With Maximized Windows"
+    },
+    "X-KDE-Ordering": 60,
+    "X-Plasma-API": "javascript"
+}

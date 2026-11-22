@@ -223,6 +223,39 @@ for (const panel of panelList) {
         raise RuntimeError("Could not replace the installed launcher")
 
 
+DOCK_SCRIPT_ID = "mttkde-dock-follows-screen"
+DOCK_FLUSH_ID = "mttkde_dock_flush"
+
+
+def plasma_dock_hiding(mode: str) -> str:
+    """Plasma panel mode for an installer Dock visibility choice.
+
+    Plasma de-floats an always-visible panel as soon as a window touches it,
+    and the non-floating panel drops its bottom border, which squares the
+    Dock's corners. macOS keeps the Dock floating, so the always-visible Dock
+    uses "windows go below", which never de-floats; the dock-flush effect and
+    the dock-follows-screen script then give it the macOS behaviour next to
+    maximized windows.
+    """
+    return "windowsgobelow" if mode == "none" else mode
+
+
+def _configure_dock_flush(mode: str) -> None:
+    always_visible = mode == "none"
+    kw_write("--file", "kwinrc", "--group", "Script-" + DOCK_SCRIPT_ID,
+             "--key", "FitAboveDock", "true" if always_visible else "false")
+    dest = DATA_HOME / "kwin/effects" / DOCK_FLUSH_ID
+    if always_visible:
+        if install_tree(offline("kwin-effects", "dock-flush"), dest, "Dock flush with maximized windows"):
+            kw_write("--file", "kwinrc", "--group", "Plugins", "--key", DOCK_FLUSH_ID + "Enabled", "true")
+            # Never unload a running copy: loading picks up the new files.
+            qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", DOCK_FLUSH_ID)
+    elif dest.exists():
+        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", DOCK_FLUSH_ID + "Enabled", "false")
+        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", DOCK_FLUSH_ID)
+        remove_tree(dest, "Dock flush with maximized windows")
+
+
 def configure_dock() -> None:
     from installer_choices import dock_visibility, dock_visibility_preference, selected
     choices = selected()
@@ -238,7 +271,7 @@ def configure_dock() -> None:
             }
         }
     })()
-    """.replace("MODE", json.dumps(mode))
+    """.replace("MODE", json.dumps(plasma_dock_hiding(mode)))
     if not _evaluate_layout_script(script):
         warn(tr("Dock preset update failed"))
         return
@@ -246,7 +279,8 @@ def configure_dock() -> None:
         preference = dock_visibility_preference()
         preference.parent.mkdir(parents=True, exist_ok=True)
         preference.write_text(mode + "\n")
-    script_id = "mttkde-dock-follows-screen"
+    script_id = DOCK_SCRIPT_ID
+    _configure_dock_flush(mode)
     if install_tree(offline("kwin-scripts", script_id), DATA_HOME / "kwin/scripts" / script_id,
                     "Dock follows screen"):
         kw_write("--file", "kwinrc", "--group", "Plugins", "--key", script_id + "Enabled", "true")
@@ -259,7 +293,7 @@ def _dock_migration_script() -> str:
     requested = choices.get("dock_apps", []) if choices.get("dock", True) else []
     appearance = choices.get("dock_appearance", "auto") if choices.get("dock", True) else "keep"
     return ("var mttkdeResetDock = " + json.dumps(choices.get("reset_layout", False)) + ";\n"
-            + "var mttkdeDockVisibility = " + json.dumps(choices.get("dock_visibility", dock_visibility())) + ";\n"
+            + "var mttkdeDockVisibility = " + json.dumps(plasma_dock_hiding(choices.get("dock_visibility", dock_visibility()))) + ";\n"
             + "var mttkdeDockAppearance = " + json.dumps(appearance) + ";\n"
             + "var mttkdeRequestedDockApps = " + json.dumps(requested) + ";\n"
             + DOCK_MIGRATION.read_text())
@@ -533,6 +567,10 @@ def uninstall() -> None:
         kw_write("--file", "kwinrc", "--group", "Plugins", "--key", script_id + "Enabled", "false")
         qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
         remove_tree(DATA_HOME / "kwin/scripts" / script_id, "Dock follows screen")
+    if (DATA_HOME / "kwin/effects" / DOCK_FLUSH_ID).exists():
+        kw_write("--file", "kwinrc", "--group", "Plugins", "--key", DOCK_FLUSH_ID + "Enabled", "false")
+        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", DOCK_FLUSH_ID)
+        remove_tree(DATA_HOME / "kwin/effects" / DOCK_FLUSH_ID, "Dock flush with maximized windows")
     dock_visibility_preference().unlink(missing_ok=True)
     has_theme_widgets = _layout_has_any_theme_widget()
     _clear_layout_marker()

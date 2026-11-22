@@ -61,6 +61,46 @@ function followBottomEdge() {
     dwell.start();
 }
 
+// With the always-visible Dock, as on macOS, a window maximized on the Dock's
+// screen stops at the Dock's top edge; windows maximized before the Dock
+// moved there keep their size. The installer turns this on (FitAboveDock)
+// with the mttkde_dock_flush effect, which lowers the Dock onto the screen
+// edge next to those windows.
+const fitAboveDockEnabled = readConfig("FitAboveDock", false);
+const FLUSH_GAP = 10;   // the floating gap the dock-flush effect removes
+
+function dockOn(output) {
+    for (const w of workspace.stackingOrder) {
+        if (w.dock && !w.hidden && w.output === output
+                && w.frameGeometry.y > output.geometry.y + output.geometry.height / 2)
+            return w;
+    }
+    return null;
+}
+
+function fitAboveDock(w) {
+    if (!fitAboveDockEnabled || !w.normalWindow || w.fullScreen || !w.output) return;
+    // 3 = KWin::MaximizeFull.
+    if (w.maximizeMode !== 3) return;
+    const dock = dockOn(w.output);
+    if (!dock) return;
+    const area = workspace.clientArea(KWin.MaximizeArea, w);
+    // The Dock's panel window is taller than its visible frame: Plasma's
+    // floating panel keeps a 9 px shadow margin above the frame, and the
+    // effect lowers the frame by its floating gap.
+    const top = dock.frameGeometry.y + 9 + FLUSH_GAP;
+    const f = w.frameGeometry;
+    if (f.y + f.height <= top) return;
+    w.frameGeometry = { x: area.x, y: area.y, width: area.width, height: top - area.y };
+}
+
+function watchWindow(w) {
+    if (!w.normalWindow) return;
+    w.maximizedChanged.connect(function () { fitAboveDock(w); });
+}
+
+workspace.windowAdded.connect(function (w) { watchWindow(w); fitAboveDock(w); });
+workspace.windowList().forEach(watchWindow);
 workspace.cursorPosChanged.connect(followBottomEdge);
 workspace.screensChanged.connect(function () {
     edgeOutput = null;
