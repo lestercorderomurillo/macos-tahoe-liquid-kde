@@ -1,24 +1,36 @@
 {
-  "version": "0.82.3",
+  "version": "0.82.5",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "a9f442f48c9efd312347a91d20ff8aba0398aaf5",
-  "scope": "Install the Liquid Glass desktop widget pack by default with an illustrated Desktop widgets step in the installer.",
-  "approval": "Maintainer approved the pictured selector from PR #166 and explicitly requested enabling the pack by default and publishing the release.",
+  "implementation_commit": "718371a5976b6eaab5fd69cd463b96ade540d020",
+  "scope": "Restore the illustrated desktop widget step with automatic left-column placement and verify panel cleanup and work area after restarting Plasma.",
+  "approval": "The maintainer answered yes to the actual selector and left-column desktop previews for the candidate.",
   "checks": [
     {
-      "command": "Tahoe focused installer wizard, widget bundle, Plasmoids, localization, package mapping and component manifest suite (569 passed). Wizard checks covered the Custom and Express defaults for both editions.",
+      "command": "243 focused regressions for the installer, panels, layout preservation, widget package ownership, Dock and menu bar behavior, and icon overlays.",
       "result": "passed"
     },
     {
-      "command": "KDE neon Plasma 6.8.1 Wayland: installer backend provisioned all 15 packages. Plasma discovered them and left placement to the user. Reinstallation with the pack disabled removed the theme-owned packages and preserved a local widget.",
+      "command": "Both native wizard navigation cases passed with the final side-placement preview and install selected by default.",
+      "result": "passed"
+    },
+    {
+      "command": "The released verifier falsely accepted the incident configuration with three empty panels. Candidate removed a reproduced retired empty panel from live and saved Plasma state.",
+      "result": "passed"
+    },
+    {
+      "command": "KDE neon 6.8.1 Wayland: full Golden Gate reinstall from candidate runtime bytes. One populated top bar and one populated Dock after restart. The calendar, analog clock and timer populated one left column. Maximized Dolphin started at y=30.",
+      "result": "passed"
+    },
+    {
+      "command": "Golden Gate wrapper staged the same installer, widget archive and preview images with its own defaults.",
       "result": "passed"
     }
   ],
   "captures": [],
   "approved_preview_sha256": {
-    "tahoe_light_skip_selected": "3b15443fe9330ad253b1cef824281e1d777344ac26e98a6104fcc6b7dd42ef4c",
-    "tahoe_dark_install_selected": "2feb13f19605862d47352ac8a8d6a5572e8b38b328c42dba77007c0ecb644746"
+    "installer-left-selector.png": "0648da58a64bff23bac2dec88327ffefdff629fcd7e31c7a87ff58c2cc996315",
+    "widgets-at-left.jpg": "9a49a616a3be03c2f9bac4ae44ce8ebe218ada32f73c50fcd9834a78d59735b6"
   },
-  "coverage_limits": "Plasma widget registration and installer lifecycle exercised on KDE neon 6.8.1 Wayland. Calendar, analog clock and timer were rendered for the desktop preview. The remaining widget packages were checked for registration. Historical galleries retain their original provenance.",
-  "source_sha256": "8ad261f1b850bbe96617f8481909eb5562b5d1533d31dbe04c8f7973fd7da9e1"
+  "coverage_limits": "The full reinstall and screenshots were tested in Golden Gate on KDE neon Plasma 6.8.1 Wayland with one output. The desktop incident was inspected and repaired on a separate two-monitor Plasma 6.7.4 session, where the work area was rechecked on both outputs. The original spontaneous duplicate-panel incident was not reproduced during a clean VM run. The targeted regression restored an empty panel in the VM to exercise cleanup. Historical gallery captures retain their original provenance.",
+  "source_sha256": "fb405592d9c8bf420924410010ebc957bfd23ab4139037df9df8be51dbf232f7"
 }

@@ -1,4 +1,5 @@
 from localization import tr
+import json
 import re
 import shutil
 import subprocess
@@ -7,6 +8,7 @@ from pathlib import Path
 
 from distro import qt6_plugins_dir, qt6_qml_dir
 from installer_choices import selected
+from utils import qdbus_cmd, run_user
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
 from steps._native_build import cmake_build
 from steps._helpers import (
@@ -20,6 +22,8 @@ DEST_DIR = DATA_HOME / "plasma/plasmoids"
 WIDGETS_ARCHIVE = offline("desktop-widgets", "liquidglass-kde-widgets.tar.zst")
 WIDGETS_STATE = DATA_HOME / "mac-tahoe-liquid-kde/desktop-widgets.list"
 WIDGET_ID = re.compile(r"com\.jaxparrow07\.macoswidgets\.[a-z0-9-]+")
+DESKTOP_STARTERS = tuple("com.jaxparrow07.macoswidgets." + name
+                         for name in ("calendar", "clock-analog", "timer"))
 
 TASKMANAGER_SRC = SRC_DIR / "org.kde.mac.tahoe.liquid.taskmanager"
 TASKMANAGER_BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")
@@ -332,6 +336,7 @@ def _save_installed_widgets(names: set[str]) -> None:
 
 
 def _remove_desktop_widgets() -> None:
+    _remove_placed_desktop_widgets()
     remaining = set()
     for name in sorted(_installed_widgets()):
         target = DEST_DIR / name
@@ -365,3 +370,84 @@ def install_desktop_widgets(enabled: bool) -> None:
             if install_tree(entry, target, name):
                 installed.add(name)
                 _save_installed_widgets(installed)
+
+
+def _run_widget_script(script: str) -> dict:
+    command = qdbus_cmd()
+    if not command:
+        raise RuntimeError("Plasma scripting is unavailable")
+    result = run_user([command, "org.kde.plasmashell", "/PlasmaShell",
+                       "org.kde.PlasmaShell.evaluateScript", script],
+                      check=True, capture_output=True, text=True, timeout=15)
+    return json.loads(result.stdout)
+
+
+def place_desktop_widgets() -> None:
+    """Place the illustrated starter set once, after Plasma loads the packages."""
+    if not selected().get("desktop_widgets"):
+        return
+    placement = WIDGETS_STATE.with_suffix(".placed.json")
+    if placement.exists():
+        return
+    script = """
+    (function () {
+        const names = NAMES;
+        const desk = Array.from(desktopsForActivity(currentActivity())).find(d => d.screen === 0);
+        if (!desk || !names.every(name => knownWidgetTypes.includes(name))) {
+            throw new Error("Desktop widgets are unavailable");
+        }
+        const area = screenGeometry(0);
+        const size = Math.min(208, Math.max(160, Math.floor((area.height - 188) / 3)));
+        const step = size + 20;
+        let x = 48;
+        let y = 76;
+        const placed = {};
+        const widgets = desk.widgets();
+        for (const name of names) {
+            if (widgets.some(w => w.type === name)) continue;
+            while (x + size <= area.width - 48) {
+                if (y + size > area.height - 72) {
+                    x += step;
+                    y = 76;
+                    continue;
+                }
+                const occupied = widgets.some(w => {
+                    const r = w.geometry;
+                    return r.x < x + size && x < r.x + r.width &&
+                           r.y < y + size && y < r.y + r.height;
+                });
+                if (!occupied) break;
+                y += step;
+            }
+            if (x + size > area.width - 48) break;
+            const widget = desk.addWidget(name, x, y, size, size);
+            if (widget) placed[widget.id] = name;
+            y += step;
+        }
+        print(JSON.stringify(placed));
+    })();
+    """.replace("NAMES", json.dumps(DESKTOP_STARTERS))
+    placed = _run_widget_script(script)
+    placement.parent.mkdir(parents=True, exist_ok=True)
+    placement.write_text(json.dumps(placed), encoding="utf-8")
+
+
+def _remove_placed_desktop_widgets() -> None:
+    placement = WIDGETS_STATE.with_suffix(".placed.json")
+    try:
+        placed = json.loads(placement.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return
+    if placed:
+        _run_widget_script("""
+        (function () {
+            const placed = PLACED;
+            for (const desk of desktops()) {
+                for (const widget of desk.widgets()) {
+                    if (placed[widget.id] === widget.type) widget.remove();
+                }
+            }
+            print("{}");
+        })();
+        """.replace("PLACED", json.dumps(placed)))
+    placement.unlink()

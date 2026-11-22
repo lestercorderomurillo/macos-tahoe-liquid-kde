@@ -7,6 +7,8 @@ rebuilds the panel from scratch.
 """
 
 import json
+import shutil
+import subprocess
 
 import pytest
 
@@ -16,6 +18,7 @@ import steps.layout as layout
 @pytest.fixture(autouse=True)
 def isolate_layout_paths(monkeypatch, tmp_path):
     monkeypatch.setattr(layout, "DATA_HOME", tmp_path / "share")
+    monkeypatch.setattr(layout, "_retired_panel_ids", set())
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
 
 
@@ -477,3 +480,40 @@ def test_layout_uninstall_removes_update_marker(monkeypatch, tmp_path):
     layout.uninstall()
 
     assert not marker.exists()
+
+
+def test_finish_reset_only_removes_panels_retired_by_this_install(monkeypatch, tmp_path):
+    node = shutil.which("node")
+    if node is None:
+        pytest.skip("node is unavailable")
+    _quiet_layout_install(monkeypatch, tmp_path)
+    _write_appletsrc(tmp_path, (
+        "[Containments][10]\nplugin=org.kde.panel\n"
+        "[Containments][11]\nplugin=org.kde.panel\n"
+        "[Containments][12]\nplugin=org.kde.plasma.folder\n"
+    ))
+    monkeypatch.setattr(layout, "_evaluate_layout_with_launchers", lambda *_: True)
+    monkeypatch.setattr(layout, "_wait_for_layout_install", lambda: True)
+    layout.install()
+
+    def evaluate(script):
+        program = '''
+        let live = [[10, []], [11, []], [20, [30]], [21, []]]
+            .map(([id, widgetIds]) => ({
+                id, widgetIds, location: "top", hiding: "none",
+                widgets: () => widgetIds.map(() => ({type: "org.kde.mac.tahoe.liquid.globalmenu"})),
+                remove() { live = live.filter(p => p.id !== id); }
+            }));
+        const panels = () => [...live];
+        ''' + script + "\nconsole.log(JSON.stringify(panels().map(p => p.id)));"
+        result = subprocess.run([node, "-e", program], check=True, text=True, capture_output=True)
+        assert json.loads(result.stdout) == [20, 21]
+        (tmp_path / ".config/plasma-org.kde.plasma.desktop-appletsrc").write_text(
+            "[Containments][20]\nplugin=org.kde.panel\n"
+            "[Containments][21]\nplugin=org.kde.panel\n"
+        )
+        return True
+
+    monkeypatch.setattr(layout, "_evaluate_layout_script", evaluate)
+    layout.finish_reset()
+    assert not layout._retired_panel_ids

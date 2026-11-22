@@ -1215,7 +1215,6 @@ class InstallerWindow(OpaqueSurface):
             (True, "Install Liquid Glass widgets", "Calendar, weather, clocks, music, timers and photos.",
              picture("desktop-widgets-on.jpg", 368, 207, cover=True)),
         ], default_first=False)
-        self.body.addWidget(self.label("After installation, place widgets from Plasma’s Add Widgets menu."))
 
     def launcher_notice(self):
         from steps.clipboard import HISTORY_DIR

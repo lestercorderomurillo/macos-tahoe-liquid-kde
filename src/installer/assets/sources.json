@@ -2927,31 +2927,33 @@
     "crop": null
   },
   "desktop-widgets-off.jpg": {
-    "source": "desktop-widgets-off.png",
-    "source_sha256": "8652b96bfbaf7edf82184de5f7757fc8e1dc81e2b086b12260a9204f9eec2077",
+    "source": "candidate-off.png",
+    "source_sha256": "a18ab571c1a75c2f5ecf22ec17a7e79e93224f24f1a96a677b213b164bb1df29",
     "crop": null,
-    "sha256": "c89a0ca8784b50378cca7aee6debede41340622507a5514cd9fe9543c32628db",
-    "file": "desktop-widgets-off-c89a0ca8784b.jpg",
+    "sha256": "119f0f4665b02576d148c3b333e0c9f2fbf5e33b2920982f7f9fade0496b4ce2",
+    "file": "desktop-widgets-off-119f0f4665b0.jpg",
     "kind": "installer-desktop-widgets",
-    "edition": "tahoe",
+    "edition": "golden-gate",
     "source_commit": "18d37f4a42cb4d01bad7454012936c028fdfc7c2",
     "archive_sha256": "3f11de54fa641fce310ca399882c930ac5077e74108cce4621954104799d2cd9",
-    "capture": "KDE neon Plasma 6.8.1 Wayland at 2x, before and after placing Calendar, Analog Clock and Timer.",
-    "desktop_source_commit": "f054fb42b602bc72de0d45a3e69371c908253a19",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
+    "capture": "KDE neon Plasma 6.8.1 Wayland at 2x, with and without the installer-placed starter widgets on the left.",
+    "desktop_source_commit": "e797a1576bd853a5be391bf6a1d0e6c5c296241f",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "placement_source_sha256": "aecf3b1477085683d5f67cfa6533fafff90121d997918a8aa631b378f99f3df8"
   },
   "desktop-widgets-on.jpg": {
-    "source": "desktop-widgets-on.png",
-    "source_sha256": "d0f61aefe60a5f1964e684d45eb16442027e6a2a3cbb4b014041831ac40cca91",
+    "source": "candidate-left.png",
+    "source_sha256": "01c15d3180d177d0cafba99979bdecbd6ac4957ec48443939e1d7ee27980e2c2",
     "crop": null,
-    "sha256": "9606e4718641c5e941736e1e889a0b75bec11dc92f37f8d3b2eb01b305a23757",
-    "file": "desktop-widgets-on-9606e4718641.jpg",
+    "sha256": "1a24c14b407ae21b4572d377f45b9bcb20c6a8259634d9331f150276720b52a9",
+    "file": "desktop-widgets-on-1a24c14b407a.jpg",
     "kind": "installer-desktop-widgets",
-    "edition": "tahoe",
+    "edition": "golden-gate",
     "source_commit": "18d37f4a42cb4d01bad7454012936c028fdfc7c2",
     "archive_sha256": "3f11de54fa641fce310ca399882c930ac5077e74108cce4621954104799d2cd9",
-    "capture": "KDE neon Plasma 6.8.1 Wayland at 2x, before and after placing Calendar, Analog Clock and Timer.",
-    "desktop_source_commit": "f054fb42b602bc72de0d45a3e69371c908253a19",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
+    "capture": "KDE neon Plasma 6.8.1 Wayland at 2x, with and without the installer-placed starter widgets on the left.",
+    "desktop_source_commit": "e797a1576bd853a5be391bf6a1d0e6c5c296241f",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
+    "placement_source_sha256": "aecf3b1477085683d5f67cfa6533fafff90121d997918a8aa631b378f99f3df8"
   }
 }
