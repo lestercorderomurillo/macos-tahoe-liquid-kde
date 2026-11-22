@@ -49,7 +49,8 @@ def test_nix_asset_assembly_matches_runtime_theme_names(repo, tmp_path, monkeypa
         assert GTK_SHADOWS["medium"] in gtk_css
         assert not list(share.rglob("*-ReducedTransparency"))
     assert not (share / "fonts").exists()
-    assert not (share / "wallpapers").exists()
+    assert [p.name for p in (share / "wallpapers").iterdir()] == ["MacExuma"]
+    assert (share / "wallpapers/MacExuma/metadata.json").is_file()
     assert not (share / "sounds").exists()
     launcher = share / "plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher"
     golden_gate = str(edition == "MacGoldenGate").lower()

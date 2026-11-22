@@ -174,7 +174,7 @@ def test_layout_uses_explicit_launcher_and_independent_panels(monkeypatch, tmp_p
     assert "applications:example.desktop" in script
 
 
-@pytest.mark.parametrize("pack", ["landscape", "prism", "macos"])
+@pytest.mark.parametrize("pack", ["landscape", "prism", "macos", "exuma"])
 @pytest.mark.parametrize("style", ["regular", "dark", "clear", "glass"])
 def test_installed_switcher_uses_selected_wallpaper_pair_and_icon_mode(monkeypatch, tmp_path, pack, style):
     import theme_switch as switch

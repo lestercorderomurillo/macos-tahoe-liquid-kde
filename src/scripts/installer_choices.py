@@ -6,7 +6,6 @@ import json
 import os
 import re
 from pathlib import Path
-from pathlib import Path
 
 from launcher_defaults import edition_name
 
