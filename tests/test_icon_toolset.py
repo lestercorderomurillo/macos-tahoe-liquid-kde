@@ -577,3 +577,34 @@ def test_installer_selector_styles_generate_matching_overlays(source, tmp_path, 
     else:
         assert images[0] != images[1]  # Clear follows the desktop appearance.
         assert 0 < Image.open(blue / names[0] / "apps/256/demo.png").getpixel((128, 36))[3] < 255
+
+
+SYMBOL = b'''<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M4 2h8v12H4z" fill="#000"/></svg>'''
+
+
+@pytest.mark.parametrize("style", ["regular", "glass"])
+def test_overlay_keeps_symbols_that_share_an_app_icon_name(source, tmp_path, style):
+    # Issue #160: ``input-mouse-symbolic`` resolved to the overlay's opaque
+    # ``input-mouse`` app icon (KIconLoader tries the generic fallback inside
+    # a theme before the inherited one), so masked symbols became squares.
+    if not shutil.which("rsvg-convert"):
+        pytest.skip("rsvg-convert is required for material rendering")
+    from icon_toolset import installer_themes
+    staging = tmp_path / "source"
+    unpack(source, staging)
+    (staging / BASE / "apps/scalable/input-mouse.svg").symlink_to("demo.svg")
+    for theme, color_name in ((BASE, b"#000"), (BASE + "-dark", b"#fff")):
+        folder = staging / theme / "devices/symbolic"
+        folder.mkdir(parents=True)
+        (folder / "input-mouse-symbolic.svg").write_bytes(SYMBOL.replace(b"#000", color_name))
+    names = installer_themes(staging, tmp_path / "out", style, "#007aff")
+    for name in names:
+        theme = tmp_path / "out" / name
+        index = (theme / "index.theme").read_text()
+        assert "Directories=apps/256,symbolic\n" in index and "[symbolic]" in index
+        symbol = theme / "symbolic/input-mouse-symbolic.svg"
+        expected = b"#fff" if name.endswith("-Dark") else b"#000"
+        assert expected in symbol.read_bytes()
+        # Only symbols that collide with generated artwork are copied.
+        assert [p.name for p in (theme / "symbolic").iterdir()] == ["input-mouse-symbolic.svg"]
+        assert json.loads((theme / "generation.json").read_text())["symbolic"] == ["input-mouse-symbolic.svg"]

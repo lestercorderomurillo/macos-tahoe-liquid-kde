@@ -161,16 +161,55 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
             raise
     if not records:
         raise ValueError("No application artwork found")
+    symbolic = _shadowed_symbols(source, output, names, [path.stem for path, _ in entries])
     for name, mode in zip(names, ("light", "dark")):
         write_json(output / name / "generation.json", {"style": style, "tint": tint, "sources": records,
             "dark_artwork": {path.name: digest(path) for checksum, path in dark_sources.items()
                              if checksum in unique and (mode == "dark" or style == "dark")},
             "material": asdict(material) if style == "glass" else None, "partial": bool(icons),
+            "symbolic": symbolic[name],
             "generator": {file: digest(Path(__file__).with_name(file)) for file in
                           ("icon_toolset.py", "icon_materials.py")},
             "renderer": {"pillow": PIL.__version__, "librsvg": subprocess.check_output(
                 ["rsvg-convert", "--version"], text=True).strip()}})
     return names
+
+
+def _shadowed_symbols(source: Path, output: Path, names: list[str], stems: list[str]) -> dict[str, list[str]]:
+    """Copy the base theme's ``<name>-symbolic`` next to each generated ``<name>``.
+
+    KIconLoader tries the generic fallbacks of a name (``input-mouse`` for
+    ``input-mouse-symbolic``) inside a theme before it looks in the inherited
+    theme. The overlay only holds application artwork, so a symbolic request
+    whose base name is also an application icon resolved to that opaque app
+    icon, and widgets that draw symbols as masks showed a solid square. With
+    the symbol in the overlay itself, the exact name always wins.
+    """
+    copied = {}
+    for name, mode in zip(names, ("light", "dark")):
+        themes = [source / (BASE + "-dark"), source / BASE] if mode == "dark" else [source / BASE]
+        found = {}
+        for theme in reversed(themes):  # the dark theme's own symbols win
+            if not theme.is_dir():
+                continue
+            for path in sorted(theme.rglob("*-symbolic.svg")):
+                if "@2x" in path.parent.as_posix():
+                    continue
+                stem = path.name[:-len("-symbolic.svg")]
+                if path.is_file():
+                    found[stem] = path
+        out = [stem + "-symbolic.svg" for stem in sorted(set(stems) & found.keys())]
+        copied[name] = out
+        if not out:
+            continue
+        theme_dir = output / name / "symbolic"
+        theme_dir.mkdir(exist_ok=True)
+        for file in out:
+            shutil.copyfile(found[file[:-len("-symbolic.svg")]], theme_dir / file)
+        index = output / name / "index.theme"
+        text = index.read_text().replace("Directories=apps/256\n", "Directories=apps/256,symbolic\n")
+        index.write_text(text + "\n[symbolic]\nSize=16\nType=Scalable\nMinSize=8\nMaxSize=512\nContext=Devices\n")
+    return copied
 
 
 def installer_build(args) -> None:
