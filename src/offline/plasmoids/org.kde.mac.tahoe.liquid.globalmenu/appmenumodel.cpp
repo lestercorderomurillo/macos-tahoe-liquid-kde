@@ -21,6 +21,8 @@
 #include <QUrl>
 
 #include <KApplicationTrader>
+#include <KConfig>
+#include <KConfigGroup>
 #include <KLocalizedString>
 #include <QLineEdit>
 #include <QListView>
@@ -306,14 +308,23 @@ bool AppMenuModel::showingFinder() const
 }
 
 namespace {
+QString preferredFileManager()
+{
+    const auto mimeType = QStringLiteral("inode/directory");
+    // The installer writes the user association before KDE refreshes its
+    // service cache. Read that file on each activation to pick up the choice.
+    const KConfig mimeApps(QStringLiteral("mimeapps.list"), KConfig::SimpleConfig);
+    const auto selected = mimeApps.group(QStringLiteral("Default Applications")).readXdgListEntry(mimeType).value(0);
+    if (!selected.isEmpty()) return selected;
+    const auto service = KApplicationTrader::preferredService(mimeType);
+    return service ? service->storageId() : QString();
+}
+
 void openFinderLocation(const QUrl &location, bool newWindow = false)
 {
-    // The installer's Files choice sets this association. Resolve it when the
-    // action runs so changes in System Settings also apply to an open menu.
-    const auto service = KApplicationTrader::preferredService(QStringLiteral("inode/directory"));
-    const auto desktopName = service ? service->desktopEntryName() : QString();
-    const bool nautilus = desktopName == QStringLiteral("org.gnome.Nautilus");
-    const bool dolphin = desktopName == QStringLiteral("org.kde.dolphin");
+    const auto desktopId = preferredFileManager();
+    const bool nautilus = desktopId == QStringLiteral("org.gnome.Nautilus.desktop");
+    const bool dolphin = desktopId == QStringLiteral("org.kde.dolphin.desktop");
     if (nautilus || dolphin) {
         auto target = location;
         if (nautilus) {

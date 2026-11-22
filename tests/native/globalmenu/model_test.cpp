@@ -410,9 +410,6 @@ private Q_SLOTS:
             const auto service = KService::serviceByDesktopName(name);
             QVERIFY(service);
             KApplicationTrader::setPreferredService(mimeType, service);
-            QCOMPARE(QProcess::execute(QStringLiteral("kbuildsycoca6"), {QStringLiteral("--noincremental")}), 0);
-            QTRY_VERIFY(KApplicationTrader::preferredService(mimeType)
-                && KApplicationTrader::preferredService(mimeType)->desktopEntryName() == name);
             const auto program = name.section(QLatin1Char('.'), -1).toLower();
             const auto recentUrl = program == QStringLiteral("nautilus") ? QStringLiteral("recent:///") : QStringLiteral("recentlyused:/");
             newWindow->trigger();
