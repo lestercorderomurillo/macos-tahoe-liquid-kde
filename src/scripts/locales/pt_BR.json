@@ -1281,5 +1281,13 @@
   "Automatic": "Automático",
   "Dock behaviour could not be enabled in kwinrc": "Não foi possível ativar o comportamento do Dock no kwinrc",
   "Dock follows screen": "Dock segue a tela",
-  "Dock on several screens": "Dock em várias telas"
+  "Dock on several screens": "Dock em várias telas",
+  "New Finder Window": "Nova Janela do Finder",
+  "&Go": "&Ir",
+  "Recents": "Recentes",
+  "Documents": "Documentos",
+  "Desktop": "Mesa",
+  "Home": "Pasta pessoal",
+  "&Help": "Aj&uda",
+  "Help": "Ajuda"
 }

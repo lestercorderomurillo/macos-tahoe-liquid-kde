@@ -13,9 +13,14 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusServiceWatcher>
+#include <QDesktopServices>
 #include <QGuiApplication>
 #include <QMenu>
+#include <QProcess>
+#include <QStandardPaths>
+#include <QUrl>
 
+#include <KApplicationTrader>
 #include <KLocalizedString>
 #include <QLineEdit>
 #include <QListView>
@@ -149,7 +154,7 @@ QString AppMenuModel::activeAppName() const
 {
     const QModelIndex idx = m_tasksModel->activeTask();
     if (!idx.isValid())
-        return {};
+        return showingFinder() ? i18n("Finder") : QString();
     return m_tasksModel->data(idx, TaskManager::AbstractTasksModel::AppName).toString();
 }
 
@@ -281,6 +286,7 @@ void AppMenuModel::update()
 void AppMenuModel::onActiveWindowChanged()
 {
     const QModelIndex activeTaskIndex = m_tasksModel->activeTask();
+    if (!activeTaskIndex.isValid() && showingFinder()) return;
     if (!activeTaskIndex.isValid() && m_containmentStatus == Plasma::Types::AcceptingInputStatus
         && (!m_genericMenu || m_genericTarget.isValid())) {
         return;
@@ -289,8 +295,86 @@ void AppMenuModel::onActiveWindowChanged()
     const QString objectPath = m_tasksModel->data(activeTaskIndex, TaskManager::AbstractTasksModel::ApplicationMenuObjectPath).toString();
     const QString serviceName = m_tasksModel->data(activeTaskIndex, TaskManager::AbstractTasksModel::ApplicationMenuServiceName).toString();
     updateApplicationMenu(serviceName, objectPath);
-    if (serviceName.isEmpty() || objectPath.isEmpty()) updateGenericMenu();
+    if (!activeTaskIndex.isValid()) updateFinderMenu();
+    else if (serviceName.isEmpty() || objectPath.isEmpty()) updateGenericMenu();
     Q_EMIT activeAppNameChanged();
+}
+
+bool AppMenuModel::showingFinder() const
+{
+    return m_finderMenu && m_menu == m_finderMenu.get();
+}
+
+namespace {
+void openFinderLocation(const QUrl &location, bool newWindow = false)
+{
+    // The installer's Files choice sets this association. Resolve it when the
+    // action runs so changes in System Settings also apply to an open menu.
+    const auto service = KApplicationTrader::preferredService(QStringLiteral("inode/directory"));
+    const auto desktopName = service ? service->desktopEntryName() : QString();
+    const bool nautilus = desktopName == QStringLiteral("org.gnome.Nautilus");
+    const bool dolphin = desktopName == QStringLiteral("org.kde.dolphin");
+    if (nautilus || dolphin) {
+        auto target = location;
+        if (nautilus) {
+            // Nautilus uses GVfs locations for its sidebar views.
+            if (target.scheme() == QStringLiteral("recentlyused")) target = QUrl(QStringLiteral("recent:///"));
+            if (target.scheme() == QStringLiteral("remote")) target = QUrl(QStringLiteral("network:///"));
+            if (target.scheme() == QStringLiteral("trash")) target = QUrl(QStringLiteral("trash:///"));
+        }
+        QStringList arguments;
+        if (newWindow) arguments << QStringLiteral("--new-window");
+        arguments << (target.isLocalFile() ? target.toLocalFile() : target.toString(QUrl::FullyEncoded));
+        const auto program = nautilus ? QStringLiteral("nautilus") : QStringLiteral("dolphin");
+        if (QProcess::startDetached(program, arguments)) return;
+    }
+    QDesktopServices::openUrl(location);
+}
+}
+
+void AppMenuModel::updateFinderMenu()
+{
+    if (!m_enableGenericMenu) return;
+    if (!m_finderMenu) {
+        m_finderMenu = std::make_unique<QMenu>();
+        m_finderMenu->setObjectName(QStringLiteral("tahoe-finder-menu"));
+        auto folder = [](QStandardPaths::StandardLocation location) {
+            return QUrl::fromLocalFile(QStandardPaths::writableLocation(location));
+        };
+        auto *file = m_finderMenu->addMenu(i18n("&File"));
+        auto *window = file->addAction(i18n("New Finder Window"));
+        window->setShortcut(QKeySequence::New);
+        connect(window, &QAction::triggered, this, [folder] {
+            openFinderLocation(folder(QStandardPaths::HomeLocation), true);
+        });
+        auto *go = m_finderMenu->addMenu(i18n("&Go"));
+        const QList<std::pair<QString, QUrl>> places = {
+            {i18n("Recents"), QUrl(QStringLiteral("recentlyused:/"))},
+            {i18n("Documents"), folder(QStandardPaths::DocumentsLocation)},
+            {i18n("Desktop"), folder(QStandardPaths::DesktopLocation)},
+            {i18n("Downloads"), folder(QStandardPaths::DownloadLocation)},
+            {i18n("Home"), folder(QStandardPaths::HomeLocation)},
+            {i18n("Network"), QUrl(QStringLiteral("remote:/"))},
+            {i18n("Trash"), QUrl(QStringLiteral("trash:/"))},
+        };
+        for (const auto &[label, url] : places) {
+            connect(go->addAction(label), &QAction::triggered, this, [url] { openFinderLocation(url); });
+        }
+        auto *help = m_finderMenu->addMenu(i18n("&Help"));
+        connect(help->addAction(i18n("Help")), &QAction::triggered, this, [] {
+            if (!QStandardPaths::findExecutable(QStringLiteral("khelpcenter")).isEmpty())
+                QProcess::startDetached(QStringLiteral("khelpcenter"), {});
+            else
+                QDesktopServices::openUrl(QUrl(QStringLiteral("https://userbase.kde.org/")));
+        });
+    }
+    if (m_menu == m_finderMenu.get()) return;
+    Q_EMIT menuSourceAboutToChange();
+    removeSearchActionsFromMenu();
+    m_menu = m_finderMenu.get();
+    setMenuAvailable(true);
+    setVisible(true);
+    Q_EMIT modelNeedsUpdate();
 }
 
 QHash<int, QByteArray> AppMenuModel::roleNames() const
@@ -468,6 +552,14 @@ void AppMenuModel::setEnableGenericMenu(bool enabled)
 {
     if (m_enableGenericMenu == enabled) return;
     m_enableGenericMenu = enabled;
+    if (!enabled && showingFinder()) {
+        Q_EMIT menuSourceAboutToChange();
+        removeSearchActionsFromMenu();
+        m_menu.clear();
+        setMenuAvailable(false);
+        setVisible(false);
+        Q_EMIT activeAppNameChanged();
+    }
     if (!enabled && m_genericMenu) {
         Q_EMIT menuSourceAboutToChange();
         removeSearchActionsFromMenu();
@@ -477,7 +569,12 @@ void AppMenuModel::setEnableGenericMenu(bool enabled)
         ++m_shortcutGeneration;
         setMenuAvailable(false);
     }
-    onActiveWindowChanged();
+    if (enabled && !m_menu && m_serviceName.isEmpty() && !m_tasksModel->activeTask().isValid()) {
+        updateFinderMenu();
+        Q_EMIT activeAppNameChanged();
+    } else {
+        onActiveWindowChanged();
+    }
     Q_EMIT enableGenericMenuChanged();
 }
 

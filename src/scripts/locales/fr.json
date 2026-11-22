@@ -1441,5 +1441,12 @@
   "Icon appearance": "Apparence des icônes",
   "Dock behaviour could not be enabled in kwinrc": "Le comportement du Dock n'a pas pu être activé dans kwinrc",
   "Dock follows screen": "Dock qui suit l'écran",
-  "Dock on several screens": "Dock sur plusieurs écrans"
+  "Dock on several screens": "Dock sur plusieurs écrans",
+  "New Finder Window": "Nouvelle fenêtre du Finder",
+  "&Go": "&Aller",
+  "Recents": "Récents",
+  "Documents": "Documents",
+  "Home": "Dossier personnel",
+  "&Help": "&Aide",
+  "Help": "Aide"
 }

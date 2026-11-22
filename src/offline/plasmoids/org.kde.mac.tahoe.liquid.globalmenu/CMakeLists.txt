@@ -18,7 +18,7 @@ find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Core Widgets Quick DBus
 )
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
-    WindowSystem I18n CoreAddons Config ColorScheme
+    WindowSystem I18n CoreAddons Config ColorScheme Service
 )
 find_package(Plasma REQUIRED)
 find_package(PlasmaActivities)
@@ -79,6 +79,7 @@ target_link_libraries(org.kde.mac.tahoe.liquid.globalmenu PRIVATE
     KF6::WindowSystem
     KF6::I18n
     KF6::ColorScheme
+    KF6::Service
     PW::LibTaskManager
     dbusmenuqt
 )

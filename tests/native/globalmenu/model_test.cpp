@@ -139,7 +139,8 @@ private Q_SLOTS:
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus));
         tasks.removeRow(1);
         Q_EMIT model.tasksModel()->activeTaskChanged();
-        QTRY_COMPARE(model.rowCount(), 0);
+        QTRY_COMPARE(model.rowCount(), 3);
+        QCOMPARE(model.activeAppName(), QStringLiteral("Finder"));
     }
     void fallbackShortcutRequiresTheOriginalWindow()
     {
@@ -280,8 +281,9 @@ private Q_SLOTS:
         QVERIFY(QMetaObject::invokeMethod(&model, "onActiveWindowChanged"));
         QCOMPARE(model.rowCount(), 2);
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::ActiveStatus));
-        QTRY_COMPARE(model.rowCount(), 0);
-        QVERIFY(!model.menuAvailable());
+        QTRY_COMPARE(model.rowCount(), 3);
+        QCOMPARE(model.activeAppName(), QStringLiteral("Finder"));
+        QVERIFY(model.menuAvailable());
     }
     void activeApplicationWinsWhilePanelStillAcceptsInput()
     {
@@ -322,7 +324,8 @@ private Q_SLOTS:
         QTRY_VERIFY(!model.tasksModel()->activeTask().isValid());
         QCOMPARE(model.rowCount(), 3);
         QVERIFY(model.setProperty("containmentStatus", Plasma::Types::ActiveStatus));
-        QTRY_COMPARE(model.rowCount(), 0);
+        QTRY_COMPARE(model.rowCount(), 3);
+        QCOMPARE(model.activeAppName(), QStringLiteral("Finder"));
     }
     void x11ActiveApplicationWinsWhilePanelStillAcceptsInput()
     {
@@ -371,6 +374,21 @@ private Q_SLOTS:
         setWindowProperty("_NET_CLIENT_LIST", {});
         QTRY_VERIFY(!model.tasksModel()->activeTask().isValid());
         xcb_disconnect(connection);
+    }
+    void idleFinderMenuFollowsGenericMenuSetting()
+    {
+        AppMenuModel model;
+        QTRY_COMPARE(model.activeAppName(), QStringLiteral("Finder"));
+        QCOMPARE(model.index(0).data(AppMenuModel::MenuRole).toString(), QStringLiteral("&File"));
+        QCOMPARE(model.index(1).data(AppMenuModel::MenuRole).toString(), QStringLiteral("&Go"));
+        QCOMPARE(model.index(2).data(AppMenuModel::MenuRole).toString(), QStringLiteral("&Help"));
+        QVERIFY(model.setProperty("containmentStatus", Plasma::Types::AcceptingInputStatus));
+        model.setEnableGenericMenu(false);
+        QVERIFY(model.activeAppName().isEmpty());
+        QCOMPARE(model.rowCount(), 0);
+        model.setEnableGenericMenu(true);
+        QTRY_COMPARE(model.rowCount(), 3);
+        QCOMPARE(model.activeAppName(), QStringLiteral("Finder"));
     }
     void lateMenuAppearsAfterEmptyExport()
     {
