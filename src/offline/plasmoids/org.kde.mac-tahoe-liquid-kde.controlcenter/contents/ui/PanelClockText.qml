@@ -15,8 +15,18 @@ Text {
         timeZone: "Local"
         trackSeconds: clockText.withSeconds
     }
-    text: Qt.locale().toString(localClock.dateTime, "ddd MMM d  " + hours
-                               + (withSeconds ? ":ss" : "") + (twelveHour ? "\u2009AP" : ""))
+    // macOS writes the date as "Sun Nov 22" ("Dim Nov 22" in French): short
+    // day and month names with a capital and no abbreviation dot, then the
+    // day of the month. Qt's French short names are "dim." and "nov.".
+    function shortName(name) {
+        const bare = name.replace(/\.$/, "");
+        return bare.charAt(0).toLocaleUpperCase(Qt.locale().name) + bare.slice(1);
+    }
+    readonly property date now: localClock.dateTime
+    text: shortName(Qt.locale().dayName(now.getDay(), Locale.ShortFormat)) + " "
+        + shortName(Qt.locale().monthName(now.getMonth(), Locale.ShortFormat)) + " "
+        + now.getDate() + "  "
+        + Qt.locale().toString(now, hours + (withSeconds ? ":ss" : "") + (twelveHour ? "\u2009AP" : ""))
     Accessible.ignored: true
     textFormat: Text.PlainText
     font.family: "SF Pro Text"

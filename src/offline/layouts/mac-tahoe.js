@@ -123,7 +123,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     clock.writeConfig("fontSize", 10);
     clock.writeConfig("fontWeight", 500);
     clock.writeConfig("showDate", "true");
-    clock.writeConfig("use24hFormat", 0);
+    clock.writeConfig("use24hFormat", 1);  // follow the region: 15:49 in French, 3:49 PM in US English
     clock.writeConfig("showSeconds", 0);
     clock.writeConfig("dateDisplayFormat", "BesideTime");
     clock.writeConfig("dateFormat", "custom");
