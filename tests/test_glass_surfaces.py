@@ -297,12 +297,8 @@ def test_surface_contours_match_material(mode, name):
     painter.end()
     x = size.width() // 2
     outer, inner, body = (image.pixelColor(x, y) for y in (1, 4, 12))
-    if name == "widgets/panel-background":
-        assert outer == body
-        assert inner.red() > 240 and inner.alphaF() > body.alphaF()
-    else:
-        assert outer.red() < inner.red(), (mode, name, outer.getRgb(), inner.getRgb())
-        assert outer.alphaF() > body.alphaF() and inner.alphaF() > body.alphaF()
+    assert outer.alphaF() > body.alphaF()
+    assert inner == body, (mode, name, "second band inside the edge")
     # The contour ends before the second logical pixel.
     assert image.pixelColor(x, 7) == body
 
