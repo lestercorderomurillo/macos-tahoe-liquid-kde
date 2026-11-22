@@ -1,0 +1,11 @@
+[Unit]
+Description=MacTahoe Liquid KDE — menu bar colours that follow the wallpaper
+After=plasma-plasmashell.service graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/mac-tahoe-menubar-contrast
+
+[Install]
+WantedBy=plasma-plasmashell.service

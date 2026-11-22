@@ -1441,5 +1441,6 @@
   "Icon appearance": "Apparence des icônes",
   "Dock behaviour could not be enabled in kwinrc": "Le comportement du Dock n'a pas pu être activé dans kwinrc",
   "Dock follows screen": "Dock qui suit l'écran",
-  "Dock on several screens": "Dock sur plusieurs écrans"
+  "Dock on several screens": "Dock sur plusieurs écrans",
+  "Menu bar colours will not follow the wallpaper: the user timer could not be enabled": "Les couleurs de la barre des menus ne suivront pas le fond d’écran : le minuteur utilisateur n’a pas pu être activé"
 }

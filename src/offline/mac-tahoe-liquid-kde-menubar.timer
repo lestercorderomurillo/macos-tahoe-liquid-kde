@@ -1,0 +1,14 @@
+[Unit]
+Description=MacTahoe Liquid KDE — check the wallpaper behind the menu bar
+
+[Timer]
+# Slideshows change the wallpaper without a configuration change the path
+# unit could see, so check once a minute too.
+OnStartupSec=20
+OnCalendar=*:*:00
+AccuracySec=10s
+Persistent=false
+Unit=mac-tahoe-liquid-kde-menubar.service
+
+[Install]
+WantedBy=timers.target

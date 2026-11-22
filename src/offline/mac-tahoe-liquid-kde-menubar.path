@@ -1,0 +1,9 @@
+[Unit]
+Description=MacTahoe Liquid KDE — react when a wallpaper is chosen
+
+[Path]
+PathChanged=%h/.config/plasma-org.kde.plasma.desktop-appletsrc
+Unit=mac-tahoe-liquid-kde-menubar.service
+
+[Install]
+WantedBy=default.target

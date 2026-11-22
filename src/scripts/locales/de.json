@@ -1281,5 +1281,6 @@
   "Automatic": "Automatisch",
   "Dock behaviour could not be enabled in kwinrc": "Das Dock-Verhalten konnte in kwinrc nicht aktiviert werden",
   "Dock follows screen": "Dock folgt dem Bildschirm",
-  "Dock on several screens": "Dock auf mehreren Bildschirmen"
+  "Dock on several screens": "Dock auf mehreren Bildschirmen",
+  "Menu bar colours will not follow the wallpaper: the user timer could not be enabled": "Die Farben der Menüleiste folgen nicht dem Hintergrundbild: Der Benutzer-Timer konnte nicht aktiviert werden"
 }
