@@ -1,34 +1,23 @@
 {
-  "version": "0.82.10",
+  "version": "0.82.11",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "8f549624827c2032c93e9c9b0c1e481d26f31b7e",
-  "scope": "Raise the default desktop calendar, analog clock, and timer stack by 48 logical pixels in both editions.",
-  "approval": "The maintainer replied yes to releasing the placement after seeing the Golden Gate preview and the Tahoe candidate beside the Apple reference.",
+  "implementation_commit": "1adaf20884eb3c2895add1655f813333ef8dc1a3",
+  "scope": "Install and load Fedora’s GTK 3 global menu exporter, including on Fedora derivatives.",
   "checks": [
     {
-      "command": "Installed the approved Tahoe and Golden Gate candidates in disposable KDE neon Plasma 6.8.1 Wayland overlays. On first placement the calendar, analog clock, and timer started at y=62, 286, and 510 logical pixels at x=48. The positions matched in light and dark mode.",
+      "command": "Ran the exhaustive package mapping, GTK login hook and global menu installer tests in a network-isolated Bubblewrap sandbox. All 451 tests passed.",
       "result": "passed"
     },
     {
-      "command": "Verified both installed placement SHA-256 records against the release source. Between the preview baseline and v0.82.9, runtime changes were scoped to the Dock and Apps button. The widget package, placement entry point, top panel, and desktop containment were unchanged.",
+      "command": "In a disposable Fedora 45 container, installed unity-gtk3-module from Fedora, detected its packaged library, sourced the generated Plasma login hook and confirmed that native GTK 3 loaded the library in a private Xvfb and D-Bus session.",
       "result": "passed"
     },
     {
-      "command": "Verified the Tahoe component fingerprint ledger and inspected the focused release diff with git diff --check.",
+      "command": "Verified the regenerated component fingerprint ledger and reviewed the integration with git diff --check.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "approved_preview_sha256": {
-    "tahoe-reference-comparison.png": "584df5a9bbbb99511fc0aa5d8f72d277ac8b1b6e9416fe25fa4ed19ecfb06b50",
-    "golden-gate-light.png": "ab17e84e787499d2b00ddab0d5c1613affe44586bd57dc83ed478884b3ce75cd"
-  },
-  "capture_sha256": {
-    "tahoe-light.png": "9e46bf1f44786a5c1980dc6d2d714f90da30b6216b67e4e6246541d335871f49",
-    "tahoe-dark.png": "126ccc2458b21c90e15d5f70ddcf04304de9844b3fc381bf97657057a341dd9b",
-    "golden-gate-light.png": "ab17e84e787499d2b00ddab0d5c1613affe44586bd57dc83ed478884b3ce75cd",
-    "golden-gate-dark.png": "ece584d6665467e310cc86085068ad495b3fbdf33f5d05607ee17cf85937baf3"
-  },
-  "coverage_limits": "KDE neon Plasma 6.8.1 Wayland at 2x scale with one display. The preview used the v0.82.8 baseline. This changes first placement for the starter set.",
-  "source_sha256": "e2381550e8be01c77fda1a8375fcb8a43789f08cf80085760465976980e44a09"
+  "coverage_limits": "The native check establishes module loading in Fedora 45 under isolated X11. It does not exercise menu display in a full Plasma desktop.",
+  "source_sha256": "44f5a015eed876eaeb22156ae71425218d4b0d09afdd39290de679f02eb330c3"
 }
