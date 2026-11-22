@@ -10,7 +10,7 @@ LEVELS = {"none": 0, "soft": .30, "medium": .65, "hard": 1.0}
 GTK_SHADOWS = {
     "none": "none",
     "soft": "0 8px 28px rgba(0, 0, 0, 0.12)",
-    "medium": "0 8px 20px rgba(0, 0, 0, 0.24)",
+    "medium": "0 18px 40px rgba(0, 0, 0, 0.40)",
     "hard": "0 8px 12px rgba(0, 0, 0, 0.40)",
 }
 
@@ -72,11 +72,13 @@ def apply_aurorae(path: Path) -> None:
         path.write_text(aurorae_svg(path.read_text(), options["shadows"]))
 
 
-def apply_gtk(path: Path) -> None:
-    options = selected()
-    if not options:
-        return
+def apply_gtk(path: Path, level: str | None = None) -> None:
+    if level is None:
+        options = selected()
+        if not options:
+            return
+        level = options["shadows"]
     for version in (3, 4):
         for css in (path / f"gtk-{version}.0").glob("*.css"):
             if not css.is_symlink():
-                css.write_text(gtk_css(css.read_text(), options["shadows"], version))
+                css.write_text(gtk_css(css.read_text(), level, version))

@@ -8,7 +8,7 @@ import json
 import math
 import time
 
-from PyQt6.QtCore import Qt, QEvent, QPointF, QRectF, QSize, QTimer, QUrl
+from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPointF, QRectF, QSize, QTimer, QUrl
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
@@ -581,6 +581,47 @@ class OpaqueSurface(QWidget):
             painter.drawLine(0, 0, self.width(), 0)
 
 
+class WizardFrame(QWidget):
+    """Finish the shared install/remove window after its opaque pages paint."""
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+
+    def paintEvent(self, event):
+        if self.window().isMaximized() or self.window().isFullScreen():
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        bounds = QRectF(self.rect())
+        inset = 0.375
+        left, top = inset, inset
+        right, bottom = bounds.width() - inset, bounds.height() - inset
+        radius = 28 - inset
+        # Tangent handles follow the installed 28-unit continuous window corner.
+        handle = radius * 0.73
+        path = QPainterPath(QPointF(left + radius, top))
+        path.lineTo(right - radius, top)
+        path.cubicTo(right - radius + handle, top, right, top + radius - handle, right, top + radius)
+        path.lineTo(right, bottom - radius)
+        path.cubicTo(right, bottom - radius + handle, right - radius + handle, bottom, right - radius, bottom)
+        path.lineTo(left + radius, bottom)
+        path.cubicTo(left + radius - handle, bottom, left, bottom - radius + handle, left, bottom - radius)
+        path.lineTo(left, top + radius)
+        path.cubicTo(left, top + radius - handle, left + radius - handle, top, left + radius, top)
+        path.closeSubpath()
+        outside = QPainterPath()
+        outside.addRect(bounds)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Clear)
+        painter.fillPath(outside.subtracted(path), Qt.GlobalColor.transparent)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
+        highlight = QLinearGradient(0, top, 0, bottom)
+        highlight.setColorAt(0, QColor(142, 142, 142, 148))
+        highlight.setColorAt(1, QColor(98, 98, 98, 187))
+        painter.strokePath(path, QPen(highlight, 2 * inset))
+
+
+
 class PageScrollArea(QScrollArea):
     def __init__(self):
         super().__init__()
@@ -668,6 +709,8 @@ class InstallerWindow(OpaqueSurface):
         # Keep the desktop text size and scale the SF hierarchy for accessibility.
         self.setFont(relative_font(self, 7/6))
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
+        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.setAttribute(Qt.WidgetAttribute.WA_OpaquePaintEvent, False)
         self.resize(900, 680)
         self.setMinimumSize(820, 640)
         self.layout = QVBoxLayout(self)
@@ -741,6 +784,20 @@ class InstallerWindow(OpaqueSurface):
         self.next.clicked.connect(self.advance)
         self.footer_layout.addWidget(self.next, 1, 2, Qt.AlignmentFlag.AlignRight)
         self.layout.addWidget(self.footer)
+        self.frame_edge = WizardFrame(self)
+        self.frame_edge.setGeometry(self.rect())
+        app.styleHints().colorSchemeChanged.connect(self.system_scheme_changed)
+        # KDE replaces kdeglobals atomically. Watch its directory so the next
+        # switch is observed even after a new inode replaces the original.
+        config = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ConfigLocation)
+        self.desktop_config = Path(config) / "kdeglobals"
+        if self.desktop_config.is_file():
+            self.config_timer = QTimer(self)
+            self.config_timer.setSingleShot(True)
+            self.config_timer.setInterval(150)
+            self.config_timer.timeout.connect(self.refresh_desktop_scheme)
+            self.config_watcher = QFileSystemWatcher([config], self)
+            self.config_watcher.directoryChanged.connect(lambda _: self.config_timer.start())
         bridge.runningChanged.connect(self.refresh_window_controls)
         bridge.finished.connect(self.finished)
         bridge.progressChanged.connect(self.refresh_progress)
@@ -751,6 +808,30 @@ class InstallerWindow(OpaqueSurface):
         bridge.updateReturned.connect(self.update_returned)
         self.render()
         self.next.setFocus(Qt.FocusReason.OtherFocusReason)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.frame_edge.setGeometry(self.rect())
+
+    def refresh_desktop_scheme(self):
+        settings = QSettings(str(self.desktop_config), QSettings.Format.IniFormat)
+        rgb = settings.value("Colors:Window/BackgroundNormal")
+        if isinstance(rgb, list) and len(rgb) >= 3:
+            try:
+                color = QColor(*(int(v) for v in rgb[:3]))
+            except (TypeError, ValueError):
+                return
+            if color.isValid():
+                self.system_scheme_changed(Qt.ColorScheme.Dark if color.lightnessF() <= .5 else Qt.ColorScheme.Light)
+
+    def system_scheme_changed(self, scheme):
+        if scheme == Qt.ColorScheme.Unknown:
+            return
+        dark = scheme == Qt.ColorScheme.Dark
+        if dark != (self.surface_color.lightnessF() <= .5):
+            self.setPalette(installer_palette(dark))
+            self.render()
+            self.frame_edge.update()
 
     def express_install(self):
         if self.page != "welcome" or self.bridge.running or self.updating:
@@ -935,7 +1016,7 @@ class InstallerWindow(OpaqueSurface):
         QApplication.setPalette(self.palette())
         focused = QApplication.focusWidget()
         focus_name = focused.objectName() if focused else ""
-        # Keep the opening light/dark appearance; installation choices affect previews only.
+        # The live desktop selects the window palette. Wizard choices affect previews only.
         self.accent = "#007aff"
         light = self.window().palette().window().color().lightnessF() > .5
         surface, footer = ("#f6f6f6", "#eeeeee") if light else ("#292929", "#242424")

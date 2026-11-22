@@ -24,7 +24,8 @@ def test_nix_asset_assembly_matches_runtime_theme_names(repo, tmp_path, monkeypa
 
     scripts = tmp_path / "scripts"
     scripts.mkdir()
-    for name in ("glass_surfaces.py", "theme_switch.py", "launcher_defaults.py", "localization.py", "window_controls.py"):
+    for name in ("glass_surfaces.py", "theme_switch.py", "launcher_defaults.py", "localization.py", "window_controls.py",
+                 "window_shadows.py", "installer_choices.py"):
         shutil.copy2(repo / "src/scripts" / name, scripts / name)
     shutil.copytree(repo / "src/scripts/locales", scripts / "locales")
     (scripts / "defaults.json").write_text(json.dumps({"wallpaper": edition, "launcher_preset": 1}))
@@ -44,7 +45,8 @@ def test_nix_asset_assembly_matches_runtime_theme_names(repo, tmp_path, monkeypa
         assert f"theme=__aurorae__svg__{edition}LiquidKde-{mode}" in defaults
         gtk_css = (share / "themes" / name / "gtk-3.0/gtk.css").read_text()
         assert ('windows-assets/golden-gate-close-' in gtk_css) == (edition == "MacGoldenGate")
-        assert (share / "themes" / name / "gtk-3.0/gtk.css").is_file()
+        from window_shadows import GTK_SHADOWS
+        assert GTK_SHADOWS["medium"] in gtk_css
         assert not list(share.rglob("*-ReducedTransparency"))
     assert not (share / "fonts").exists()
     assert not (share / "wallpapers").exists()

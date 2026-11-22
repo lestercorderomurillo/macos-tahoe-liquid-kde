@@ -96,8 +96,7 @@ expected = {'Chip', 'Cores', 'Memory', 'Graphics', 'Startup disk', 'Network',
 assert expected <= texts, f'Missing labels: {expected - texts}'
 window = engine.rootObjects()[0]
 surface = window.findChild(QQuickItem, 'aboutGlassSurface')
-highlight = window.findChild(QQuickItem, 'aboutGlassHighlight')
-assert surface is not None and highlight is not None
+assert surface is not None
 # Every action uses the same glass background, including the icon-only Copy.
 faces = window.findChildren(QQuickItem, 'aboutButtonFace')
 assert len(faces) == 3
@@ -168,13 +167,17 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
         painter.end()
         contrast = (luminance(image.pixelColor(1, 0)) + .05) / (luminance(image.pixelColor(0, 0)) + .05)
         assert contrast >= 4.5, contrast
-    assert QQmlProperty(surface, 'border.width').read() == .75
-    assert QQmlProperty(highlight, 'border.width').read() == .75
-    outer = QQmlProperty(surface, 'border.color').read()
-    inner = QQmlProperty(highlight, 'border.color').read()
-    assert outer.red() == 0 and abs(outer.alphaF() - .18) < .005
-    assert inner.red() == 255 and abs(inner.alphaF() - .22) < .005
-    assert highlight.property('radius') == surface.property('radius') - .75
+    edge = window.findChild(QQuickItem, 'aboutKeyline')
+    assert edge and edge.property('radius') == surface.property('radius')
+    painted = window.grabWindow()
+    edge.setVisible(False)
+    QTest.qWait(20)
+    without_edge = window.grabWindow()
+    assert painted != without_edge
+    center = painted.rect().center()
+    assert painted.pixelColor(center) == without_edge.pixelColor(center)
+    edge.setVisible(True)
+    QTest.qWait(20)
 assert not errors, '\n'.join(errors)
 '''
     qml = repo / 'src/offline/plasmoids/org.kde.mac.tahoe.liquid.globalmenu/qml/AboutWindow.qml'

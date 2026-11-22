@@ -4,6 +4,7 @@ import shutil
 import sys
 from pathlib import Path
 
+from window_shadows import apply_gtk as apply_gtk_shadow
 from window_controls import EDITIONS, assemble_aurorae, apply_gtk_controls, apply_global_theme
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default
 from glass_surfaces import apply_kvantum_surface_defaults, apply_plasma_surface_defaults
@@ -26,6 +27,7 @@ for mode in ("Light", "Dark"):
     name = f"MacTahoeLiquidKde-{mode}"
     apply_plasma_surface_defaults(share / "plasma/desktoptheme" / name)
     apply_gtk_controls(share / "themes" / name)
+    apply_gtk_shadow(share / "themes" / name, "medium")
     for edition in EDITIONS:
         dest = share / "aurorae/themes" / f"{edition}LiquidKde-{mode}"
         assemble_aurorae(source / "aurorae", dest, mode, edition)
