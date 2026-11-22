@@ -174,7 +174,8 @@
         }
       }
     ],
-    "stable_frames": true
+    "stable_frames": true,
+    "reviewed": true
   },
   "nautilus-light.jpg": {
     "source": "nautilus-light.png",
@@ -316,7 +317,8 @@
         }
       }
     ],
-    "stable_frames": true
+    "stable_frames": true,
+    "reviewed": true
   },
   "desktop-tahoe-dark.jpg": {
     "source": "desktop-tahoe-dark.png",
@@ -493,7 +495,8 @@
         }
       }
     ],
-    "stable_frames": true
+    "stable_frames": true,
+    "reviewed": true
   },
   "nautilus-dark.jpg": {
     "source": "nautilus-dark.png",
@@ -635,7 +638,8 @@
         }
       }
     ],
-    "stable_frames": true
+    "stable_frames": true,
+    "reviewed": true
   },
   "tahoe.jpg": {
     "source": "src/offline/wallpapers/MacTahoe/contents/images/3840x2160.jpg",

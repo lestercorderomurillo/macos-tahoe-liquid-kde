@@ -1,35 +1,47 @@
 {
-  "version": "0.81.7",
+  "version": "0.82.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "b05629a9e84cd0c5f365fde389903742c5442fcc",
-  "scope": "Multi-display menu bar synchronization, Dock movement and maximized windows.",
-  "approval": "Maintainer approved the Tahoe and Golden Gate previews of b05629a9.",
+  "implementation_commit": "3f797e54504e5096c9dd2049e77fd074a90b79f1",
+  "scope": "Shared category foreground, local app and search contrast, four glass presets, installer previews and Exuma wallpaper.",
+  "approval": "Maintainer approved the final Golden Gate appearance on Exuma with the shared category row, local search and app foregrounds.",
   "checks": [
     {
-      "command": "pytest tests/test_dock_always_visible.py tests/test_dock_follows_screen_dwell.py tests/test_menubar_sync.py tests/test_acrylic_glass_uninstall.py; dwell tests rerun after cancellation fix",
+      "command": "KDE neon 6.8.1 Wayland: installed the shared candidate with Golden Gate defaults, applied the final category compositing change, verified the light and dark launcher, a Dolphin query, and opposite wallpaper tones.",
       "result": "passed"
     },
     {
-      "command": "pytest tests/test_dock_appearance.py tests/test_dock_defaults.py (87 passed)",
+      "command": "tests/test_launcher_presets.py::test_native_launcher_popup_presets and ::test_control_center_glass_regions (10 passed before the final QML composition correction, confirmed separately by Wayland captures).",
       "result": "passed"
     },
     {
-      "command": "Installed and reinstalled candidate in KDE neon Wayland 6.8.1, set a clock on one display, read both clocks and captured the Dock moving from display 0 to 1.",
+      "command": "tests/test_installer_glass_step.py (6 passed); native KCM material checks and component surface regressions passed after the dark gradient fallback fix.",
       "result": "passed"
     },
     {
-      "command": "Ran KWin X11 6.6.5 and 6.7.4 in Xvfb, loaded the effect and measured a 10-pixel shift on maximization.",
+      "command": "Built and loaded the candidate x11 module in isolated KWin 6.6.5 and 6.7.4 with Xvfb; each delivered a 64x64 launcher grid that tracked a rendered backdrop from black to white. The 6.7.4 Wayland module was also built.",
+      "result": "passed"
+    },
+    {
+      "command": "pytest tests/test_component_cache.py::test_installer_file_previews_keep_verified_focus_and_hashes tests/test_component_cache.py::test_committed_component_hashes_match_sources",
       "result": "passed"
     }
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/tahoe-multiscreen-dock-7cb13adcee1c.jpg",
-      "sha256": "7cb13adcee1c95a5e2fab3d6d5e9611d47064b2b5310c9d32efeddace854b26c",
+      "path": "src/screenshots/previews/golden-gate-categorias-92679197e55a.png",
+      "sha256": "92679197e55ae39c8eb03597f4229c96119c033b7930a7fe09c4809b2689ea64",
       "reviewed": true,
-      "source_commit": "b05629a9e84cd0c5f365fde389903742c5442fcc"
+      "source_commit": "3f797e54504e5096c9dd2049e77fd074a90b79f1",
+      "edition": "golden-gate"
+    },
+    {
+      "path": "src/screenshots/previews/golden-gate-busqueda-656d687e8504.png",
+      "sha256": "656d687e8504e6332eb5d693968db78aafc047412a4f3482ac1da00d21a05e6f",
+      "reviewed": true,
+      "source_commit": "3f797e54504e5096c9dd2049e77fd074a90b79f1",
+      "edition": "golden-gate"
     }
   ],
-  "coverage_limits": "Two virtual displays on Wayland. X11 used a rendered Dock test window. The before/after photographs establish location, not animation timing.",
-  "source_sha256": "831187e4b34a70f524bb7cacf6e7cdf7a15079c27ae958d38feccc15355c8d7b"
+  "coverage_limits": "Golden Gate launcher photography uses KDE neon Wayland 6.8.1. The X11 checks used a launcher test window and verified compositor readback. Historical galleries retain their original provenance.",
+  "source_sha256": "d0bf91c472e31936561a2577e4c2aa3b839888f37c69a06df40498f44020c480"
 }
