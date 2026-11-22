@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.79.0**. Reviewed window, Dock, menu and installer edges on white and black backgrounds in both appearances on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
+**v0.80.0**. Dock order, Apps activation and saved pin placement were checked on KDE neon Wayland. The approved Dock photographs precede the v0.79.0 outer edge. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
