@@ -26,10 +26,11 @@ void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bou
         || pid != QCoreApplication::applicationPid() || !BackdropGeometry::sizeMatches(frame, *m_window)
         // Wayland repositions the anchored Plasma dialog relative to its panel.
         || !m_window->screen() || !m_window->screen()->geometry().intersects(frame)
-        || bounds.isEmpty() || colors.size() != 8 * 8 * 3) return;
+        || bounds.isEmpty() || (colors.size() != 8 * 8 * 3 && colors.size() != 64 * 64 * 3)) return;
     if (!m_lastFrame.isEmpty() && frame.topLeft() != m_lastFrame.topLeft()) m_ink.moved();
     m_lastFrame = frame;
     m_sampleBounds = bounds.translated(-frame.topLeft());
+    m_gridSide = colors.size() == 64 * 64 * 3 ? 64 : 8;
     m_backdropGrid = colors;
     ++m_revision;
     Q_EMIT backdropChanged();
@@ -38,9 +39,9 @@ void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bou
 QColor PopupBackdrop::backdropAt(QPointF point) const
 {
     if (m_backdropGrid.isEmpty()) return Qt::transparent;
-    const int x = std::clamp(int((point.x() - m_sampleBounds.x()) * 8 / m_sampleBounds.width()), 0, 7);
-    const int y = std::clamp(int((point.y() - m_sampleBounds.y()) * 8 / m_sampleBounds.height()), 0, 7);
-    const auto *rgb = reinterpret_cast<const unsigned char *>(m_backdropGrid.constData()) + (y * 8 + x) * 3;
+    const int x = std::clamp(int((point.x() - m_sampleBounds.x()) * m_gridSide / m_sampleBounds.width()), 0, m_gridSide - 1);
+    const int y = std::clamp(int((point.y() - m_sampleBounds.y()) * m_gridSide / m_sampleBounds.height()), 0, m_gridSide - 1);
+    const auto *rgb = reinterpret_cast<const unsigned char *>(m_backdropGrid.constData()) + (y * m_gridSide + x) * 3;
     return QColor(rgb[0], rgb[1], rgb[2]);
 }
 

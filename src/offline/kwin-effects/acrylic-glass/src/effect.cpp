@@ -2076,15 +2076,20 @@ void BlurEffect::blur(
         const int sampleInterval = about ? 40 : 200;
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
             blurInfo.contrastTimer.start();
-            if (!m_contrastTexture) {
-                m_contrastTexture = GLTexture::allocate(GL_RGBA8, QSize(8, 8));
-                if (m_contrastTexture) {
-                    m_contrastTexture->setFilter(GL_LINEAR);
-                    m_contrastTexture->setWrapMode(GL_CLAMP_TO_EDGE);
-                    m_contrastFramebuffer = std::make_unique<GLFramebuffer>(m_contrastTexture.get());
+            // A Launchpad label can be shorter than a single cell in the menu grid.
+            const bool launcher = caption == QStringLiteral("mttkde-apps") || caption == QStringLiteral("mttkde-search");
+            const int side = launcher ? 64 : 8;
+            auto &texture = launcher ? m_launcherContrastTexture : m_contrastTexture;
+            auto &framebuffer = launcher ? m_launcherContrastFramebuffer : m_contrastFramebuffer;
+            if (!texture) {
+                texture = GLTexture::allocate(GL_RGBA8, QSize(side, side));
+                if (texture) {
+                    texture->setFilter(GL_LINEAR);
+                    texture->setWrapMode(GL_CLAMP_TO_EDGE);
+                    framebuffer = std::make_unique<GLFramebuffer>(texture.get());
                 }
             }
-            if (m_contrastFramebuffer && m_contrastFramebuffer->valid()) {
+            if (framebuffer && framebuffer->valid()) {
                 const bool blendEnabled = glIsEnabled(GL_BLEND);
                 glDisable(GL_BLEND);
                 const auto &read = renderInfo.framebuffers[blurOffset > 0 && optics.surfaceBlur >= 0.5f ? 1 : 0];
@@ -2095,9 +2100,9 @@ void BlurEffect::blur(
                 m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, 0.0f);
                 m_downsamplePass.shader->setUniform(m_downsamplePass.halfpixelLocation, QVector2D(0, 0));
                 read->colorAttachment()->bind();
-                GLFramebuffer::pushFramebuffer(m_contrastFramebuffer.get());
+                GLFramebuffer::pushFramebuffer(framebuffer.get());
                 vbo->draw(GL_TRIANGLES, 0, 6);
-                std::array<unsigned char, 8 * 8 * 4> pixels{};
+                std::array<unsigned char, 64 * 64 * 4> pixels;
                 GLint packBuffer = 0;
                 glGetIntegerv(GL_PIXEL_PACK_BUFFER_BINDING, &packBuffer);
                 glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
@@ -2107,7 +2112,7 @@ void BlurEffect::blur(
                     glGetIntegerv(packNames[i], &packValues[i]);
                     glPixelStorei(packNames[i], 0);
                 }
-                glReadPixels(0, 0, 8, 8, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+                glReadPixels(0, 0, side, side, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
                 for (size_t i = 0; i < packNames.size(); ++i) glPixelStorei(packNames[i], packValues[i]);
                 glBindBuffer(GL_PIXEL_PACK_BUFFER, packBuffer);
                 GLFramebuffer::popFramebuffer();
@@ -2116,14 +2121,14 @@ void BlurEffect::blur(
                 // Match the interior glass pass before clients composite their own fill.
                 const auto transform = material.color.transposed();
                 QByteArray colors;
-                colors.reserve(8 * 8 * 3);
+                colors.reserve(side * side * 3);
                 QVector3D total;
-                for (int row = 0; row < 8; ++row) {
-                    for (int col = 0; col < 8; ++col) {
-                        const auto *pixel = pixels.data() + ((7 - row) * 8 + col) * 4;
+                for (int row = 0; row < side; ++row) {
+                    for (int col = 0; col < side; ++col) {
+                        const auto *pixel = pixels.data() + ((side - 1 - row) * side + col) * 4;
                         const QVector3D base(pixel[0] / 255.f, pixel[1] / 255.f, pixel[2] / 255.f);
-                        const QPointF screenPoint(backgroundRect.x() + (col + .5) * backgroundRect.width() / 8,
-                                                  backgroundRect.y() + (row + .5) * backgroundRect.height() / 8);
+                        const QPointF screenPoint(backgroundRect.x() + (col + .5) * backgroundRect.width() / side,
+                                                  backgroundRect.y() + (row + .5) * backgroundRect.height() / side);
                         const QPointF point((screenPoint.x() - w->x() - data.xTranslation()) / data.xScale(),
                                             (screenPoint.y() - w->y() - data.yTranslation()) / data.yScale());
                         QRectF surface(QPointF(), frameRect.size());

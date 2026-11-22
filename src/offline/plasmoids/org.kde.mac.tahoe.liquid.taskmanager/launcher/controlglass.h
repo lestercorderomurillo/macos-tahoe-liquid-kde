@@ -32,6 +32,7 @@ private:
     Q_SLOT void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title);
     quint64 m_revision = 0;
     QByteArray m_backdropGrid;
+    int m_gridSide = 8;
     QRect m_sampleBounds;
     QRect m_lastFrame;
     GlassInk::Transition m_ink{[this] { ++m_revision; Q_EMIT backdropChanged(); }};
