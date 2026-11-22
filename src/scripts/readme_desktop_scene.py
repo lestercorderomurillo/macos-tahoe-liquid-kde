@@ -192,6 +192,7 @@ def photograph_materials(vm, edition, mode, guest, snapshot, save, taken):
     vm.click(1000, 900)
     vm.action("clean-desktop")
     photograph_dock(vm, mode, guest, snapshot, save, taken)
+    guest("dock", "regular", mode)
 
     if mode == "light" and not taken("boot"):
         vm.action("boot")

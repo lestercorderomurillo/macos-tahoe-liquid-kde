@@ -30,6 +30,7 @@ def test_installed_launcher_uses_edition_default_without_changing_source(
     widget = repo / "src/offline/plasmoids" / launcher_defaults.LAUNCHER_ID
     original = (widget / "contents/config/main.xml").read_bytes()
     original_view = (widget / "contents/ui/MainView.qml").read_bytes()
+    monkeypatch.setattr(plasmoids, "DATA_HOME", tmp_path / "data")
     monkeypatch.setattr(plasmoids, "DEST_DIR", tmp_path / "installed")
     monkeypatch.setattr(plasmoids, "HOME", tmp_path)
 
@@ -435,7 +436,7 @@ import org.kde.mac.tahoe.launcher as NativeLauncher
 Item {
     id: root
     width: 600; height: 300
-    QtObject { id: plasmoid; property int formFactor: PlasmaCore.Types.Horizontal }
+    QtObject { id: plasmoid; property int formFactor: PlasmaCore.Types.Horizontal; property var configuration: ({showSeparator:true}) }
     GridLayout {
         id: panel
         width: vertical ? 96 : 500
@@ -447,6 +448,7 @@ Item {
             id: applet
             NativeLauncher.DockCell { id: dockCell; applet: applet; vertical: panel.vertical }
             implicitWidth: 32; implicitHeight: 32
+            property bool usesAppsPin: false
             HINTS
         }
         Item { Layout.fillWidth: true; Layout.fillHeight: true }

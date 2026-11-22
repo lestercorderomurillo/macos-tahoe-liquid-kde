@@ -9,6 +9,7 @@ import org.kde.kirigami as Kirigami
 PlasmaCore.Dialog {
 	id: root
 	title: "mttkde-apps"
+	property Item dockAnchor
 	readonly property NativeGlass.GlassSettings glassSettings: NativeGlass.GlassSettings {
 		component: "apps"
 		window: root
@@ -119,6 +120,7 @@ PlasmaCore.Dialog {
 	}
 
 	function popupPosition(width, height) {
+		const anchor = dockAnchor || parent;
 		var searchHeight = main.detachedSearch ? main.searchPopupHeight + main.searchPopupGap : 0;
 		height += searchHeight;
 		var screenAvail = Plasmoid.availableScreenRect;
@@ -134,15 +136,15 @@ PlasmaCore.Dialog {
 		if (Plasmoid.configuration.offsetX > 0 && Plasmoid.configuration.floating) {
 			offset = Plasmoid.configuration.offsetX
 		} else {
-			offset = plasmoid.configuration.floating ? parent.height * 0.35 : 0
+			offset = plasmoid.configuration.floating ? anchor.height * 0.35 : 0
 		}
 		// Fall back to bottom-left of screen area when the applet is on the desktop or floating.
 		var x = offset;
 		var y = screen.height - height - offset;
 		var horizMidPoint = screen.x + (screen.width / 2);
 		var vertMidPoint = screen.y + (screen.height / 2);
-		var appletTopLeft = parent.mapToGlobal(0, 0);
-		var appletBottomLeft = parent.mapToGlobal(0, parent.height);
+		var appletTopLeft = anchor.mapToGlobal(0, 0);
+		var appletBottomLeft = anchor.mapToGlobal(0, anchor.height);
 
 		if (Plasmoid.configuration.launcherPosition != 0){
 			x = horizMidPoint - width / 2;
@@ -164,15 +166,15 @@ PlasmaCore.Dialog {
 					if (Plasmoid.configuration.offsetY > 0) {
 						offset = (125 * 1) / 2 + Plasmoid.configuration.offsetY
 					} else {
-						offset = (125 * 1) / 2 + parent.height * 0.125
+						offset = (125 * 1) / 2 + anchor.height * 0.125
 					}
 				}
-				y = screen.y + parent.height + panelSvg.margins.bottom + offset;
+				y = screen.y + anchor.height + panelSvg.margins.bottom + offset;
 			} else {
 				if (Plasmoid.configuration.offsetY > 0) {
 					offset = Plasmoid.configuration.offsetY
 				}
-				y = screen.y + screen.height - parent.height - height - panelSvg.margins.top - offset * 2.5;
+				y = screen.y + screen.height - anchor.height - height - panelSvg.margins.top - offset * 2.5;
 			}
 		} else {
 			y = vertMidPoint - height / 2

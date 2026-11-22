@@ -32,7 +32,7 @@ NativeLauncher.DockIcon {
         const app = Plasmoid.configuration.launcherApplication;
         if (app && NativeLauncher.LauncherApplications.open(app)) return;
         if (!dashWindow) return;
-        dashWindow.parent = anchor || root;
+        dashWindow.dockAnchor = anchor || null;
         dashWindow.visible = !dashWindow.visible;
     }
 

@@ -24,6 +24,7 @@ PlasmoidItem {
             || Plasmoid.formFactor === PlasmaCore.Types.Vertical
         vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     }
+    readonly property var dockConfigureAction: Plasmoid.internalAction("configure")
     readonly property var dockButtonIcon: Plasmoid.icon
     function toggleDockApps(anchor) {
         if (fullRepresentationItem) fullRepresentationItem.activateLauncher(anchor);

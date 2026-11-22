@@ -751,7 +751,8 @@ PlasmaExtras.Menu {
     PlasmaExtras.MenuItem { separator: true }
 
     PlasmaExtras.MenuItem {
-        property PlasmaCore.Action configureAction: null
+        property PlasmaCore.Action configureAction: menu.visualParent?.appsButton && tasks.launcherCell
+            ? tasks.launcherCell.applet.dockConfigureAction : Plasmoid.internalAction("configure")
 
         enabled: configureAction && configureAction.enabled
         visible: configureAction && configureAction.visible
@@ -761,7 +762,6 @@ PlasmaExtras.Menu {
 
         onClicked: configureAction.trigger()
 
-        Component.onCompleted: configureAction = Plasmoid.internalAction("configure")
     }
 
     PlasmaExtras.MenuItem {

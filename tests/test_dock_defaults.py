@@ -69,6 +69,8 @@ JSON.stringify(created.filter(p => p.location === "bottom").map(p =>
 @pytest.mark.parametrize('relative', LAYOUTS)
 @pytest.mark.parametrize('installed, expected', [
     (APPS, APPS),
+    (APPS + ["org.kde.mac-tahoe-liquid-kde.apps.desktop"],
+     [APPS[0], "org.kde.mac-tahoe-liquid-kde.apps.desktop", *APPS[1:]]),
     ([], []),
     (['firefox-esr.desktop', 'thunderbird_thunderbird.desktop'],
      ['firefox-esr.desktop', 'thunderbird_thunderbird.desktop']),
@@ -85,7 +87,10 @@ def test_base_dock_order_and_missing_apps(offline, relative, installed, expected
     for widgets in docks:
         tasks = [w for w in widgets if w['type'] == layout.MAC_TASKS_ID]
         assert tasks[0]['pins'] == ['applications:' + app for app in expected]
-        assert widgets[-1]['type'] == 'org.kde.mac-tahoe-liquid-kde.trashcan'
+        assert [w["type"] for w in widgets[-3:]] == [
+            "org.kde.mac-tahoe-liquid-kde.dockseparator", "org.kde.plasma.folder",
+            "org.kde.mac-tahoe-liquid-kde.trashcan",
+        ]
 
 
 def test_upgrade_adds_defaults_after_user_pins_on_every_screen(monkeypatch):

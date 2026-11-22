@@ -18,6 +18,7 @@ def transition(repo, sandbox, monkeypatch):
     monkeypatch.setattr(plasmoids, "HOME", sandbox)
     data = sandbox / ".local/share"
     monkeypatch.setattr(layout, "DATA_HOME", data)
+    monkeypatch.setattr(plasmoids, "DATA_HOME", data)
     monkeypatch.setattr(plasmoids, "DEST_DIR", data / "plasma/plasmoids")
     monkeypatch.setattr(layout, "_ensure_panel_colorizer", lambda: None)
     monkeypatch.setattr(layout, "_patch_plasmashellrc", lambda: None)

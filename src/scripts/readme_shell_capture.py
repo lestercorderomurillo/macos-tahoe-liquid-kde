@@ -60,7 +60,7 @@ def capture(repo, ref, image, output, editions, packages, *, dock_only=False):
                     vm.remote(
                         "sudo", "dpkg", "-i", *["/tmp/" + p.name for p in packages]
                     )
-                manifest["environment"][edition] = vm.action("setup", edition, "installer") if dock_only else vm.action("setup", edition)
+                manifest["environment"][edition] = vm.action("setup", edition)
                 from readme_shell_scene import photograph
 
                 photograph(vm, profile, edition, output, manifest, dock_only=dock_only)
