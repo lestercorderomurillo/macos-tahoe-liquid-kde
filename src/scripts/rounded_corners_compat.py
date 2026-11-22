@@ -41,22 +41,23 @@ _REPLACEMENTS = {
     "src/shaders/shapecorners.glsl": (
         ('#include "shapecorners_shadows.glsl"', """#include "shapecorners_shadows.glsl"
 uniform bool nativeFinderEdge;"""),
-        ("    bool  inOutlineZone =", """    // Carry the native shadow's first texels around the compositor's curve.
-    // The outer edge of a GTK CSD lives in those texels. The fallback shadow
-    // is sampled farther out and otherwise erases the edge at each tangent.
+        ("    bool  inOutlineZone =", """    // GTK paints the hairline across the frame boundary. Sample both sides
+    // of that boundary, using its actual light or dark premultiplied texels.
     float outside = distance_from_center - radius;
     if (nativeFinderEdge && usesNativeShadows && hasExpandedSize() &&
         !hasPrimaryOutline() && !hasSecondOutline() && !hasOuterOutline() && abs(angle_vector.x) > 0.1 &&
-        abs(angle_vector.y) > 0.1 && outside > -0.5 && outside < 3.0) {
+        abs(angle_vector.y) > 0.1 && outside > -2.0 && outside < 3.0) {
         vec2 inward = sign(roundness_center - start);
         vec2 tangent = clamp(roundness_center + inward * 2.0, vec2(0.5), windowSize - vec2(0.5));
-        float offset = max(0.5, outside);
-        vec4 side = texture2D(sampler, pixel_to_tex(vec2(start.x - inward.x * offset, tangent.y)));
-        vec4 cap = texture2D(sampler, pixel_to_tex(vec2(tangent.x, start.y - inward.y * offset)));
+        vec4 side = texture2D(sampler, pixel_to_tex(vec2(start.x - inward.x * outside, tangent.y)));
+        vec4 cap = texture2D(sampler, pixel_to_tex(vec2(tangent.x, start.y - inward.y * outside)));
         vec2 direction = abs(coord0 - roundness_center);
         float capWeight = direction.y / max(direction.x + direction.y, 0.001);
         vec4 nativeEdge = mix(side, cap, capWeight);
-        coord_shadowColor = mix(nativeEdge, coord_shadowColor, smoothstep(1.0, 3.0, outside));
+        if (outside < 0.0) {
+            return mix(tex, nativeEdge, smoothstep(-2.0, -1.0, outside));
+        }
+        return mix(nativeEdge, coord_shadowColor, smoothstep(1.0, 3.0, outside));
     }
 
     bool  inOutlineZone ="""),
