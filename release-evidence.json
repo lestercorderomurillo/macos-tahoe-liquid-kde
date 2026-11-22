@@ -1,35 +1,36 @@
 {
-  "version": "0.82.4",
+  "version": "0.82.5",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "b65b41c482fce0678180a45d55fe59f9bb279876",
-  "scope": "Restore the v0.82.2 installer sources while the desktop layout and widget placement correction is prepared.",
-  "approval": "Maintainer requested a rollback release before publishing the separately validated repair.",
+  "implementation_commit": "718371a5976b6eaab5fd69cd463b96ade540d020",
+  "scope": "Restore the illustrated desktop widget step with automatic left-column placement and verify panel cleanup and work area after restarting Plasma.",
+  "approval": "The maintainer answered yes to the actual selector and left-column desktop previews for the candidate.",
   "checks": [
     {
-      "command": "Compared the rollback runtime and test sources byte-for-byte with v0.82.2. Reused the qualification for those sources.",
+      "command": "243 focused regressions for the installer, panels, layout preservation, widget package ownership, Dock and menu bar behavior, and icon overlays.",
+      "result": "passed"
+    },
+    {
+      "command": "Both native wizard navigation cases passed with the final side-placement preview and install selected by default.",
+      "result": "passed"
+    },
+    {
+      "command": "The released verifier falsely accepted the incident configuration with three empty panels. Candidate removed a reproduced retired empty panel from live and saved Plasma state.",
+      "result": "passed"
+    },
+    {
+      "command": "KDE neon 6.8.1 Wayland: full Golden Gate reinstall from candidate runtime bytes. One populated top bar and one populated Dock after restart. The calendar, analog clock and timer populated one left column. Maximized Dolphin started at y=30.",
+      "result": "passed"
+    },
+    {
+      "command": "Golden Gate wrapper staged the same installer, widget archive and preview images with its own defaults.",
       "result": "passed"
     }
   ],
-  "captures": [
-    {
-      "path": "src/screenshots/previews/search-bar-motion-ac86c6a7ba49.mp4",
-      "sha256": "ac86c6a7ba494b9cd6c8530acef21491f5829de911ec17c1ef446760d3a9301c",
-      "reviewed": true,
-      "source_commit": "b65b41c482fce0678180a45d55fe59f9bb279876",
-      "edition": "golden-gate",
-      "installed_sha256": "6a3b3d23dc8f32c4830822331c790b0a339d15203c745b7b032587de9e55042d  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/SearchCursor.qml\nb5477d7e0099185e7c63b86061c6964d660b5748904b49876eed830b1e07844b  /home/tester/.local/share/kwin/effects/mttkde_controlcenter_transition/contents/code/main.js"
-    }
-  ],
-  "reviewed_pr_previews": [
-    {
-      "url": "https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/pr160-bluetooth-symbols-light.png",
-      "sha256": "f279dde2b7fdd225012da4466c7c0389a9c0873cd8968efc9b1633c447f08885"
-    },
-    {
-      "url": "https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/pr160-bluetooth-symbols-dark.png",
-      "sha256": "03d812624de3f18c9502d9ed172576e722435d22715887f5448a6e6da8e62e76"
-    }
-  ],
-  "coverage_limits": "Rollback release. The maintainer requested no new runtime test run. Prior qualified runtime sources restored. Existing installed desktop preferences are separate.",
-  "source_sha256": "60afa948b4f6561478f6956e1b5824ad9af419213febb96bbdb6d97c3fc1330d"
+  "captures": [],
+  "approved_preview_sha256": {
+    "installer-left-selector.png": "0648da58a64bff23bac2dec88327ffefdff629fcd7e31c7a87ff58c2cc996315",
+    "widgets-at-left.jpg": "9a49a616a3be03c2f9bac4ae44ce8ebe218ada32f73c50fcd9834a78d59735b6"
+  },
+  "coverage_limits": "The full reinstall and screenshots were tested in Golden Gate on KDE neon Plasma 6.8.1 Wayland with one output. The desktop incident was inspected and repaired on a separate two-monitor Plasma 6.7.4 session, where the work area was rechecked on both outputs. The original spontaneous duplicate-panel incident was not reproduced during a clean VM run. The targeted regression restored an empty panel in the VM to exercise cleanup. Historical gallery captures retain their original provenance.",
+  "source_sha256": "fb405592d9c8bf420924410010ebc957bfd23ab4139037df9df8be51dbf232f7"
 }

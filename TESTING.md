@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.82.4**. Restores the installer sources from v0.82.2. [Evidence and coverage](release-evidence.json).
+**v0.82.5**. Verified the desktop widget selector, automatic left-column placement, panel cleanup and reserved top-bar space after the installer restarted Plasma. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
