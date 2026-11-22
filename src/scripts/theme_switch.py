@@ -671,6 +671,7 @@ def _read_portal_color_scheme() -> int | None:
 
 
 _WALLPAPER_PAIRS = {
+    "exuma": ("MacExuma", "MacExuma"),
     "prism": ("MacPrism", "MacPrism"),
     "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
     "tahoe": ("MacTahoe", "MacTahoe"),

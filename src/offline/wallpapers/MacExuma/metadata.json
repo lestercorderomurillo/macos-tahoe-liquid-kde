@@ -1,0 +1,14 @@
+{
+    "KPlugin": {
+        "Id": "MacExuma",
+        "Name": "Exuma",
+        "Description": "Tidal channels of Great Exuma photographed from the International Space Station",
+        "Authors": [
+            {
+                "Name": "Earth Science and Remote Sensing Unit, NASA Johnson Space Center"
+            }
+        ],
+        "License": "Public Domain",
+        "Website": "https://eol.jsc.nasa.gov/Collections/EarthObservatory/articles/GreatExuma.htm"
+    }
+}

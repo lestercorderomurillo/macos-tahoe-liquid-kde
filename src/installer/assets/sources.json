@@ -2907,5 +2907,19 @@
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-water",
     "wallpaper": "MacTahoe-Iridescence"
+  },
+  "exuma.jpg": {
+    "source": "src/offline/wallpapers/MacExuma/contents/images/4928x3280.jpg",
+    "source_sha256": "1fab739508f0710d5b4234374b61a8e421d22ccc6e9508159b9b6ed912a75094",
+    "sha256": "b01d56293e69baed6dfb83fa2f256390e91a3cfd029670f162808900d163716b",
+    "file": "exuma-b01d56293e69.jpg",
+    "crop": null
+  },
+  "exuma-dark.jpg": {
+    "source": "src/offline/wallpapers/MacExuma/contents/images/4928x3280.jpg",
+    "source_sha256": "1fab739508f0710d5b4234374b61a8e421d22ccc6e9508159b9b6ed912a75094",
+    "sha256": "b01d56293e69baed6dfb83fa2f256390e91a3cfd029670f162808900d163716b",
+    "file": "exuma-b01d56293e69.jpg",
+    "crop": null
   }
 }

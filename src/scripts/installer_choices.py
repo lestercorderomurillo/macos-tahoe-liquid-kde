@@ -26,7 +26,7 @@ ENUMS = {
     # Light/dark variant of the icons, independent of the appearance (macOS).
     "icon_appearance": ("auto", "light", "dark"),
     "color": tuple(COLORS),
-    "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "keep", "custom"),
+    "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "exuma", "keep", "custom"),
     "launcher": ("tahoe", "golden", "keep"),
     "files": ("nautilus", "dolphin", "keep"),
     "shadows": ("none", "soft", "medium", "hard"),
@@ -35,6 +35,7 @@ ENUMS = {
     "glass_style": tuple(preset["choice"] for preset in GLASS_PRESETS),
 }
 WALLPAPERS = {
+    "exuma": ("MacExuma", "MacExuma"),
     "prism": ("MacPrism", "MacPrism"),
     "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
     "tahoe": ("MacTahoe", "MacTahoe"),

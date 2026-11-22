@@ -1188,7 +1188,7 @@ class InstallerWindow(OpaqueSurface):
         items = [(key, label, "", picture(key+".jpg", 170, 112, key+"-dark.jpg", cover=True))
                  for key, label in (("tahoe", "Tahoe"), ("golden", "Golden Gate"),
                                     ("landscape", "Landscape"), ("sonoma", "Sonoma"),
-                                    ("prism", "Prism"), ("macos", "Monterey"))]
+                                    ("prism", "Prism"), ("macos", "Monterey"), ("exuma", "Exuma"))]
         items.append(("keep", "Keep my wallpaper", "", current_wallpaper_preview(170, 112)))
         self.cards("wallpaper", items, columns=4, compact=True)
         row = QHBoxLayout()
