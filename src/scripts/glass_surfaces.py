@@ -79,7 +79,7 @@ def _apps_frame(root: ET.Element) -> None:
                 f"C{point(0, 18)} {point(0, 26)} {point(0, 44)} L44 44 Z")
 
     center = indexed["center"]
-    edge_layers = list(indexed["topleft"])
+    edge = list(indexed["topleft"])[1]
     for masked in (False, True):
         prefix = "mask-" if masked else ""
         for corner, sides in ((True, ("topleft", "topright", "bottomright", "bottomleft")),
@@ -98,18 +98,11 @@ def _apps_frame(root: ET.Element) -> None:
                 ET.SubElement(tile, f"{{{_SVG}}}path", {"d": shape, **paint})
                 if masked:
                     continue
-                # Preserve the two edge highlights and their straight-edge widths.
-                for i, layer in enumerate(edge_layers[1:3]):
-                    inset = 0.75 * i
-                    inner = inset + 0.75
-                    if corner:
-                        band = boundary(inset) + " " + boundary(inner)
-                    else:
-                        band = f"M0 {inset} H20 V{inner} H0 Z"
-                    ET.SubElement(tile, f"{{{_SVG}}}path", {
-                        "d": band, "fill-rule": "evenodd", "fill": layer.get("fill"),
-                        "opacity": layer.get("opacity"),
-                    })
+                band = boundary(0) + " " + boundary(0.75) if corner else "M0 0 H20 V0.75 H0 Z"
+                ET.SubElement(tile, f"{{{_SVG}}}path", {
+                    "d": band, "fill-rule": "evenodd", "fill": edge.get("fill"),
+                    "opacity": edge.get("opacity"),
+                })
 
 
 def apply_plasma_surface_defaults(theme: Path) -> None:

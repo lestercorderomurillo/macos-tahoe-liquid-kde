@@ -137,14 +137,14 @@ def test_wallpaper_round_trip_updates_managed_screen_only(repo, sandbox, monkeyp
     state.update(initialized=True, enabled=True, last_applied=current, user_screens=[1])
     theme_switch._save_wallpaper_state(state)
     snapshots = []
-    monkeypatch.setattr(theme_switch, "_apply_wallpaper_snapshot", lambda value:
+    monkeypatch.setattr(theme_switch, "_apply_wallpaper_snapshot", lambda value, expected:
                         snapshots.append(value) or True)
     other = "MacGoldenGate" if first == "MacTahoe" else "MacTahoe"
     for target in (other, first):
         (sandbox / "defaults.json").write_text(json.dumps({"wallpaper": target}))
         assert theme_switch._apply_wallpaper(mode, context="install", current_snapshot=current)
-        assert snapshots[-1] == [{"screen": 0, "image": wallpaper(target)}, current[1]]
-        current = snapshots[-1]
+        assert snapshots[-1] == [{"screen": 0, "image": wallpaper(target)}]
+        current = snapshots[-1] + current[1:]
         assert theme_switch._load_wallpaper_state()["user_screens"] == [1]
 
 

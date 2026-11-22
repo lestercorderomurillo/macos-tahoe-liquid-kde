@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 ControlTile {
-    doubleRim: true
     cornerRadius: 20
     rimWidth: 0.75
     leftPadding: 14; rightPadding: 14

@@ -137,8 +137,11 @@ public:
         }
         painter->fillPath(shape, fill);
         const auto inner = contour(surface.adjusted(.75, .75, -.75, -.75));
-        painter->fillPath(shape.subtracted(inner), QColor(0, 0, 0, 46));
-        painter->fillPath(inner.subtracted(contour(surface.adjusted(1.5, 1.5, -1.5, -1.5))), QColor(255, 255, 255, 56));
+        QLinearGradient rim(surface.topLeft(), surface.bottomLeft());
+        rim.setColorAt(0.0, QColor(150, 150, 150, 134));
+        rim.setColorAt(0.55, QColor(116, 116, 116, 126));
+        rim.setColorAt(1.0, QColor(135, 135, 135, 148));
+        painter->fillPath(shape.subtracted(inner), rim);
         painter->restore();
         if (translucent && widget->windowHandle())
             KWindowEffects::enableBlurBehind(widget->windowHandle(), true, QRegion(shape.toFillPolygon().toPolygon()));

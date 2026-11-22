@@ -17,6 +17,42 @@ DEST_DIR = DATA_HOME / "wallpapers"
 OFFLINE_DIR = offline("wallpapers")
 
 
+def _update_package(source: Path, target: Path) -> bool:
+    # Plasma's slideshow watcher interprets removing the package directory
+    # as an uninstall and can recursively delete its replacement (#157).
+    if target.is_symlink() or not target.is_dir():
+        return safe_copy(source, target)
+
+    from steps.fonts import _copy_font
+    for entry in source.iterdir():
+        destination = target / entry.name
+        if entry.is_symlink():
+            if destination.is_symlink() and destination.readlink() == entry.readlink():
+                continue
+            if destination.is_dir() and not destination.is_symlink():
+                shutil.rmtree(destination)
+            else:
+                destination.unlink(missing_ok=True)
+            destination.symlink_to(entry.readlink())
+        elif entry.is_dir():
+            if not _update_package(entry, destination):
+                return False
+        else:
+            if destination.is_symlink():
+                destination.unlink()
+            elif destination.is_dir():
+                shutil.rmtree(destination)
+            _copy_font(entry, destination)
+
+    for obsolete in target.iterdir():
+        if not (source / obsolete.name).exists() and not (source / obsolete.name).is_symlink():
+            if obsolete.is_symlink() or not obsolete.is_dir():
+                obsolete.unlink()
+            else:
+                shutil.rmtree(obsolete)
+    return True
+
+
 def install() -> None:
     from installer_choices import selected
     options = selected()
@@ -45,7 +81,7 @@ def install() -> None:
         if not (wp / "metadata.json").is_file():
             fail(tr('{value1} (missing metadata.json in offline bundle)', value1=wp.name))
             continue
-        if not install_owned("wallpapers", wp, DEST_DIR / wp.name, safe_copy):
+        if not install_owned("wallpapers", wp, DEST_DIR / wp.name, _update_package):
             fail(tr('{value1} (copy failed)', value1=wp.name))
             continue
         if wp.name in pre:

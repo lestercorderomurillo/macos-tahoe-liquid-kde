@@ -1,7 +1,7 @@
 """Apply the theme's reviewed changes to the verified Rounded Corners source.
 
 Upstream v0.11.0 already detects the 6.8 texture orientation (PR #547); only
-desktop exclusion and the shared corner shape for Acrylic Glass remain.
+desktop exclusion, native Finder edges and shared Acrylic Glass geometry remain.
 SPDX-License-Identifier: GPL-3.0-or-later
 """
 from pathlib import Path
@@ -16,8 +16,50 @@ _REPLACEMENTS = {
 
     // Don't treat docks as windows."""),
     ),
+    "src/Window.h": (
+        ("        KWin::EffectWindow *w;", """        KWin::EffectWindow *w;
+        bool nativeFinderEdge = false;"""),
+    ),
     "src/Window.cpp": (
+        ("    connect(Config::self(),", """    const auto klass = kwindow->windowClass().section(QLatin1Char(' '), -1);
+    nativeFinderEdge = kwindow->isNormalWindow() &&
+        (klass.compare(QStringLiteral("nautilus"), Qt::CaseInsensitive) == 0 ||
+         klass.compare(QStringLiteral("org.gnome.Nautilus"), Qt::CaseInsensitive) == 0);
+    connect(Config::self(),"""),
         ("    return (w->expandedGeometry().isValid() &&", """    return (!w->isDesktop() && !w->isDock() && w->expandedGeometry().isValid() &&"""),
+    ),
+    "src/Shader.h": (
+        ("        int m_shader_usesNativeShadows = 0;", """        int m_shader_usesNativeShadows = 0;
+        int m_shader_nativeFinderEdge = -1;"""),
+    ),
+    "src/Shader.cpp": (
+        ('    m_shader_usesNativeShadows      =', """    m_shader_nativeFinderEdge = m_shader->uniformLocation("nativeFinderEdge");
+    m_shader_usesNativeShadows      ="""),
+        ("    m_shader->setUniform(m_shader_usesNativeShadows,", """    m_shader->setUniform(m_shader_nativeFinderEdge, static_cast<int>(window.nativeFinderEdge));
+    m_shader->setUniform(m_shader_usesNativeShadows,"""),
+    ),
+    "src/shaders/shapecorners.glsl": (
+        ('#include "shapecorners_shadows.glsl"', """#include "shapecorners_shadows.glsl"
+uniform bool nativeFinderEdge;"""),
+        ("    bool  inOutlineZone =", """    // Carry the native shadow's first texels around the compositor's curve.
+    // The outer edge of a GTK CSD lives in those texels. The fallback shadow
+    // is sampled farther out and otherwise erases the edge at each tangent.
+    float outside = distance_from_center - radius;
+    if (nativeFinderEdge && usesNativeShadows && hasExpandedSize() &&
+        !hasPrimaryOutline() && !hasSecondOutline() && !hasOuterOutline() && abs(angle_vector.x) > 0.1 &&
+        abs(angle_vector.y) > 0.1 && outside > -0.5 && outside < 3.0) {
+        vec2 inward = sign(roundness_center - start);
+        vec2 tangent = clamp(roundness_center + inward * 2.0, vec2(0.5), windowSize - vec2(0.5));
+        float offset = max(0.5, outside);
+        vec4 side = texture2D(sampler, pixel_to_tex(vec2(start.x - inward.x * offset, tangent.y)));
+        vec4 cap = texture2D(sampler, pixel_to_tex(vec2(tangent.x, start.y - inward.y * offset)));
+        vec2 direction = abs(coord0 - roundness_center);
+        float capWeight = direction.y / max(direction.x + direction.y, 0.001);
+        vec4 nativeEdge = mix(side, cap, capWeight);
+        coord_shadowColor = mix(nativeEdge, coord_shadowColor, smoothstep(1.0, 3.0, outside));
+    }
+
+    bool  inOutlineZone ="""),
     ),
     "src/Effect.cpp": (
         ('#include <QDebug>', '#include <QDebug>\n#include <QVariant>'),
