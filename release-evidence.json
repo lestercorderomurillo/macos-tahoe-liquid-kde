@@ -1,46 +1,29 @@
 {
-  "version": "0.81.3",
+  "version": "0.81.4",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "764f73957fa5d1264c6d1430067ac8a20fb44e0b",
-  "photographed_source": "2122f2a38696c26ff135ec8244123ab84e15b81b",
-  "scope": "Restore the existing curved Downloads fan for fresh and upgraded Docks.",
-  "approval": "Maintainer approved the shown Golden Gate and Tahoe Downloads fan for paired publication.",
+  "implementation_commit": "4ac5883d2faba3a139a42ccdb2b4a9ec4a365d17",
+  "photographed_source": "c2d31cf913308b926a0a3fb687dd2c4ef0914888",
+  "scope": "Dock launcher hover, single-line app label and white running indicator.",
+  "approval": "Maintainer approved publication using the existing preview and requested no further captures.",
   "checks": [
     {
-      "command": "Installed candidate in a disposable KDE neon Wayland guest for each edition. Clicked the Downloads Dock shortcut and captured its seven-file fan in light and dark. Verified the four installed QML hashes.",
+      "command": "Reviewed the recorded Plasma 6.8.1 Wayland Dock previews in both editions and modes. Enlarged highlighted launcher and white group dot in both modes. The label was not visible in the captured frames.",
       "result": "passed"
     },
     {
-      "command": "On the Tahoe guest, replaced the previous layout shortcut, compared surrounding applet IDs and order, and applied the migration a second time.",
-      "result": "passed"
-    },
-    {
-      "command": "Executed the original RecentFiles model probe and the Dock layout, dependency mapping and translation regressions. On integration with v0.81.2, tests/test_dock_defaults.py and tests/test_localization.py passed (65 tests).",
+      "command": "python3 -m pytest -q tests/test_taskmanager_qml.py tests/test_dock_defaults.py (58 passed on the integrated Tahoe source)",
       "result": "passed"
     }
   ],
-  "captures": [
-    {
-      "path": "src/screenshots/previews/tahoe-downloads-fan-light-65bd85a1e810.png",
-      "edition": "tahoe",
-      "sha256": "65bd85a1e810c0a25fe0280c4e252fb3f0a0540eb2d79fdee393082e5d0c67c4",
-      "source_commit": "2122f2a38696c26ff135ec8244123ab84e15b81b",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-downloads-fan-dark-943faef81f52.png",
-      "edition": "tahoe",
-      "sha256": "943faef81f526f0facfa2753c7d7ea850d74e670c1aba1b9253520168e692a5d",
-      "source_commit": "2122f2a38696c26ff135ec8244123ab84e15b81b",
-      "reviewed": true
-    }
-  ],
-  "installed_qml_sha256": {
-    "DownloadsFan.qml": "4f0748e18379638a3df579825ebdf3a411097ba82251a84f6a6a2b0e0eab484f",
-    "FileCard.qml": "90cc96d6fbb3257f420bee26038bedcdbf411d35889cb0dbdc1c036d9ea5eb98",
-    "RecentFiles.qml": "d966322c6b2349ebf2615c4fd0e904db086c684f6295fc11a86078292b57edf1",
-    "main.qml": "74eeef31f71bc01e208a666ab24fc917ebfa24a5def274aa607b0366e819ea8c"
+  "preview_frame_sha256": {
+    "dark": "c1a3917da4d012657b06ccbf5056616fe84ea1a5a061248071cc8d1226c10c59",
+    "light": "a9bc57cffaa4be58b1633a896a64a574add6007cbcade5b3f77129deaffa72d9"
   },
-  "coverage_limits": "Rendered in light and dark on KDE neon Wayland. In-place migration exercised on Tahoe. The captured Downloads component is byte-identical in the integrated release.",
-  "source_sha256": "962aa5b1e0330209ad3c0958c92a7ebd5b7a0227ad3b38d852b5ee84044f2026"
+  "preview_installed_qml": [
+    "8a6e55ff48bf0e0dcc00adabc99d3b600d443f8e8c05ae77ee1e3aeab216dc47  /usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/GroupExpanderOverlay.qml",
+    "755ed9bde605fa076890e22405eb3cc807f82e4a134c05278001ff94ef731193  /usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/Task.qml",
+    "e3a289649921948ab7d90f2a471a53c401e5d949846ae46c451aa3b67d9e7c7d  /usr/lib/x86_64-linux-gnu/qt6/qml/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager/ToolTipDelegate.qml"
+  ],
+  "coverage_limits": "Tahoe tooltip visibility was not established. Integration preserves subsequent Finder pin movement changes.",
+  "source_sha256": "4bbf862abc51277ca7f52f21585e0bd1a69a03049725513aa65fe67111e4c01c"
 }
