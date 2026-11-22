@@ -51,3 +51,19 @@ def test_installed_default_survives_without_checkout(tmp_path, monkeypatch):
     installed = runpy.run_path(str(destination))
     assert installed["default_wallpaper"]() == "MacGoldenGate"
     assert destination.stat().st_mode & 0o111
+
+
+def test_update_replaces_changed_image_without_removing_watched_directory(tmp_path):
+    source = tmp_path / "source"
+    target = tmp_path / "installed"
+    for package in (source, target):
+        (package / "contents/images").mkdir(parents=True)
+    folder = target / "contents/images"
+    inode = folder.stat().st_ino
+    (folder / "current.jpg").write_bytes(b"old")
+    (folder / "retired.jpg").touch()
+    (source / "contents/images/current.jpg").write_bytes(b"updated")
+    assert wallpapers._update_package(source, target)
+    assert folder.stat().st_ino == inode
+    assert (folder / "current.jpg").read_bytes() == b"updated"
+    assert not (folder / "retired.jpg").exists()

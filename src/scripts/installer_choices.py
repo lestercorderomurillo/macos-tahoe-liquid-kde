@@ -81,7 +81,7 @@ def defaults() -> dict:
     edition = "golden" if edition_name() == "MacGoldenGate" else "tahoe"
     return dict(
         appearance="auto", icons="regular", icon_appearance="auto", color="blue", wallpaper=edition,
-        wallpaper_path="", launcher="keep" if launcher_preference().exists() else edition, panel=True, dock=True, reset_layout=True,
+        wallpaper_explicit=True, wallpaper_path="", launcher="keep" if launcher_preference().exists() else edition, panel=True, dock=True, reset_layout=True,
         acrylic_glass=True, rounded_corners=True, shadows="medium", fonts=True, firefox=True,
         window_controls="glassy" if edition == "golden" else "flat", button_position="left",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
@@ -147,6 +147,7 @@ def features(choices: dict, baseline: dict, *, existing_install: bool = False) -
         nautilus_bookmarks=choices["files"] == "nautilus" and choices["nautilus_bookmarks"],
         apply_theme=True, sddm=False,
         apps=choices["dock"] and bool(choices["dock_apps"]),
-        _reset_wallpapers=choices["wallpaper"] != "keep",
+        _reset_wallpapers=choices["wallpaper"] != "keep" and
+                          (not existing_install or choices["wallpaper_explicit"]),
     )
     return result

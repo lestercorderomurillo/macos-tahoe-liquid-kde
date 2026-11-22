@@ -726,3 +726,10 @@ def test_dock_visibility_from_legacy_panel_and_saved_choice(tmp_path, monkeypatc
     preference.parent.mkdir(parents=True)
     preference.write_text("autohide\n")
     assert choices.defaults()["dock_visibility"] == "autohide"
+
+
+def test_existing_install_only_resets_an_explicit_wallpaper_selection():
+    for explicit in (False, True):
+        selected = choices.defaults() | {"wallpaper": "landscape", "wallpaper_explicit": explicit}
+        assert choices.features(selected, {}, existing_install=True)["_reset_wallpapers"] is explicit
+        assert choices.features(selected, {}, existing_install=False)["_reset_wallpapers"]

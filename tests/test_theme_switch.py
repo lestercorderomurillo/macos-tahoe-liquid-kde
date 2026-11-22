@@ -1078,6 +1078,7 @@ def test_auto_install_records_wallpaper_before_persistent_timer_can_fire(monkeyp
         return True
 
     monkeypatch.setattr(ts, "_apply_theme_wallpaper", apply_theme)
+    monkeypatch.setattr(ts, "_apply_wallpaper_snapshot", lambda snapshot, expected: snapshot == current["value"])
     monkeypatch.setattr(step, "SVC_DIR", tmp_path / "units")
     step.SVC_DIR.mkdir()
     monkeypatch.setattr(step, "_teardown_units", lambda: True)
@@ -1130,7 +1131,7 @@ def test_failed_wallpaper_switch_keeps_last_successful_snapshot(
     monkeypatch.setattr(ts, "_current_wallpapers", lambda: light)
     monkeypatch.setattr(ts, "_apply_theme_wallpaper",
                         lambda mode: (False, theme))
-    monkeypatch.setattr(ts, "_apply_wallpaper_snapshot", lambda snapshot: False)
+    monkeypatch.setattr(ts, "_apply_wallpaper_snapshot", lambda snapshot, *args: False)
 
     assert ts._apply_wallpaper("dark") is False
     state = ts._load_wallpaper_state()
@@ -1223,9 +1224,9 @@ def test_custom_screen_stays_while_other_screen_keeps_switching(
     )
     applied = []
 
-    def apply_snapshot(snapshot):
+    def apply_snapshot(snapshot, expected):
         applied.append(snapshot)
-        current["value"] = snapshot
+        current["value"] = _wp(custom) + snapshot
         return True
 
     monkeypatch.setattr(ts, "_apply_wallpaper_snapshot", apply_snapshot)
@@ -1234,17 +1235,15 @@ def test_custom_screen_stays_while_other_screen_keeps_switching(
     assert ts._apply_wallpaper("light") is True
     assert applied == [
         [
-            {"screen": 0, "image": custom},
             {"screen": 1, "image": f"file://{dark}"},
         ],
         [
-            {"screen": 0, "image": custom},
             {"screen": 1, "image": f"file://{light}"},
         ],
     ]
     state = ts._load_wallpaper_state()
     assert state["user_screens"] == [0]
-    assert state["last_applied"] == applied[-1]
+    assert state["last_applied"] == _wp(custom) + applied[-1]
 
 
 def test_mixed_snapshot_reapplies_auto_package_to_refresh_managed_screen(
@@ -1266,11 +1265,11 @@ def test_mixed_snapshot_reapplies_auto_package_to_refresh_managed_screen(
     applied = []
     monkeypatch.setattr(
         ts, "_apply_wallpaper_snapshot",
-        lambda snapshot: applied.append(snapshot) or True,
+        lambda snapshot, expected: applied.append(snapshot) or True,
     )
 
     assert ts._apply_wallpaper("dark") is True
-    assert applied == [mixed]
+    assert applied == [mixed[1:]]
 
 
 def test_v1_custom_mode_migrates_to_sticky_screen_override(
@@ -1405,7 +1404,7 @@ def test_wallpaper_apply_with_no_live_desktops_uses_config_fallback(
     )
     monkeypatch.setattr(
         ts, "_write_wallpapers_to_config",
-        lambda value: writes.append(value) or True,
+        lambda value, expected: writes.append(value) or True,
     )
 
     assert ts._apply_wallpaper_snapshot(snapshot) is True
@@ -2328,10 +2327,10 @@ def test_reinstall_after_uninstall_reclaims_only_unchanged_reset_backgrounds(
     monkeypatch.setattr(ts, "_apply_theme_wallpaper",
                         lambda mode: applied.append(ts._theme_wallpaper_snapshot(current, theme)) or (True, theme))
     monkeypatch.setattr(ts, "_apply_wallpaper_snapshot",
-                        lambda snapshot: applied.append(snapshot) or True)
+                        lambda snapshot, expected: applied.append(snapshot) or True)
     assert ts._apply_wallpaper("dark", context="install", current_snapshot=current)
     expected = _wp(theme.as_uri(), 0) + _wp(user_choice or theme.as_uri(), 1)
-    assert applied == [expected]
+    assert applied == [expected[:1] if user_choice else expected]
     assert ts._load_wallpaper_state()["last_applied"] == expected
     assert ts._load_wallpaper_state()["user_screens"] == ([1] if user_choice else [])
 
@@ -2465,3 +2464,25 @@ def test_finder_component_theme_tracks_mode_without_replacing_user_mapping(monke
     else:
         assert saved["Applications"]["mac-tahoe-liquid-kdeFinderDark"] == "dolphin"
         assert "mac-tahoe-liquid-kdeFinder" not in saved["Applications"]
+
+
+def test_slideshow_and_panel_stale_images_survive_offline_update(monkeypatch, tmp_path):
+    ts, theme = _smart_wallpaper_env(monkeypatch, tmp_path)
+    config = ts._xdg_config() / "plasma-org.kde.plasma.desktop-appletsrc"
+    desktops = (
+        (1, 0, "org.kde.plasma.folder", "org.kde.slideshow"),
+        (2, 1, "org.kde.plasma.folder", "org.kde.image"),
+        (3, 1, "org.kde.panel", "org.kde.image"),
+        (4, -1, "org.kde.plasma.folder", "org.kde.image"),
+    )
+    config.write_text("".join(
+        f"[Containments][{cid}]\nplugin={plugin}\nlastScreen={screen}\nwallpaperplugin={wp}\n"
+        f"[Containments][{cid}][Wallpaper][org.kde.image][General]\nImage={theme.as_uri()}\n"
+        for cid, screen, plugin, wp in desktops))
+    monkeypatch.setattr(ts, "_evaluate_plasma_script", lambda _: None)
+    writes = []
+    monkeypatch.setattr(ts, "_kwrite", lambda *args: writes.append(args) or True)
+    assert ts._apply_wallpaper("dark")
+    assert ts._load_wallpaper_state()["user_screens"] == [0]
+    assert len(writes) == 1
+    assert writes[0][writes[0].index("Containments") + 2] == "2"

@@ -652,6 +652,7 @@ class InstallerWindow(OpaqueSurface):
         self._eta_timer.setInterval(1000)
         self._eta_timer.timeout.connect(self.refresh_progress)
         self.defaults = defaults()
+        self.defaults["wallpaper_explicit"] = False
         self.choices = dict(self.defaults)
         self.edition = "Golden Gate" if bridge.editionName == "MacGoldenGate" else "Tahoe"
         self.asset_edition = "golden-gate" if self.edition == "Golden Gate" else "tahoe"
@@ -828,6 +829,8 @@ class InstallerWindow(OpaqueSurface):
 
     def select(self, key, value):
         self.choices[key] = value
+        if key == "wallpaper":
+            self.choices["wallpaper_explicit"] = True
         if key == "window_controls":
             self.refresh_window_controls()
         controls = self.choice_widgets.get(key, [])

@@ -670,20 +670,41 @@ def _read_portal_color_scheme() -> int | None:
     return None
 
 
+_WALLPAPER_PAIRS = {
+    "prism": ("MacPrism", "MacPrism"),
+    "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
+    "tahoe": ("MacTahoe", "MacTahoe"),
+    "golden": ("MacGoldenGate", "MacGoldenGate"),
+    "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),
+    "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon"),
+}
+
+
+def _selected_wallpaper() -> str | None:
+    options = _installer_options()
+    return options.get("wallpaper") if options.get("wallpaper_explicit", True) else None
+
+
 def _wallpaper_path(mode: str) -> Path | None:
     data_home = Path(os.environ.get("XDG_DATA_HOME") or
                      str(Path.home() / ".local/share"))
     base = data_home / "wallpapers"
-    choices = INSTALLER_OPTIONS
-    if choices.get("wallpaper") == "custom":
+    choice = _selected_wallpaper()
+    if choice is None and _env_bool("MTTKDE_RESET_WALLPAPERS") is not True:
+        state = _load_wallpaper_state()
+        choice = state.get("choice")
+        if choice is None:
+            # Older switchers only recorded the installed package URL. An
+            # unchanged named pair should still follow its day/night cycle.
+            owned = {str(item["image"]).removeprefix("file://").rstrip("/")
+                     for item in state["last_applied"] if item["screen"] not in state["user_screens"]}
+            choice = next((key for key, pair in _WALLPAPER_PAIRS.items()
+                           if key not in ("tahoe", "golden") and
+                           any(str(base / name) in owned for name in pair)), None)
+    if choice == "custom":
         custom = base / "MacTahoe-Custom" / "wallpaper"
         return custom if custom.is_file() else None
-    pairs = {"prism": ("MacPrism", "MacPrism"),
-             "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
-             "tahoe": ("MacTahoe", "MacTahoe"), "golden": ("MacGoldenGate", "MacGoldenGate"),
-             "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),
-             "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon")}
-    pair = pairs.get(choices.get("wallpaper"))
+    pair = _WALLPAPER_PAIRS.get(choice)
     auto = base / (pair[mode == "dark"] if pair else default_wallpaper())
     if auto.is_dir():
         return auto
@@ -715,25 +736,26 @@ def _normalize_wallpaper_snapshot(value: object) -> list[dict[str, object]]:
 
     Plasma containment IDs can change when a panel layout is rebuilt, while
     screen numbers remain the stable identity users care about. Keep one
-    non-empty image URL per screen and discard malformed state rather than
-    ever feeding it back into evaluateScript.
+    image or active non-image plugin per screen. A non-image containment
+    always takes precedence over a stale image for the same screen.
     """
     if not isinstance(value, list):
         return []
-    by_screen: dict[int, str] = {}
+    by_screen = {}
     for item in value:
         if not isinstance(item, dict):
             continue
         screen = item.get("screen")
         image = item.get("image")
         if isinstance(screen, bool) or not isinstance(screen, int) \
-                or screen < 0 or not isinstance(image, str) or not image:
+                or screen < 0:
             continue
-        by_screen[screen] = image
-    return [
-        {"screen": screen, "image": by_screen[screen]}
-        for screen in sorted(by_screen)
-    ]
+        plugin = item.get("plugin", "org.kde.image")
+        if isinstance(plugin, str) and plugin and plugin != "org.kde.image":
+            by_screen[screen] = {"screen": screen, "plugin": plugin, "image": ""}
+        elif isinstance(image, str) and image and not by_screen.get(screen, {}).get("plugin"):
+            by_screen[screen] = {"screen": screen, "image": image}
+    return [by_screen[screen] for screen in sorted(by_screen)]
 
 
 def _normalize_wallpaper_screens(value: object) -> list[int]:
@@ -753,6 +775,8 @@ def _load_wallpaper_state() -> dict:
     if not isinstance(raw, dict):
         return state
     state["initialized"] = raw.get("initialized") is True
+    if isinstance(raw.get("choice"), str) and raw["choice"] in _WALLPAPER_PAIRS:
+        state["choice"] = raw["choice"]
     if isinstance(raw.get("enabled"), bool):
         state["enabled"] = raw["enabled"]
     state["last_applied"] = _normalize_wallpaper_snapshot(
@@ -824,6 +848,10 @@ var out = [];
 var all = desktops();
 for (var i = 0; i < all.length; i++) {
     var d = all[i];
+    if (d.wallpaperPlugin !== 'org.kde.image') {
+        out.push({screen: d.screen, plugin: d.wallpaperPlugin});
+        continue;
+    }
     d.currentConfigGroup = ['Wallpaper', 'org.kde.image', 'General'];
     out.push({screen: d.screen, image: d.readConfig('Image', '')});
 }
@@ -844,35 +872,21 @@ def _parse_wallpaper_reply(output: str | None) -> list[dict[str, object]]:
 
 
 _DESKTOP_SECTION_RE = re.compile(r"^Containments\]\[([^]]+)$")
-_WALLPAPER_SECTION_RE = re.compile(
-    r"^Containments\]\[([^]]+)\]\[Wallpaper\]"
-    r"\[org\.kde\.image\]\[General$",
-)
 
 
 def _wallpapers_from_config() -> list[dict[str, object]]:
-    path = _xdg_config() / "plasma-org.kde.plasma.desktop-appletsrc"
-    sections = _parse_ini(path)
-    screens: dict[str, int] = {}
+    sections = _parse_ini(_xdg_config() / "plasma-org.kde.plasma.desktop-appletsrc")
+    snapshot = []
     for section, values in sections.items():
-        match = _DESKTOP_SECTION_RE.fullmatch(section)
-        if not match or values.get("plugin") != "org.kde.plasma.folder":
+        if not _DESKTOP_SECTION_RE.fullmatch(section) or values.get("plugin") != "org.kde.plasma.folder":
             continue
         try:
             screen = int(values.get("lastScreen", ""))
         except ValueError:
             continue
-        if screen >= 0:
-            screens[match.group(1)] = screen
-    snapshot: list[dict[str, object]] = []
-    for section, values in sections.items():
-        match = _WALLPAPER_SECTION_RE.fullmatch(section)
-        if not match or match.group(1) not in screens:
-            continue
-        image = values.get("Image", "")
-        if image:
-            snapshot.append({"screen": screens[match.group(1)],
-                             "image": image})
+        plugin = values.get("wallpaperplugin", "org.kde.image")
+        general = sections.get(section + "][Wallpaper][org.kde.image][General", {})
+        snapshot.append({"screen": screen, "plugin": plugin, "image": general.get("Image", "")})
     return _normalize_wallpaper_snapshot(snapshot)
 
 
@@ -895,23 +909,24 @@ def _capture_wallpapers_with_retry(*, attempts: int = 4,
 
 
 def _build_wallpaper_apply_script(
-        snapshot: list[dict[str, object]]) -> str:
+        snapshot: list[dict[str, object]], expected: dict | None = None) -> str:
     by_screen = {
         str(item["screen"]): item["image"]
         for item in _normalize_wallpaper_snapshot(snapshot)
     }
-    fallback = next(iter(by_screen.values()), "")
     return f"""
 var wanted = {json.dumps(by_screen)};
-var fallback = {json.dumps(fallback)};
+var expected = {json.dumps(expected)};
 var all = desktops();
 var applied = 0;
 for (var i = 0; i < all.length; i++) {{
     var d = all[i];
-    var image = wanted[String(d.screen)] || fallback;
+    var image = wanted[String(d.screen)];
     if (!image) continue;
-    d.wallpaperPlugin = 'org.kde.image';
+    if (expected && d.wallpaperPlugin !== 'org.kde.image') continue;
+    if (!expected) d.wallpaperPlugin = 'org.kde.image';
     d.currentConfigGroup = ['Wallpaper', 'org.kde.image', 'General'];
+    if (expected && d.readConfig('Image', '') !== expected[String(d.screen)]) continue;
     d.writeConfig('Image', image);
     applied++;
 }}
@@ -920,14 +935,13 @@ print(applied > 0 ? 'applied' : 'no-desktops');
 
 
 def _write_wallpapers_to_config(
-        snapshot: list[dict[str, object]]) -> bool:
+        snapshot: list[dict[str, object]], expected: dict | None = None) -> bool:
     wanted = {
         int(item["screen"]): str(item["image"])
         for item in _normalize_wallpaper_snapshot(snapshot)
     }
     if not wanted:
         return False
-    fallback = next(iter(wanted.values()))
     sections = _parse_ini(
         _xdg_config() / "plasma-org.kde.plasma.desktop-appletsrc")
     writes: list[bool] = []
@@ -939,7 +953,20 @@ def _write_wallpapers_to_config(
             screen = int(values.get("lastScreen", ""))
         except ValueError:
             continue
-        image = wanted.get(screen, fallback)
+        image = wanted.get(screen)
+        if not image:
+            continue
+        if values.get("wallpaperplugin", "org.kde.image") != "org.kde.image":
+            if expected is not None:
+                continue
+            if not _kwrite("--file", "plasma-org.kde.plasma.desktop-appletsrc",
+                           "--group", "Containments", "--group", match.group(1),
+                           "--key", "wallpaperplugin", "org.kde.image"):
+                return False
+        if expected is not None:
+            general = sections.get(section + "][Wallpaper][org.kde.image][General", {})
+            if general.get("Image") != expected.get(screen):
+                continue
         writes.append(_kwrite(
             "--file", "plasma-org.kde.plasma.desktop-appletsrc",
             "--group", "Containments", "--group", match.group(1),
@@ -950,15 +977,19 @@ def _write_wallpapers_to_config(
 
 
 def _apply_wallpaper_snapshot(
-        snapshot: list[dict[str, object]]) -> bool:
+        snapshot: list[dict[str, object]], expected: dict | None = None) -> bool:
     snapshot = _normalize_wallpaper_snapshot(snapshot)
     if not snapshot:
         return False
-    reply = _evaluate_plasma_script(_build_wallpaper_apply_script(snapshot))
+    reply = _evaluate_plasma_script(_build_wallpaper_apply_script(snapshot, expected))
     if any(line.strip() == "applied"
            for line in (reply or "").splitlines()):
         return True
-    return _write_wallpapers_to_config(snapshot)
+    if expected is not None and (reply or "").strip() == "no-desktops":
+        # A live desktop disappeared or changed after capture. Its disk
+        # configuration may lag behind Plasma, so leave it alone.
+        return False
+    return _write_wallpapers_to_config(snapshot, expected)
 
 
 def _theme_wallpaper_snapshot(
@@ -973,8 +1004,8 @@ def _wallpaper_image_is_theme_managed(
         image: str) -> bool:
     base = Path(os.environ.get("XDG_DATA_HOME") or
                 str(Path.home() / ".local/share")) / "wallpapers"
-    managed = [str(base / name).rstrip("/") for name in (
-        "MacTahoe", "MacGoldenGate", "MacTahoe-Light", "MacTahoe-Dark")]
+    names = {name for pair in _WALLPAPER_PAIRS.values() for name in pair}
+    managed = [str(base / name) for name in names | {"MacTahoe-Light", "MacTahoe-Dark"}]
     if image.startswith("file://"):
         image = image[7:]
     image = image.rstrip("/")
@@ -1017,6 +1048,8 @@ def _apply_wallpaper(
     feature = _env_bool("FEAT_WALLPAPERS")
     enabled = was_enabled if feature is None else feature
     reset = _env_bool("MTTKDE_RESET_WALLPAPERS") is True
+    if was_initialized and not was_enabled and _installer_options().get("wallpaper_explicit") is False and not reset:
+        enabled = False
     existing_env = _env_bool("MTTKDE_EXISTING_INSTALL")
     existing = (was_initialized or context != "install") \
         if existing_env is None else existing_env
@@ -1045,57 +1078,67 @@ def _apply_wallpaper(
     state["initialized"] = True
     state["enabled"] = bool(enabled)
 
+    choice = _selected_wallpaper()
     if not enabled:
+        if choice == "keep":
+            state["user_screens"] = sorted(user_screens.union(current_by_screen))
         state["last_applied"] = current
         _save_wallpaper_state(state)
         return True
 
     if reset:
+        if not choice:
+            state.pop("choice", None)
         user_screens.clear()
         last_applied = []
         last_by_screen.clear()
 
     if current and not reset:
+        data_home = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")
+        custom = data_home / "wallpapers/MacTahoe-Custom/wallpaper"
         for screen, image in current_by_screen.items():
             if screen in user_screens:
                 continue
-            if screen in last_by_screen and image != last_by_screen[screen]:
+            if existing and (not image or image in (str(custom), custom.as_uri())):
                 user_screens.add(screen)
-            elif ((not was_initialized and existing) or not was_enabled) \
+            elif screen in last_by_screen and image != last_by_screen[screen]:
+                user_screens.add(screen)
+            elif ((screen not in last_by_screen and existing) or not was_enabled) \
                     and not _wallpaper_image_is_theme_managed(image):
                 # Preserve deliberate pre-state and feature-disabled choices
                 # per screen instead of disabling every monitor.
                 user_screens.add(screen)
 
     state["user_screens"] = sorted(user_screens)
-    current_user_screens = user_screens.intersection(current_by_screen)
-    if current and current_user_screens == set(current_by_screen):
-        state["last_applied"] = current
+    managed = [item for item in current if item["screen"] not in user_screens]
+    if current and not managed:
+        absent = [item for item in last_applied if item["screen"] not in current_by_screen]
+        state["last_applied"] = _normalize_wallpaper_snapshot(absent + current)
         _save_wallpaper_state(state)
         return True
 
-    if current_user_screens:
-        wp = _wallpaper_path(mode)
-        applied = _theme_wallpaper_snapshot(current, wp) if wp else []
-        for item in applied:
-            screen = int(item["screen"])
-            if screen in current_user_screens:
-                item["image"] = current_by_screen[screen]
-        # Reapply even when the package URL is unchanged: MacTahoe contains
-        # both images/ and images_dark/, so rewriting the mixed snapshot makes
-        # Plasma refresh the managed screens after the color-mode transition.
-        success = bool(applied) and _apply_wallpaper_snapshot(applied)
-    else:
+    # Only an explicit selection or the initial install owns the whole desktop.
+    # Scheduled switches and updates target the screens we actually captured.
+    if reset or not existing:
         success, wp = _apply_theme_wallpaper(mode)
         applied = _theme_wallpaper_snapshot(current, wp) if wp else []
         if not success and applied:
-            # The official helper is preferred, but a headless install or a
-            # temporarily unavailable session bus must still leave correct
-            # on-disk per-screen config for the final Plasma restart.
             success = _apply_wallpaper_snapshot(applied)
+    else:
+        wp = _wallpaper_path(mode)
+        applied = _theme_wallpaper_snapshot(managed, wp) if wp and managed else []
+        success = bool(applied) and _apply_wallpaper_snapshot(applied, current_by_screen)
 
     if success:
-        state["last_applied"] = applied
+        observed = [item for item in current if item["screen"] in user_screens]
+        # Keep baselines for temporarily disconnected monitors.
+        absent = [item for item in last_applied if item["screen"] not in current_by_screen]
+        state["last_applied"] = _normalize_wallpaper_snapshot(absent + observed + applied)
+        if choice in _WALLPAPER_PAIRS:
+            state["choice"] = choice
+        if choice == "custom":
+            state.pop("choice", None)
+            state["user_screens"] = sorted(user_screens.union(item["screen"] for item in applied))
     _save_wallpaper_state(state)
     return success
 
