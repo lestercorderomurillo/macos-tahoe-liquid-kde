@@ -111,12 +111,16 @@ Window {
     }
 
     title: translations.i18n("About This Computer")
-    width: 360
-    height: 700
-    minimumWidth: 360
-    minimumHeight: 700
-    maximumWidth: 360
-    maximumHeight: 700
+    // Keep the reviewed 10 pt proportions. Long hardware names wrap within
+    // the value column, so fetching them never widens the panel.
+    readonly property real fontScale: Math.max(1, Kirigami.Theme.defaultFont.pointSize / 10)
+    readonly property int workWidth: Screen.desktopAvailableWidth || 360
+    readonly property int workHeight: Screen.desktopAvailableHeight || 700
+    minimumWidth: Math.min(workWidth, Math.ceil(Math.max(360, details.implicitWidth + 54,
+                                                         actions.implicitWidth + 32)))
+    minimumHeight: Math.min(workHeight, Math.ceil(Math.max(700, contentColumn.implicitHeight)))
+    width: minimumWidth
+    height: minimumHeight
     flags: Qt.Window | Qt.FramelessWindowHint
     color: "transparent"
 
@@ -398,319 +402,345 @@ Window {
             buttons: aboutWindow.windowControlPaths.right || ["minimize", "maximize", "close"]
         }
 
-        // content
-        ColumnLayout {
+        Flickable {
+            id: viewport
             anchors.fill: parent
-            spacing: 0
+            contentHeight: contentColumn.height
+            interactive: contentHeight > height
+            boundsBehavior: Flickable.StopAtBounds
+            clip: interactive
+            QQC2.ScrollBar.vertical: QQC2.ScrollBar { policy: viewport.interactive ? QQC2.ScrollBar.AsNeeded : QQC2.ScrollBar.AlwaysOff }
 
-            Item { Layout.preferredHeight: 70 }
+            ColumnLayout {
+                id: contentColumn
+                width: viewport.width
+                height: Math.max(viewport.height, implicitHeight)
+                spacing: 0
 
-            Kirigami.Icon {
-                Layout.alignment: Qt.AlignHCenter
-                implicitWidth: 132; implicitHeight: 132
-                source: Qt.resolvedUrl("about-computer.svg")
-            }
+                Item { Layout.preferredHeight: 70 }
 
-            Item { Layout.preferredHeight: 18 }
-
-            PrimaryLabel {
-                Layout.alignment: Qt.AlignHCenter
-                text: aboutWindow.vendorDisplay
-
-                font.family: aboutWindow.fontFamilyDisplay
-                font.pixelSize: 22
-                font.bold: true
-                opacity: aboutWindow.infoReady ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
-            }
-
-            Item { Layout.preferredHeight: 4 }
-
-            SecondaryLabel {
-                Layout.alignment: Qt.AlignHCenter
-                text: {
-                    let parts = [];
-                    if (aboutWindow.modelDisplay && aboutWindow.modelDisplay.trim())
-                        parts.push(aboutWindow.modelDisplay);
-                    if (aboutWindow.yearDisplay)
-                        parts.push(aboutWindow.yearDisplay);
-                    // Always render at least a NBSP so this row reserves
-                    // one line of vertical space even on machines where
-                    // DMI returned no model — avoids the layout shift
-                    // when the real value (or empty model) lands.
-                    return parts.length ? parts.join(", ") : " ";
+                Kirigami.Icon {
+                    Layout.alignment: Qt.AlignHCenter
+                    implicitWidth: 132; implicitHeight: 132
+                    source: Qt.resolvedUrl("about-computer.svg")
                 }
 
-                font.family: aboutWindow.fontFamily
-                font.pixelSize: 13
-                opacity: aboutWindow.infoReady ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
-            }
+                Item { Layout.preferredHeight: 18 }
 
-            Item { Layout.preferredHeight: 36 }
-
-            GridLayout {
-                Layout.alignment: Qt.AlignHCenter
-                columns: 2
-                columnSpacing: 16
-                rowSpacing: 6
-                // Whole table fades in together once the helper returns —
-                // no per-row pop-in, no placeholder dots.
-                opacity: aboutWindow.infoReady ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: 260; easing.type: Easing.OutQuad } }
-
-                // Chip
-                SecondaryLabel {
-                    text: translations.i18n("Chip")
-
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
-                    horizontalAlignment: Text.AlignRight
-                }
                 PrimaryLabel {
-                    text: aboutWindow.chipDisplay
+                    Layout.alignment: Qt.AlignHCenter
+                    text: aboutWindow.vendorDisplay
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
-                    Layout.minimumHeight: 2 * _fm.height
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
+                    font.family: aboutWindow.fontFamilyDisplay
+                    font.pixelSize: 22
+                    font.bold: true
+                    opacity: aboutWindow.infoReady ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
                 }
 
-                // Cores
+                Item { Layout.preferredHeight: 4 }
+
                 SecondaryLabel {
-                    text: translations.i18n("Cores")
+                    Layout.alignment: Qt.AlignHCenter
+                    text: {
+                        let parts = [];
+                        if (aboutWindow.modelDisplay && aboutWindow.modelDisplay.trim())
+                            parts.push(aboutWindow.modelDisplay);
+                        if (aboutWindow.yearDisplay)
+                            parts.push(aboutWindow.yearDisplay);
+                        // Always render at least a NBSP so this row reserves
+                        // one line of vertical space even on machines where
+                        // DMI returned no model — avoids the layout shift
+                        // when the real value (or empty model) lands.
+                        return parts.length ? parts.join(", ") : " ";
+                    }
 
                     font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
-                    horizontalAlignment: Text.AlignRight
-                }
-                PrimaryLabel {
-                    text: aboutWindow.coresDisplay
-
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
+                    font.pixelSize: 13
+                    opacity: aboutWindow.infoReady ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
                 }
 
-                // Memory
-                SecondaryLabel {
-                    text: translations.i18n("Memory")
+                Item { Layout.preferredHeight: 36 }
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
-                    horizontalAlignment: Text.AlignRight
-                }
-                PrimaryLabel {
-                    text: aboutWindow.memoryDisplay
+                GridLayout {
+                    id: details
+                    readonly property real available: Math.max(1, aboutWindow.workWidth - 54 - columnSpacing)
+                    readonly property real labelWidth: Math.min(available * 0.42, 110 * aboutWindow.fontScale)
+                    readonly property real valueWidth: Math.min(available - labelWidth, 180 * aboutWindow.fontScale)
+                    Layout.alignment: Qt.AlignHCenter
+                    columns: 2
+                    columnSpacing: 16
+                    rowSpacing: 6
+                    // Whole table fades in together once the helper returns —
+                    // no per-row pop-in, no placeholder dots.
+                    opacity: aboutWindow.infoReady ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 260; easing.type: Easing.OutQuad } }
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
-                }
+                    // Chip
+                    SecondaryLabel {
+                        text: translations.i18n("Chip")
 
-                // Graphics
-                SecondaryLabel {
-                    text: translations.i18n("Graphics")
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: details.labelWidth
+                        wrapMode: Text.Wrap
+                        horizontalAlignment: Text.AlignRight
+                    }
+                    PrimaryLabel {
+                        text: aboutWindow.chipDisplay
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
-                    horizontalAlignment: Text.AlignRight
-                }
-                PrimaryLabel {
-                    text: aboutWindow.graphicsDisplay
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.preferredWidth: details.valueWidth
+                        Layout.minimumHeight: 2 * _fm.height
+                        wrapMode: Text.Wrap
+                        verticalAlignment: Text.AlignVCenter
+                    }
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
-                    Layout.minimumHeight: 2 * _fm.height
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
+                    // Cores
+                    SecondaryLabel {
+                        text: translations.i18n("Cores")
 
-                // Startup disk
-                SecondaryLabel {
-                    text: translations.i18n("Startup disk")
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: details.labelWidth
+                        wrapMode: Text.Wrap
+                        horizontalAlignment: Text.AlignRight
+                    }
+                    PrimaryLabel {
+                        text: aboutWindow.coresDisplay
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
-                    horizontalAlignment: Text.AlignRight
-                }
-                PrimaryLabel {
-                    text: aboutWindow.diskDisplay
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.preferredWidth: details.valueWidth
+                        wrapMode: Text.Wrap
+                    }
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
-                    Layout.minimumHeight: 2 * _fm.height
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
+                    // Memory
+                    SecondaryLabel {
+                        text: translations.i18n("Memory")
 
-                // Network address
-                SecondaryLabel {
-                    text: translations.i18n("Network")
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: details.labelWidth
+                        wrapMode: Text.Wrap
+                        horizontalAlignment: Text.AlignRight
+                    }
+                    PrimaryLabel {
+                        text: aboutWindow.memoryDisplay
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
-                    horizontalAlignment: Text.AlignRight
-                }
-                PrimaryLabel {
-                    text: aboutWindow.networkDisplay
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.preferredWidth: details.valueWidth
+                        wrapMode: Text.Wrap
+                    }
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
-                    elide: Text.ElideRight
-                }
+                    // Graphics
+                    SecondaryLabel {
+                        text: translations.i18n("Graphics")
 
-                // Serial number
-                SecondaryLabel {
-                    text: translations.i18n("Serial number")
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: details.labelWidth
+                        wrapMode: Text.Wrap
+                        horizontalAlignment: Text.AlignRight
+                    }
+                    PrimaryLabel {
+                        text: aboutWindow.graphicsDisplay
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
-                    horizontalAlignment: Text.AlignRight
-                }
-                PrimaryLabel {
-                    text: aboutWindow.serialDisplay
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.preferredWidth: details.valueWidth
+                        Layout.minimumHeight: 2 * _fm.height
+                        wrapMode: Text.Wrap
+                        verticalAlignment: Text.AlignVCenter
+                    }
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
-                    elide: Text.ElideRight
-                }
+                    // Startup disk
+                    SecondaryLabel {
+                        text: translations.i18n("Startup disk")
 
-                // OS
-                SecondaryLabel {
-                    text: translations.i18n("OS")
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: details.labelWidth
+                        wrapMode: Text.Wrap
+                        horizontalAlignment: Text.AlignRight
+                    }
+                    PrimaryLabel {
+                        text: aboutWindow.diskDisplay
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.alignment: Qt.AlignRight
-                    Layout.preferredWidth: 110
-                    horizontalAlignment: Text.AlignRight
-                }
-                PrimaryLabel {
-                    text: aboutWindow.osDisplay
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.preferredWidth: details.valueWidth
+                        Layout.minimumHeight: 2 * _fm.height
+                        wrapMode: Text.Wrap
+                        verticalAlignment: Text.AlignVCenter
+                    }
 
-                    font.family: aboutWindow.fontFamily
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    Layout.preferredWidth: 180
-                    Layout.minimumHeight: 2 * _fm.height
-                    wrapMode: Text.WordWrap
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
+                    // Network address
+                    SecondaryLabel {
+                        text: translations.i18n("Network")
 
-            Item { Layout.preferredHeight: 22 }
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: details.labelWidth
+                        wrapMode: Text.Wrap
+                        horizontalAlignment: Text.AlignRight
+                    }
+                    PrimaryLabel {
+                        text: aboutWindow.networkDisplay
 
-            RowLayout {
-                Layout.alignment: Qt.AlignHCenter
-                spacing: 8
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.preferredWidth: details.valueWidth
+                        wrapMode: Text.Wrap
+                    }
 
-                GlassButton {
-                    id: moreInfoButton
-                    labelColor: backdrop.foreground
-                    isDarkTheme: aboutWindow.isDarkTheme
-                    text: translations.i18n("More Info…")
-                    onClicked: {
-                        launcher.exec("kinfocenter");
-                        aboutWindow.close();
+                    // Serial number
+                    SecondaryLabel {
+                        text: translations.i18n("Serial number")
+
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: details.labelWidth
+                        wrapMode: Text.Wrap
+                        horizontalAlignment: Text.AlignRight
+                    }
+                    PrimaryLabel {
+                        text: aboutWindow.serialDisplay
+
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.preferredWidth: details.valueWidth
+                        wrapMode: Text.Wrap
+                    }
+
+                    // OS
+                    SecondaryLabel {
+                        text: translations.i18n("OS")
+
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.alignment: Qt.AlignRight
+                        Layout.preferredWidth: details.labelWidth
+                        wrapMode: Text.Wrap
+                        horizontalAlignment: Text.AlignRight
+                    }
+                    PrimaryLabel {
+                        text: aboutWindow.osDisplay
+
+                        font.family: aboutWindow.fontFamily
+                        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                        Layout.preferredWidth: details.valueWidth
+                        Layout.minimumHeight: 2 * _fm.height
+                        wrapMode: Text.Wrap
+                        verticalAlignment: Text.AlignVCenter
                     }
                 }
 
-                GlassButton {
-                    id: reportButton
-                    labelColor: backdrop.foreground
-                    isDarkTheme: aboutWindow.isDarkTheme
-                    text: translations.i18n("Report a Bug…")
-                    onClicked: {
-                        launcher.exec("xdg-open https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new");
-                        aboutWindow.close();
-                    }
-                }
+                Item { Layout.preferredHeight: 22 }
 
-                GlassButton {
-                    labelColor: backdrop.foreground
-                    isDarkTheme: aboutWindow.isDarkTheme
-                    id: copyButton
-                    property bool justCopied: false
-                    enabled: aboutWindow.infoReady
-                    display: QQC2.AbstractButton.IconOnly
-                    QQC2.ToolTip.text: justCopied ? translations.i18n("Copied") : translations.i18n("Copy details")
-                    QQC2.ToolTip.visible: hovered
-                    QQC2.ToolTip.delay: 400
-                    onClicked: {
-                        aboutWindow.copyDetails();
-                        justCopied = true;
-                        copiedReset.restart();
-                    }
+                RowLayout {
+                    id: actions
+                    Layout.alignment: Qt.AlignHCenter
+                    spacing: 8
 
-                    contentItem: Item {
-                        implicitWidth: 18
-                        implicitHeight: 18
-
-                        Image {
-                            anchors.centerIn: parent
-                            width: 18
-                            height: 18
-                            source: Qt.resolvedUrl(copyButton.labelColor.hslLightness > 0.5
-                                ? "copy-dark.svg" : "copy-light.svg")
-                            sourceSize.width: 36
-                            sourceSize.height: 36
-                            fillMode: Image.PreserveAspectFit
-                            smooth: true
-                            opacity: copyButton.enabled ? 1.0 : 0.4
-                            visible: !copyButton.justCopied
-                        }
-                        Kirigami.Icon {
-                            id: copyStatusIcon
-                            anchors.centerIn: parent
-                            width: 18
-                            height: 18
-                            source: "dialog-ok"
-                            color: backdrop.foreground
-                            visible: copyButton.justCopied
+                    GlassButton {
+                        id: moreInfoButton
+                        labelColor: backdrop.foreground
+                        isDarkTheme: aboutWindow.isDarkTheme
+                        text: translations.i18n("More Info…")
+                        onClicked: {
+                            launcher.exec("kinfocenter");
+                            aboutWindow.close();
                         }
                     }
 
-                    Timer {
-                        id: copiedReset
-                        interval: 1500
-                        onTriggered: copyButton.justCopied = false
+                    GlassButton {
+                        id: reportButton
+                        labelColor: backdrop.foreground
+                        isDarkTheme: aboutWindow.isDarkTheme
+                        text: translations.i18n("Report a Bug…")
+                        onClicked: {
+                            launcher.exec("xdg-open https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new");
+                            aboutWindow.close();
+                        }
+                    }
+
+                    GlassButton {
+                        labelColor: backdrop.foreground
+                        isDarkTheme: aboutWindow.isDarkTheme
+                        id: copyButton
+                        property bool justCopied: false
+                        enabled: aboutWindow.infoReady
+                        display: QQC2.AbstractButton.IconOnly
+                        QQC2.ToolTip.text: justCopied ? translations.i18n("Copied") : translations.i18n("Copy details")
+                        QQC2.ToolTip.visible: hovered
+                        QQC2.ToolTip.delay: 400
+                        onClicked: {
+                            aboutWindow.copyDetails();
+                            justCopied = true;
+                            copiedReset.restart();
+                        }
+
+                        contentItem: Item {
+                            implicitWidth: 18
+                            implicitHeight: 18
+
+                            Image {
+                                anchors.centerIn: parent
+                                width: 18
+                                height: 18
+                                source: Qt.resolvedUrl(copyButton.labelColor.hslLightness > 0.5
+                                    ? "copy-dark.svg" : "copy-light.svg")
+                                sourceSize.width: 36
+                                sourceSize.height: 36
+                                fillMode: Image.PreserveAspectFit
+                                smooth: true
+                                opacity: copyButton.enabled ? 1.0 : 0.4
+                                visible: !copyButton.justCopied
+                            }
+                            Kirigami.Icon {
+                                id: copyStatusIcon
+                                anchors.centerIn: parent
+                                width: 18
+                                height: 18
+                                source: "dialog-ok"
+                                color: backdrop.foreground
+                                visible: copyButton.justCopied
+                            }
+                        }
+
+                        Timer {
+                            id: copiedReset
+                            interval: 1500
+                            onTriggered: copyButton.justCopied = false
+                        }
                     }
                 }
+
+                Item { Layout.fillHeight: true; Layout.minimumHeight: 32 }
+
+                SecondaryLabel {
+                    Layout.alignment: Qt.AlignHCenter
+                    text: aboutWindow.themeVersionDisplay
+
+                    font.family: aboutWindow.fontFamily
+                    font.pointSize: Kirigami.Theme.defaultFont.pointSize - 1
+                    opacity: aboutWindow.infoReady ? 1.0 : 0.0
+                    Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
+                }
+
+                Item { Layout.preferredHeight: 28 }
             }
-
-            Item { Layout.fillHeight: true }
-
-            SecondaryLabel {
-                Layout.alignment: Qt.AlignHCenter
-                text: aboutWindow.themeVersionDisplay
-
-                font.family: aboutWindow.fontFamily
-                font.pointSize: Kirigami.Theme.defaultFont.pointSize - 1
-                opacity: aboutWindow.infoReady ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutQuad } }
-            }
-
-            Item { Layout.preferredHeight: 28 }
         }
     }
 }
