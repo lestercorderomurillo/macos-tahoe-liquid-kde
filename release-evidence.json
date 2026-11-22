@@ -1,24 +1,37 @@
 {
-  "version": "0.82.1",
+  "version": "0.82.2",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "9e509bf90c46a18ad2973f84becf82f0e3682ba0",
-  "scope": "Keep Bluetooth and other symbolic icons visible when their names overlap application artwork in generated overlays.",
-  "approval": "The maintainer explicitly approved the light and dark before-and-after previews shown for PR #161.",
+  "implementation_commit": "b65b41c482fce0678180a45d55fe59f9bb279876",
+  "scope": "Ease the two-tone search caret pulse and fade the detached launcher search popup on open and close.",
+  "approval": "Maintainer directed publishing the scoped animation update after checking the existing code and finishing missing behavior.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_icon_toolset.py -k 'overlay or installer_selector' (4 passed)",
+      "command": "Golden Gate on KDE neon Plasma/KWin 6.8.1 Wayland: installed source hashes matched. Reviewed recorded search capsule open/close and caret pulse in light and dark modes.",
       "result": "passed"
     },
     {
-      "command": "python3 -m pytest -q tests/test_reserved_menu_icons.py (2 passed)",
+      "command": "Tahoe launcher preset and native popup suite: 80 passed.",
       "result": "passed"
     },
     {
-      "command": "python3 src/scripts/component_manifest.py",
+      "command": "Scripted effect check: KWin animation duration scaling, interrupted opening opacity, and launcher search window scope.",
+      "result": "passed"
+    },
+    {
+      "command": "Tahoe component hash manifest matches the source tree.",
       "result": "passed"
     }
   ],
-  "captures": [],
+  "captures": [
+    {
+      "path": "src/screenshots/previews/search-bar-motion-ac86c6a7ba49.mp4",
+      "sha256": "ac86c6a7ba494b9cd6c8530acef21491f5829de911ec17c1ef446760d3a9301c",
+      "reviewed": true,
+      "source_commit": "b65b41c482fce0678180a45d55fe59f9bb279876",
+      "edition": "golden-gate",
+      "installed_sha256": "6a3b3d23dc8f32c4830822331c790b0a339d15203c745b7b032587de9e55042d  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/SearchCursor.qml\nb5477d7e0099185e7c63b86061c6964d660b5748904b49876eed830b1e07844b  /home/tester/.local/share/kwin/effects/mttkde_controlcenter_transition/contents/code/main.js"
+    }
+  ],
   "reviewed_pr_previews": [
     {
       "url": "https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/pr160-bluetooth-symbols-light.png",
@@ -29,6 +42,6 @@
       "sha256": "03d812624de3f18c9502d9ed172576e722435d22715887f5448a6e6da8e62e76"
     }
   ],
-  "coverage_limits": "The PR author provided mask-rendered comparisons and live icon lookups in Plasma 6.7.4 Regular. The merged icon assets, generator and Bluetooth rendering sources match the reviewed PR. Focused local checks exercised generated overlays and reserved symbols.",
-  "source_sha256": "a1aa39848fdc7d60d39b97b7eff8f523516669fb460987147fd460d40a376587"
+  "coverage_limits": "Motion captured in the Golden Gate default detached layout on KWin 6.8.1 Wayland. Tahoe defaults to the inline layout. Native backend coverage from the launcher regression suite does not constitute a separate X11 motion capture.",
+  "source_sha256": "4246c01eee7ba6566f3cb873604cd6329371c35bc0706f6e240aea2ede0b201b"
 }

@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.82.0**. Verified launcher category, search and app contrast on Wayland, the four installer materials, and launcher backdrop sampling on KWin X11 6.6 and 6.7. [Evidence and coverage](release-evidence.json).
+**v0.82.2**. Verified the search capsule fade and caret pulse in light and dark on Plasma 6.8.1 Wayland. [Motion capture](src/screenshots/previews/search-bar-motion-ac86c6a7ba49.mp4) · [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
