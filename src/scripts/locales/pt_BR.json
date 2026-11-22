@@ -1281,7 +1281,5 @@
   "Automatic": "Automático",
   "Dock behaviour could not be enabled in kwinrc": "Não foi possível ativar o comportamento do Dock no kwinrc",
   "Dock follows screen": "Dock segue a tela",
-  "Dock on several screens": "Dock em várias telas",
-  "Liquid Glass desktop widgets not found — skipping": "Widgets de área de trabalho Liquid Glass não encontrados — ignorados",
-  "Liquid Glass desktop widgets could not be unpacked: {error}": "Não foi possível extrair os widgets de área de trabalho Liquid Glass: {error}"
+  "Dock on several screens": "Dock em várias telas"
 }

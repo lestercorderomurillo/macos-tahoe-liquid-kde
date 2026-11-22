@@ -1,24 +1,35 @@
 {
-  "version": "0.82.3",
+  "version": "0.82.4",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "a9f442f48c9efd312347a91d20ff8aba0398aaf5",
-  "scope": "Install the Liquid Glass desktop widget pack by default with an illustrated Desktop widgets step in the installer.",
-  "approval": "Maintainer approved the pictured selector from PR #166 and explicitly requested enabling the pack by default and publishing the release.",
+  "implementation_commit": "b65b41c482fce0678180a45d55fe59f9bb279876",
+  "scope": "Restore the v0.82.2 installer sources while the desktop layout and widget placement correction is prepared.",
+  "approval": "Maintainer requested a rollback release before publishing the separately validated repair.",
   "checks": [
     {
-      "command": "Tahoe focused installer wizard, widget bundle, Plasmoids, localization, package mapping and component manifest suite (569 passed). Wizard checks covered the Custom and Express defaults for both editions.",
-      "result": "passed"
-    },
-    {
-      "command": "KDE neon Plasma 6.8.1 Wayland: installer backend provisioned all 15 packages. Plasma discovered them and left placement to the user. Reinstallation with the pack disabled removed the theme-owned packages and preserved a local widget.",
+      "command": "Compared the rollback runtime and test sources byte-for-byte with v0.82.2. Reused the qualification for those sources.",
       "result": "passed"
     }
   ],
-  "captures": [],
-  "approved_preview_sha256": {
-    "tahoe_light_skip_selected": "3b15443fe9330ad253b1cef824281e1d777344ac26e98a6104fcc6b7dd42ef4c",
-    "tahoe_dark_install_selected": "2feb13f19605862d47352ac8a8d6a5572e8b38b328c42dba77007c0ecb644746"
-  },
-  "coverage_limits": "Plasma widget registration and installer lifecycle exercised on KDE neon 6.8.1 Wayland. Calendar, analog clock and timer were rendered for the desktop preview. The remaining widget packages were checked for registration. Historical galleries retain their original provenance.",
-  "source_sha256": "8ad261f1b850bbe96617f8481909eb5562b5d1533d31dbe04c8f7973fd7da9e1"
+  "captures": [
+    {
+      "path": "src/screenshots/previews/search-bar-motion-ac86c6a7ba49.mp4",
+      "sha256": "ac86c6a7ba494b9cd6c8530acef21491f5829de911ec17c1ef446760d3a9301c",
+      "reviewed": true,
+      "source_commit": "b65b41c482fce0678180a45d55fe59f9bb279876",
+      "edition": "golden-gate",
+      "installed_sha256": "6a3b3d23dc8f32c4830822331c790b0a339d15203c745b7b032587de9e55042d  /home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/SearchCursor.qml\nb5477d7e0099185e7c63b86061c6964d660b5748904b49876eed830b1e07844b  /home/tester/.local/share/kwin/effects/mttkde_controlcenter_transition/contents/code/main.js"
+    }
+  ],
+  "reviewed_pr_previews": [
+    {
+      "url": "https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/pr160-bluetooth-symbols-light.png",
+      "sha256": "f279dde2b7fdd225012da4466c7c0389a9c0873cd8968efc9b1633c447f08885"
+    },
+    {
+      "url": "https://gist.githubusercontent.com/RoxasYTB/b552334b7afd3ff281a4a0fe71a0b00a/raw/pr160-bluetooth-symbols-dark.png",
+      "sha256": "03d812624de3f18c9502d9ed172576e722435d22715887f5448a6e6da8e62e76"
+    }
+  ],
+  "coverage_limits": "Rollback release. The maintainer requested no new runtime test run. Prior qualified runtime sources restored. Existing installed desktop preferences are separate.",
+  "source_sha256": "60afa948b4f6561478f6956e1b5824ad9af419213febb96bbdb6d97c3fc1330d"
 }

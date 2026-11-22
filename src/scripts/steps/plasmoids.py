@@ -1,25 +1,18 @@
 from localization import tr
-import re
 import shutil
-import subprocess
-import tempfile
 from pathlib import Path
 
 from distro import qt6_plugins_dir, qt6_qml_dir
-from installer_choices import selected
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
 from steps._native_build import cmake_build
 from steps._helpers import (
     DATA_HOME, HOME, build_dir, fail, info, install_tree, ok, offline,
-    remove_tree, qdbus_call, warn,
+    remove_tree, qdbus_call,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir,
 )
 
 SRC_DIR = offline("plasmoids")
 DEST_DIR = DATA_HOME / "plasma/plasmoids"
-WIDGETS_ARCHIVE = offline("desktop-widgets", "liquidglass-kde-widgets.tar.zst")
-WIDGETS_STATE = DATA_HOME / "mac-tahoe-liquid-kde/desktop-widgets.list"
-WIDGET_ID = re.compile(r"com\.jaxparrow07\.macoswidgets\.[a-z0-9-]+")
 
 TASKMANAGER_SRC = SRC_DIR / "org.kde.mac.tahoe.liquid.taskmanager"
 TASKMANAGER_BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")
@@ -66,7 +59,7 @@ LEGACY_TASKMANAGER_QML_DIRS = (
 )
 
 def deps():
-    dependencies = [
+    return [
         "qmake6:qt6-base",
         "qt6-svg-icons",
         "qt6-gui-cmake:qt6-base",
@@ -105,9 +98,6 @@ def deps():
         "ksysguard-cmake:libksysguard",
         "libnotificationmanager-cmake:plasma-workspace",
     ]
-    if selected().get("desktop_widgets"):
-        dependencies.append("zstd")
-    return dependencies
 
 
 def build_artifacts() -> list[Path]:
@@ -184,9 +174,6 @@ def _install_launcher_package(widget: Path) -> bool:
 
 def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
-    choices = selected()
-    if choices:
-        install_desktop_widgets(choices["desktop_widgets"])
 
     dest_qml = qt6_qml_dir() / _TASKMANAGER_QML_RELPATH
     for name in LEGACY_DIRS:
@@ -272,7 +259,6 @@ def install() -> None:
 
 
 def uninstall() -> None:
-    _remove_desktop_widgets()
     from installer_choices import launcher_preference
     launcher_preference().unlink(missing_ok=True)
     (DATA_HOME / "applications" / APPS_ENTRY).unlink(missing_ok=True)
@@ -306,62 +292,3 @@ def uninstall() -> None:
             except OSError:
                 fail(d.name)
     info(tr('{n} plasmoids removed', n=n))
-
-def _installed_widgets() -> set[str]:
-    try:
-        entries = WIDGETS_STATE.read_text(encoding="utf-8").splitlines()
-    except FileNotFoundError:
-        return set()
-    return {name for name in entries if WIDGET_ID.fullmatch(name)}
-
-
-def _save_installed_widgets(names: set[str]) -> None:
-    if not names:
-        WIDGETS_STATE.unlink(missing_ok=True)
-        return
-    WIDGETS_STATE.parent.mkdir(parents=True, exist_ok=True)
-    stream = tempfile.NamedTemporaryFile(mode="w", encoding="utf-8",
-                                         dir=WIDGETS_STATE.parent, delete=False)
-    pending = Path(stream.name)
-    try:
-        with stream:
-            stream.writelines(name + "\n" for name in sorted(names))
-        pending.replace(WIDGETS_STATE)
-    finally:
-        pending.unlink(missing_ok=True)
-
-
-def _remove_desktop_widgets() -> None:
-    remaining = set()
-    for name in sorted(_installed_widgets()):
-        target = DEST_DIR / name
-        if target.is_dir() and not target.is_symlink() and not remove_tree(target, name):
-            remaining.add(name)
-    _save_installed_widgets(remaining)
-
-
-def install_desktop_widgets(enabled: bool) -> None:
-    """Manage the optional widget pack without taking over user installations."""
-    if not enabled:
-        _remove_desktop_widgets()
-        return
-    if not WIDGETS_ARCHIVE.is_file():
-        warn(tr('Liquid Glass desktop widgets not found — skipping'))
-        return
-    with temp_dir("mttkde-desktop-widgets-") as staging:
-        result = subprocess.run(["tar", "--zstd", "-xf", str(WIDGETS_ARCHIVE), "-C", str(staging)],
-                                check=False, capture_output=True, text=True)
-        if result.returncode != 0:
-            warn(tr('Liquid Glass desktop widgets could not be unpacked: {error}', error=result.stderr.strip()))
-            return
-        installed = _installed_widgets()
-        for entry in sorted(staging.iterdir()):
-            name = entry.name
-            if not WIDGET_ID.fullmatch(name) or not (entry / "metadata.json").is_file():
-                continue
-            target = DEST_DIR / name
-            if target.is_symlink() or (target.exists() and name not in installed):
-                continue
-            if install_tree(entry, target, name):
-                installed.add(name)
-                _save_installed_widgets(installed)

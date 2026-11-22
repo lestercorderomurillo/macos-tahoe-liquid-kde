@@ -26,7 +26,6 @@ STEPS = (
     ("welcome", ""), ("appearance", "Which appearance would you like?"),
     ("icons", "Which icons and color would you like?"),
     ("wallpaper", "Which wallpaper would you like?"),
-    ("desktop_widgets", "Desktop widgets"),
     ("launcher", "Which launcher would you like?"),
     ("layout", "What would you like to add to your desktop?"),
     ("effects", "Which effects would you like to enable?"),
@@ -943,7 +942,7 @@ class InstallerWindow(OpaqueSurface):
             for spin in self.content.findChildren(QSpinBox):
                 spin.setEnabled(value)
 
-    def cards(self, key, items, *, columns=2, independent=False, compact=False, default_first=True):
+    def cards(self, key, items, *, columns=2, independent=False, compact=False):
         grid = QGridLayout()
         grid.setHorizontalSpacing(18 if columns == 2 else 14)
         grid.setVerticalSpacing(14)
@@ -952,8 +951,7 @@ class InstallerWindow(OpaqueSurface):
             group = QButtonGroup(self.content)
             group.setExclusive(True)
             self.groups.append(group)
-            if default_first:
-                items = sorted(items, key=lambda item: item[0] != self.defaults[key])
+            items = sorted(items, key=lambda item: item[0] != self.defaults[key])
         row_cards = []
         for i, (value, title, detail, pixmap) in enumerate(items):
             choice_key = value if independent else key
@@ -1207,15 +1205,6 @@ class InstallerWindow(OpaqueSurface):
         if path and not QPixmap(path).isNull():
             self.choices["wallpaper_path"] = path
             self.select("wallpaper", "custom")
-
-    def page_desktop_widgets(self):
-        self.cards("desktop_widgets", [
-            (False, "Skip widget pack", "Remove any widgets previously installed by this theme.",
-             picture("desktop-widgets-off.jpg", 368, 207, cover=True)),
-            (True, "Install Liquid Glass widgets", "Calendar, weather, clocks, music, timers and photos.",
-             picture("desktop-widgets-on.jpg", 368, 207, cover=True)),
-        ], default_first=False)
-        self.body.addWidget(self.label("After installation, place widgets from Plasma’s Add Widgets menu."))
 
     def launcher_notice(self):
         from steps.clipboard import HISTORY_DIR
@@ -1569,7 +1558,6 @@ class InstallerWindow(OpaqueSurface):
             ("icons", "Icons", value("icons"), "icons"),
             ("color", "Color", value("color"), "icons"),
             ("wallpaper", "Background", value("wallpaper"), "wallpaper"),
-            ("desktop_widgets", "Desktop widgets", enabled("desktop_widgets"), "desktop_widgets"),
             ("launcher", "Launcher", self.t("Use my launcher") if c["launcher"] == "keep" else value("launcher"), "launcher"),
             ("panel", "Desktop", desktop or self.t("Keep"), "layout"),
             ("dock_apps", "Dock apps", self.dock_app_summary() + (" · " + self.t("macOS-style Dock icons" if c["dock_appearance"] == "macos" else "Application icons") if not keep_layout and c["dock"] and c["dock_appearance"] not in ("auto", "keep") else ""), "layout"),

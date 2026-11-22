@@ -1484,12 +1484,5 @@
   "Dock behaviour could not be enabled in kwinrc": "Impossibile attivare il comportamento del Dock in kwinrc",
   "Dock follows screen": "Il Dock segue lo schermo",
   "Dock on several screens": "Dock su più schermi",
-  "Icon appearance": "Aspetto delle icone",
-  "Skip widget pack": "Salta il pacchetto di widget",
-  "Install Liquid Glass widgets": "Installa i widget Liquid Glass",
-  "Remove any widgets previously installed by this theme.": "Rimuove i widget installati in precedenza da questo tema.",
-  "Calendar, weather, clocks, music, timers and photos.": "Calendario, meteo, orologi, musica, timer e foto.",
-  "After installation, place widgets from Plasma’s Add Widgets menu.": "Dopo l’installazione, posiziona i widget dal menu Aggiungi oggetti di Plasma.",
-  "Liquid Glass desktop widgets not found — skipping": "Widget del desktop Liquid Glass non trovati — saltati",
-  "Liquid Glass desktop widgets could not be unpacked: {error}": "Impossibile estrarre i widget del desktop Liquid Glass: {error}"
+  "Icon appearance": "Aspetto delle icone"
 }
