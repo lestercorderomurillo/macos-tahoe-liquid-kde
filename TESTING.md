@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.81.0**. Verified the Golden Gate dark and light system menus on KDE neon Wayland and popup rendering on KWin X11. [Evidence and coverage](release-evidence.json).
+**v0.81.2**. Verified Finder edges in light and dark and live Rounded Corners activation on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

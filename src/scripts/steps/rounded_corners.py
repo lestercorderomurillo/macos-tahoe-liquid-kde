@@ -31,6 +31,7 @@ from log import note
 from steps._native_build import cmake_build
 from steps._helpers import (
     HOME,
+    _as_root,
     build_dir,
     fail,
     have,
@@ -251,7 +252,7 @@ def _effect_active() -> bool:
         return False
     try:
         result = run_user(
-            [qdbus, "org.kde.KWin", "/Effects", "org.kde.kwin.Effects.activeEffects"],
+            [qdbus, "org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadedEffects"],
             check=False,
             capture_output=True,
             text=True,
@@ -259,7 +260,7 @@ def _effect_active() -> bool:
         )
     except (OSError, subprocess.TimeoutExpired):
         return False
-    return EFFECT_ID in (result.stdout or "")
+    return result.returncode == 0 and EFFECT_ID in (result.stdout or "").splitlines()
 
 
 def _same_contents(source: Path, destination: Path) -> bool:
@@ -545,6 +546,29 @@ def _restore_round_corners_keys(*, legacy_install: bool) -> bool:
     return True
 
 
+def _activate_distinct_build(effect: Path, plugin: Path) -> bool:
+    # Qt retains a library by canonical path after unloading its effect.
+    # Keep the plugin basename (its KPlugin ID), but give each build its
+    # own canonical path outside KWin's plugin discovery directory.
+    library = plugin.parent.parent / "mttkde-rounded-builds" / _sha256(effect) / plugin.name
+    if not sudo_install_file(effect, library, "KDE Rounded Corners effect installed"):
+        return False
+    link = plugin.with_name(f".{plugin.name}.{uuid.uuid4().hex}")
+    try:
+        with _as_root():
+            try:
+                link.symlink_to(os.path.relpath(library, plugin.parent))
+                link.replace(plugin)
+            finally:
+                link.unlink(missing_ok=True)
+    except OSError as exc:
+        fail(str(exc))
+        return False
+    qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", EFFECT_ID)
+    qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", EFFECT_ID)
+    return _effect_active() and running_kwin_plugin_matches(library) is True
+
+
 def install() -> None:
     effect, config, *shaders = build_artifacts()
     if not all(path.is_file() for path in (effect, config, *shaders)):
@@ -583,7 +607,7 @@ def install() -> None:
     for source, destination, label in destinations:
         # Identical bytes keep their inode, so a library KWin already maps
         # is not reported as a stale build after a plain reinstall.
-        if _same_contents(source, destination):
+        if _same_contents(source, destination.resolve() if source == effect else destination):
             ok(tr(label))
         elif not sudo_install_file(source, destination, label):
             return
@@ -622,14 +646,12 @@ def install() -> None:
         "org.kde.KWin", "/Effects",
         "org.kde.kwin.Effects.loadEffect", EFFECT_ID,
     )
-    # Qt can keep a replaced library resident across the effect reload, so
-    # activeEffects alone does not prove the new build is running.
-    if running_kwin_plugin_matches(destinations[0][1]) is False:
-        warn(tr('KWin still runs the previous KDE Rounded Corners build — log out and back in to activate this one'))
-    elif _effect_active():
-        ok(tr('KDE Rounded Corners loaded'))
-    else:
-        ok(tr('KDE Rounded Corners installed (log out and back in to activate)'))
+    plugin = destinations[0][1]
+    if running_kwin_plugin_matches(plugin.resolve()) is False or not _effect_active():
+        if not _activate_distinct_build(effect, plugin):
+            fail(tr('KWin could not activate the installed KDE Rounded Corners build'))
+            return
+    ok(tr('KDE Rounded Corners loaded'))
     info(tr('KDE Rounded Corners v{UPSTREAM_VERSION} installed from verified upstream source', UPSTREAM_VERSION=UPSTREAM_VERSION))
 
 
@@ -668,6 +690,16 @@ def uninstall() -> None:
         existed = path.exists() or path.is_symlink()
         if not sudo_remove(path, label) and existed:
             cleanup_ok = False
+    versions = _plugin_dir() / "kwin/effects/mttkde-rounded-builds"
+    for library in versions.glob("*/kwin4_effect_shapecorners.so"):
+        if re.fullmatch("[0-9a-f]{64}", library.parent.name):
+            cleanup_ok = sudo_remove(library) and cleanup_ok
+            if library.parent.is_dir() and not any(library.parent.iterdir()):
+                with _as_root():
+                    library.parent.rmdir()
+    if versions.is_dir() and not any(versions.iterdir()):
+        with _as_root():
+            versions.rmdir()
     if not cleanup_ok:
         fail(tr('KDE Rounded Corners removal incomplete — recovery state retained'))
         return

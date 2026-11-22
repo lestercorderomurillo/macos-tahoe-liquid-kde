@@ -156,9 +156,11 @@ def existing_dock(pins, revision=0, screen=0):
     )
 
 
-def test_apps_pin_retains_its_new_position_after_edition_rebuild(monkeypatch):
+@pytest.mark.parametrize("finder_position", [0, 1, 2])
+def test_moved_pins_retain_their_positions_after_edition_rebuild(monkeypatch, finder_position):
     apps = "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop"
-    pins = ["applications:org.kde.dolphin.desktop", "applications:firefox.desktop", apps]
+    pins = ["applications:firefox.desktop", apps]
+    pins.insert(finder_position, "applications:org.kde.dolphin.desktop")
     monkeypatch.setattr(layout, "_layout_has_any_theme_widget", lambda: True)
     script = existing_dock(pins, revision=3)
     script += layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, pins, layout.MAC_TASKS_ID)

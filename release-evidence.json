@@ -1,22 +1,86 @@
 {
-  "version": "0.81.0",
+  "version": "0.81.2",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "0c445e9f870a609d075478825a0e063d95c5562c",
-  "photographed_source": "3bebbfa8105c1e134bdf27bbb1266a1e902b9127",
-  "scope": "Golden Gate dark shell menu backdrop and shared contributor credits.",
-  "approval": "Maintainer approved the Golden Gate comparison and paired v0.81.0 publication.",
-  "effect_build": "309554164697c437a2db267860e3eea8eed262b5d75298790aa402a550727d64",
+  "implementation_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
+  "photographed_source": "7363b6ff030225d659c318998359726de1cc0aa4",
+  "scope": "Native Finder edges in both appearances and automatic live Rounded Corners activation.",
+  "approval": "Maintainer approved the Golden Gate before/after comparison and requested paired publication.",
   "checks": [
     {
-      "command": "KDE neon 6.8.1 Wayland: open the Golden Gate system menu over Kate in light and dark modes; verify loaded effect identity and inspected frames.",
+      "command": "KDE neon 6.8.1 Wayland at 2\u00d7: Finder corners on black and white in light and dark. Verified window identity and background samples in the VM captures.",
       "result": "passed"
     },
     {
-      "command": "Build liquidglass_x11 with KWin 6.6.5 and liquidglass with KWin 6.7.5; load the X11 candidate in isolated Xvfb and compare captured popup pixels with the effect off and on (481934 changed, 0 changed in the transparent gap).",
+      "command": "Golden Gate installer_backend.py install --only --rounded-corners: upgraded a stale mapped library in place. The new SHA-256-addressed module was mapped; KWin (1316) and Nautilus (59000) kept their PIDs.",
+      "result": "passed"
+    },
+    {
+      "command": "Xvfb, KWin X11 and Nautilus at 2\u00d7: changing the legacy GTK sheet to the candidate changed 2,164 edge pixels, with identical center pixels. The straight top edge on black changed from RGB 0 to 47.",
+      "result": "passed"
+    },
+    {
+      "command": "Built the candidate shader and Rounded Corners module against KWin 6.6.4 and 6.7.4, and installed the 6.8.1 build in the capture VM.",
+      "result": "passed"
+    },
+    {
+      "command": "Focused installer, localization and GTK tests: 48 passed, one skipped. Verified-archive compatibility and Qt corner regressions: five passed.",
+      "result": "passed"
+    },
+    {
+      "command": "Tahoe auto schedule: observed dusk and dawn on Wayland with the same five open windows; verified rendered GTK 3 and installer colors and recorded the GTK 4 appearance.",
       "result": "passed"
     }
   ],
-  "captures": [],
-  "coverage_limits": "Desktop captures cover Golden Gate on Wayland. KWin 6.7 coverage is build-only. The X11 check exercised a synthetic popup; historical gallery photos retain their original provenance.",
-  "source_sha256": "37241bdda33d1169ed63722f61e8e5d6c07fea628a421fc60a32be4311244319"
+  "captures": [
+    {
+      "path": "src/screenshots/previews/tahoe-finder-edge-light-white-1eecabbf3c52.webp",
+      "edition": "tahoe",
+      "sha256": "1eecabbf3c527235be3d818653a996d94edc69dd49637f95590153c9938e8b1f",
+      "source_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-finder-edge-light-black-41761ec85d19.webp",
+      "edition": "tahoe",
+      "sha256": "41761ec85d19a6c21b41585d4b43785fb000f8b28c5792b8d86f5689a2684631",
+      "source_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-finder-edge-dark-white-578fd694397a.webp",
+      "edition": "tahoe",
+      "sha256": "578fd694397a61b5f9e359734a54204df055c40593342b393df72701ee12e4a5",
+      "source_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-finder-edge-dark-black-595ec233b85f.webp",
+      "edition": "tahoe",
+      "sha256": "595ec233b85fd586d14cc7c0e306101b3d981a23d8ea47a3666ae60d48bb2fd9",
+      "source_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
+      "reviewed": true
+    }
+  ],
+  "source_files": {
+    "src/scripts/steps/rounded_corners.py": "625d3716ddbde00d891293ee79ba7850c741c9dcaa461953e4615a3e88e852d8",
+    "src/scripts/rounded_corners_compat.py": "fe0f80742c20fcb8ec30b6ed1ce6395f7cbecb3bde08f71d8031acbb65970bb7",
+    "src/scripts/theme_switch.py": "21bd780170f5e7da7189aba2ed0f58bc45533cd15204799e2be5850ac0cd7174"
+  },
+  "loaded_library_sha256": "82970f2422d7a72e1e266b43a8b2b8e9485e913772c8e355db424f5324276b78",
+  "coverage_limits": "Live installer upgrade observed on Wayland. X11 Finder was rendered with the effect loaded. An effect-on/off screenshot comparison alone did not distinguish the shader change. Historical gallery images keep their original provenance.",
+  "automatic_frames": [
+    {
+      "clock": "2026-01-01T17:58:44+00:00",
+      "sha256": "9cb5f5097f37479503029b97e3e84fb0803e81840ac4758be9f8f34e77b80f8d"
+    },
+    {
+      "clock": "2026-01-01T18:00:05+00:00",
+      "sha256": "0cec0c4f6a8f9c1667dcf8586810feadafaec8e5205e3f9ab2ed21eada4b5d67"
+    },
+    {
+      "clock": "2026-01-02T06:00:05+00:00",
+      "sha256": "dc871e49d0b54e3d5256699e2da5fd82373ece95ab2d4b9a9f13c4f22a86ab44"
+    }
+  ],
+  "source_sha256": "86d6844d1d0bb2caf83ff25083077574a993ea734db0e4e48e0b03ca78ab31e4"
 }

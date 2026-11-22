@@ -1228,6 +1228,13 @@ def gtk4_legacy_adaptive_css(source: str, mode: str = "light") -> str:
     # live libadwaita palette, but select our literal button artwork explicitly.
     if mode not in ("light", "dark"):
         raise ValueError("Unknown GTK appearance")
+    # This sheet starts from the light chrome. Retain its chosen shadow
+    # depth, but use the bundled dark hairline at the window perimeter.
+    if mode == "dark":
+        source = re.sub(r"(?m)^window\.csd(?::backdrop)?\s*\{[^}]*\}",
+                        lambda rule: rule[0].replace("0 0 0 0.5px rgba(0, 0, 0, 0.22)",
+                                                     "0 0 0 0.5px rgba(224, 224, 224, 0.42)"),
+                        source)
     source = re.sub(r'(windows-assets/golden-gate-[\w-]+)-(?:light|dark)(\.svg)',
                     lambda match: match[1] + "-" + mode + match[2], source)
     return "/* mac-tahoe-liquid-kde: adaptive legacy GTK 4 */\n" + source

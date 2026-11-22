@@ -880,19 +880,27 @@ def test_reinstall_preserves_identical_files(monkeypatch, tmp_path):
     assert targets["shaders"] / "shapecorners_core.frag" in installed
 
 
-def test_install_reports_previous_build_still_resident(monkeypatch, tmp_path):
-    _pin_install_targets(monkeypatch, tmp_path)
-    monkeypatch.setattr(rounded, "sudo_install_file", lambda *a, **k: True)
-    monkeypatch.setattr(rounded, "running_kwin_plugin_matches", lambda path: False)
-    warnings: list[str] = []
-    loaded: list[str] = []
-    monkeypatch.setattr(rounded, "warn", warnings.append)
-    monkeypatch.setattr(rounded, "ok", loaded.append)
+def test_install_activates_previous_build_replacement(monkeypatch, tmp_path):
+    from contextlib import nullcontext
+    import shutil
+    targets = _pin_install_targets(monkeypatch, tmp_path)
+    monkeypatch.setattr(rounded, "_as_root", nullcontext)
 
+    def install_file(source, destination, label):
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+        return True
+
+    monkeypatch.setattr(rounded, "sudo_install_file", install_file)
+    plugin = targets["plugins"] / "kwin/effects/plugins/kwin4_effect_shapecorners.so"
+    checked = []
+    def matches(path):
+        checked.append(path)
+        return path != plugin and path.read_bytes() == b"artifact"
+    monkeypatch.setattr(rounded, "running_kwin_plugin_matches", matches)
     rounded.install()
-
-    assert any("log out" in message for message in warnings)
-    assert "KDE Rounded Corners loaded" not in loaded
+    assert checked == [plugin, plugin.resolve()]
+    assert plugin.is_symlink() and plugin.resolve().name == plugin.name
 
 
 def test_uninstall_leaves_distro_package_files_and_reports_replacement(

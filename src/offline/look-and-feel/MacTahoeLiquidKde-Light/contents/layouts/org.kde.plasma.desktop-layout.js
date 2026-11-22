@@ -159,7 +159,7 @@ for (var app = 0; app < dockApplications.length; app++) {
     }
 }
 if (typeof userLauncherTypes === "undefined" && applicationExists("org.kde.mac-tahoe-liquid-kde.apps.desktop")) {
-        dockLaunchers.splice(resolvedDockCategories[0] === "files" ? 1 : 0, 0, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop");
+        dockLaunchers.splice(1, 0, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop");
     }
     tasks.writeConfig("launchers", dockLaunchers);
 tasks.writeConfig("dockPresetCategories", resolvedDockCategories);

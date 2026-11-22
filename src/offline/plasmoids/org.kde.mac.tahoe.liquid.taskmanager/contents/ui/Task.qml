@@ -57,8 +57,6 @@ PlasmaCore.ToolTipArea {
     readonly property bool appsButton: !inPopup && tasksRoot.hasAppsPin
         && (String(model.LauncherUrlWithoutIcon) === tasksRoot.appsPin
             || appId === "org.kde.mac-tahoe-liquid-kde.apps")
-    readonly property bool fixedFiles: !inPopup && tasksRoot.hasAppsPin && index === 0
-        && DockRoles.roleFor(model.LauncherUrlWithoutIcon, model.AppId) === "files"
     readonly property int pid: model.AppPid
     readonly property string appName: model.AppName
     readonly property string dockRole: tasksRoot.iconsOnly && Plasmoid.configuration.macOSDockIcons
@@ -318,15 +316,14 @@ PlasmaCore.ToolTipArea {
     Keys.onDownPressed: event => Keys.rightPressed(event)
     Keys.onLeftPressed: event => {
         if (!inPopup && (event.modifiers & Qt.ControlModifier) && (event.modifiers & Qt.ShiftModifier)) {
-            if (!fixedFiles && !(index === 1 && tasksRoot.taskList.children.some(item => item.fixedFiles)))
-                tasksModel.move(task.index, task.index - 1);
+            tasksModel.move(task.index, task.index - 1);
         } else {
             event.accepted = false;
         }
     }
     Keys.onRightPressed: event => {
         if (!inPopup && (event.modifiers & Qt.ControlModifier) && (event.modifiers & Qt.ShiftModifier)) {
-            if (!fixedFiles) tasksModel.move(task.index, task.index + 1);
+            tasksModel.move(task.index, task.index + 1);
         } else {
             event.accepted = false;
         }
@@ -523,7 +520,6 @@ PlasmaCore.ToolTipArea {
         // Avoid repositioning delegate item after dragFinished
         DragHandler {
             id: dragHandler
-            enabled: !task.fixedFiles
             grabPermissions: PointerHandler.CanTakeOverFromHandlersOfDifferentType
 
             function setRequestedInhibitDnd(value: bool): void {
