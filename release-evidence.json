@@ -1,86 +1,46 @@
 {
-  "version": "0.81.2",
+  "version": "0.81.3",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
-  "photographed_source": "7363b6ff030225d659c318998359726de1cc0aa4",
-  "scope": "Native Finder edges in both appearances and automatic live Rounded Corners activation.",
-  "approval": "Maintainer approved the Golden Gate before/after comparison and requested paired publication.",
+  "implementation_commit": "764f73957fa5d1264c6d1430067ac8a20fb44e0b",
+  "photographed_source": "2122f2a38696c26ff135ec8244123ab84e15b81b",
+  "scope": "Restore the existing curved Downloads fan for fresh and upgraded Docks.",
+  "approval": "Maintainer approved the shown Golden Gate and Tahoe Downloads fan for paired publication.",
   "checks": [
     {
-      "command": "KDE neon 6.8.1 Wayland at 2\u00d7: Finder corners on black and white in light and dark. Verified window identity and background samples in the VM captures.",
+      "command": "Installed candidate in a disposable KDE neon Wayland guest for each edition. Clicked the Downloads Dock shortcut and captured its seven-file fan in light and dark. Verified the four installed QML hashes.",
       "result": "passed"
     },
     {
-      "command": "Golden Gate installer_backend.py install --only --rounded-corners: upgraded a stale mapped library in place. The new SHA-256-addressed module was mapped; KWin (1316) and Nautilus (59000) kept their PIDs.",
+      "command": "On the Tahoe guest, replaced the previous layout shortcut, compared surrounding applet IDs and order, and applied the migration a second time.",
       "result": "passed"
     },
     {
-      "command": "Xvfb, KWin X11 and Nautilus at 2\u00d7: changing the legacy GTK sheet to the candidate changed 2,164 edge pixels, with identical center pixels. The straight top edge on black changed from RGB 0 to 47.",
-      "result": "passed"
-    },
-    {
-      "command": "Built the candidate shader and Rounded Corners module against KWin 6.6.4 and 6.7.4, and installed the 6.8.1 build in the capture VM.",
-      "result": "passed"
-    },
-    {
-      "command": "Focused installer, localization and GTK tests: 48 passed, one skipped. Verified-archive compatibility and Qt corner regressions: five passed.",
-      "result": "passed"
-    },
-    {
-      "command": "Tahoe auto schedule: observed dusk and dawn on Wayland with the same five open windows; verified rendered GTK 3 and installer colors and recorded the GTK 4 appearance.",
+      "command": "Executed the original RecentFiles model probe and the Dock layout, dependency mapping and translation regressions. On integration with v0.81.2, tests/test_dock_defaults.py and tests/test_localization.py passed (65 tests).",
       "result": "passed"
     }
   ],
   "captures": [
     {
-      "path": "src/screenshots/previews/tahoe-finder-edge-light-white-1eecabbf3c52.webp",
+      "path": "src/screenshots/previews/tahoe-downloads-fan-light-65bd85a1e810.png",
       "edition": "tahoe",
-      "sha256": "1eecabbf3c527235be3d818653a996d94edc69dd49637f95590153c9938e8b1f",
-      "source_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
+      "sha256": "65bd85a1e810c0a25fe0280c4e252fb3f0a0540eb2d79fdee393082e5d0c67c4",
+      "source_commit": "2122f2a38696c26ff135ec8244123ab84e15b81b",
       "reviewed": true
     },
     {
-      "path": "src/screenshots/previews/tahoe-finder-edge-light-black-41761ec85d19.webp",
+      "path": "src/screenshots/previews/tahoe-downloads-fan-dark-943faef81f52.png",
       "edition": "tahoe",
-      "sha256": "41761ec85d19a6c21b41585d4b43785fb000f8b28c5792b8d86f5689a2684631",
-      "source_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-finder-edge-dark-white-578fd694397a.webp",
-      "edition": "tahoe",
-      "sha256": "578fd694397a61b5f9e359734a54204df055c40593342b393df72701ee12e4a5",
-      "source_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
-      "reviewed": true
-    },
-    {
-      "path": "src/screenshots/previews/tahoe-finder-edge-dark-black-595ec233b85f.webp",
-      "edition": "tahoe",
-      "sha256": "595ec233b85fd586d14cc7c0e306101b3d981a23d8ea47a3666ae60d48bb2fd9",
-      "source_commit": "7363b6ff030225d659c318998359726de1cc0aa4",
+      "sha256": "943faef81f526f0facfa2753c7d7ea850d74e670c1aba1b9253520168e692a5d",
+      "source_commit": "2122f2a38696c26ff135ec8244123ab84e15b81b",
       "reviewed": true
     }
   ],
-  "source_files": {
-    "src/scripts/steps/rounded_corners.py": "625d3716ddbde00d891293ee79ba7850c741c9dcaa461953e4615a3e88e852d8",
-    "src/scripts/rounded_corners_compat.py": "fe0f80742c20fcb8ec30b6ed1ce6395f7cbecb3bde08f71d8031acbb65970bb7",
-    "src/scripts/theme_switch.py": "21bd780170f5e7da7189aba2ed0f58bc45533cd15204799e2be5850ac0cd7174"
+  "installed_qml_sha256": {
+    "DownloadsFan.qml": "4f0748e18379638a3df579825ebdf3a411097ba82251a84f6a6a2b0e0eab484f",
+    "FileCard.qml": "90cc96d6fbb3257f420bee26038bedcdbf411d35889cb0dbdc1c036d9ea5eb98",
+    "RecentFiles.qml": "d966322c6b2349ebf2615c4fd0e904db086c684f6295fc11a86078292b57edf1",
+    "main.qml": "74eeef31f71bc01e208a666ab24fc917ebfa24a5def274aa607b0366e819ea8c"
   },
-  "loaded_library_sha256": "82970f2422d7a72e1e266b43a8b2b8e9485e913772c8e355db424f5324276b78",
-  "coverage_limits": "Live installer upgrade observed on Wayland. X11 Finder was rendered with the effect loaded. An effect-on/off screenshot comparison alone did not distinguish the shader change. Historical gallery images keep their original provenance.",
-  "automatic_frames": [
-    {
-      "clock": "2026-01-01T17:58:44+00:00",
-      "sha256": "9cb5f5097f37479503029b97e3e84fb0803e81840ac4758be9f8f34e77b80f8d"
-    },
-    {
-      "clock": "2026-01-01T18:00:05+00:00",
-      "sha256": "0cec0c4f6a8f9c1667dcf8586810feadafaec8e5205e3f9ab2ed21eada4b5d67"
-    },
-    {
-      "clock": "2026-01-02T06:00:05+00:00",
-      "sha256": "dc871e49d0b54e3d5256699e2da5fd82373ece95ab2d4b9a9f13c4f22a86ab44"
-    }
-  ],
-  "source_sha256": "86d6844d1d0bb2caf83ff25083077574a993ea734db0e4e48e0b03ca78ab31e4"
+  "coverage_limits": "Rendered in light and dark on KDE neon Wayland. In-place migration exercised on Tahoe. The captured Downloads component is byte-identical in the integrated release.",
+  "source_sha256": "962aa5b1e0330209ad3c0958c92a7ebd5b7a0227ad3b38d852b5ee84044f2026"
 }

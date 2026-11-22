@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.81.2**. Verified Finder edges in light and dark and live Rounded Corners activation on KDE neon Wayland. [Evidence and coverage](release-evidence.json).
+**v0.81.3**. Verified the Downloads fan in light and dark on KDE neon Wayland and the upgrade from the previous Dock shortcut. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
