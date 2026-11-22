@@ -58,8 +58,10 @@ PlasmoidItem {
             anchors.centerIn: parent
             width: root.vertical ? Math.round(parent.width * 0.62) : 1
             height: root.vertical ? 1 : Math.round(parent.height * 0.62)
-            color: Kirigami.Theme.textColor
-            opacity: 0.32
+            // A midtone hairline stays visible over both the light glass
+            // and the dark parts of the edition wallpapers.
+            color: Kirigami.ColorUtils.mixColors(Kirigami.Theme.textColor, Kirigami.Theme.backgroundColor, 0.35)
+            opacity: 0.65
         }
     }
     preferredRepresentation: fullRepresentation
