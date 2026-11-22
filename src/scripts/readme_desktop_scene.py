@@ -248,7 +248,7 @@ def photograph_dock(vm, mode, guest, snapshot, save, taken, styles=("regular", "
             "An extra application is visible in the Dock",
         )
         save_window(
-        save,
+            save,
             im,
             dict(record, **evidence),
             "dock-" + style,

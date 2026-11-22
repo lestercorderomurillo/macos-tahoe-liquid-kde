@@ -12,12 +12,13 @@ PREPARED_NEON = "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d46170
 
 
 def capture(repo, ref, image, output, editions, packages, *, dock_only=False):
-    languages = subprocess.check_output(
-        ["tesseract", "--list-langs"], text=True
-    ).splitlines()
-    require(
-        "eng" in languages, "The README capture host needs the English Tesseract model"
-    )
+    if not dock_only:
+        languages = subprocess.check_output(
+            ["tesseract", "--list-langs"], text=True
+        ).splitlines()
+        require(
+            "eng" in languages, "The README capture host needs the English Tesseract model"
+        )
     source = commit_id(repo, ref)
     image = image.resolve()
     profile = json.loads(PROFILE.read_text())
@@ -51,7 +52,8 @@ def capture(repo, ref, image, output, editions, packages, *, dock_only=False):
                 tempfile.TemporaryDirectory(dir=scratch) as work,
                 Guest(Path(work), profile, image, archive, edition) as vm,
             ):
-                vm.action("configure-indexer")
+                if not dock_only:
+                    vm.action("configure-indexer")
                 if packages:
                     for package in packages:
                         vm.put(package, "/tmp/" + package.name)
