@@ -38,3 +38,12 @@ def test_auto_hide_keeps_the_slide_but_not_the_flush(monkeypatch, tmp_path):
     assert ("install", layout.DOCK_FLUSH_ID) in calls
     fits = [c for c in calls if c[0] == "write" and "FitAboveDock" in c]
     assert len(fits) == 2 and all(c[-1] == "false" for c in fits)
+
+
+def test_motion_effect_declares_the_setting_it_reads():
+    # Scripted effects only read keys declared in contents/config/main.xml;
+    # without it effect.readConfig("FitAboveDock") always returns the default.
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1] / "src/offline/kwin-effects/dock-flush/contents"
+    assert 'effect.readConfig("FitAboveDock"' in (root / "code/main.js").read_text()
+    assert '<entry name="FitAboveDock" type="Bool">' in (root / "config/main.xml").read_text()

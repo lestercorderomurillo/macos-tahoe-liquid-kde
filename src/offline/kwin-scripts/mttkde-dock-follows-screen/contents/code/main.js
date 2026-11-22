@@ -11,6 +11,8 @@ const DWELL_MS = 2000;
 // rest is over; move the panel only after that slide, so the Dock then rises
 // from below the new screen's edge.
 const SLIDE_MS = 220;
+// px from the bottom edge that count as the edge (the same in the effect).
+const EDGE = 2;
 
 let edgeOutput = null;
 let pendingOutput = null;
@@ -23,7 +25,7 @@ function bottomEdgeOutput() {
     const pos = workspace.cursorPos;
     const single = workspace.screens.length === 1;
     const output = single ? workspace.screens[0] : workspace.screenAt(pos);
-    if (!output || (!single && pos.y < output.geometry.y + output.geometry.height - 1)) return null;
+    if (!output || (!single && pos.y < output.geometry.y + output.geometry.height - EDGE)) return null;
     return output;
 }
 

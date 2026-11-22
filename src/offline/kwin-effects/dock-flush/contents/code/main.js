@@ -17,11 +17,13 @@
 const GAP = 10;              // px between the floating Dock frame and the screen edge
 const DWELL_MS = 2000;       // the script moves the Dock DWELL_MS + SLIDE_MS after
 const SLIDE_MS = 220;
+const EDGE = 2;              // px from the bottom edge that count as the edge
 const flushEnabled = effect.readConfig("FitAboveDock", false);
 
 const shifted = new Map();   // dock window -> flush translation id
 let leaving = null;          // { dock, id } while the Dock slides down
 let waitId = null;           // no-op animation timing the pointer's rest
+let waitStart = 0;          // when that rest began (ms)
 let pending = null;          // screen key the pointer rests on
 let dockScreen = null;       // screen key the Dock was last on
 
@@ -57,22 +59,31 @@ function stopFlush(d) {
     if (shifted.has(d)) { cancel(shifted.get(d)); shifted.delete(d); }
 }
 
-function refresh() {
-    if (!flushEnabled) return;
+function busyScreens() {
     const busy = new Set();
     for (const w of effects.stackingOrder)
         if (fillsScreen(w) && w.onCurrentDesktop !== false) busy.add(keyOf(w.screen));
+    return busy;
+}
+
+function flushTo(d, from) {
+    d.setData(Effect.WindowForceBlurRole, true);
+    // keepAlive false: a closed Dock must never stay painted as a ghost, and
+    // the effect can then be unloaded safely.
+    shifted.set(d, set({
+        window: d, duration: from === 0 ? 160 : 260, curve: QEasingCurve.OutCubic, keepAlive: false,
+        animations: [{ type: Effect.Translation, from: { value1: 0, value2: from }, to: { value1: 0, value2: GAP } }]
+    }));
+}
+
+function refresh() {
+    if (!flushEnabled) return;
+    const busy = busyScreens();
     for (const d of effects.stackingOrder.filter(isDock)) {
         if (leaving && leaving.dock === d) continue;
         const lower = d.visible && busy.has(keyOf(d.screen));
         if (lower && !shifted.has(d)) {
-            d.setData(Effect.WindowForceBlurRole, true);
-            // keepAlive false: a closed Dock must never stay painted as a ghost,
-            // and the effect can then be unloaded safely.
-            shifted.set(d, set({
-                window: d, duration: 160, curve: QEasingCurve.OutCubic, keepAlive: false,
-                animations: [{ type: Effect.Translation, from: { value1: 0, value2: 0 }, to: { value1: 0, value2: GAP } }]
-            }));
+            flushTo(d, 0);
         } else if (!lower && shifted.has(d)) {
             stopFlush(d);
             animate({ window: d, duration: 160, curve: QEasingCurve.OutCubic, keepAlive: false,
@@ -94,12 +105,18 @@ function slideOut(d) {
 function slideIn(d) {
     if (leaving && leaving.dock === d) { cancel(leaving.id); leaving = null; }
     if (!d.visible) { refresh(); return; }
-    animate({ window: d, duration: 260, curve: QEasingCurve.OutCubic, keepAlive: false,
-              animations: [{ type: Effect.Translation, from: { value1: 0, value2: below(d) }, to: { value1: 0, value2: 0 } }] });
+    // One movement: up from below the edge straight to the Dock's place,
+    // flush with the edge when a maximized window shares the screen.
+    if (flushEnabled && busyScreens().has(keyOf(d.screen))) {
+        stopFlush(d);
+        flushTo(d, below(d));
+    } else {
+        animate({ window: d, duration: 260, curve: QEasingCurve.OutCubic, keepAlive: false,
+                  animations: [{ type: Effect.Translation, from: { value1: 0, value2: below(d) }, to: { value1: 0, value2: 0 } }] });
+    }
     refresh();
 }
 
-// The pointer on the last pixel row of a screen that is not the Dock's.
 // Scripted effects get no list of screens: collect them from the windows,
 // since every screen has its menu bar.
 function knownScreens() {
@@ -112,7 +129,7 @@ function edgeScreen(pos, d) {
     for (const output of knownScreens()) {
         const s = output.geometry;
         if (pos.x < s.x || pos.x >= s.x + s.width || pos.y < s.y || pos.y >= s.y + s.height) continue;
-        if (pos.y < s.y + s.height - 1) return null;
+        if (pos.y < s.y + s.height - EDGE) return null;
         return keyOf(output) === keyOf(d.screen) ? null : keyOf(output);
     }
     return null;
@@ -131,12 +148,15 @@ function pointerMoved(pos) {
     stopWait();
     // Scripted effects have no timers: a no-op animation on the Dock times the
     // rest, and animationEnded reports when it is over.
+    waitStart = Date.now();
     waitId = animate({ window: d, duration: DWELL_MS, keepAlive: false,
                        animations: [{ type: Effect.Opacity, from: 1, to: 1 }] });
 }
 
-effect.animationEnded.connect(function (w, id) {
-    if (id !== waitId) return;
+// animationEnded does not report the id animate() returned, so the rest is
+// over when an animation of the Dock ends DWELL_MS after it began.
+effect.animationEnded.connect(function (w) {
+    if (waitId === null || Date.now() - waitStart < DWELL_MS - 50) return;
     waitId = null;
     const d = theDock();
     if (d && pending && edgeScreen(effects.cursorPos, d) === pending) slideOut(d);
@@ -161,7 +181,18 @@ function watch(w) {
     if (w.windowHiddenChanged) w.windowHiddenChanged.connect(refresh);
 }
 
-effects.windowAdded.connect(function (w) { watch(w); if (isDock(w)) dockScreen = keyOf(w.screen); refresh(); });
+// Plasma does not move the Dock window to the new screen: it closes it and
+// opens a new one there, so the slide up starts from the new window.
+effects.windowAdded.connect(function (w) {
+    watch(w);
+    if (isDock(w)) {
+        const key = keyOf(w.screen);
+        const moved = dockScreen !== null && key !== dockScreen;
+        dockScreen = key;
+        if (moved) { slideIn(w); return; }
+    }
+    refresh();
+});
 effects.windowClosed.connect(function (w) {
     stopFlush(w);
     if (leaving && leaving.dock === w) leaving = null;
