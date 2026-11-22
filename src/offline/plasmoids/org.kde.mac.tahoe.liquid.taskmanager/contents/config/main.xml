@@ -6,6 +6,7 @@
   <kcfgfile name=""/>
 
   <group name="General">
+    <entry name="appsPinInitialized" type="Bool"><default>false</default></entry>
     <entry name="macOSDockIcons" type="Bool">
       <label>Use consistent function icons only inside this Dock.</label>
       <default>false</default>

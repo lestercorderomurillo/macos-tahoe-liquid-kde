@@ -40,7 +40,7 @@ PlasmoidItem {
     readonly property bool iconsOnly: Plasmoid.pluginName === "org.kde.mac.tahoe.liquid.icontasks"
 
     readonly property string appsPin: "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop"
-    readonly property bool hasAppsPin: iconsOnly && !vertical && Plasmoid.configuration.launchers.indexOf(appsPin) >= 0
+    readonly property bool hasAppsPin: iconsOnly && (Plasmoid.configuration.appsPinInitialized || Plasmoid.configuration.launchers.indexOf(appsPin) >= 0)
 
     readonly property var visibleAppIds: taskList.children.map(item =>
         item.model ? String(item.model.LauncherUrlWithoutIcon).split(/[/:]/).pop() : "")

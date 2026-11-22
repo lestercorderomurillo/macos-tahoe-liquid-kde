@@ -173,6 +173,7 @@ def _layout_script_with_launchers(
         from installer_choices import selected, use_user_launcher
         choices = selected()
         if use_user_launcher():
+            pins = [pin for pin in pins if pin != "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop"]
             script = user_launcher_script() + script
         if choices:
             preset = 2 if choices["launcher"] == "golden" else 1

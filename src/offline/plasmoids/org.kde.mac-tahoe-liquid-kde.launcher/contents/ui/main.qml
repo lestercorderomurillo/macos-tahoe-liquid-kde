@@ -39,9 +39,9 @@ PlasmoidItem {
     Layout.minimumWidth: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? Math.floor(dockCell.size) : 0
     Layout.preferredWidth: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.size : -1
     Layout.maximumWidth: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Horizontal ? dockCell.preferredSize : Infinity
-    Layout.minimumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.floor(dockCell.size) : 0
-    Layout.preferredHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : -1
-    Layout.maximumHeight: Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.preferredSize : Infinity
+    Layout.minimumHeight: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Vertical ? Math.floor(dockCell.size) : 0
+    Layout.preferredHeight: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.size : -1
+    Layout.maximumHeight: usesAppsPin ? 0 : Plasmoid.formFactor === PlasmaCore.Types.Vertical ? dockCell.preferredSize : Infinity
 
     anchors.fill: parent
 

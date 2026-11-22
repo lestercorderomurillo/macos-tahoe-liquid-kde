@@ -14,8 +14,8 @@ LAYOUTS = [
 ]
 APPS = [
     'org.kde.dolphin.desktop', 'firefox.desktop', 'thunderbird.desktop',
-    'org.kde.merkuro.calendar.desktop', 'org.kde.marknote.desktop',
-    'org.kde.gwenview.desktop', 'org.kde.elisa.desktop', 'org.kde.haruna.desktop',
+    'org.kde.gwenview.desktop', 'org.kde.merkuro.calendar.desktop',
+    'org.kde.marknote.desktop', 'org.kde.haruna.desktop', 'org.kde.elisa.desktop',
     'org.kde.discover.desktop', 'systemsettings.desktop',
 ]
 HARNESS = '''
@@ -212,9 +212,9 @@ def test_fresh_install_preserves_existing_user_pins(monkeypatch):
 @pytest.mark.parametrize('relative', LAYOUTS)
 def test_base_uses_installed_equivalents(offline, relative):
     installed = ['org.gnome.Nautilus.desktop', 'chromium.desktop',
-                 'org.kde.kmail2.desktop', 'org.gnome.Calendar.desktop',
-                 'org.gnome.Gnote.desktop', 'org.gnome.Loupe.desktop',
-                 'org.gnome.Rhythmbox3.desktop', 'org.gnome.Showtime.desktop',
+                 'org.kde.kmail2.desktop', 'org.gnome.Loupe.desktop',
+                 'org.gnome.Calendar.desktop', 'org.gnome.Gnote.desktop',
+                 'org.gnome.Showtime.desktop', 'org.gnome.Rhythmbox3.desktop',
                  'org.kde.discover.desktop', 'systemsettings.desktop']
     for widgets in execute((offline / relative).read_text(), installed):
         assert next(w['pins'] for w in widgets if w['type'] == layout.MAC_TASKS_ID) == [

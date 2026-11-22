@@ -17,7 +17,7 @@ def appearance(style, mode, profile):
     theme_root = Path.home() / ".local/share/icons"
     # The gallery demonstrates installed icon themes. The Dock's separate
     # role-artwork option deliberately overrides those themes.
-    pins = []
+    pins_by_id = {}
     for desktop_id, icon in zip(
         profile["pins"],
         (
@@ -42,9 +42,12 @@ def appearance(style, mode, profile):
                 desktop.write_text(
                     f"[Desktop Entry]\nType=Application\nName={name}\nIcon={icon}\nExec=/usr/bin/true\n"
                 )
-            pins.append(desktop.as_uri())
+            pins_by_id[name] = desktop.as_uri()
         else:
-            pins.append(desktop_id)
+            pins_by_id[name] = desktop_id
+    from dock_apps import CANDIDATES
+    pins = [pins_by_id[desktop_id] for candidates in CANDIDATES.values()
+            for desktop_id in candidates if desktop_id in pins_by_id]
     pins.insert(1, "applications:org.kde.mac-tahoe-liquid-kde.apps.desktop")
     run("kbuildsycoca6", "--noincremental")
     plasma(

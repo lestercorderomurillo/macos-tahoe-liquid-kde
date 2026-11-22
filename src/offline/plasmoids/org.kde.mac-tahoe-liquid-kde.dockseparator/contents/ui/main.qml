@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
