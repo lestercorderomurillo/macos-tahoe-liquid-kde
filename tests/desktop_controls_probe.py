@@ -301,7 +301,7 @@ for base in ('#eeeeee', '#333333'):
         surface = separation(QColor(backdrop))
         before = abs(separation(original) - surface)
         assert abs(separation(adjusted) - surface) >= before
-        if before >= .20:
+        if before >= .33:
             assert adjusted == original
         if not contrast.property('enabledContrast'):
             assert adjusted == original, (base, backdrop)

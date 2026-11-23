@@ -108,13 +108,18 @@ int main(int argc, char **argv)
             const double surface = GlassInk::lightness(backdrop);
             const double before = std::abs(GlassInk::lightness(base) - surface);
             const double after = std::abs(GlassInk::lightness(tone) - surface);
-            if ((before >= .20 && tone != base) || after < before
+            if ((before >= .33 && tone != base) || after < before
                 || GlassInk::familyOf(tone) != GlassInk::familyOf(base)
                 || tone.alpha() != base.alpha() || std::abs(tone.red() - base.red()) > 102) return 27;
         }
     }
-    if (localTone(Qt::black, Qt::black).red() != 49 || localTone(Qt::white, Qt::white).red() != 204
+    if (localTone(Qt::black, Qt::black).red() != 78 || localTone(Qt::white, Qt::white).red() != 163
         || overWhite.red() >= theme.red() || overBlack != theme) return 28;
+    const QColor appsBase("#242424");
+    const QColor darkBackdrop("#070707");
+    const QColor appsInk = localTone(darkBackdrop, appsBase);
+    if (GlassInk::lightness(appsInk) - GlassInk::lightness(darkBackdrop) < .33
+        || localTone(Qt::white, appsBase) != appsBase) return 31;
     const QColor translucent(36, 36, 36, 128);
     const QColor corrected = localTone(Qt::black, translucent);
     if (corrected.alpha() != translucent.alpha() || corrected == translucent

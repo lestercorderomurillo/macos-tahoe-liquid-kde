@@ -46,7 +46,7 @@ inline constexpr Profile control{3, 3, .65};
 inline constexpr Profile label{5, 3};
 inline constexpr Profile categoryRow{5, 1};
 
-// CIE L* on a 0..1 scale. A separation of .20 is twenty lightness points.
+// CIE L* on a 0..1 scale. A separation of .33 is thirty-three lightness points.
 inline double lightness(QColor color)
 {
     const double y = luminance(color);
@@ -67,7 +67,7 @@ public:
     QColor tone(QColor base) const
     {
         if (m_samples.isEmpty() || !base.isValid() || !base.alpha()) return base;
-        constexpr double minimum = .20;
+        constexpr double minimum = .33;
         constexpr int maximumShift = 102; // At most two fifths of the encoded channel range.
         double best = separation(base);
         if (best >= minimum) return base;
