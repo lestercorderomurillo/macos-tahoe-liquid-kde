@@ -52,6 +52,8 @@ This project customizes the look and feel of your KDE desktop on Linux. It does 
 > **Rolling Release Philosophy**
 > Experimental. Receives daily updates. Updates may break compatibility. Avoid production systems; [report issues here](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
+**Next release goal.** The next release begins a feature freeze. Every release through 0.90 (inclusive) will focus on fixing bugs.
+
 > [!WARNING]
 > **Beware of paywall repackers: this theme is FREE.**
 >
@@ -565,7 +567,7 @@ Plasma 6.6–6.8 is supported; compiled effects use the host SDK.
 
 ![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-**Next release goal.** The next release begins a feature freeze. Every release through 0.90 (inclusive) will focus on fixing bugs.
+What works now and what we plan to add.
 
 <details>
 <summary><b>Component status</b></summary>
