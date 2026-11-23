@@ -117,7 +117,7 @@ Item {
         title: "mttkde-calendar"
         visualParent: calendar.clock
         location: calendar.clock?.plasmoid.location ?? PlasmaCore.Types.TopEdge
-        surfaces: [{x: 0, y: 0, width: card.width, height: card.height, radius: card.cornerRadius}]
+        surfaces: [{x: 0, y: 0, width: card.width, height: card.height, radius: card.cornerRadius, fill: card.fillColor}]
         onVisibleChanged: if (visible) {
             calendar.clockTip?.hideToolTip()
             card.refresh()

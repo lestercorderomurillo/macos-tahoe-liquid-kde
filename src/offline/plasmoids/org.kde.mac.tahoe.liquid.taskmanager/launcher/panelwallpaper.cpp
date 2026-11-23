@@ -12,6 +12,7 @@
 #include <QPalette>
 #include <QQuickWindow>
 #include <QScreen>
+#include <QTimer>
 #include <QtConcurrentRun>
 #include <limits>
 #include <memory>
@@ -92,6 +93,10 @@ struct Wallpaper {
     QColor background;
     int mode;
     bool blur;
+    // Shared by the delegates on this output. Replacing the wallpaper drops this cache.
+    QRectF panelBounds{};
+    QColor panelPreferred{};
+    GlassInk::Family panelFamily = GlassInk::Family::Dark;
 
     QColor pixel(QPointF point) const
     {
@@ -167,7 +172,7 @@ public:
         }
     }
 
-    const Wallpaper *current(int screen) const
+    Wallpaper *current(int screen) const
     {
         const auto output = m_outputs.value(screen);
         return output && output->wallpaper ? &*output->wallpaper : nullptr;
@@ -272,7 +277,6 @@ void PanelWallpaper::setWatching(bool watching)
     if (!watching && m_screen >= 0) {
         wallpapers().removeWatcher(m_screen);
         m_screen = -1;
-        m_transition.reset();
     }
     Q_EMIT watchingChanged();
 }
@@ -303,7 +307,7 @@ QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF 
     } else {
         wallpapers().resize(m_screen, screen.size());
     }
-    const auto *wallpaper = wallpapers().current(m_screen);
+    auto *wallpaper = wallpapers().current(m_screen);
     if (!wallpaper) return base;
 
     // A full-width top panel is anchored to its output. Wayland clients can
@@ -311,7 +315,7 @@ QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF 
     const QPointF origin = window->width() == screen.width() ? screen.topLeft() : window->position();
     const QPointF point = origin + center;
     const QSizeF radius(std::clamp(item->width() / 3, 3., 42.), std::clamp(item->height() / 4, 2., 6.));
-    const auto target = GlassInk::sample(base, m_transition.target(item, base), GlassInk::label, point, radius, [&](QPointF sample) {
+    const auto surfaceAt = [&](QPointF sample) {
         const QPointF local = sample - screen.topLeft();
         const QColor pixel = wallpaper->pixel(QPointF(std::clamp(local.x(), 0., double(screen.width() - 1)),
                                                      std::clamp(local.y(), 0., double(screen.height() - 1))));
@@ -324,8 +328,17 @@ QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF 
         QColor scrim = Qt::black;
         scrim.setAlphaF(std::lerp(scrimOpacityAt(left / 8), scrimOpacityAt(right / 8), segment - left));
         return GlassInk::composite(pixel, scrim);
-    });
-    return m_transition.color(item, base, target);
+    };
+    // Every applet on this panel uses the same global rectangle and palette.
+    const QRectF bounds(origin, window->size());
+    const auto preferred = qGuiApp->palette().color(QPalette::WindowText);
+    if (wallpaper->panelBounds != bounds || wallpaper->panelPreferred != preferred) {
+        wallpaper->panelBounds = bounds;
+        wallpaper->panelPreferred = preferred;
+        wallpaper->panelFamily = GlassInk::sample(GlassInk::component,
+            bounds.center(), bounds.size() * .45, surfaceAt).family(preferred);
+    }
+    return GlassInk::sample(GlassInk::label, point, radius, surfaceAt).tone(base, wallpaper->panelFamily);
 }
 
 #include "panelwallpaper.moc"

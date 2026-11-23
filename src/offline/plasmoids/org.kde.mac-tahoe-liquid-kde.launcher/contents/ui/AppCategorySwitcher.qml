@@ -11,14 +11,6 @@ Item {
 
     signal categorySwitched(int index)
 
-    readonly property color rowInk: {
-        const surfaces = [];
-        for (const cell of categorySwitcher.contentItem.children) {
-            if (cell.categoryPill) surfaces.push(...cell.categoryPill.samples);
-        }
-        return main.categoryForeground(scrollview, surfaces);
-    }
-
     ListView {
         id: categorySwitcher
         spacing: main.detachedSearch ? Kirigami.Units.smallSpacing * 2.5 : 7
@@ -33,7 +25,6 @@ Item {
 
         delegate: Item {
             id: del
-            property alias categoryPill: pill
             required property var model
             required property var index
             implicitWidth: pill.implicitWidth
@@ -45,7 +36,6 @@ Item {
                 id: pill
                 anchors.verticalCenter: parent.verticalCenter
                 viewport: categorySwitcher
-                rowInk: scrollview.rowInk
                 selected: categorySwitcher.currentIndex == del.index
                 text: del.model.name
 

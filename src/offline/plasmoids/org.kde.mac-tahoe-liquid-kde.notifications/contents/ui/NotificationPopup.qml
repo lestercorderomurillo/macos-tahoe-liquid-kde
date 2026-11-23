@@ -15,6 +15,8 @@ Native.NotificationBanner {
     property int remainingTimeout: 0
     readonly property bool interacting: card.interacting
     property real cardWidth: 344
+    property color componentInk: "transparent"
+    readonly property color surfaceFill: tile.fillColor
     property color foregroundColor: "black"
     property color backgroundColor: "white"
     property color disabledColor: "gray"
@@ -50,6 +52,7 @@ Native.NotificationBanner {
                 index: banner.index
                 history: banner.history
                 previewHistory: banner.members
+                componentInk: banner.componentInk
                 backdropColor: banner.backdropColor
                 surfaceColor: tile.fillColor
                 compact: true

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.mac.tahoe.launcher as Native
 
@@ -28,6 +29,7 @@ PlasmaCore.Dialog {
         return glass.animatedForegroundAt(item, point, radius, base, fill);
     }
     property Native.ControlGlass glass: Native.ControlGlass {
+        preferredInk: popup.Kirigami.Theme.textColor
         window: popup
         surfaces: popup.surfaces
         maskWindow: popup.inputOnGlassOnly

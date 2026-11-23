@@ -60,7 +60,7 @@ Item {
     property var batteryState: nativeBattery
     Power.BatteryControlModel { id: nativeBattery }
     readonly property var surfaces: section === "" ? [surface(wifi),surface(bluetooth),surface(sharing),surface(overview),surface(mirroring),surface(darkMode),surface(screenshot),surface(battery),surface(media),surface(focus),surface(notifications),surface(settings),surface(display),surface(audio),surface(edit)] : [surface(detail)]
-    function surface(item) { if (!item.visible) return {}; return {x:item.x + (item === detail || item === edit ? 0 : grid.x), y:item.y + (item === detail || item === edit ? 0 : grid.y), width:item.width, height:item.height, radius:Math.floor(item.cornerRadius)}; }
+    function surface(item) { if (!item.visible) return {}; return {x:item.x + (item === detail || item === edit ? 0 : grid.x), y:item.y + (item === detail || item === edit ? 0 : grid.y), width:item.width, height:item.height, radius:Math.floor(item.cornerRadius), fill:item.fillColor}; }
     GridLayout {
         id: grid
         x: 10 + view.shadowMargin; y: 16

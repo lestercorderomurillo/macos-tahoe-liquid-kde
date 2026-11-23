@@ -9,7 +9,7 @@ Item {
     implicitHeight: label.implicitHeight
 
     required property Item viewport
-    required property color rowInk
+    readonly property color textInk: main.categoryForeground(pill, samples)
     property bool selected: false
     readonly property color baseFill: main.isDarkTheme
             ? Qt.rgba(1, 1, 1, selected ? 0.12 : 0.06)
@@ -17,7 +17,7 @@ Item {
                 ? (selected ? 0.68 : 0.52) : (selected ? 0.62 : 0.46))
     readonly property var samples: main.categorySamples(label, viewport, baseFill)
     readonly property color correctedFill: {
-        const ink = Contrast.luminance(rowInk);
+        const ink = Contrast.luminance(textInk);
         const shade = ink > 0.179 ? 0 : 1;
         // Use only as much neutral fill as the poorest sampled region needs.
         for (let step = 0; step <= 12; ++step) {
@@ -43,7 +43,7 @@ Item {
         font.family: Kirigami.Theme.defaultFont.family
         font.pointSize: main.appTextSize
 
-        color: pill.rowInk
+        color: pill.textInk
     }
 
     Rectangle {

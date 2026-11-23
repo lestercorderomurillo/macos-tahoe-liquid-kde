@@ -13,6 +13,20 @@ QtObject {
     readonly property var host: hosts.length ? hosts[0] : null
     readonly property bool historyVisible: hosts.some(item => item.historyVisible === true)
     onHistoryVisibleChanged: position()
+    property Native.GlassSettings inkSettings: Native.GlassSettings { component: "notifications" }
+    function groupInk(popup) {
+        if (!popup.model.isGroup && !popup.model.isInGroup) return Qt.rgba(0,0,0,0);
+        const observations = [];
+        for (let i = 0; i < windows.count; ++i) {
+            const member = windows.objectAt(i);
+            if (!member || !member.visible || (!member.model.isGroup && !member.model.isInGroup)) continue;
+            if (member.model.desktopEntry !== popup.model.desktopEntry
+                    || member.model.applicationName !== popup.model.applicationName
+                    || member.model.originName !== popup.model.originName) continue;
+            observations.push({backdrop: member.backdropColor, fill: member.surfaceFill, area: member.width * member.height});
+        }
+        return service.inkSettings.notificationFamily(popup.foregroundColor, observations);
+    }
     function markSeen() {
         for (let i = members.count - 1; i >= 0; --i) {
             const index = members.index(i, 0);
@@ -132,6 +146,8 @@ QtObject {
         id: windows
         model: service.host ? service.popups : null
         delegate: NotificationPopup {
+            id: notice
+            componentInk: service.groupInk(notice)
             history: service.popups
             settings: service.settings
             members: service.members

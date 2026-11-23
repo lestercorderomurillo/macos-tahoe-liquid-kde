@@ -5,6 +5,7 @@
 #include <QPointer>
 #include <QSizeF>
 #include <QWindow>
+#include <QVariantList>
 #include <qqmlregistration.h>
 
 // The same material settings drive the compositor and client-side background
@@ -34,8 +35,9 @@ public:
     void setWindow(QWindow *window);
     bool dynamicTinting() const;
     quint64 inkRevision() const { return m_inkRevision; }
-    Q_INVOKABLE QColor animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop, QColor fill);
-    Q_INVOKABLE QColor notificationForeground(QColor base, QColor backdrop, QColor fill) const;
+    Q_INVOKABLE QColor animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop, QColor fill, QColor componentInk = {});
+    Q_INVOKABLE QColor notificationForeground(QColor base, QColor backdrop, QColor fill, QColor componentInk = {}) const;
+    Q_INVOKABLE QColor notificationFamily(QColor preferred, const QVariantList &surfaces) const;
     qreal lightOpacity() const;
     qreal darkOpacity() const;
 Q_SIGNALS:

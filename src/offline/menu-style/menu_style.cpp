@@ -132,6 +132,8 @@ public:
             QPainter overlay(&sample);
             const bool light = option->palette.color(QPalette::Window).lightnessF() > .5;
             overlay.fillRect(sample.rect(), light ? QColor(255,255,255,102) : QColor(0,0,0,25));
+            const auto wash = widget->property("menuContrastWash").value<QColor>();
+            if (wash.isValid() && wash.alpha()) overlay.fillRect(sample.rect(), wash);
             overlay.end();
             fill = sample.pixelColor(0, 0);
         }

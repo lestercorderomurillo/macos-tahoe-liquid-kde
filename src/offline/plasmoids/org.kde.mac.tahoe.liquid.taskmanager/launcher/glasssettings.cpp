@@ -267,16 +267,31 @@ qreal GlassSettings::lightOpacity() const { return opacity(QStringLiteral("Surfa
 qreal GlassSettings::darkOpacity() const { return opacity(QStringLiteral("SurfaceTransparencyDark")); }
 #include "glasssettings.moc"
 
-QColor GlassSettings::notificationForeground(QColor base, QColor backdrop, QColor fill) const
+QColor GlassSettings::notificationFamily(QColor preferred, const QVariantList &surfaces) const
 {
-    if (!dynamicTinting() || !backdrop.alpha()) return base;
-    GlassInk::Samples samples(base, GlassInk::control);
-    samples.add(GlassInk::composite(backdrop, fill));
-    return samples.resolve(base);
+    GlassInk::Samples samples;
+    for (const QVariant &value : surfaces) {
+        const auto surface = value.toMap();
+        const auto backdrop = surface.value(QStringLiteral("backdrop")).value<QColor>();
+        if (!backdrop.alpha() || !backdrop.isValid()) continue;
+        const auto fill = surface.value(QStringLiteral("fill")).value<QColor>();
+        samples.add(GlassInk::composite(backdrop, fill), surface.value(QStringLiteral("area")).toDouble());
+    }
+    return samples.family(preferred) == GlassInk::Family::Light ? Qt::white : Qt::black;
 }
 
-QColor GlassSettings::animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop, QColor fill)
+QColor GlassSettings::notificationForeground(QColor base, QColor backdrop, QColor fill, QColor componentInk) const
+{
+    if (!dynamicTinting()) return base;
+    GlassInk::Samples local;
+    if (backdrop.alpha()) local.add(GlassInk::composite(backdrop, fill));
+    const bool shared = componentInk.isValid() && componentInk.alpha();
+    return local.tone(base, shared ? GlassInk::familyOf(componentInk) : local.family(base));
+}
+
+QColor GlassSettings::animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop,
+                                                     QColor fill, QColor componentInk)
 {
     m_ink.observe(window);
-    return m_ink.color(item, base, notificationForeground(base, backdrop, fill));
+    return m_ink.color(item, base, notificationForeground(base, backdrop, fill, componentInk));
 }

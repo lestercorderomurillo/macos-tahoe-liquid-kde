@@ -30,13 +30,16 @@ Item {
     property bool replying: false
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
     property color backdropColor: "transparent"
+    property color componentInk: "transparent"
     property color surfaceColor: "transparent"
     Native.GlassSettings { id: inkSettings; component: "notifications" }
     readonly property color foregroundColor: {
         const base = Contrast.preferredText(Kirigami.Theme.textColor);
         if (!inkSettings.dynamicTinting) return base;
+        const window = row.Window.window;
+        if (window && typeof window.foregroundFor === "function") return window.foregroundFor(row, base);
         inkSettings.inkRevision;
-        return inkSettings.animatedNotificationForeground(row, row.Window.window, base, backdropColor, surfaceColor);
+        return inkSettings.animatedNotificationForeground(row, row.Window.window, base, backdropColor, surfaceColor, componentInk);
     }
     readonly property bool hovered: hover.hovered
     readonly property bool interacting: hovered || dismiss.hovered || reply.activeFocus || options.visible
@@ -190,7 +193,7 @@ Item {
         Accessible.name: i18n("Dismiss")
         background: Rectangle {
             radius: 10
-            color: Kirigami.Theme.textColor.r < 0.5
+            color: row.foregroundColor.r < 0.5
                 ? Qt.rgba(1, 1, 1, dismiss.hovered ? 0.85 : 0.65)
                 : Qt.rgba(0.22, 0.22, 0.22, dismiss.hovered ? 0.95 : 0.85)
             border.width: 0.5
@@ -199,7 +202,7 @@ Item {
         contentItem: Kirigami.Icon {
             source: Qt.resolvedUrl("symbols/mttkde-control-notification-close.svg")
             isMask: true
-            color: Kirigami.Theme.textColor
+            color: row.foregroundColor
             opacity: dismiss.hovered ? 0.85 : 0.65
         }
         onClicked: row.history.close(row.itemIndex())

@@ -202,7 +202,23 @@ assert child(card, 'notificationSummary').property('text') == 'Message 2'
 assert notification_body(card) == 'Body 2', (notification_body(card), errors)
 sounded = noticeService.property('soundedIds').toVariant()
 QMetaObject.invokeMethod(card, 'open'); QTest.qWait(100)
-assert len(visible_notices()) == 4
+expanded_notices = visible_notices()
+assert len(expanded_notices) == 4
+# A group spans separate native banner windows. Feed opposite samples to its
+# members and verify the labels track one family through both global polarities.
+noticeHost.setProperty('notificationTextColor', QColor('white'))
+noticeHost.setProperty('notificationBackgroundColor', QColor('black'))
+for majority, minority, light in ((0, 1, True), (1, .7, False)):
+    for i, pane in enumerate(expanded_notices):
+        channel = minority if i == 0 else majority
+        sample = dict(pid=os.getpid(), x=pane.x(), y=pane.y(), width=pane.width(),
+                      height=pane.height(), rgb=[channel] * 3)
+        QMetaObject.invokeMethod(pane, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
+    QTest.qWait(30)
+    inks = [child(pane.property('mainItem'), 'notificationCard').property('foregroundColor') for pane in expanded_notices]
+    assert all((ink.lightnessF() > .5) == light for ink in inks), ([ink.name() for ink in inks], errors)
+noticeHost.setProperty('notificationTextColor', QColor('black'))
+noticeHost.setProperty('notificationBackgroundColor', QColor('white'))
 QMetaObject.invokeMethod(card, 'open'); QTest.qWait(100)
 assert len(visible_notices()) == 1
 assert noticeService.property('soundedIds').toVariant() == sounded

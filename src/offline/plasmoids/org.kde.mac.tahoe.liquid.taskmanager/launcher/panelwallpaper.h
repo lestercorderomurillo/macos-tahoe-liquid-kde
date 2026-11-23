@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 
-#include "inktransition.h"
+#include <QColor>
 #include <QObject>
 #include <QQuickItem>
 #include <qqmlregistration.h>
@@ -31,5 +31,4 @@ private:
     int m_screen = -1;
     bool m_watching = false;
     quint64 m_revision = 0;
-    GlassInk::Transition m_transition{[this] { revise(); }};
 };

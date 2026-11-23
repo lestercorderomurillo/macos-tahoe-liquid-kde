@@ -138,8 +138,8 @@ Item {
 		Kirigami.Theme.inherit: false
 		Kirigami.Theme.colorSet: Kirigami.Theme.Window
 	}
-    Tahoe.PopupBackdrop { id: appBackdrop; window: root }
-    Tahoe.PopupBackdrop { id: searchBackdrop; window: searchPopup }
+    Tahoe.PopupBackdrop { id: appBackdrop; window: root; preferredInk: main.textColor; componentFill: main.materialFill(root.glassSettings) }
+    Tahoe.PopupBackdrop { id: searchBackdrop; window: searchPopup; preferredInk: main.textColor; componentFill: main.materialFill(searchMaterial) }
     Tahoe.GlassSettings { id: searchMaterial; component: "search" }
     function materialFill(settings) {
         const saved = isDarkTheme ? settings.darkOpacity : settings.lightOpacity;
@@ -157,7 +157,7 @@ Item {
                        (top.b * top.a + base.b * remaining) / alpha, alpha);
     }
     function categoryForeground(item, samples) {
-        return appBackdrop.groupForeground(item, textColor, samples);
+        return root.glassSettings.dynamicTinting ? appBackdrop.groupForeground(item, textColor, samples) : textColor;
     }
     function categorySamples(label, view, backing) {
         if (!root.glassSettings.dynamicTinting || !root.visible) return [];
@@ -186,7 +186,7 @@ Item {
         const span = Math.max(0, Math.min(textWidth, sampleX * 2, (item.width - sampleX) * 2));
         const radius = Qt.size(span * 0.4, Math.min(item.height, item.font.pixelSize > 0 ? item.font.pixelSize : item.height / 2) * 0.22);
         return sampler.animatedLabelForeground(item, point, radius,
-                                      fallback, Qt.tint(materialFill(settings), overlay));
+                                      fallback, layerOver(materialFill(settings), overlay));
     }
 	readonly property color textColor: Contrast.preferredText(glassPalette.Kirigami.Theme.textColor)
 	readonly property string textFont: Kirigami.Theme.defaultFont.family

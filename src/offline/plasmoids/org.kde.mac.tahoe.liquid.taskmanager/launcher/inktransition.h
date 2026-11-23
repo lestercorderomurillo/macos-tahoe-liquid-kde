@@ -62,12 +62,6 @@ public:
 
     void stationary() { m_settledAt = 0; }
 
-    QColor target(const QObject *item, QColor initial) const
-    {
-        const auto it = m_tracks.constFind(item);
-        return it == m_tracks.cend() ? initial : it->to;
-    }
-
     QColor color(const QObject *item, QColor initial, QColor target)
     {
         if (!item) return initial;

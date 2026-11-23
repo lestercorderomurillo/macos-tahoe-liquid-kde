@@ -7,7 +7,11 @@ import org.kde.mac.tahoe.launcher as NativeGlass
 QtObject {
     id: ink
     required property Window window
-    readonly property NativeGlass.PopupBackdrop sampler: NativeGlass.PopupBackdrop { window: ink.window }
+    readonly property NativeGlass.PopupBackdrop sampler: NativeGlass.PopupBackdrop {
+        window: ink.window
+        preferredInk: ink.preferred
+        componentFill: ink.fill
+    }
     required property color preferred
     required property color fill
     required property bool tintEnabled

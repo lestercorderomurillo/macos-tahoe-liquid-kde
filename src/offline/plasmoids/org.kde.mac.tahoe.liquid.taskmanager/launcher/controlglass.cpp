@@ -15,6 +15,7 @@
 
 PopupBackdrop::PopupBackdrop(QObject *parent) : QObject(parent)
 {
+    connect(this, &PopupBackdrop::appearanceChanged, this, &PopupBackdrop::refreshFamily);
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray,QString)));
@@ -44,8 +45,51 @@ void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bou
     m_sampleBounds = bounds.translated(-frame.topLeft());
     m_gridSide = colors.size() == 64 * 64 * 3 ? 64 : 8;
     m_backdropGrid = colors;
+    refreshFamily();
+}
+
+void PopupBackdrop::refreshFamily()
+{
+    m_family = m_backdropGrid.isEmpty() ? GlassInk::familyOf(m_preferredInk) : componentSamples().family(m_preferredInk);
     ++m_revision;
     Q_EMIT backdropChanged();
+}
+
+void PopupBackdrop::addMaterial(GlassInk::Samples &samples, const QRectF &bounds, QColor fill) const
+{
+    const QRectF visible = bounds.intersected(m_sampleBounds);
+    if (visible.isEmpty()) return;
+    const auto &profile = GlassInk::component;
+    // Sample the center of each cell. Larger glass islands contribute proportionally
+    // more than small ones and transparent space between controls contributes nothing.
+    const QSizeF radius(visible.width() * .5 * (1. - 1. / profile.columns),
+                        visible.height() * .5 * (1. - 1. / profile.rows));
+    GlassInk::forEachPoint(profile, visible.center(), radius, [&](QPointF point, double weight) {
+        samples.add(GlassInk::composite(backdropAt(point), fill), weight * visible.width() * visible.height());
+    });
+}
+
+GlassInk::Samples PopupBackdrop::componentSamples() const
+{
+    GlassInk::Samples samples;
+    addMaterial(samples, m_sampleBounds, m_componentFill);
+    return samples;
+}
+
+GlassInk::Samples ControlGlass::componentSamples() const
+{
+    GlassInk::Samples samples;
+    bool hasMaterial = false;
+    for (const auto &value : m_surfaces) {
+        const auto surface = value.toMap();
+        const QColor fill = surface.value(QStringLiteral("fill")).value<QColor>();
+        if (!fill.isValid() || !surface.value(QStringLiteral("glass"), true).toBool()) continue;
+        hasMaterial = true;
+        const QRectF bounds(surface.value(QStringLiteral("x")).toDouble(), surface.value(QStringLiteral("y")).toDouble(),
+                            surface.value(QStringLiteral("width")).toDouble(), surface.value(QStringLiteral("height")).toDouble());
+        addMaterial(samples, bounds, fill);
+    }
+    return hasMaterial ? samples : PopupBackdrop::componentSamples();
 }
 
 QColor PopupBackdrop::backdropAt(QPointF point) const
@@ -60,7 +104,9 @@ QColor PopupBackdrop::backdropAt(QPointF point) const
 QColor PopupBackdrop::foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const
 {
     if (m_backdropGrid.isEmpty()) return base;
-    return GlassInk::sample(base, base, GlassInk::control, point, radius, [&](QPointF p) { return GlassInk::composite(backdropAt(p), fill); });
+    return GlassInk::sample(GlassInk::control, point, radius, [&](QPointF p) {
+        return GlassInk::composite(backdropAt(p), fill);
+    }).tone(base, m_family);
 }
 
 QColor PopupBackdrop::animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill)
@@ -72,8 +118,9 @@ QColor PopupBackdrop::animatedLabelForeground(QObject *item, QPointF point, QSiz
 {
     QColor target = base;
     if (!m_backdropGrid.isEmpty()) {
-        target = GlassInk::sample(base, m_ink.target(item, base), GlassInk::label, point, radius,
-            [&](QPointF p) { return GlassInk::composite(backdropAt(p), fill); });
+        target = GlassInk::sample(GlassInk::label, point, radius, [&](QPointF p) {
+            return GlassInk::composite(backdropAt(p), fill);
+        }).tone(base, m_family);
     }
     return m_ink.color(item, base, target);
 }
@@ -91,9 +138,10 @@ QList<QColor> PopupBackdrop::categorySamples(QPointF point, QSizeF radius, QRect
 
 QColor PopupBackdrop::groupForeground(QObject *item, QColor base, const QList<QColor> &surfaces)
 {
-    GlassInk::Samples samples(base, GlassInk::categoryRow);
+    if (m_backdropGrid.isEmpty()) return base;
+    GlassInk::Samples samples;
     for (const auto &surface : surfaces) samples.add(surface);
-    return m_ink.color(item, base, samples.resolve(m_ink.target(item, base)));
+    return m_ink.color(item, base, samples.tone(base, m_family));
 }
 
 QRegion ControlGlass::regionFor(const QVariantList &surfaces, bool glassOnly)
@@ -131,8 +179,7 @@ void PopupBackdrop::setWindow(QWindow *window)
         m_movingFrame = {};
         m_ink.reset();
         m_backdropGrid.clear();
-        ++m_revision;
-        Q_EMIT backdropChanged();
+        refreshFamily();
     };
     if (window) connect(window, &QWindow::visibleChanged, this, [clear](bool visible) {
         if (!visible) clear();
@@ -165,6 +212,7 @@ void ControlGlass::setSurfaces(const QVariantList &surfaces)
     m_surfaces = surfaces;
     m_region = regionFor(surfaces);
     m_inputRegion = regionFor(surfaces, false);
+    refreshFamily();
     Q_EMIT surfacesChanged();
     apply();
 }

@@ -31,82 +31,79 @@ inline bool isLightInk(double luminance)
     return luminance > std::sqrt(.05 * 1.05) - .05;
 }
 
-// Sample geometry is in logical pixels. Agreement and contrast are independent
-// of the number of samples, including a group of partially visible labels.
+enum class Family { Dark, Light };
+
+inline Family familyOf(QColor color)
+{
+    return isLightInk(luminance(color)) ? Family::Light : Family::Dark;
+}
+
+// The component profile measures the common material. The smaller profiles
+// measure the backdrop behind individual glyphs, labels and category pills.
 struct Profile {
     int columns = 3;
     int rows = 3;
-    double contrast = 5.2;
-    double advantage = 1.;
-    double enter = .5;
-    double retain = .5;
-    bool preserveTheme = false;
-    // A centered control reads a cross through its glyph; labels vote over their extent.
     double crossCenterWeight = 0.;
 };
-inline constexpr Profile control{.crossCenterWeight = .65};
-inline constexpr Profile menu{.columns = 5, .advantage = 1.25};
-inline constexpr Profile label{.columns = 5, .advantage = 1.25, .enter = .8, .preserveTheme = true};
-inline constexpr Profile categoryRow{.columns = 5, .rows = 1, .advantage = 1.25, .enter = .8, .retain = .55, .preserveTheme = true};
-
-inline QColor neutralInk(QColor base, double surface, bool light, double contrast)
-{
-    const double luminance = light
-        ? std::clamp((surface + .05) * contrast - .05, .55, 1.)
-        : std::max(0., (surface + .05) / contrast - .05);
-    const double gray = luminance <= .0031308
-        ? 12.92 * luminance : 1.055 * std::pow(luminance, 1. / 2.4) - .055;
-    return QColor::fromRgbF(gray, gray, gray, base.alphaF());
-}
+inline constexpr Profile component{9, 5};
+inline constexpr Profile control{3, 3, .65};
+inline constexpr Profile menu{5, 3};
+inline constexpr Profile label{5, 3};
+inline constexpr Profile categoryRow{5, 1};
+inline constexpr double targetContrast = 5.2;
 
 class Samples {
 public:
-    Samples(QColor base, const Profile &profile)
-        : m_base(base), m_profile(profile), m_light(isLightInk(luminance(base))),
-          m_preferred(profile.preserveTheme ? luminance(base) : double(m_light)),
-          m_limit(m_light ? 1. : 0.)
-    {}
-
     void add(const QColor &surface, double weight = 1.)
     {
-        // Unsupported wallpaper margins provide no evidence for switching ink.
-        m_requestedWeight += weight;
+        if (!(weight > 0.) || !std::isfinite(weight)) return;
+        m_requested += weight;
         if (!surface.isValid() || !surface.alpha()) return;
         const double lightness = luminance(surface);
-        m_sum += weight * lightness;
-        m_count += weight;
-        const double preferred = contrastRatio(m_preferred, lightness);
-        const double alternate = contrastRatio(m_light ? 0. : 1., lightness);
-        if (alternate >= m_profile.advantage * preferred
-            && (!m_profile.preserveTheme || (preferred < 4.5 && alternate >= 4.5))) {
-            m_limit = m_light ? std::min(m_limit, lightness) : std::max(m_limit, lightness);
-            m_votes += weight;
-        }
+        m_luminance += weight * lightness;
+        m_weight += weight;
+        // Once text is readable, extra contrast in an already favourable
+        // region should not outweigh unreadable text elsewhere in the surface.
+        m_darkScore += weight * std::min(targetContrast, contrastRatio(0., lightness));
+        m_lightScore += weight * std::min(targetContrast, contrastRatio(1., lightness));
     }
 
-    QColor resolve(QColor previous) const
+    Family family(QColor preferred, double tolerance = 1.10) const
     {
-        if (!m_count) return m_base;
-        const double mean = m_sum / m_count;
-        if (m_profile.crossCenterWeight > 0.)
-            return neutralInk(m_base, mean, !isLightInk(mean), m_profile.contrast);
-        const bool wasAlternate = isLightInk(luminance(previous)) != m_light;
-        const bool alternate = m_votes >= m_requestedWeight * (wasAlternate ? m_profile.retain : m_profile.enter);
-        if (m_profile.preserveTheme && !alternate) return m_base;
-        const double surface = m_profile.preserveTheme ? m_limit : mean;
-        return neutralInk(m_base, surface, alternate != m_light, m_profile.contrast);
+        // Wallpaper plugins can expose unsampled margins around a centered image.
+        if (m_weight < .5 * m_requested) return familyOf(preferred);
+        if (m_darkScore > tolerance * m_lightScore) return Family::Dark;
+        if (m_lightScore > tolerance * m_darkScore) return Family::Light;
+        return familyOf(preferred);
+    }
+
+    QColor tone(QColor base, Family family, double contrast = targetContrast) const
+    {
+        if (!m_weight) return familyOf(base) == family ? base
+            : QColor::fromRgbF(family == Family::Light, family == Family::Light, family == Family::Light, base.alphaF());
+        const double surface = m_luminance / m_weight;
+        const bool light = family == Family::Light;
+        const double extreme = light ? 1. : 0.;
+        const double grayLimit = light ? .55 : .155;
+        const double ideal = light ? (surface + .05) * contrast - .05 : (surface + .05) / contrast - .05;
+        double ink = std::clamp(ideal, std::min(extreme, grayLimit), std::max(extreme, grayLimit));
+
+        // On a patch as bright as white ink (or as dark as black ink), the gray
+        // end of the same family is more legible. Ease through that end of the
+        // range in proportion to its contrast gain, without a polarity switch.
+        const double gain = contrastRatio(grayLimit, surface) / contrastRatio(ink, surface);
+        const double t = std::clamp((gain - 1.) / (contrastRatio(extreme, grayLimit) - 1.), 0., 1.);
+        ink = std::lerp(ink, grayLimit, t * t * (3. - 2. * t));
+        const double gray = ink <= .0031308 ? 12.92 * ink : 1.055 * std::pow(ink, 1. / 2.4) - .055;
+        return QColor::fromRgbF(gray, gray, gray, base.alphaF());
     }
 
 private:
-    QColor m_base;
-    Profile m_profile;
-    bool m_light;
-    double m_preferred;
-    double m_limit;
-    double m_sum = 0.;
-    double m_count = 0.;
-    double m_votes = 0.;
-    double m_requestedWeight = 0.;
+    double m_requested = 0.;
+    double m_weight = 0.;
+    double m_luminance = 0.;
+    double m_darkScore = 0.;
+    double m_lightScore = 0.;
 };
 
 template <typename Visit>
@@ -130,10 +127,10 @@ void forEachPoint(const Profile &profile, QPointF center, QSizeF radius, Visit v
 }
 
 template <typename SurfaceAt>
-QColor sample(QColor base, QColor previous, const Profile &profile, QPointF center, QSizeF radius, SurfaceAt surfaceAt)
+Samples sample(const Profile &profile, QPointF center, QSizeF radius, SurfaceAt surfaceAt)
 {
-    Samples samples(base, profile);
+    Samples samples;
     forEachPoint(profile, center, radius, [&](QPointF point, double weight) { samples.add(surfaceAt(point), weight); });
-    return samples.resolve(previous);
+    return samples;
 }
 }

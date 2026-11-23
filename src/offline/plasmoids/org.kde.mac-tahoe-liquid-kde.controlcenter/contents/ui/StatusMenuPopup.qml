@@ -6,7 +6,7 @@ Item {
     property url source
     implicitWidth: 328
     implicitHeight: surface.implicitHeight + 20
-    readonly property var surfaces: [{x: surface.x, y: surface.y, width: surface.width, height: surface.height, radius: surface.cornerRadius}]
+    readonly property var surfaces: [{x: surface.x, y: surface.y, width: surface.width, height: surface.height, radius: surface.cornerRadius, fill: surface.fillColor}]
     NotificationSurface {
         id: surface
         x: 10; y: 10
