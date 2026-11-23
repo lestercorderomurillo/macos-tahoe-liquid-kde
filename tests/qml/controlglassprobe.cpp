@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "controlglass.h"
+#include "glassink.h"
 #include <QGuiApplication>
 #include <QVariantMap>
 #include <QThread>
@@ -65,21 +66,57 @@ int main(int argc, char **argv)
             Q_ARG(QByteArray, colors), Q_ARG(QString, window.title()));
         return glass.animatedLabelForeground(&label, center, radius, theme, Qt::transparent);
     };
-    if (labelInk(3) != theme || labelInk(4) != QColor(Qt::black)
-        || labelInk(3) != QColor(Qt::black) || labelInk(2) != theme) return 12;
+    const auto gradedDark = GlassInk::neutralInk(theme, 1., false, GlassInk::control.contrast);
+    const auto gradedLight = GlassInk::neutralInk(theme, 0., true, GlassInk::control.contrast);
+    if (labelInk(3) != theme || labelInk(4) != gradedDark
+        || labelInk(3) != gradedDark || labelInk(2) != theme) return 12;
 
     const auto ink = [&] { return glass.animatedForegroundAt(&label, center, radius, theme, Qt::transparent); };
     // Anchored menus can move when search results change size. The next
     // sample still applies on the first paint, even if it reverses quickly.
-    if (!sample(window.size(), 0) || ink() != QColor(Qt::white)
-        || !sample(window.size(), char(255), QPoint(1, 0)) || ink() != QColor(Qt::black)
-        || !sample(window.size(), 0, QPoint(2, 0)) || ink() != QColor(Qt::white)) return 13;
+    if (!sample(window.size(), 0) || ink() != gradedLight
+        || !sample(window.size(), char(255), QPoint(1, 0)) || ink() != gradedDark
+        || !sample(window.size(), 0, QPoint(2, 0)) || ink() != gradedLight) return 13;
 
-    glass.windowMoveStarted();
-    if (!sample(window.size(), char(255), QPoint(3, 0)) || ink() != QColor(Qt::white)) return 14;
+    const auto markMoving = [&](QPoint offset) {
+        return QMetaObject::invokeMethod(&glass, "movingControlSample", Qt::DirectConnection,
+            Q_ARG(int, int(app.applicationPid())), Q_ARG(QRect, QRect(window.position() + offset, window.size())),
+            Q_ARG(QString, window.title()));
+    };
+    if (!markMoving(QPoint(2, 0)) || !sample(window.size(), char(255), QPoint(2, 0)) || ink() != gradedDark) return 20;
+    if (!sample(window.size(), 0, QPoint(2, 0)) || ink() != gradedLight || !markMoving(QPoint(3, 0))) return 21;
+    if (!sample(window.size(), char(255), QPoint(3, 0)) || ink() != gradedLight) return 14;
     QThread::msleep(320);
-    if (ink() != QColor(Qt::black)) return 15;
-    if (!sample(window.size(), 0, QPoint(3, 0)) || ink() != QColor(Qt::white)) return 16;
+    if (ink() != gradedDark) return 15;
+    if (!sample(window.size(), 0, QPoint(3, 0)) || ink() != gradedLight) return 16;
+    if (!markMoving(QPoint(4, 0)) || !sample(window.size(), char(255), QPoint(4, 0)) || ink() != gradedLight) return 22;
+    // A stationary update immediately following the last drag frame must snap.
+    if (!sample(window.size(), char(160), QPoint(5, 0)) || ink() != glass.foregroundAt(center, radius, theme, Qt::transparent)) return 23;
+    const QColor medium = GlassInk::sample(theme, theme, GlassInk::control, {}, {}, [](QPointF) { return QColor("#c4c4c4"); });
+    if (!(medium.red() > 0 && medium.red() < gradedDark.red() && gradedDark.red() < gradedLight.red()
+          && gradedLight.red() < 255 && GlassInk::contrastRatio(GlassInk::luminance(medium), .55) > 4.5)) return 17;
+    // Close midtones under a dark menu should keep the same text polarity.
+    // Crossing the contrast margin still switches immediately on a brighter row.
+    const auto menuInk = [&](QColor surface) {
+        GlassInk::Samples samples(theme, GlassInk::menu);
+        samples.add(surface);
+        return samples.resolve(theme);
+    };
+    if (!GlassInk::isLightInk(GlassInk::luminance(menuInk(QColor("#5e6772"))))
+        || !GlassInk::isLightInk(GlassInk::luminance(menuInk(QColor("#747a81"))))
+        || GlassInk::isLightInk(GlassInk::luminance(menuInk(QColor("#83868c"))))) return 18;
+    if (glass.groupForeground(&label, theme, {}) != theme
+        || glass.groupForeground(&label, theme, {Qt::white, Qt::white}) != gradedDark
+        || glass.groupForeground(&label, theme, {Qt::black, Qt::black}) != theme) return 19;
+    const QRectF clipped(center.x(), 0, radius.width(), window.height());
+    const auto visibleSamples = glass.categorySamples(center, radius, clipped, Qt::transparent);
+    if (visibleSamples.size() != 2 || visibleSamples.front() != QColor(160, 160, 160)) return 24;
+    const auto centered = GlassInk::sample(theme, theme, GlassInk::control, {}, QSizeF(10, 10),
+        [](QPointF point) { return point.isNull() ? QColor(Qt::white) : QColor(Qt::black); });
+    if (centered != GlassInk::neutralInk(theme, .65, false, GlassInk::control.contrast)) return 25;
+    const auto margin = GlassInk::sample(theme, theme, GlassInk::label, {}, QSizeF(10, 10),
+        [](QPointF point) { return point.isNull() ? QColor(Qt::white) : QColor(); });
+    if (margin != theme) return 26;
     glass.setWindow(nullptr);
     std::cout << "CONTROL_GLASS_REGIONS_OK\n";
 }

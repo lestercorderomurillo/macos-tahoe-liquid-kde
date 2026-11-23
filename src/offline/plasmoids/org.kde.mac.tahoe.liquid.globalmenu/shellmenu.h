@@ -3,6 +3,8 @@
 
 #include <QHash>
 #include <QMenu>
+#include <QPointer>
+#include <QScreen>
 #include <QStyleOptionMenuItem>
 
 class ShellMenu final : public QMenu
@@ -13,7 +15,6 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
-    void hideEvent(QHideEvent *event) override;
     void initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const override;
 
 private Q_SLOTS:
@@ -24,5 +25,9 @@ private:
     bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;
+    QRect m_sampledGeometry;
+    QPointer<QScreen> m_sampledScreen;
+    qint64 m_sampledPalette = 0;
+    qreal m_sampledScale = 0;
     QHash<const QAction *, QColor> m_rowInks;
 };

@@ -156,6 +156,9 @@ Item {
                        (top.g * top.a + base.g * remaining) / alpha,
                        (top.b * top.a + base.b * remaining) / alpha, alpha);
     }
+    function categoryForeground(item, samples) {
+        return appBackdrop.groupForeground(item, textColor, samples);
+    }
     function categorySamples(label, view, backing) {
         if (!root.glassSettings.dynamicTinting || !root.visible) return [];
         appBackdrop.backdropRevision;
@@ -164,16 +167,10 @@ Item {
             ancestor.x; ancestor.y;
         }
         const fill = layerOver(materialFill(root.glassSettings), backing);
-        const samples = [];
-        for (let i = -2; i <= 2; ++i) {
-            const x = label.width / 2 + i * Math.min(label.contentWidth, label.width) * 0.2;
-            const y = label.height / 2;
-            const viewportX = label.mapToItem(view, x, y).x;
-            if (viewportX < 0 || viewportX >= view.width) continue;
-            const sample = appBackdrop.backdropAt(label.mapToItem(root.contentItem, x, y));
-            if (sample.a > 0) samples.push(Qt.tint(sample, fill));
-        }
-        return samples;
+        const center = label.mapToItem(root.contentItem, label.width / 2, label.height / 2);
+        const radius = Qt.size(Math.min(label.contentWidth, label.width) * 0.4, 0);
+        const clip = view.mapToItem(root.contentItem, Qt.rect(0, 0, view.width, view.height));
+        return appBackdrop.categorySamples(center, radius, clip, fill);
     }
     function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth) {
         if (!root.glassSettings.dynamicTinting) return fallback;

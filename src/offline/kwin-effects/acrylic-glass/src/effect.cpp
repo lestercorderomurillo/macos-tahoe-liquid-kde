@@ -2187,6 +2187,14 @@ void BlurEffect::blur(
                         blurInfo.contrastBounds = frame;
                         const auto path = QStringLiteral("/org/kde/MacTahoe/Glass");
                         const auto interface = QStringLiteral("org.kde.MacTahoe.Glass");
+                        // Mark only this sample. The Wayland compositor owns the pointer
+                        // during a system move, so clients cannot infer its end from a release.
+                        if (about && w->isUserMove()) {
+                            auto moving = QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"),
+                                path, interface, QStringLiteral("movingControlSample"));
+                            moving << int(w->window()->pid()) << frame << caption;
+                            QDBusConnection::sessionBus().send(moving);
+                        }
                         const auto signal = QStringLiteral("controlBackdrop");
                         auto message = (shellMenu || about)
                             ? QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"), path, interface, signal)

@@ -60,6 +60,8 @@ public:
         }
     }
 
+    void stationary() { m_settledAt = 0; }
+
     QColor target(const QObject *item, QColor initial) const
     {
         const auto it = m_tracks.constFind(item);

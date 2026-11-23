@@ -311,33 +311,21 @@ QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF 
     const QPointF origin = window->width() == screen.width() ? screen.topLeft() : window->position();
     const QPointF point = origin + center;
     const QSizeF radius(std::clamp(item->width() / 3, 3., 42.), std::clamp(item->height() / 4, 2., 6.));
-    const double themeLuma = GlassInk::luminance(base);
-    const QColor previous = m_transition.target(item, base);
-    QColor alternate = themeLuma > .179 ? Qt::black : Qt::white;
-    int votes = 0;
-    for (int row = -1; row <= 1; ++row) {
-        for (int col = -2; col <= 2; ++col) {
-            const QPointF sample = point + QPointF(col * radius.width() / 2, row * radius.height());
-            const QPointF local = sample - screen.topLeft();
-            const QColor pixel = wallpaper->pixel(QPointF(std::clamp(local.x(), 0., double(screen.width() - 1)),
-                                                         std::clamp(local.y(), 0., double(screen.height() - 1))));
-            if (!pixel.isValid()) continue;
-            // Interpolate the same samples used by the Qt Quick gradient.
-            const double position = std::clamp((sample.y() - origin.y()) / std::max(1, window->height()), 0., 1.);
-            const double segment = position * 8;
-            const double left = std::floor(segment);
-            const double right = std::min(8., left + 1);
-            QColor scrim = Qt::black;
-            scrim.setAlphaF(std::lerp(scrimOpacityAt(left / 8), scrimOpacityAt(right / 8), segment - left));
-            const double background = GlassInk::luminance(GlassInk::composite(pixel, scrim));
-            const double preferred = GlassInk::contrastRatio(themeLuma, background);
-            const double other = GlassInk::contrastRatio(themeLuma > .179 ? 0. : 1., background);
-            if (preferred < 4.5 && other >= 4.5 && other >= 1.25 * preferred) ++votes;
-        }
-    }
-    const int threshold = previous.rgb() == alternate.rgb() ? 8 : 12;
-    alternate.setAlphaF(base.alphaF());
-    return m_transition.color(item, base, votes >= threshold ? alternate : base);
+    const auto target = GlassInk::sample(base, m_transition.target(item, base), GlassInk::label, point, radius, [&](QPointF sample) {
+        const QPointF local = sample - screen.topLeft();
+        const QColor pixel = wallpaper->pixel(QPointF(std::clamp(local.x(), 0., double(screen.width() - 1)),
+                                                     std::clamp(local.y(), 0., double(screen.height() - 1))));
+        if (!pixel.isValid()) return QColor();
+        // Interpolate the same samples used by the Qt Quick gradient.
+        const double position = std::clamp((sample.y() - origin.y()) / std::max(1, window->height()), 0., 1.);
+        const double segment = position * 8;
+        const double left = std::floor(segment);
+        const double right = std::min(8., left + 1);
+        QColor scrim = Qt::black;
+        scrim.setAlphaF(std::lerp(scrimOpacityAt(left / 8), scrimOpacityAt(right / 8), segment - left));
+        return GlassInk::composite(pixel, scrim);
+    });
+    return m_transition.color(item, base, target);
 }
 
 #include "panelwallpaper.moc"

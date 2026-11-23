@@ -17,8 +17,6 @@ QtObject {
                                Qt.size(window.width / 4, window.height / 9), preferred, fill)
         : preferred
 
-    function windowMoveStarted() { sampler.windowMoveStarted(); }
-
     function withOpacity(fallback: color): color {
         return sampled ? Qt.rgba(foreground.r, foreground.g, foreground.b, fallback.a) : fallback;
     }

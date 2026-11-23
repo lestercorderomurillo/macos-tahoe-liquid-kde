@@ -1,4 +1,3 @@
-import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationContrast.js" as Contrast
 import QtQuick
 import QtQuick.Controls
 import org.kde.kirigami as Kirigami
@@ -12,30 +11,12 @@ Item {
 
     signal categorySwitched(int index)
 
-    readonly property real themeLightness: Contrast.luminance(main.textColor)
-    readonly property color alternate: themeLightness > 0.179 ? "black" : "white"
-    property bool useAlternate: false
-    readonly property color rowInk: useAlternate && root.glassSettings.dynamicTinting ? alternate : main.textColor
-    readonly property bool preferAlternate: {
-        let total = 0, votes = 0;
+    readonly property color rowInk: {
+        const surfaces = [];
         for (const cell of categorySwitcher.contentItem.children) {
-            if (!cell.categoryPill) continue;
-            for (const sample of cell.categoryPill.samples) {
-                const surface = Contrast.luminance(sample);
-                const themeRatio = Contrast.ratio(themeLightness, surface);
-                const otherRatio = Contrast.ratio(Contrast.luminance(alternate), surface);
-                if (themeRatio < 4.5 && otherRatio >= Math.max(4.5, themeRatio * 1.25)) ++votes;
-                ++total;
-            }
+            if (cell.categoryPill) surfaces.push(...cell.categoryPill.samples);
         }
-        return total > 0 && votes >= total * (useAlternate ? 0.55 : 0.8);
-    }
-    onPreferAlternateChanged: settle.restart()
-    onThemeLightnessChanged: { useAlternate = false; settle.restart(); }
-    Timer {
-        id: settle
-        interval: 250
-        onTriggered: scrollview.useAlternate = scrollview.preferAlternate
+        return main.categoryForeground(scrollview, surfaces);
     }
 
     ListView {

@@ -40,19 +40,19 @@ void ShellMenu::updateBackdrop(int pid, const QRect &frame, const QRect &bounds,
     const int tolerance = BackdropGeometry::edgeTolerance(*windowHandle());
     if (qAbs(frame.x() - origin.x()) > tolerance || qAbs(frame.y() - origin.y()) > tolerance) return;
     m_bounds = bounds.translated(-frame.topLeft());
+    m_sampledGeometry = QRect(origin, size());
+    m_sampledScreen = screen();
+    m_sampledScale = devicePixelRatioF();
+    m_sampledPalette = palette().cacheKey();
     m_grid = grid;
     update();
 }
 
-void ShellMenu::hideEvent(QHideEvent *event)
-{
-    m_grid.clear();
-    QMenu::hideEvent(event);
-}
-
 void ShellMenu::paintEvent(QPaintEvent *event)
 {
-    if (!m_grid.isEmpty()) {
+    if (!m_grid.isEmpty() && m_sampledGeometry == QRect(mapToGlobal(QPoint()), size())
+        && m_sampledScreen && m_sampledScreen == screen() && m_sampledScale == devicePixelRatioF()
+        && m_sampledPalette == palette().cacheKey()) {
         // Composite the style's actual menu panel over KWin's backdrop. It
         // includes the installed theme's fill and any saved opacity changes.
         QImage panel(8, 8, QImage::Format_ARGB32_Premultiplied);
@@ -64,20 +64,29 @@ void ShellMenu::paintEvent(QPaintEvent *event)
             painter.scale(8. / width(), 8. / height());
             style()->drawPrimitive(QStyle::PE_PanelMenu, &option, &painter, this);
         }
+        const auto surfaceAt = [&](QPointF point) {
+            // KWin samples cell centers. Interpolate between them so a label
+            // straddling a coarse grid edge sees the same continuous backdrop.
+            const double x = std::clamp((point.x() - m_bounds.x()) * 8 / m_bounds.width() - .5, 0., 7.);
+            const double y = std::clamp((point.y() - m_bounds.y()) * 8 / m_bounds.height() - .5, 0., 7.);
+            const int col = int(x), row = int(y);
+            const auto *rgb = reinterpret_cast<const uchar *>(m_grid.constData());
+            const auto channel = [&](int c) {
+                const auto at = [&](int i, int j) { return rgb[(std::min(j, 7) * 8 + std::min(i, 7)) * 3 + c]; };
+                return qRound(std::lerp(std::lerp(at(col, row), at(col + 1, row), x - col),
+                                        std::lerp(at(col, row + 1), at(col + 1, row + 1), x - col), y - row));
+            };
+            const auto fill = panel.pixelColor(qBound(0, int(point.x() * 8 / width()), 7),
+                                               qBound(0, int(point.y() * 8 / height()), 7));
+            return GlassInk::composite(QColor(channel(0), channel(1), channel(2)), fill);
+        };
         for (QAction *action : actions()) {
             if (!action->isVisible() || action->isSeparator()) continue;
             const QRect row = actionGeometry(action);
             const QPoint point(row.left() + row.width() / 3, row.center().y());
-            const auto surfaceAt = [&](QPointF p) {
-                const int col = qBound(0, int((p.x() - m_bounds.x()) * 8 / m_bounds.width()), 7);
-                const int line = qBound(0, int((p.y() - m_bounds.y()) * 8 / m_bounds.height()), 7);
-                const auto *rgb = reinterpret_cast<const uchar *>(m_grid.constData()) + (line * 8 + col) * 3;
-                const auto fill = panel.pixelColor(qBound(0, int(p.x() * 8 / width()), 7),
-                                                   qBound(0, int(p.y() * 8 / height()), 7));
-                return GlassInk::composite(QColor(rgb[0], rgb[1], rgb[2]), fill);
-            };
-            m_rowInks.insert(action, GlassInk::sample(Qt::white, point,
-                QSizeF(row.width() / 4., row.height()), surfaceAt));
+            const QColor preferred = palette().color(QPalette::WindowText);
+            m_rowInks.insert(action, GlassInk::sample(preferred, preferred, GlassInk::menu, point,
+                QSizeF(row.width() / 4., row.height() / 4.), surfaceAt));
         }
     }
     QMenu::paintEvent(event);

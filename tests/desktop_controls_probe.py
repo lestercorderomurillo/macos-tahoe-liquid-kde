@@ -259,11 +259,13 @@ QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.du
 assert noticeForContrast.property('backdropColor').lightnessF() == 0
 noticeForContrast.setProperty('visible', False)
 contrast = fake('''import "NotificationContrast.js" as Contrast
+import org.kde.mac.tahoe.launcher as Native
 Item {
+    Native.GlassSettings { id: ink; component: "notifications" }
     property color base: "white"
     property color backdrop: "white"
     property color surface: "transparent"
-    property color foreground: Contrast.foreground(base, backdrop, surface)
+    property color foreground: ink.notificationForeground(base, backdrop, surface)
     property real contrastRatio: Contrast.ratio(Contrast.luminance(foreground), Contrast.luminance(backdrop))
 }''')
 for base in ('#eeeeee', '#333333'):

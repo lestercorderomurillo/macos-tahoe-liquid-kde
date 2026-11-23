@@ -270,8 +270,9 @@ qreal GlassSettings::darkOpacity() const { return opacity(QStringLiteral("Surfac
 QColor GlassSettings::notificationForeground(QColor base, QColor backdrop, QColor fill) const
 {
     if (!dynamicTinting() || !backdrop.alpha()) return base;
-    const auto light = GlassInk::luminance(GlassInk::composite(backdrop, fill));
-    return GlassInk::foreground(base, light, light, light, light, light);
+    GlassInk::Samples samples(base, GlassInk::control);
+    samples.add(GlassInk::composite(backdrop, fill));
+    return samples.resolve(base);
 }
 
 QColor GlassSettings::animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop, QColor fill)
