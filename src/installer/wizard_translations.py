@@ -382,7 +382,7 @@ Search settings|Buscar ajustes|搜索设置|Buscar ajustes|Einstellungen suchen
 No matching settings|No se encontraron ajustes|未找到匹配的设置|Nenhum ajuste encontrado|Keine passenden Einstellungen
 Open Settings|Abrir Ajustes|打开设置|Abrir Ajustes|Einstellungen öffnen
 Welcome|Bienvenida|欢迎|Boas-vindas|Willkommen
-Desktop & Dock|Escritorio y Dock|桌面与程序坞|Mesa e Dock|Schreibtisch & Dock
+Dock|Dock|程序坞|Dock|Dock
 Startup|Arranque|启动|Inicialização|Start
 Review|Revisión|检查|Revisão|Übersicht
 Review changes|Revisar cambios|检查更改|Revisar alterações|Änderungen prüfen

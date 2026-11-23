@@ -56,8 +56,8 @@ STEPS = (
 # these grouped routes participate in the interactive installation flow.
 SECTIONS = {
     "theme": ("Appearance", "appearance", ("#777fc0", "#262c68"), ("appearance", "icons", "fonts")),
-    "desktop": ("Desktop", "stage-manager", ("#61adbf", "#1d5973"), ("wallpaper", "desktop_widgets")),
-    "dock_bar": ("Desktop & Dock", "mirroring", ("#718dc0", "#3a507c"), ("launcher", "layout")),
+    "desktop": ("Desktop", "stage-manager", ("#61adbf", "#1d5973"), ("wallpaper", "desktop_widgets", "launcher")),
+    "dock_bar": ("Dock", "mirroring", ("#718dc0", "#3a507c"), ("layout",)),
     "windows": ("Windows", "airplay", ("#69a38e", "#305e55"),
                 ("effects", "window_controls", "button_position", "shadows", "glass_style", "acrylic_glass_editor")),
     "applications": ("Applications", "screenshot", ("#8c83bd", "#4d427b"), ("files", "firefox")),
@@ -67,7 +67,7 @@ INSTALL_SECTIONS = {
     "theme": ("Appearance", ("appearance",)),
     "personalization": ("Icons & Typography", ("icons", "fonts")),
     "desktop": ("Desktop", SECTIONS["desktop"][3]),
-    "dock_bar": ("Desktop & Dock", SECTIONS["dock_bar"][3]),
+    "dock_bar": (SECTIONS["dock_bar"][0], SECTIONS["dock_bar"][3]),
     "windows": ("Effects", ("effects", "glass_style")),
     "window_details": ("Windows", ("window_controls", "button_position", "shadows")),
     "applications": ("Applications", SECTIONS["applications"][3]),
@@ -894,6 +894,14 @@ class InstallerWindow(OpaqueSurface):
         self.acrylic_glass_editor = None
         self.requested_glass_editor = self.settings_mode and section == "acrylic_glass"
         section = SECTION_ALIASES.get(section, section)
+        if self.settings_mode and section == "dock_bar" and widget is not None:
+            from plasmoid_settings import instances
+
+            try:
+                if widget in instances("launcher"):
+                    section = "desktop"
+            except RuntimeError:
+                pass
         self.page = section if self.settings_mode else "uninstall" if uninstall else "welcome"
         self.requested_install_panel = None
         self.panel_frames = {}
@@ -1167,14 +1175,17 @@ class InstallerWindow(OpaqueSurface):
             elif page == "theme":
                 terms += ("Light", "Dark", "Auto", "Icon appearance", "Icon color palette", "Tinted")
             elif page == "desktop":
-                terms += ("Weather (Panel)", "Temperature unit", "Widget settings", "Clock", "Timer", "Photos")
+                from launcher_preferences import FORMS as launcher_forms
+
+                terms += tuple(label for form in launcher_forms.values() for label in form.values())
+                terms += ("Apps preferences", "Activation shortcut", "Weather (Panel)", "Temperature unit",
+                          "Widget settings", "Clock", "Timer", "Photos")
             elif page == "dock_bar":
                 from system_menu_preferences import FORMS as system_menu_forms
 
                 terms += tuple(label for form in system_menu_forms.values() for label in form.values())
                 terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons",
                           "System menu",
-                          "Apps preferences", "Open from Apps", "Launcher position", "Grid icon size",
                           "Activation shortcut", "Hover magnification", "Control Center", "Widget shortcuts",
                           "Wi-Fi", "Bluetooth", "Battery", "Downloads", "Notifications")
             keywords = search_text(" ".join((*terms, *(self.t(term) for term in terms))))
@@ -1455,10 +1466,8 @@ class InstallerWindow(OpaqueSurface):
         self.update_settings_review()
         if key in ("files", "acrylic_glass") and "glass_style" in self.panel_frames:
             self.panel_frames["glass_style"].setVisible(self.show_glass_style())
-        if key in ("launcher", "reset_layout") and "launcher" in self.choice_widgets:
-            if key == "launcher":
-                self.launcher_art.setPixmap(picture(f"launcher-{value}-art.png",
-                                                    SETTING_ART_SIZE, SETTING_ART_SIZE))
+        if key == "launcher" and key in self.choice_widgets:
+            self.launcher_art.setPixmap(picture(f"launcher-{value}-art.png", SETTING_ART_SIZE, SETTING_ART_SIZE))
             self.refresh_launcher_warning()
 
     def cards(self, key, items, *, columns=2, independent=False, compact=False, default_first=True):
@@ -1835,8 +1844,12 @@ class InstallerWindow(OpaqueSurface):
             self.requested_glass_editor = False
 
         if self.page == "dock_bar":
-            self.page_dock_and_menu_widgets()
+            self.page_widget_preferences((
+                ("dock", "Dock preferences"), ("trash", "Trash"), ("control_center", "Control Center"),
+                ("bar_shortcuts", "Widget shortcuts"), ("system_menu", "System menu"),
+            ))
         if self.page == "desktop":
+            self.page_widget_preferences((("launcher", "Apps preferences"),))
             self.page_weather_panel()
             from desktop_widget_editor import DesktopWidgetEditor, installed_instances
             widgets = installed_instances()
@@ -1955,7 +1968,7 @@ class InstallerWindow(OpaqueSurface):
             self.widget_settings_target = None
             self.requested_widget = None
 
-    def page_dock_and_menu_widgets(self):
+    def page_widget_preferences(self, entries):
         import dock_preferences
         from dock_apps import desktop_applications
         from plasmoid_settings import (
@@ -1967,9 +1980,7 @@ class InstallerWindow(OpaqueSurface):
                 ("fullIcon", "Full trash icon", "user-trash-full"),
             ),
         }
-        for kind, title in (("dock", "Dock preferences"), ("launcher", "Apps preferences"),
-                            ("trash", "Trash"), ("control_center", "Control Center"),
-                            ("bar_shortcuts", "Widget shortcuts"), ("system_menu", "System menu")):
+        for kind, title in entries:
             try:
                 widgets = instances(kind)
             except RuntimeError:
@@ -2731,10 +2742,6 @@ class InstallerWindow(OpaqueSurface):
         self.body.addLayout(row)
 
     def page_firefox(self):
-        artwork = self.image("firefox-art.png", width=SETTING_ART_SIZE, height=SETTING_ART_SIZE)
-        artwork.setObjectName("firefoxArtwork")
-        self.body.addWidget(artwork, alignment=Qt.AlignmentFlag.AlignHCenter)
-        self.body.addSpacing(8)
         self.radio("firefox", [(True, "Apply the theme"), (False, "Keep Firefox as it is")])
 
     def page_files(self):

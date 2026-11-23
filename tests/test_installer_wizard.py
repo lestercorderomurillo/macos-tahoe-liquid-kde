@@ -319,18 +319,21 @@ bookmarks = window.content.findChild(CheckOption, 'choice-nautilus_bookmarks')
 assert bookmarks.isChecked()
 bookmarks.setFocus(); QTest.keyClick(bookmarks, Qt.Key.Key_Space)
 assert not window.choices['nautilus_bookmarks']
-for page, key, art_name, side in [('firefox', 'firefox', 'firefoxArtwork', 112),
-                                  ('boot', 'plymouth', 'bootAnimationPreview', 200)]:
+for page, key in [('firefox', 'firefox'), ('boot', 'plymouth')]:
     window.page = page; window.render(); app.processEvents(); app.processEvents()
     options = window.content.findChildren(RadioOption)
     assert len(options) == 2 and abs(options[0].width() - options[1].width()) <= 1
-    preview = window.content.findChild(QLabel, art_name)
-    size = preview.pixmap().deviceIndependentSize()
-    assert (size.width(), size.height()) == (side, side)
-    assert preview.pixmap().toImage().pixelColor(0, 0).alpha() == 0
     assert options[0].x() == options[1].x() == window.body.contentsMargins().left()
-    assert abs(preview.geometry().center().x() - window.content.rect().center().x()) <= 1
-    assert preview.geometry().bottom() < options[0].y() < options[1].y()
+    assert options[0].y() < options[1].y()
+    if page == 'boot':
+        preview = window.content.findChild(QLabel, 'bootAnimationPreview')
+        size = preview.pixmap().deviceIndependentSize()
+        assert (size.width(), size.height()) == (200, 200)
+        assert preview.pixmap().toImage().pixelColor(0, 0).alpha() == 0
+        assert abs(preview.geometry().center().x() - window.content.rect().center().x()) <= 1
+        assert preview.geometry().bottom() < options[0].y()
+    else:
+        assert all(label.pixmap().isNull() for label in window.content.findChildren(QLabel))
     options[1].click(); app.processEvents()
     assert window.choices[key] is False
 window.page = 'launcher'; window.render(); app.processEvents()
@@ -399,6 +402,10 @@ window.page = 'summary'; window.render()
 window.content.findChild(QPushButton, 'edit-icons').click()
 assert window.page == 'personalization' and window.panel_frames['icons'].isVisible()
 window.select('icons', 'glass'); app.processEvents(); window.advance()
+assert window.page == 'summary' and window.choices['launcher'] == selected
+window.content.findChild(QPushButton, 'edit-launcher').click(); app.processEvents()
+assert window.page == 'desktop' and window.panel_frames['launcher'].isVisible()
+window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['launcher'] == selected
 window.advance()
 assert window.page == 'progress' and calls[-1][0] == 'install'
@@ -664,13 +671,19 @@ for section in INSTALL_FLOW[1:]:
     if window.scroll.verticalScrollBar().maximum() > 0:
         scrollable_steps.add(section)
     if section == 'desktop':
-        assert all(window.panel_frames[key].isVisible() for key in ('wallpaper', 'desktop_widgets'))
+        assert all(window.panel_frames[key].isVisible() for key in ('wallpaper', 'desktop_widgets', 'launcher'))
+    if section == 'dock_bar':
+        assert 'launcher' not in window.panel_frames
 assert 'desktop' in scrollable_steps
 window.previous()
 assert window.page == 'startup'
 window.page = 'done'
 window.open_installed_settings()
 assert window.sidebar.isVisible() and not window.dots.isVisible()
+assert list(window.section_buttons)[1:5] == ['theme', 'desktop', 'dock_bar', 'windows']
+assert window.section_buttons['dock_bar'].text() == 'Dock'
+window.search.setText('Launcher position')
+assert window.filter_settings() == ['desktop']
 window.search.setText('idioma')
 assert window.filter_settings() == ['general']
 window.open_search_result()

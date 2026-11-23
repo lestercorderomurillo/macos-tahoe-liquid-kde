@@ -710,19 +710,6 @@
       400
     ]
   },
-  "firefox-art.png": {
-    "file": "firefox-art-bbc0544ccba4.png",
-    "sha256": "bbc0544ccba4c88825651c83e4bec1dfe71339e4c67edbf5cec362bfd1e5eed2",
-    "kind": "generated-setting-artwork",
-    "generator": "OpenAI ImageGen",
-    "prompt": "Create one square representative Firefox-theme illustration for a desktop settings panel. The reference boot illustration is for its compact 200 px shape, front-facing framing and understated treatment only. Fill the canvas with one near-black aubergine squircle, with continuous round corners and genuine transparency just outside. Center one original, softly modeled orange fox-tail flame curling around a small indigo globe, the recognizable visual idea of Firefox, composed as a single emblem about half the tile width. Use subtle glass-like color depth, a satin finish and a sharply legible silhouette. No browser screenshot, UI chrome, letters, progress indicator, unrelated marks, border or outside drop shadow.",
-    "reference": "boot-preview-ab721d174e9c.png",
-    "source_sha256": "d0f092202bf25446452f4b6eb99802b56c4e472d70237c58d35e5ac80a54db34",
-    "size": [
-      320,
-      320
-    ]
-  },
   "launcher-tahoe-art.png": {
     "file": "launcher-tahoe-art-8e6c1cb3695a.png",
     "sha256": "8e6c1cb3695af3176faae278d31b33ba65fbf553180e09273c0d828ee1cef0d0",
