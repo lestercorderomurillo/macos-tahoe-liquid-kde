@@ -18,7 +18,8 @@ from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPain
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
     QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
-    QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QTabWidget, QToolButton, QVBoxLayout, QWidget,
+    QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QStyle, QStyleOptionSpinBox, QTabWidget, QToolButton,
+    QVBoxLayout, QWidget,
 )
 
 from installer_choices import COLORS, GLASS_PRESETS, defaults, validate
@@ -383,6 +384,56 @@ class GlassComboBox(QComboBox):
         painter.setPen(QPen(self.palette().text().color(), 1.2, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
         painter.drawLine(QPointF(x-3, y-1.5), QPointF(x, y+1.5))
         painter.drawLine(QPointF(x, y+1.5), QPointF(x+3, y-1.5))
+
+
+class GlassSpinBox(QSpinBox):
+    def __init__(self):
+        super().__init__()
+        self.setFixedSize(68, 32)
+        self.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.setStyleSheet("""
+            QSpinBox { background: transparent; border: none; }
+            QSpinBox::up-button, QSpinBox::down-button {
+                subcontrol-origin: border; width: 23px; height: 16px;
+            }
+            QSpinBox::up-button { subcontrol-position: top right; }
+            QSpinBox::down-button { subcontrol-position: bottom right; }
+        """)
+        self.lineEdit().setStyleSheet("background: transparent; border: none;")
+        self.lineEdit().setTextMargins(7, 0, 5, 0)
+
+    def focusInEvent(self, event):
+        self.keyboard_focus = event.reason() in (
+            Qt.FocusReason.TabFocusReason, Qt.FocusReason.BacktabFocusReason,
+            Qt.FocusReason.ShortcutFocusReason)
+        super().focusInEvent(event)
+        self.update()
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        paint_glass_control(self, painter)
+
+        option = QStyleOptionSpinBox()
+        self.initStyleOption(option)
+        control = QStyle.ComplexControl.CC_SpinBox
+        up = self.style().subControlRect(control, option, QStyle.SubControl.SC_SpinBoxUp, self)
+        down = self.style().subControlRect(control, option, QStyle.SubControl.SC_SpinBoxDown, self)
+        ink = self.palette().text().color()
+        separator = QColor(ink)
+        separator.setAlphaF(.18)
+        painter.setPen(QPen(separator, .75))
+        painter.drawLine(QPointF(up.left(), 6), QPointF(up.left(), self.height() - 7))
+        for rect, direction, step in ((up, -1, self.StepEnabledFlag.StepUpEnabled),
+                                      (down, 1, self.StepEnabledFlag.StepDownEnabled)):
+            color = QColor(ink)
+            if not self.isEnabled() or not option.stepEnabled & step:
+                color.setAlphaF(.38)
+            painter.setPen(QPen(color, 1.3, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap,
+                                Qt.PenJoinStyle.RoundJoin))
+            x, y = rect.center().x() - 1, rect.center().y()
+            painter.drawPolyline(QPolygonF([QPointF(x - 3, y - direction * 1.5),
+                                            QPointF(x, y + direction * 1.5),
+                                            QPointF(x + 3, y - direction * 1.5)]))
 
 
 class LanguageSelector(GlassComboBox):
@@ -2702,14 +2753,21 @@ class InstallerWindow(OpaqueSurface):
 
     def page_oled(self):
         self.radio("oled_care", [(False, "Do not enable"), (True, "Enable pixel shifting")])
-        for key, title, maximum in (("oled_interval", "Interval (minutes)", 59), ("oled_max_shift", "Maximum shift (pixels)", 16)):
-            row = QHBoxLayout(); label = self.label(title)
-            label.setMinimumWidth(290); row.addWidget(label)
-            spin = QSpinBox(); spin.setRange(1, maximum); spin.setValue(self.choices[key])
-            spin.setEnabled(self.choices["oled_care"]); spin.setObjectName(key)
-            spin.valueChanged.connect(lambda value, k=key: self.update_choice(k, value))
-            spin.setFixedWidth(80)
-            row.addWidget(spin); row.addStretch(); self.body.addLayout(row)
+        for key, title, maximum in (("oled_interval", "Interval (minutes)", 59),
+                                    ("oled_max_shift", "Maximum shift (pixels)", 16)):
+            row = QHBoxLayout()
+            label = self.label(title)
+            row.addWidget(label, 1)
+            spin = GlassSpinBox()
+            spin.setObjectName(key)
+            spin.setAccessibleName(label.text())
+            spin.setFont(relative_font(self, .85))
+            spin.setRange(1, maximum)
+            spin.setValue(self.choices[key])
+            spin.setEnabled(self.choices["oled_care"])
+            spin.valueChanged.connect(lambda value, preference=key: self.update_choice(preference, value))
+            row.addWidget(spin)
+            self.body.addLayout(row)
 
     def dock_app_summary(self):
         from dock_apps import recommendation

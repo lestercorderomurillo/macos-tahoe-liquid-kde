@@ -472,7 +472,7 @@ assert not window.isVisible()
 # This catches both immediate rebuilds and zero-delay render callbacks.
 window = InstallerWindow(bridge)
 window.show(); app.processEvents()
-from PyQt6.QtWidgets import QSpinBox, QFileDialog, QToolButton
+from PyQt6.QtWidgets import QSpinBox, QFileDialog, QStyle, QStyleOptionSpinBox, QToolButton
 from PyQt6.QtGui import QPixmap, QColor
 from PyQt6.QtCore import QObject, QEvent, QSize
 class PageEvents(QObject):
@@ -607,8 +607,17 @@ window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['shadows'] == 'soft'
 window.page = 'oled'; window.render(); app.processEvents()
 spins = window.content.findChildren(QSpinBox)
+assert len(spins) == 2
+assert all(spin.geometry().right() == window.content.rect().right() - window.body.contentsMargins().right()
+           for spin in spins)
 window.select('oled_care', True); assert all(spin.isEnabled() for spin in spins)
-spins[0].setValue(17)
+spins[0].setValue(16)
+option = QStyleOptionSpinBox()
+spins[0].initStyleOption(option)
+up = spins[0].style().subControlRect(QStyle.ComplexControl.CC_SpinBox, option,
+                                    QStyle.SubControl.SC_SpinBoxUp, spins[0])
+QTest.mouseClick(spins[0], Qt.MouseButton.LeftButton, pos=up.center())
+assert window.choices['oled_interval'] == 17
 window.select('oled_care', False); assert all(not spin.isEnabled() for spin in spins)
 window.select('oled_care', True); assert spins[0].value() == 17
 # Current wallpaper cards render actual files and package light/dark partners.
