@@ -383,7 +383,9 @@ Restoration|Restauración|恢复|Restauração|Wiederherstellung
 Reinstall|Reinstalar|重新安装|Reinstalar|Neu installieren
 Review your reinstallation|Revisa la reinstalación|检查重新安装选项|Revise a reinstalação|Neuinstallation überprüfen
 Language|Idioma|语言|Idioma|Sprache
+Search|Buscar|搜索|Buscar|Suchen
 Search settings|Buscar ajustes|搜索设置|Buscar ajustes|Einstellungen suchen
+Clear search|Borrar búsqueda|清除搜索|Limpar busca|Suche löschen
 No matching settings|No se encontraron ajustes|未找到匹配的设置|Nenhum ajuste encontrado|Keine passenden Einstellungen
 Open Settings|Abrir Ajustes|打开设置|Abrir Ajustes|Einstellungen öffnen
 Welcome|Bienvenida|欢迎|Boas-vindas|Willkommen

@@ -789,13 +789,27 @@ for _ in range(100):
     QTest.qWait(10)
 assert window.choices['appearance'] == 'dark' and window.appearance_error
 window.navigate_settings('startup')
+assert set(window.panel_frames) == {'boot'}
+window.search.setText('pantalla')
+matches = window.filter_settings()
+assert matches[0] == 'display' and 'desktop' in matches
+assert window.section_list.itemAt(0).widget() is window.section_buttons['display']
+assert window.search.clear_action.isVisible()
+window.search.setFocus()
+QTest.keyClick(window.search, Qt.Key.Key_Return)
+assert window.page == 'display' and set(window.panel_frames) == {'oled'}
+window.search.setFocus()
+QTest.keyClick(window.search, Qt.Key.Key_Escape)
+assert not window.search.text() and all(not button.isHidden() for button in window.section_buttons.values())
+assert not window.search.clear_action.isVisible()
+assert window.section_list.itemAt(0).widget() is window.section_buttons['general']
 window.select('oled_care', not window.choices['oled_care'])
 assert window.settings_review.isVisible()
 window.settings_review.click()
 assert window.page == 'summary' and not window.settings_mode and window.reconfiguring
 assert not window.choices['reset_layout']
 window.previous()
-assert window.page == 'startup' and window.settings_mode and window.settings_review.isVisible()
+assert window.page == 'display' and window.settings_mode and window.settings_review.isVisible()
 window.select('oled_care', window.settings_baseline['oled_care'])
 window.navigate_settings('general')
 assert not window.settings_review.isVisible()

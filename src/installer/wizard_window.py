@@ -66,13 +66,14 @@ STEPS = (
 # The individual panel IDs remain available to the screenshot harness. Only
 # these grouped routes participate in the interactive installation flow.
 SECTIONS = {
-    "theme": ("Appearance", "appearance", ("#777fc0", "#262c68"), ("appearance", "icons", "fonts")),
-    "desktop": ("Desktop", "stage-manager", ("#61adbf", "#1d5973"), ("wallpaper", "desktop_widgets", "launcher")),
-    "dock_bar": ("Dock", "mirroring", ("#718dc0", "#3a507c"), ("layout",)),
-    "windows": ("Windows", "airplay", ("#69a38e", "#305e55"),
+    "theme": ("Appearance", "appearance", ("#596173", "#2c3241"), ("appearance", "icons", "fonts")),
+    "desktop": ("Desktop", "wallpaper", ("#27a8bc", "#127588"), ("wallpaper", "desktop_widgets", "launcher")),
+    "dock_bar": ("Dock", "dock", ("#617288", "#384354"), ("layout",)),
+    "windows": ("Windows", "windows", ("#697bd8", "#4657a5"),
                 ("effects", "window_controls", "button_position", "shadows", "glass_style", "acrylic_glass_editor")),
-    "applications": ("Applications", "screenshot", ("#8c83bd", "#4d427b"), ("files", "firefox")),
-    "startup": ("Startup & Display", "sun", ("#bc945f", "#795336"), ("boot", "oled")),
+    "applications": ("Applications", "apps", ("#9b72ce", "#634596"), ("files", "firefox")),
+    "startup": ("Startup", "power", ("#d89556", "#a55a2e"), ("boot",)),
+    "display": ("Display", "display", ("#46a0f0", "#2467c2"), ("oled",)),
 }
 INSTALL_SECTIONS = {
     "theme": ("Appearance", ("appearance",)),
@@ -82,7 +83,7 @@ INSTALL_SECTIONS = {
     "windows": ("Effects", ("effects", "glass_style")),
     "window_details": ("Windows", ("window_controls", "button_position", "shadows")),
     "applications": ("Applications", SECTIONS["applications"][3]),
-    "startup": ("Startup & Display", SECTIONS["startup"][3]),
+    "startup": ("Startup & Display", ("boot", "oled")),
 }
 INSTALL_FLOW = ("welcome", *INSTALL_SECTIONS, "summary")
 PANEL_LABELS = {
@@ -95,15 +96,31 @@ PANEL_LABELS = {
     "boot": "Boot animation", "oled": "OLED protection",
 }
 SETTINGS_PAGES = {
-    "general": ("General", "settings", ("#99a9bc", "#3e506a"), ()),
+    "general": ("General", "settings", ("#9da7b2", "#596675"), ()),
     **SECTIONS,
 }
 SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows", "weather_panel": "desktop", "desktop_widget": "desktop"}
 PANEL_SECTIONS = {panel: section for section, (_, _, _, panels) in SECTIONS.items() for panel in panels}
 PANEL_STEPS = {panel: step for step, (_, panels) in INSTALL_SECTIONS.items() for panel in panels}
 
+SETTINGS_GLYPHS = {
+    "wallpaper": '<rect x="2" y="3.5" width="20" height="17" rx="3"/>'
+                 '<path d="m3 18 6-6 4 4 3-3 5 5"/><circle cx="16.8" cy="8.2" r="1.3" fill="white" stroke="none"/>',
+    "dock": '<rect x="1.5" y="6" width="21" height="12" rx="3"/>'
+            '<path d="M6 11v2m4-2v2m4-2v2m4-2v2" stroke-width="2.4"/>',
+    "windows": '<path d="M10 8V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4"/>'
+               '<rect x="2" y="8" width="14" height="13" rx="2"/><path d="M2 12h14"/>',
+    "apps": '<g fill="white" stroke="none"><rect x="3" y="3" width="7.5" height="7.5" rx="1.7"/>'
+            '<rect x="13.5" y="3" width="7.5" height="7.5" rx="1.7"/>'
+            '<rect x="3" y="13.5" width="7.5" height="7.5" rx="1.7"/>'
+            '<rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.7"/></g>',
+    "power": '<path d="M12 2v10m-5-7a8.6 8.6 0 1 0 10 0" stroke-width="2.4"/>',
+    "display": '<rect x="2" y="3" width="20" height="14" rx="2.2"/><path d="M12 17v4m-4 0h8"/>',
+}
+
+
 def settings_icon(symbol, colors):
-    """Mount the project's existing symbols on small frosted tiles."""
+    """Render a compact sidebar symbol at the same optical scale as its peers."""
     size = 24
     pixmap = QPixmap(size * 3, size * 3)
     pixmap.fill(Qt.GlobalColor.transparent)
@@ -112,20 +129,26 @@ def settings_icon(symbol, colors):
     painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
     painter.scale(3, 3)
     tile = QPainterPath()
-    tile.addRoundedRect(QRectF(1, 1, 22, 22), 6, 6)
+    tile.addRoundedRect(QRectF(.75, .75, 22.5, 22.5), 5.4, 5.4)
     fill = QLinearGradient(3, 0, 20, 24)
     fill.setColorAt(0, QColor(colors[0]))
     fill.setColorAt(1, QColor(colors[1]))
     painter.fillPath(tile, fill)
     rim = QLinearGradient(0, 1, 0, 23)
-    rim.setColorAt(0, QColor(255, 255, 255, 188))
-    rim.setColorAt(1, QColor(255, 255, 255, 28))
-    painter.strokePath(tile, QPen(rim, .8))
+    rim.setColorAt(0, QColor(255, 255, 255, 135))
+    rim.setColorAt(1, QColor(255, 255, 255, 32))
+    painter.strokePath(tile, QPen(rim, .7))
     glyph = QPixmap()
-    artwork = (CONTROL_SYMBOLS / f"mttkde-control-{symbol}.svg").read_bytes()
-    artwork = artwork.replace(b'width="24" height="24"', b'width="72" height="72"', 1)
-    glyph.loadFromData(artwork.replace(b"currentColor", b"#ffffff"), "SVG")
-    painter.drawPixmap(QRectF(4.6, 4.6, 14.8, 14.8), glyph, QRectF(glyph.rect()))
+    if symbol in SETTINGS_GLYPHS:
+        artwork = (f'<svg xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24">'
+                   f'<g fill="none" stroke="white" stroke-width="2" stroke-linecap="round" '
+                   f'stroke-linejoin="round">{SETTINGS_GLYPHS[symbol]}</g></svg>').encode()
+    else:
+        artwork = (CONTROL_SYMBOLS / f"mttkde-control-{symbol}.svg").read_bytes()
+        artwork = artwork.replace(b'width="24" height="24"', b'width="72" height="72"', 1)
+        artwork = artwork.replace(b"currentColor", b"#ffffff")
+    glyph.loadFromData(artwork, "SVG")
+    painter.drawPixmap(QRectF(4, 4, 16, 16), glyph, QRectF(glyph.rect()))
     painter.end()
     pixmap.setDevicePixelRatio(3)
     return QIcon(pixmap)
@@ -208,12 +231,17 @@ def relative_font(widget, scale=1, weight=None):
     return font
 
 
-def paint_glass_control(widget, painter, *, pressed=False):
+def paint_glass_control(widget, painter, *, pressed=False, backed=False):
     """Keep the face even; concentrate reflections along the capsule edge."""
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     light = widget.window().palette().window().color().lightnessF() > .5
     rect = QRectF(1, 1, widget.width()-2, widget.height()-3)
     radius = rect.height()/2
+    if backed:
+        # Give the toolbar's shadow a solid silhouette while retaining its rim and reflections.
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(widget.window().surface_color)
+        painter.drawRoundedRect(rect, radius, radius)
     painter.setBrush(Qt.BrushStyle.NoBrush)
     painter.setPen(QPen(QColor(0, 0, 0, 12 if light else 28), 1))
     painter.drawRoundedRect(rect.translated(0, .8), radius, radius)
@@ -274,6 +302,8 @@ class ColorSwatch(QPushButton):
 
 
 class GlassButton(QPushButton):
+    backed = False
+
     def focusInEvent(self, event):
         self.keyboard_focus = event.reason() in (
             Qt.FocusReason.TabFocusReason, Qt.FocusReason.BacktabFocusReason,
@@ -289,7 +319,7 @@ class GlassButton(QPushButton):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        paint_glass_control(self, painter, pressed=self.isDown())
+        paint_glass_control(self, painter, pressed=self.isDown(), backed=self.backed)
         light = self.window().palette().window().color().lightnessF() > .5
         painter.setPen(QColor("#292929" if light else "#eeeeee") if self.isEnabled()
                        else QColor("#777777" if light else "#aaaaaa"))
@@ -492,6 +522,39 @@ class WindowHeader(QWidget):
             super().mousePressEvent(event)
 
 
+class SettingsSearch(QLineEdit):
+    def __init__(self):
+        super().__init__()
+        self.setObjectName("settingsSearch")
+        self.setTextMargins(19, 0, 0, 0)
+        glyph = QPixmap()
+        glyph.loadFromData(b'<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 16 16">'
+                           b'<circle cx="8" cy="8" r="6" fill="#818b97"/>'
+                           b'<path d="m6 6 4 4m0-4-4 4" stroke="white" stroke-width="1.25" stroke-linecap="round"/>'
+                           b'</svg>', "SVG")
+        self.clear_action = self.addAction(QIcon(glyph), QLineEdit.ActionPosition.TrailingPosition)
+        self.clear_action.setVisible(False)
+        self.clear_action.triggered.connect(self.clear)
+        self.textChanged.connect(lambda value: self.clear_action.setVisible(bool(value)))
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Escape and self.text():
+            self.clear()
+            event.accept()
+        else:
+            super().keyPressEvent(event)
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setPen(QPen(self.palette().placeholderText().color(), 1.25,
+                            Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
+        y = self.height() / 2 - 1
+        painter.drawEllipse(QPointF(12, y), 3.5, 3.5)
+        painter.drawLine(QPointF(14.5, y + 2.5), QPointF(17, y + 5))
+
+
 class HistoryControl(QWidget):
     def __init__(self, back, forward):
         super().__init__()
@@ -505,7 +568,11 @@ class HistoryControl(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        paint_glass_control(self, painter)
+        paint_glass_control(self, painter, backed=True)
+        light = self.window().palette().window().color().lightnessF() > .5
+        painter.setPen(QPen(QColor(0, 0, 0, 22) if light else QColor(255, 255, 255, 26), 1))
+        x, y = self.width() / 2, self.height() / 2
+        painter.drawLine(QPointF(x, y - 7), QPointF(x, y + 7))
 
 
 class HistoryButton(QPushButton):
@@ -1009,38 +1076,41 @@ class InstallerWindow(OpaqueSurface):
         self.layout.addLayout(self.main_row, 1)
         self.sidebar = QFrame()
         self.sidebar.setObjectName("settingsSidebar")
-        self.sidebar.setFixedWidth(176)
+        self.sidebar.setFixedWidth(166)
         self.sidebar_layout = QVBoxLayout(self.sidebar)
         self.sidebar_layout.setContentsMargins(0, 0, 1, 0)
         self.sidebar_layout.setSpacing(0)
         navigation = QWidget()
         sidebar = QVBoxLayout(navigation)
-        sidebar.setContentsMargins(9, 1, 9, 12)
-        sidebar.setSpacing(2)
+        sidebar.setContentsMargins(10, 1, 9, 12)
+        sidebar.setSpacing(1)
         self.sidebar_layout.addWidget(navigation, 1)
-        self.search = QLineEdit()
-        self.search.setObjectName("settingsSearch")
+        self.search = SettingsSearch()
         self.search.setFont(relative_font(self, .8))
-        self.search.setClearButtonEnabled(True)
-        self.search.addAction(QIcon.fromTheme("edit-find"), QLineEdit.ActionPosition.LeadingPosition)
         self.search.textChanged.connect(self.filter_settings)
         self.search.returnPressed.connect(self.open_search_result)
         sidebar.addWidget(self.search)
-        sidebar.addSpacing(9)
+        sidebar.addSpacing(8)
+        self.section_list = QVBoxLayout()
+        self.section_list.setSpacing(1)
+        sidebar.addLayout(self.section_list)
         self.section_buttons = {}
         for page, (_, symbol, colors, _) in SETTINGS_PAGES.items():
             button = QPushButton()
             button.setObjectName("section-" + page)
             button.setProperty("navigation", "section")
-            button.setFont(relative_font(self, .80, QFont.Weight.Medium))
-            button.setIconSize(QSize(18, 18))
+            button.setFont(relative_font(self, .81, QFont.Weight.Medium))
+            button.setIconSize(QSize(16, 16))
+            button.setMinimumHeight(25)
             button.setIcon(settings_icon(symbol, colors))
             button.setCheckable(True)
             button.clicked.connect(lambda _, target=page: self.navigate_settings(target))
-            sidebar.addWidget(button)
+            self.section_list.addWidget(button)
             self.section_buttons[page] = button
         self.no_results = self.label("No matching settings")
         self.no_results.setObjectName("detail")
+        self.no_results.setWordWrap(True)
+        self.no_results.setContentsMargins(6, 4, 6, 4)
         sidebar.addWidget(self.no_results)
         sidebar.addStretch()
         self.main_row.addWidget(self.sidebar)
@@ -1065,9 +1135,9 @@ class InstallerWindow(OpaqueSurface):
         self.main_row.addLayout(content_column, 1)
         self.settings_toolbar = WindowHeader(self)
         self.settings_toolbar.setObjectName("settingsToolbar")
-        self.settings_toolbar.setFixedHeight(46)
+        self.settings_toolbar.setFixedHeight(50)
         toolbar = QHBoxLayout(self.settings_toolbar)
-        toolbar.setContentsMargins(12, 6, 14, 8)
+        toolbar.setContentsMargins(13, 7, 16, 10)
         toolbar.setSpacing(3)
         self.settings_back = HistoryButton(-1)
         self.settings_back.setObjectName("settingsBack")
@@ -1076,14 +1146,15 @@ class InstallerWindow(OpaqueSurface):
         self.settings_forward.setObjectName("settingsForward")
         self.settings_forward.clicked.connect(lambda: self.move_settings_history(1))
         history = HistoryControl(self.settings_back, self.settings_forward)
-        add_surface_shadow(history, radius=11, offset=2, opacity=103)
+        add_surface_shadow(history, radius=15, offset=2.5, opacity=103)
         toolbar.addWidget(history)
         toolbar.addSpacing(6)
         self.settings_review = GlassButton()
         self.settings_review.setObjectName("settingsReview")
+        self.settings_review.backed = True
         self.settings_review.setFont(relative_font(self, .78, QFont.Weight.DemiBold))
         self.settings_review.clicked.connect(self.review_settings_changes)
-        add_surface_shadow(self.settings_review, radius=12, offset=2, opacity=108)
+        add_surface_shadow(self.settings_review, radius=16, offset=2.5, opacity=108)
         self.settings_title = self.label("")
         self.settings_title.setFont(relative_font(self, .91, QFont.Weight.DemiBold))
         toolbar.addWidget(self.settings_title, 1)
@@ -1170,7 +1241,7 @@ class InstallerWindow(OpaqueSurface):
         self.configure_window_mode()
         self.render()
         if self.settings_mode:
-            self.focus_search()
+            self.setFocus(Qt.FocusReason.OtherFocusReason)
         else:
             self.next.setFocus(Qt.FocusReason.OtherFocusReason)
 
@@ -1231,7 +1302,7 @@ class InstallerWindow(OpaqueSurface):
 
     def filter_settings(self):
         query = search_text(self.search.text()).split()
-        matches = []
+        title_matches, other_matches = [], []
         for page, button in self.section_buttons.items():
             title, _, _, panels = SETTINGS_PAGES[page]
             terms = (title, *(PANEL_LABELS[panel] for panel in panels))
@@ -1257,7 +1328,13 @@ class InstallerWindow(OpaqueSurface):
             match = all(term in keywords for term in query)
             button.setVisible(match)
             if match:
-                matches.append(page)
+                exact_title = " ".join(query) in (search_text(title), search_text(self.t(title)))
+                (title_matches if exact_title else other_matches).append(page)
+        matches = title_matches + other_matches
+        for index, page in enumerate(matches):
+            button = self.section_buttons[page]
+            if self.section_list.indexOf(button) != index:
+                self.section_list.insertWidget(index, button)
         self.no_results.setVisible(not matches)
         return matches
 
@@ -1700,8 +1777,9 @@ class InstallerWindow(OpaqueSurface):
             self.settings_forward.setEnabled(self.settings_index + 1 < len(self.settings_history))
         self.settings_review.setText(self.t("Review changes"))
         self.update_settings_review()
-        self.search.setPlaceholderText(self.t("Search settings"))
+        self.search.setPlaceholderText(self.t("Search"))
         self.search.setAccessibleName(self.t("Search settings"))
+        self.search.clear_action.setText(self.t("Clear search"))
         self.no_results.setText(self.t("No matching settings"))
         for page, button in self.section_buttons.items():
             button.setText(self.t(SETTINGS_PAGES[page][0]).replace("&", "&&"))
@@ -1710,7 +1788,9 @@ class InstallerWindow(OpaqueSurface):
         self.refresh_sidebar_material()
         field_surface = "rgba(255, 255, 255, 163)" if light else "rgba(255, 255, 255, 22)"
         hover = "rgba(94, 134, 175, 28)" if light else "rgba(153, 182, 226, 32)"
-        selected_top, selected_bottom = ("#267bbc", "#175794") if light else ("#3b78b7", "#2a527f")
+        selected_top, selected_bottom = ("#1976d3", "#0863bf") if light else ("#297bc6", "#1c60a1")
+        search_surface = "rgba(40, 69, 95, 24)" if light else "rgba(255, 255, 255, 24)"
+        search_focus = "rgba(255, 255, 255, 168)" if light else "rgba(255, 255, 255, 32)"
         separator = "#e2e7ec" if light else "#3b4049"
         panel_surface = "#f0f3f6" if light else "#30343d"
         self.close_button.setAccessibleName(self.t("Close"))
@@ -1790,11 +1870,16 @@ class InstallerWindow(OpaqueSurface):
                 background: {field_surface}; border-color: {self.accent};
             }}
             QToolButton[iconStyleChoice="true"]:focus:!checked {{ border-color: {muted}; }}
-            QLineEdit#settingsSearch, QLineEdit#widgetSettingField {{
+            QLineEdit#settingsSearch {{
+                background: {search_surface}; color: {foreground};
+                border: 1px solid transparent; border-radius: 7px; padding: 2px 5px;
+            }}
+            QLineEdit#settingsSearch:focus {{ background: {search_focus}; border-color: {self.accent}; }}
+            QLineEdit#widgetSettingField {{
                 background: {field_surface}; color: {foreground};
                 border: 1px solid {separator}; border-radius: 8px; padding: 3px 6px;
             }}
-            QLineEdit#settingsSearch:focus, QLineEdit#widgetSettingField:focus {{ border-color: {self.accent}; }}
+            QLineEdit#widgetSettingField:focus {{ border-color: {self.accent}; }}
             QKeySequenceEdit QLineEdit {{
                 background: {field_surface}; color: {foreground};
                 border: 1px solid {separator}; border-radius: 8px; padding: 3px 6px;
@@ -1802,13 +1887,13 @@ class InstallerWindow(OpaqueSurface):
             QKeySequenceEdit QLineEdit:focus {{ border-color: {self.accent}; }}
             QPushButton[navigation="section"] {{
                 color: {foreground}; text-align: left; border: 1px solid transparent;
-                border-radius: 7px; padding: 3px 6px;
+                border-radius: 6px; padding: 2px 6px;
             }}
             QPushButton[navigation="section"]:hover {{ background: {hover}; }}
             QPushButton[navigation="section"]:checked {{
                 background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                     stop: 0 {selected_top}, stop: 1 {selected_bottom});
-                border-top-color: rgba(255, 255, 255, 45); color: white;
+                color: white;
             }}
             QPushButton[navigation="section"]:focus {{ border-color: {self.accent}; }}
             QLabel {{ background: transparent; color: {foreground}; }}
@@ -3045,13 +3130,14 @@ class InstallerWindow(OpaqueSurface):
                 column = QVBoxLayout(card)
                 column.setContentsMargins(10, 5, 10, 5)
                 column.setSpacing(0)
-                heading = self.label(SECTIONS[section][0])
+                heading = self.label(INSTALL_SECTIONS["startup"][0] if section == "startup" else SECTIONS[section][0])
                 heading.setFont(relative_font(self, .82, QFont.Weight.DemiBold))
                 column.addWidget(heading)
                 sections[section] = column
                 stack.addWidget(card)
             stack.addStretch()
             summary.addLayout(stack, 1)
+        sections["display"] = sections["startup"]
         for key, title, text, step in rows:
             entry = QWidget()
             entry.setObjectName("summaryEntry")
