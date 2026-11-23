@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.82.14**. Verified that the installer Welcome page shows the Glass Tux emblem for Tahoe and Golden Gate in light and dark appearance. [Evidence and coverage](release-evidence.json).
+**v0.84.1**. Verified per-label contrast in the light and dark appearances with Adaptive Contrast on and off. On the dark half of the split launcher backdrop, the measured Firefox label improved from 20.2 to 33.4 lightness points. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
