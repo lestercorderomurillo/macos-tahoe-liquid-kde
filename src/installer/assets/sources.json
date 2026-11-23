@@ -891,26 +891,26 @@
     "sha256": "502233e14c104c61c45fcd5f6aa09e05ee7529567454809ed961262869f6aa94",
     "file": "panel-detail-502233e14c10.jpg"
   },
-  "logo-26.png": {
-    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/src/screenshots/macos-26.png",
+  "logo-tahoe.png": {
+    "source": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/435182bf289a8a15b6a3d29b1ad2f4fdcebcbb4a/src/screenshots/macos-26.png",
     "source_sha256": "0293dc2ec82d8d6b62430b3cbbd980b55ce217e44eca71d79cf96271bcf8945a",
-    "transform": "Exact README emblem",
-    "sha256": "0293dc2ec82d8d6b62430b3cbbd980b55ce217e44eca71d79cf96271bcf8945a",
-    "file": "logo-26-0293dc2ec82d.png"
+    "transform": "ImageGen glass Tux over adapted Apple emblem, with original outer artwork and alpha composited back",
+    "sha256": "d9301a4b323e6640711585b7638d1b452d1b2a7a8d2111c8032090bf4a9b7183",
+    "file": "glass-tux-tahoe-d9301a4b323e.png"
   },
-  "logo-27.png": {
-    "source": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/src/screenshots/macos-27.png",
+  "logo-golden-gate.png": {
+    "source": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/blob/5cac7052384ceadfdb3eb32a41df5b1a41da16bc/src/screenshots/macos-27.png",
     "source_sha256": "3fdb1e6494823558e600c04aceae0998f4f9db2c32a0f6842abbac1a375859b4",
-    "transform": "Exact README emblem",
-    "sha256": "3fdb1e6494823558e600c04aceae0998f4f9db2c32a0f6842abbac1a375859b4",
-    "file": "logo-27-3fdb1e649482.png"
+    "transform": "ImageGen glass Tux over adapted Apple emblem, with original outer artwork and alpha composited back",
+    "sha256": "1ebd325961a71431c7b096d13b38a5bab771bf571b51ef1731a61b0e5318303a",
+    "file": "glass-tux-golden-gate-1ebd325961a7.png"
   },
-  "logo-27-dark.png": {
-    "source": "/mnt/M2_1/Projects/Repositories/macos-golden-gate-liquid-kde/src/screenshots/macos-27-dark.png",
+  "logo-golden-gate-dark.png": {
+    "source": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/blob/5cac7052384ceadfdb3eb32a41df5b1a41da16bc/src/screenshots/macos-27-dark.png",
     "source_sha256": "6b6964ec4dfc4c019e3054527fadfbb89e0a6032087718e7d09a3553204165e5",
-    "transform": "Exact README emblem",
-    "sha256": "6b6964ec4dfc4c019e3054527fadfbb89e0a6032087718e7d09a3553204165e5",
-    "file": "logo-27-dark-6b6964ec4dfc.png"
+    "transform": "ImageGen glass Tux over adapted Apple emblem, with original outer artwork and alpha composited back",
+    "sha256": "8a2f000e0c836b7dcd4310c38ae4d7b2b0be758ae1302e00d314b2d7194e78d1",
+    "file": "glass-tux-golden-gate-dark-8a2f000e0c83.png"
   },
   "accent-tahoe-light-blue.jpg": {
     "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/installer-wizard-mocks-v5/assets/desktop-tahoe-light.jpg",
