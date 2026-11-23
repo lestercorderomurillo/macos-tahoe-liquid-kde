@@ -916,7 +916,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--uninstall", action="store_true", help="Open the graphical uninstaller.")
     parser.add_argument("--mode", choices=("install", "settings"), default="install",
                         help="Open guided installation or installed settings.")
-    parser.add_argument("--section", choices=("appearance", "general"), default="appearance",
+    parser.add_argument("--section", choices=("appearance", "general", "theme", "desktop", "dock_bar", "windows", "applications", "startup"),
+                        default="appearance",
                         help="Section to open in settings mode.")
     parser.add_argument("--wizard-options", help=argparse.SUPPRESS)
     parser.add_argument("--progress-file", help=argparse.SUPPRESS)

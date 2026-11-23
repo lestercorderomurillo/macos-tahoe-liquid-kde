@@ -206,7 +206,7 @@ from PyQt6.QtWidgets import QApplication, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtTest import QTest
 from installer_ui import _make_installer_bridge
-from wizard_window import InstallerWindow, ChoiceCard, STEPS, ASSETS
+from wizard_window import InstallerWindow, ChoiceCard, STEPS, INSTALL_FLOW, ASSETS
 import installer_choices
 import cli
 cli._theme_is_already_installed = lambda: False
@@ -298,7 +298,7 @@ assert calls == [('install', window.defaults)]
 bridge._running = False; bridge.finished.emit(0)
 calls.clear()
 window.page = 'welcome'; window.render(); window.advance()
-assert window.page == 'appearance' and not calls
+assert window.page == 'theme' and not calls
 window.page = 'files'; window.render(); app.processEvents()
 from wizard_window import CheckOption, RadioOption
 bookmarks = window.content.findChild(CheckOption, 'choice-nautilus_bookmarks')
@@ -334,7 +334,7 @@ window.advance(); assert window.page == 'launcher'
 window.previous(); assert window.page == 'desktop_widgets' and window.choices['desktop_widgets'] is False
 window.page = 'summary'; window.render()
 window.content.findChild(QPushButton, 'edit-desktop_widgets').click()
-assert window.page == 'desktop_widgets'
+assert window.page == 'desktop' and 'desktop_widgets' in window.expanded_panels['desktop']
 window.content.findChild(ChoiceCard, 'choice-desktop_widgets-True').click()
 window.advance()
 assert window.page == 'summary' and window.choices['desktop_widgets'] is True
@@ -343,7 +343,7 @@ window.content.findChild(ChoiceCard, 'choice-window_controls-glassy').click()
 assert window.choices['window_controls'] == 'glassy'
 window.page = 'summary'; window.render(); app.processEvents()
 window.content.findChild(QPushButton, 'edit-window_controls').click()
-assert window.page == 'window_controls'
+assert window.page == 'window_details' and 'window_controls' in window.expanded_panels['window_details']
 window.content.findChild(ChoiceCard, 'choice-window_controls-flat').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['window_controls'] == 'flat'
@@ -357,7 +357,7 @@ assert window.choices['button_position'] == 'right'
 window.content.findChild(ChoiceCard, 'choice-button_position-keep').click()
 window.page = 'summary'; window.render(); app.processEvents()
 window.content.findChild(QPushButton, 'edit-button_position').click()
-assert window.page == 'button_position'
+assert window.page == 'window_details' and 'button_position' in window.expanded_panels['window_details']
 window.content.findChild(ChoiceCard, 'choice-button_position-left').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['button_position'] == 'left'
@@ -370,7 +370,7 @@ assert window.choices['color'] == 'green'
 
 window.page = 'summary'; window.render()
 window.content.findChild(QPushButton, 'edit-icons').click()
-assert window.page == 'icons'
+assert window.page == 'personalization' and 'icons' in window.expanded_panels['personalization']
 window.select('icons', 'glass'); app.processEvents(); window.advance()
 assert window.page == 'summary' and window.choices['launcher'] == selected
 window.advance()
@@ -575,7 +575,7 @@ assert window.scroll.verticalScrollBar().maximum() == 0
 window.page = 'summary'; window.render(); app.processEvents()
 assert window.choices['shadows'] == 'hard'
 window.content.findChild(QPushButton, 'edit-shadows').click(); app.processEvents()
-assert window.page == 'shadows'
+assert window.page == 'window_details' and 'shadows' in window.expanded_panels['window_details']
 window.content.findChild(ChoiceCard, 'choice-shadows-soft').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['shadows'] == 'soft'
@@ -605,10 +605,21 @@ with tempfile.TemporaryDirectory() as directory:
     assert not current_wallpaper_preview(100, 50).isNull()
 theme_switch._wallpapers_from_config = snapshot
 import os
-window.page = 'appearance'; window.render(); app.processEvents()
-assert window.dots.isVisible() and not window.sidebar.isVisible()
-window.advance()
-assert window.page == 'icons' and window.dots.isVisible()
+window.page = 'welcome'; window.render(); app.processEvents()
+assert len(INSTALL_FLOW) == 10
+window.resize(window.minimumSize())
+for section in INSTALL_FLOW[1:]:
+    window.advance(); app.processEvents()
+    assert window.page == section and window.dots.isVisible()
+    assert window.scroll.horizontalScrollBar().maximum() == 0
+    assert window.scroll.verticalScrollBar().maximum() == 0
+    for frame in window.panel_frames.values():
+        toggle = frame.findChild(QPushButton, 'optionPanelTitle')
+        if toggle is not None and toggle.isVisible() and not toggle.isChecked():
+            toggle.click(); app.processEvents()
+            assert window.scroll.verticalScrollBar().maximum() == 0, section
+window.previous()
+assert window.page == 'startup'
 window.page = 'done'
 window.open_installed_settings()
 assert window.sidebar.isVisible() and not window.dots.isVisible()
@@ -617,13 +628,13 @@ assert window.filter_settings() == ['general']
 window.open_search_result()
 assert window.page == 'general' and window.settings_back.isEnabled()
 window.settings_back.click()
-assert window.page == 'appearance' and window.settings_forward.isEnabled()
+assert window.page == 'theme' and window.settings_forward.isEnabled()
 window.settings_forward.click()
 assert window.page == 'general'
 window.search.setText('zzzzz')
 assert window.no_results.isVisible()
 window.search.clear()
-window.navigate_settings('appearance')
+window.navigate_settings('theme')
 
 # Exercise the real process adapter with a session-local switcher.
 state = theme_switch._appearance_state_path()
@@ -653,6 +664,14 @@ for _ in range(100):
         break
     QTest.qWait(10)
 assert window.choices['appearance'] == 'dark' and window.appearance_error
+window.navigate_settings('startup')
+window.select('oled_care', not window.choices['oled_care'])
+assert window.settings_review.isVisible()
+window.settings_review.click()
+assert window.page == 'summary' and not window.settings_mode and window.reconfiguring
+assert not window.choices['reset_layout']
+window.previous()
+assert window.page == 'startup' and window.settings_mode and window.settings_review.isVisible()
 window.close()
 print('native wizard flow passed')
 '''

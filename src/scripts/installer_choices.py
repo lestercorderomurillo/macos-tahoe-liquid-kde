@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import os
 import re
@@ -121,6 +122,23 @@ def validate(value: object) -> dict:
     if result["wallpaper"] == "custom" and not os.path.isabs(path):
         raise ValueError("Choose a wallpaper file")
     return result
+
+
+def installed_choices() -> dict | None:
+    """Read the options embedded by the last graphical installation."""
+    switcher = Path.home() / ".local/bin/mac-tahoe-theme-switch"
+    try:
+        with switcher.open(encoding="utf-8") as stream:
+            for line in stream:
+                if line.startswith("INSTALLER_OPTIONS = "):
+                    stored = ast.literal_eval(line.split(" = ", 1)[1].strip())
+                    if not isinstance(stored, dict) or not stored:
+                        return None
+                    stored.pop("preserved_icon", None)
+                    return validate(stored)
+    except (OSError, SyntaxError, ValueError, TypeError):
+        return None
+    return None
 
 
 def selected() -> dict:
