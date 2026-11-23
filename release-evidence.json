@@ -1,37 +1,31 @@
 {
-  "version": "0.82.15",
+  "version": "0.82.16",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "ae9d068f5d2f89f5f8b45487dd7c210012014875",
-  "scope": "Give the menu bar an exponential dark fade and rounded display corners, and guide pointer motion along the visible curve on Wayland.",
-  "approval": "The maintainer approved publication to both editions after reviewing the final menu bar and corner clearance preview.",
+  "implementation_commit": "aa848c2a0bb6610bf11d8fc2b5b21d66754d0b2d",
+  "scope": "Choose a common ink family per glass component, apply stationary text updates immediately, and preserve the configured light menu glass opacity.",
+  "approval": "The maintainer requested publication after reviewing the light system menu over the Sequoia Sunrise wallpaper.",
   "checks": [
     {
-      "command": "Ran 27 focused checks covering menu geometry, component caching, installation of the Global Menu module, and Acrylic Glass regions.",
+      "command": "Verified the native control glass probe at 1x and 1.45x, including component ink caps and window drag timing.",
       "result": "passed"
     },
     {
-      "command": "Built the native effects with KWin 6.6.4, 6.7.4 and 6.8.1 SDKs. Also built the X11 target with the 6.6 and 6.7.4 SDKs.",
+      "command": "Exercised search typing, keyboard selection, menu reopening and the component ink family in the KDE neon Wayland guest.",
       "result": "passed"
     },
     {
-      "command": "Ran the existing isolated native X11 Xvfb render probe with the 6.6 build. The approved exempt surface retained pixel identity across the effect toggle.",
+      "command": "Built and installed the final Qt style and menu plugin in KDE neon, captured the approved light menu over a photographic wallpaper, and passed the native menu text contrast test.",
       "result": "passed"
     },
     {
-      "command": "Loaded the compiled menu bar and Acrylic Glass into KDE neon Plasma 6.8.1 Wayland at 2x. Exercised pointer motion at both top corners and clicked the system menu and clock. Captured both edition wallpapers with light and dark appearances.",
-      "result": "passed"
-    },
-    {
-      "command": "Verified Golden Gate local-source staging, the component hash ledger, git diff --check, and byte identity of the tested runtime with the release candidate.",
+      "command": "Verified the component installation fingerprint ledger.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "Wayland pointer and panel rendering were exercised on one display. X11 was checked with an isolated existing compositor render probe and retains its standard pointer behavior. Installer lifecycle code was unchanged.",
+  "coverage_limits": "The final transparency preview used a single KDE neon Wayland display. The broader local desktop-controls probe reported the pre-existing MacOptionsMenu width binding warning, also reproduced on dev.",
   "approved_preview_sha256": {
-    "clearance.png": "4bdac041a9ddc1e717e4baa364f22af61120364c4bfa0b62b212b0675c1df124",
-    "preview.png": "514acea1fb20ac3f02d1ec175d8f52ac5866c62def2bc8fdff3c7ac1e59e0e89",
-    "clicks.png": "b1796e72e91971f65fa251a63d3046c9f0746c28d7dc3ffe876882853ed3b735"
+    "menu-sobre-secuoyas.png": "8d94ea416588d03f9dca0259d418883c43c68b89dc641b6adff0bbdd1a0edac4"
   },
-  "source_sha256": "668bc402e7746ccbb637af3ffc48df692be868eb8258d9e0910bd8ab3cef100f"
+  "source_sha256": "ada3d9d42b95d7e3cc0af4310d5755e75b70cd19e3e4f7aa1cf1f381bd9daeb4"
 }
