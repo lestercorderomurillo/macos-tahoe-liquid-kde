@@ -14,11 +14,11 @@ import time
 
 from PyQt6 import sip
 from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
-from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
+from PyQt6.QtGui import QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
     QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
-    QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QTabWidget, QVBoxLayout, QWidget,
+    QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QTabWidget, QToolButton, QVBoxLayout, QWidget,
 )
 
 from installer_choices import COLORS, GLASS_PRESETS, defaults, validate
@@ -257,14 +257,14 @@ class ColorSwatch(QPushButton):
     def __init__(self, color, parent=None):
         super().__init__(parent)
         self.color = QColor(color)
-        self.setFixedSize(32, 36)
+        self.setFixedSize(25, 27)
         self.setCheckable(True)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        circle = QRectF(5, 7, 22, 22)
+        circle = QRectF(4.5, 5.5, 16, 16)
         painter.setPen(QPen(QColor(0, 0, 0, 25), .7))
         painter.setBrush(self.color)
         painter.drawEllipse(circle)
@@ -446,11 +446,27 @@ class WindowHeader(QWidget):
             super().mousePressEvent(event)
 
 
+class HistoryControl(QWidget):
+    def __init__(self, back, forward):
+        super().__init__()
+        self.setObjectName("settingsHistoryControl")
+        row = QHBoxLayout(self)
+        row.setContentsMargins(3, 2, 3, 3)
+        row.setSpacing(1)
+        row.addWidget(back)
+        row.addWidget(forward)
+        self.setFixedSize(row.sizeHint())
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        paint_glass_control(self, painter)
+
+
 class HistoryButton(QPushButton):
     def __init__(self, direction):
         super().__init__()
         self.direction = direction
-        self.setFixedSize(28, 28)
+        self.setFixedSize(27, 24)
 
     def paintEvent(self, event):
         super().paintEvent(event)
@@ -613,7 +629,7 @@ class ChoiceCard(QPushButton):
         text.setSpacing(4)
         label = QLabel(title)
         label.setWordWrap(True)
-        label.setFont(relative_font(self, .73 if small_caption else .93,
+        label.setFont(relative_font(self, .64 if small_caption else .93,
                                     QFont.Weight.Medium if small_caption else QFont.Weight.Bold))
         text.addWidget(label)
         if detail:
@@ -941,11 +957,11 @@ class InstallerWindow(OpaqueSurface):
         self.settings_back = HistoryButton(-1)
         self.settings_back.setObjectName("settingsBack")
         self.settings_back.clicked.connect(lambda: self.move_settings_history(-1))
-        toolbar.addWidget(self.settings_back)
         self.settings_forward = HistoryButton(1)
         self.settings_forward.setObjectName("settingsForward")
         self.settings_forward.clicked.connect(lambda: self.move_settings_history(1))
-        toolbar.addWidget(self.settings_forward)
+        toolbar.addWidget(HistoryControl(self.settings_back, self.settings_forward))
+        toolbar.addSpacing(6)
         self.settings_review = GlassButton()
         self.settings_review.setObjectName("settingsReview")
         self.settings_review.setFont(relative_font(self, .78, QFont.Weight.DemiBold))
@@ -1367,8 +1383,7 @@ class InstallerWindow(OpaqueSurface):
             for group in groups:
                 group.setExclusive(True)
         if key == "color" and "icons" in self.choice_widgets:
-            self.glass_preview.pixmap = self.icon_sample(True)
-            self.glass_preview.update()
+            self.glass_preview.setIcon(self.icon_sample("glass"))
         elif key == "wallpaper":
             self.wallpaper_filename.setText(Path(self.choices["wallpaper_path"]).name)
             self.wallpaper_filename.setVisible(value == "custom")
@@ -1425,22 +1440,25 @@ class InstallerWindow(OpaqueSurface):
         self.body.addLayout(grid)
         return group
 
-    def radio(self, key, values, *, inline=False):
+    def radio(self, key, values, *, inline=False, font_scale=.93, heading=None):
         group = QButtonGroup(self.content)
         self.groups.append(group)
         row = QHBoxLayout() if inline else self.body
         if inline:
-            row.setSpacing(22)
+            row.setSpacing(10 if heading is not None else 22)
+            if heading is not None:
+                row.addWidget(heading)
+                row.addStretch()
         for value, label in sorted(values, key=lambda item: item[0] != self.defaults[key]):
             button = RadioOption(self.t(label))
-            button.setFont(relative_font(self, .93))
+            button.setFont(relative_font(self, font_scale))
             button.setObjectName(f"choice-{key}-{value}")
             self.bind_choice(key, value, button)
             button.setChecked(self.choices[key] == value)
             group.addButton(button)
             button.clicked.connect(lambda _, k=key, v=value: self.select(k, v))
             if inline:
-                row.addWidget(button, 1)
+                row.addWidget(button, 1 if heading is None else 0)
             else:
                 row.addWidget(button)
         if inline:
@@ -1573,10 +1591,21 @@ class InstallerWindow(OpaqueSurface):
             }}
             QPushButton#settingsBack, QPushButton#settingsForward {{
                 color: {foreground}; background: transparent; border: 1px solid transparent;
-                border-radius: 6px; padding: 0;
+                border-radius: 10px; padding: 0;
             }}
             QPushButton#settingsBack:enabled:hover, QPushButton#settingsForward:enabled:hover {{ background: {hover}; }}
+            QPushButton#settingsBack:pressed, QPushButton#settingsForward:pressed {{ background: {field_surface}; }}
             QPushButton#settingsBack:focus, QPushButton#settingsForward:focus {{ border-color: {self.accent}; }}
+            QToolButton[iconStyleChoice="true"] {{
+                color: {foreground}; background: transparent;
+                border: 1px solid transparent; border-radius: 8px; padding: 5px 7px;
+                min-width: 54px;
+            }}
+            QToolButton[iconStyleChoice="true"]:hover {{ background: {hover}; }}
+            QToolButton[iconStyleChoice="true"]:checked {{
+                background: {field_surface}; border-color: {self.accent};
+            }}
+            QToolButton[iconStyleChoice="true"]:focus:!checked {{ border-color: {muted}; }}
             QLineEdit#settingsSearch, QLineEdit#widgetSettingField {{
                 background: {field_surface}; color: {foreground};
                 border: 1px solid {separator}; border-radius: 8px; padding: 3px 6px;
@@ -1731,7 +1760,9 @@ class InstallerWindow(OpaqueSurface):
             layout.setSpacing(6)
             if self.settings_mode or len(panels) > 1:
                 title = self.label(PANEL_LABELS[panel])
-                title.setFont(relative_font(self, .88, QFont.Weight.DemiBold))
+                desktop_title = panel in ("wallpaper", "desktop_widgets")
+                title.setFont(relative_font(self, .72 if desktop_title else .88,
+                                            QFont.Weight.Medium if desktop_title else QFont.Weight.DemiBold))
                 title.setContentsMargins(4, 0, 0, 0)
                 layout.addWidget(title)
             frame = self.option_card()
@@ -2283,57 +2314,58 @@ class InstallerWindow(OpaqueSurface):
             if self.appearance_error:
                 self.body.addWidget(self.label(self.appearance_error))
 
-    def icon_sample(self, glass=False, *, style=None):
-        style = style or ("glass" if glass else "regular")
+    def icon_sample(self, style):
         mode = "dark" if style == "dark" else self.mode
         color = self.choices["color"] if style == "glass" else "neutral"
-        canvas = QPixmap(362, 160)
-        canvas.fill(Qt.GlobalColor.transparent)
-        painter = QPainter(canvas)
-        painter.scale(2, 2)
-        painter.drawPixmap(62, 12, picture(f"weather-{style}-{mode}-{color}.png", 56, 56))
-        painter.end()
-        canvas.setDevicePixelRatio(2)
-        return canvas
+        return QIcon(picture(f"weather-{style}-{mode}-{color}.png", 34, 34))
 
     def page_icons(self):
-        group = self.cards("icons", [
-            ("regular", "Default", "", self.icon_sample()),
-            ("dark", "Dark", "", self.icon_sample(style="dark")),
-            ("clear", "Clear", "", self.icon_sample(style="clear")),
-            ("glass", "Tinted", "", self.icon_sample(True)),
-        ], columns=4, compact=True)
-        keep = ChoiceCard(self.t("Keep my icons"), "", None, self.choices["icons"] == "keep", self.content, compact=True)
+        group = QButtonGroup(self.content)
+        self.groups.append(group)
+        styles = QHBoxLayout()
+        styles.setSpacing(6)
+        for value, label in (("regular", "Default"), ("dark", "Dark"), ("clear", "Clear"), ("glass", "Tinted")):
+            button = QToolButton()
+            button.setObjectName("choice-icons-" + value)
+            button.setProperty("iconStyleChoice", True)
+            button.setFont(relative_font(self, .72, QFont.Weight.Medium))
+            button.setText(self.t(label))
+            button.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            button.setIcon(self.icon_sample(value))
+            button.setIconSize(QSize(32, 32))
+            button.setCheckable(True)
+            group.addButton(button)
+            button.setChecked(self.choices["icons"] == value)
+            button.clicked.connect(lambda _, style=value: self.select("icons", style))
+            self.bind_choice("icons", value, button)
+            styles.addWidget(button)
+            if value == "glass":
+                self.glass_preview = button
+        styles.addStretch()
+        self.body.addLayout(styles)
+
+        keep = RadioOption(self.t("Keep my icons"))
         keep.setObjectName("choice-icons-keep")
+        keep.setFont(relative_font(self, .76))
         group.addButton(keep)
+        keep.setChecked(self.choices["icons"] == "keep")
+        keep.clicked.connect(lambda: self.select("icons", "keep"))
         self.bind_choice("icons", "keep", keep)
-        self.glass_preview = next(button.photo for button in group.buttons()
-                                  if button.objectName() == "choice-icons-glass")
-        keep.clicked.connect(lambda: self.select("icons", "keep")); self.body.addWidget(keep)
-        self.body.addSpacing(8)
-        # As on macOS, the icons can stay light (or dark) whatever the appearance.
+        self.body.addWidget(keep)
+
         appearance = self.label("Icon appearance")
-        appearance.setFont(relative_font(self, .93, QFont.Weight.Bold))
-        self.body.addWidget(appearance)
-        self.radio("icon_appearance", [("auto", "Automatic"), ("light", "Light"), ("dark", "Dark")], inline=True)
-        self.body.addSpacing(8)
-        title = self.label("Theme")
-        title.setFont(relative_font(self, .93, QFont.Weight.Bold))
-        self.body.addWidget(title)
-        panel = QFrame(self.content)
-        panel.setObjectName("themeColorPanel")
-        dark = self.palette().window().color().lightnessF() <= .5
-        panel.setStyleSheet("QFrame#themeColorPanel { background: "
-                            + ("#333333" if dark else "#f0f0f0")
-                            + "; border-radius: 10px; }")
-        row = QHBoxLayout(panel)
-        row.setContentsMargins(14, 8, 12, 8)
-        row.setSpacing(4)
-        row.addWidget(self.label("Color"))
+        appearance.setFont(relative_font(self, .78, QFont.Weight.Medium))
+        self.radio("icon_appearance", [("auto", "Automatic"), ("light", "Light"), ("dark", "Dark")],
+                   inline=True, font_scale=.76, heading=appearance)
+        row = QHBoxLayout()
+        row.setSpacing(3)
+        color_label = self.label("Color")
+        color_label.setFont(relative_font(self, .78, QFont.Weight.Medium))
+        row.addWidget(color_label)
         row.addStretch()
         self.color_buttons = {}
         for name, color in COLORS.items():
-            button = ColorSwatch(color, panel)
+            button = ColorSwatch(color)
             button.setObjectName("color-"+name)
             button.setAccessibleName(self.t(name.capitalize()))
             button.setToolTip(self.t(name.capitalize()))
@@ -2342,7 +2374,7 @@ class InstallerWindow(OpaqueSurface):
             self.color_buttons[name] = button
             button.clicked.connect(lambda _, value=name: self.select("color", value))
             row.addWidget(button)
-        self.body.addWidget(panel)
+        self.body.addLayout(row)
 
     @property
     def mode(self):
@@ -2357,10 +2389,14 @@ class InstallerWindow(OpaqueSurface):
         self.cards("wallpaper", items, columns=4, compact=True)
         row = QHBoxLayout()
         row.addStretch()
-        button = QPushButton(self.t("Choose a file…")); button.clicked.connect(self.choose_file)
+        button = QPushButton(self.t("Choose a file…"))
+        button.setFont(relative_font(self, .72, QFont.Weight.Medium))
+        button.clicked.connect(self.choose_file)
         button.setObjectName("textLink")
-        row.addWidget(button); self.body.addLayout(row)
+        row.addWidget(button)
+        self.body.addLayout(row)
         self.wallpaper_filename = self.label(Path(self.choices["wallpaper_path"]).name)
+        self.wallpaper_filename.setFont(relative_font(self, .72))
         self.wallpaper_filename.setVisible(self.choices["wallpaper"] == "custom")
         self.body.addWidget(self.wallpaper_filename)
 
@@ -2645,18 +2681,32 @@ class InstallerWindow(OpaqueSurface):
         ])
 
     def font_sample(self, theme):
-        font = QFont(self.font() if theme else self._desktop_font)
+        body = QFont(self.font() if theme else self._desktop_font)
+        body.setPointSizeF(self.font().pointSizeF() * .88)
+        body.setWeight(QFont.Weight.Normal)
+        heading = QFont(body)
         if theme:
-            font.setFamily(self._display_family)
-        canvas = QPixmap(724, 468); canvas.fill(self.palette().base().color())
-        painter = QPainter(canvas); painter.scale(2, 2); painter.setPen(self.palette().text().color())
-        font.setPointSizeF(self.font().pointSizeF()*2.4); font.setWeight(QFont.Weight.Bold); painter.setFont(font)
-        painter.drawText(22, 78, self.t("Your files."))
-        font.setPointSizeF(self.font().pointSizeF()*1.07); font.setWeight(QFont.Weight.Normal); painter.setFont(font)
-        painter.drawText(22, 120, self.t("Documents, photos and ideas."))
-        painter.drawText(22, 142, self.t("Everything in its place."))
-        font.setPointSizeF(self.font().pointSizeF()*1.5); painter.setFont(font)
-        painter.drawText(22, 184, "09:41    0123456789"); painter.end()
+            heading.setFamily(self._display_family)
+        heading.setPointSizeF(self.font().pointSizeF() * 1.45)
+        heading.setWeight(QFont.Weight.DemiBold)
+        headline = QFontMetrics(heading)
+        lines = QFontMetrics(body)
+        height = 16 + headline.height() + 8 + 2 * lines.lineSpacing() + 7 + lines.height() + 14
+        canvas = QPixmap(724, 2 * height)
+        canvas.fill(self.palette().base().color())
+        painter = QPainter(canvas)
+        painter.scale(2, 2)
+        painter.setPen(self.palette().text().color())
+        y = 16 + headline.ascent()
+        painter.setFont(heading)
+        painter.drawText(20, y, self.t("Your files."))
+        y += headline.descent() + 8 + lines.ascent()
+        painter.setFont(body)
+        painter.drawText(20, y, self.t("Documents, photos and ideas."))
+        y += lines.lineSpacing()
+        painter.drawText(20, y, self.t("Everything in its place."))
+        painter.drawText(20, y + lines.lineSpacing() + 7, "09:41    0123456789")
+        painter.end()
         canvas.setDevicePixelRatio(2)
         return canvas
 

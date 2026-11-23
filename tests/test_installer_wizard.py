@@ -267,9 +267,13 @@ for page, _ in STEPS:
             expected = 'SF Pro Display' if widget.objectName() == 'pageTitle' else 'SF Pro Text'
             assert QFontInfo(widget.font()).family() == expected, (page, widget.objectName())
     cards = window.content.findChildren(ChoiceCard)
-    if page in ('appearance', 'icons', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows', 'fonts', 'files'):
+    if page in ('appearance', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows', 'fonts', 'files'):
         assert cards and cards[0].isChecked(), page
         assert cards[0].height() > 80, page
+    if page == 'icons':
+        styles = dict(window.choice_widgets['icons'])
+        assert styles[window.choices['icons']].isChecked()
+        assert all(not styles[key].icon().isNull() for key in ('regular', 'dark', 'clear', 'glass'))
 # Match the capture VM's larger system typography: the added shadows row must
 # still leave the complete summary visible at the normal wizard size.
 original_font = window.font()
@@ -362,9 +366,9 @@ window.content.findChild(ChoiceCard, 'choice-button_position-left').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['button_position'] == 'left'
 window.page = 'icons'; window.render(); app.processEvents()
-window.content.findChild(ChoiceCard, 'choice-icons-keep').click(); app.processEvents()
+window.content.findChild(RadioOption, 'choice-icons-keep').click(); app.processEvents()
 assert window.choices['icons'] == 'keep'
-assert sum(card.isChecked() for card in window.content.findChildren(ChoiceCard)) == 1
+assert sum(button.isChecked() for _, button in window.choice_widgets['icons']) == 1
 window.content.findChild(QPushButton, 'color-green').click(); app.processEvents()
 assert window.choices['color'] == 'green'
 
@@ -452,9 +456,9 @@ assert not window.isVisible()
 # This catches both immediate rebuilds and zero-delay render callbacks.
 window = InstallerWindow(bridge)
 window.show(); app.processEvents()
-from PyQt6.QtWidgets import QSpinBox, QFileDialog
+from PyQt6.QtWidgets import QSpinBox, QFileDialog, QToolButton
 from PyQt6.QtGui import QPixmap, QColor
-from PyQt6.QtCore import QObject, QEvent
+from PyQt6.QtCore import QObject, QEvent, QSize
 class PageEvents(QObject):
     def __init__(self):
         super().__init__(); self.hidden = 0
@@ -469,6 +473,7 @@ for page in ('appearance', 'icons', 'wallpaper', 'launcher', 'layout', 'effects'
     observer = PageEvents(); content.installEventFilter(observer)
     controls = content.findChildren(ChoiceCard) + content.findChildren(RadioOption)
     if page == 'icons':
+        controls += content.findChildren(QToolButton)
         controls += [content.findChild(QPushButton, 'color-green'), content.findChild(QPushButton, 'color-red')]
     for control in controls + controls[::-1]:
         control.setFocus(); QTest.mouseClick(control, Qt.MouseButton.LeftButton)
@@ -483,18 +488,18 @@ for page in ('appearance', 'icons', 'wallpaper', 'launcher', 'layout', 'effects'
     content.removeEventFilter(observer)
 window.page = 'icons'; window.render(); app.processEvents()
 photo = window.glass_preview
-regular = window.content.findChild(ChoiceCard, 'choice-icons-regular').photo
-regular_image = regular.pixmap.toImage()
+regular = window.content.findChild(QToolButton, 'choice-icons-regular')
+regular_image = regular.icon().pixmap(QSize(32, 32)).toImage()
 window.select('color', 'blue')
-before = photo.pixmap.toImage(); before_swatch = window.color_buttons['green'].grab().toImage()
+before = photo.icon().pixmap(QSize(32, 32)).toImage(); before_swatch = window.color_buttons['green'].grab().toImage()
 window.select('color', 'green'); app.processEvents()
-assert photo is window.glass_preview and photo.pixmap.toImage() != before
+assert photo is window.glass_preview and photo.icon().pixmap(QSize(32, 32)).toImage() != before
 assert window.color_buttons['green'].grab().toImage() != before_swatch
-assert regular.pixmap.toImage() == regular_image
+assert regular.icon().pixmap(QSize(32, 32)).toImage() == regular_image
 assert window.color_buttons['green'].isChecked() and not window.color_buttons['blue'].isChecked()
 window.select('icons', 'glass')
 window.select('icons', 'keep')
-assert sum(card.isChecked() for card in window.content.findChildren(ChoiceCard)) == 1
+assert [style for style, button in window.choice_widgets['icons'] if button.isChecked()] == ['keep']
 window.page = 'wallpaper'; window.render(); app.processEvents()
 content = window.content
 import tempfile
