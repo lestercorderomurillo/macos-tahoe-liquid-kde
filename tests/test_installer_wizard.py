@@ -334,7 +334,7 @@ window.advance(); assert window.page == 'launcher'
 window.previous(); assert window.page == 'desktop_widgets' and window.choices['desktop_widgets'] is False
 window.page = 'summary'; window.render()
 window.content.findChild(QPushButton, 'edit-desktop_widgets').click()
-assert window.page == 'desktop' and 'desktop_widgets' in window.expanded_panels['desktop']
+assert window.page == 'desktop' and window.panel_frames['desktop_widgets'].isVisible()
 window.content.findChild(ChoiceCard, 'choice-desktop_widgets-True').click()
 window.advance()
 assert window.page == 'summary' and window.choices['desktop_widgets'] is True
@@ -343,7 +343,7 @@ window.content.findChild(ChoiceCard, 'choice-window_controls-glassy').click()
 assert window.choices['window_controls'] == 'glassy'
 window.page = 'summary'; window.render(); app.processEvents()
 window.content.findChild(QPushButton, 'edit-window_controls').click()
-assert window.page == 'window_details' and 'window_controls' in window.expanded_panels['window_details']
+assert window.page == 'window_details' and window.panel_frames['window_controls'].isVisible()
 window.content.findChild(ChoiceCard, 'choice-window_controls-flat').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['window_controls'] == 'flat'
@@ -357,7 +357,7 @@ assert window.choices['button_position'] == 'right'
 window.content.findChild(ChoiceCard, 'choice-button_position-keep').click()
 window.page = 'summary'; window.render(); app.processEvents()
 window.content.findChild(QPushButton, 'edit-button_position').click()
-assert window.page == 'window_details' and 'button_position' in window.expanded_panels['window_details']
+assert window.page == 'window_details' and window.panel_frames['button_position'].isVisible()
 window.content.findChild(ChoiceCard, 'choice-button_position-left').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['button_position'] == 'left'
@@ -370,7 +370,7 @@ assert window.choices['color'] == 'green'
 
 window.page = 'summary'; window.render()
 window.content.findChild(QPushButton, 'edit-icons').click()
-assert window.page == 'personalization' and 'icons' in window.expanded_panels['personalization']
+assert window.page == 'personalization' and window.panel_frames['icons'].isVisible()
 window.select('icons', 'glass'); app.processEvents(); window.advance()
 assert window.page == 'summary' and window.choices['launcher'] == selected
 window.advance()
@@ -575,7 +575,7 @@ assert window.scroll.verticalScrollBar().maximum() == 0
 window.page = 'summary'; window.render(); app.processEvents()
 assert window.choices['shadows'] == 'hard'
 window.content.findChild(QPushButton, 'edit-shadows').click(); app.processEvents()
-assert window.page == 'window_details' and 'shadows' in window.expanded_panels['window_details']
+assert window.page == 'window_details' and window.panel_frames['shadows'].isVisible()
 window.content.findChild(ChoiceCard, 'choice-shadows-soft').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['shadows'] == 'soft'
@@ -587,7 +587,7 @@ window.select('oled_care', False); assert all(not spin.isEnabled() for spin in s
 window.select('oled_care', True); assert spins[0].value() == 17
 # Current wallpaper cards render actual files and package light/dark partners.
 from wizard_window import current_wallpaper_preview
-from PyQt6.QtCore import QUrl
+from PyQt6.QtCore import Qt, QUrl
 import theme_switch
 snapshot = theme_switch._wallpapers_from_config
 with tempfile.TemporaryDirectory() as directory:
@@ -608,16 +608,17 @@ import os
 window.page = 'welcome'; window.render(); app.processEvents()
 assert len(INSTALL_FLOW) == 10
 window.resize(window.minimumSize())
+scrollable_steps = set()
 for section in INSTALL_FLOW[1:]:
     window.advance(); app.processEvents()
-    assert window.page == section and window.dots.isVisible()
+    assert window.page == section and window.dots.isVisible() and window.next.isVisible()
     assert window.scroll.horizontalScrollBar().maximum() == 0
-    assert window.scroll.verticalScrollBar().maximum() == 0
-    for frame in window.panel_frames.values():
-        toggle = frame.findChild(QPushButton, 'optionPanelTitle')
-        if toggle is not None and toggle.isVisible() and not toggle.isChecked():
-            toggle.click(); app.processEvents()
-            assert window.scroll.verticalScrollBar().maximum() == 0, section
+    assert window.content.findChild(QPushButton, 'optionPanelTitle') is None
+    if window.scroll.verticalScrollBar().maximum() > 0:
+        scrollable_steps.add(section)
+    if section == 'desktop':
+        assert all(window.panel_frames[key].isVisible() for key in ('wallpaper', 'desktop_widgets'))
+assert 'desktop' in scrollable_steps
 window.previous()
 assert window.page == 'startup'
 window.page = 'done'
@@ -631,6 +632,30 @@ window.settings_back.click()
 assert window.page == 'theme' and window.settings_forward.isEnabled()
 window.settings_forward.click()
 assert window.page == 'general'
+window.navigate_settings('desktop')
+QTest.qWait(50)
+assert all(window.panel_frames[key].isVisible() for key in ('wallpaper', 'desktop_widgets'))
+assert window.content.findChild(QPushButton, 'optionPanelTitle') is None
+bar = window.scroll.verticalScrollBar()
+assert bar.maximum() > 0
+assert window.scroll.horizontalScrollBar().maximum() == 0
+offset = min(170, bar.maximum())
+bar.setValue(offset)
+window.section_buttons['desktop'].click()
+assert window.section_buttons['desktop'].isChecked() and bar.value() == offset
+window.navigate_settings('general')
+QTest.qWait(50)
+QTest.keyClick(window, Qt.Key.Key_Left, Qt.KeyboardModifier.AltModifier)
+QTest.qWait(50)
+assert window.page == 'desktop' and bar.value() == offset
+QTest.keyClick(window, Qt.Key.Key_Right, Qt.KeyboardModifier.AltModifier)
+QTest.qWait(50)
+assert window.page == 'general'
+window.settings_back.click()
+QTest.qWait(50)
+assert window.page == 'desktop' and bar.value() == offset
+window.navigate_settings('windows')
+assert not window.settings_forward.isEnabled()
 window.search.setText('zzzzz')
 assert window.no_results.isVisible()
 window.search.clear()
@@ -737,7 +762,8 @@ for dark in (False, True):
         assert app.palette() == window.palette()
         assert window.font().family() == 'SF Pro Text'
         assert window._desktop_font.family() == font.family()
-        assert abs(window.font().pointSizeF() - font.pointSizeF() * 7/6) < .01
+        assert abs(window.settings_font.pointSizeF() - font.pointSizeF() * 7/6) < .01
+        assert font.pointSizeF() <= window.font().pointSizeF() < window.settings_font.pointSizeF()
         assert window.palette().highlight().color().name() == '#007aff'
         capture = window.grab().toImage()
         if baseline is None:
