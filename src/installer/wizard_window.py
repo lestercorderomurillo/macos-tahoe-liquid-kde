@@ -2650,10 +2650,13 @@ class InstallerWindow(OpaqueSurface):
         rows.setHorizontalSpacing(12)
         rows.setVerticalSpacing(6)
         rows.setColumnStretch(0, 1)
-        for index, text in ((0, "Icons"), (2, "Icon appearance"), (4, "Color")):
-            label = self.label(text)
+        icons_label, appearance_label, color_label = (
+            self.label(text) for text in ("Icons", "Icon appearance", "Color")
+        )
+        for label in (icons_label, appearance_label, color_label):
             label.setFont(relative_font(self, .78, QFont.Weight.Medium))
-            rows.addWidget(label, index, 0, 1, 2 if index == 2 else 1)
+        rows.addWidget(icons_label, 0, 0)
+        rows.addWidget(color_label, 3, 0)
 
         group = QButtonGroup(self.content)
         self.groups.append(group)
@@ -2676,7 +2679,7 @@ class InstallerWindow(OpaqueSurface):
             styles.addWidget(button)
             if value == "glass":
                 self.glass_preview = button
-        rows.addLayout(styles, 0, 1)
+        rows.addLayout(styles, 0, 1, 1, 2)
 
         source = QVBoxLayout()
         source.setSpacing(0)
@@ -2691,7 +2694,7 @@ class InstallerWindow(OpaqueSurface):
             source.addWidget(button)
         self.keep_icons.clicked.connect(lambda _: self.select("icons", "keep"))
         self.use_theme_icons.clicked.connect(lambda _: self.select("icons", self.theme_icon_style))
-        rows.addLayout(source, 1, 0, 1, 2)
+        rows.addLayout(source, 1, 2)
 
         self.icon_appearance_options = QWidget()
         appearance = QVBoxLayout(self.icon_appearance_options)
@@ -2699,7 +2702,9 @@ class InstallerWindow(OpaqueSurface):
         appearance.setSpacing(0)
         self.radio("icon_appearance", [("auto", "Automatic"), ("light", "Light"), ("dark", "Dark")],
                    font_scale=.76, option_layout=appearance)
-        rows.addWidget(self.icon_appearance_options, 3, 0, 1, 2)
+        appearance_label.setMinimumHeight(appearance.itemAt(0).widget().sizeHint().height())
+        rows.addWidget(appearance_label, 2, 0, alignment=Qt.AlignmentFlag.AlignTop)
+        rows.addWidget(self.icon_appearance_options, 2, 2)
 
         colors = QHBoxLayout()
         colors.setSpacing(3)
@@ -2716,7 +2721,7 @@ class InstallerWindow(OpaqueSurface):
             self.color_buttons[name] = button
             button.clicked.connect(lambda _, value=name: self.select("color", value))
             colors.addWidget(button)
-        rows.addLayout(colors, 4, 1)
+        rows.addLayout(colors, 3, 1, 1, 2)
         self.body.addLayout(rows)
         self.refresh_icon_controls()
 
