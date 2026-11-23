@@ -103,6 +103,18 @@ function darkMode(themeName, backgroundLightness, iconThemeName) {
     return backgroundLightness < 0.5;
 }
 
+// The generated theme repaints these exact bundled role illustrations.
+var materialIcons = {
+    files: "file-manager", mail: "internet-mail", calendar: "org.kde.merkuro.calendar",
+    notes: "tomboy", photos: "shotwell", music: "gnome-music", video: "smplayer",
+    store: "org.kde.discover", settings: "systemsettings"
+};
+
+function materialIcon(role, themeName) {
+    return /^MacTahoeLiquidKde-Icons-(Glass|Clear)-(Light|Dark)$/.test(themeName)
+        ? materialIcons[role] || "" : "";
+}
+
 // Browsers retain their own identity and artwork, including Firefox.
 function appearanceRoleFor(launcherUrl, appId) {
     var role = roleFor(launcherUrl, appId);

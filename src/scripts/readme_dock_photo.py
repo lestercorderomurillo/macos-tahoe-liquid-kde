@@ -60,7 +60,7 @@ def appearance(style, mode, profile):
     if material != "regular":
         cache = Path.home() / "release-capture" / ("readme-dock-icons-" + style)
         if not cache.exists():
-            names = {"view-app-grid", "user-trash", "user-trash-full"}
+            names = {"view-app-grid", "folder-download", "user-trash", "user-trash-full"}
             for app in profile["pins"]:
                 filename = app.split(":")[1]
                 desktop = Path("/usr/share/applications") / filename
@@ -76,7 +76,7 @@ def appearance(style, mode, profile):
             names = [
                 n
                 for n in sorted(names)
-                if n.startswith("user-trash")
+                if n == "folder-download" or n.startswith("user-trash")
                 or any(
                     (theme_root / BASE / "apps/scalable" / (n + ext)).exists()
                     for ext in (".svg", ".png")

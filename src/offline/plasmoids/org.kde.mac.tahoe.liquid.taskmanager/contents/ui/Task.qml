@@ -68,7 +68,8 @@ PlasmaCore.ToolTipArea {
         tasksRoot.iconThemeWatcher.plasmaThemeName, Kirigami.Theme.backgroundColor.hslLightness,
         tasksRoot.iconThemeWatcher.iconThemeName)
     readonly property var dockIconSource: appsButton && tasksRoot.launcherCell ? tasksRoot.launcherCell.applet.dockButtonIcon : dockRole
-        ? backend.dockRoleIcon(dockRole, darkDockIcons)
+        ? (DockRoles.materialIcon(dockRole, tasksRoot.iconThemeWatcher.iconThemeName)
+           || backend.dockRoleIcon(dockRole, darkDockIcons))
         : secondaryFileManager ? "folder-open" : backend.iconSource(task.model.decoration)
     readonly property string dockRoleLabel: {
         switch (dockRole) {

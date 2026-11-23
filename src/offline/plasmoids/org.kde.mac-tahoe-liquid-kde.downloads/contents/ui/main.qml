@@ -51,6 +51,13 @@ PlasmoidItem {
     Plasmoid.contextualActions: [settingsEntry, openDownloads]
 
     fullRepresentation: NativeLauncher.DockIcon {
+        id: downloadsIcon
+        NativeLauncher.IconThemeWatcher {
+            onChanged: {
+                downloadsIcon.source = "";
+                downloadsIcon.source = Qt.binding(() => Plasmoid.icon);
+            }
+        }
         location: Plasmoid.location
         inPanel: dockCell.active
         hovered: pointer.containsMouse
