@@ -395,6 +395,21 @@ def test_rebuild_with_reset_keeps_unpinned_apps_off_every_dock(monkeypatch):
             'applications:custom.desktop']
 
 
+@pytest.mark.parametrize('relative, expected', zip(LAYOUTS, ([[1], [1]], [[1]], [[1]])))
+def test_new_menu_bar_clocks_follow_the_region(offline, relative, expected):
+    pytest.importorskip('PyQt6.QtQml')
+    source = 'var installed = [];\n' + HARNESS + (offline / relative).read_text()
+    source += '''
+JSON.stringify(created.filter(panel => panel.location === 'top').map(panel =>
+    panel.widgetIds.map(id => panel.widgetById(id))
+        .filter(widget => widget.type === 'org.kde.plasma.digitalclock')
+        .map(widget => widget.config.use24hFormat)));
+'''
+    result = subprocess.run([sys.executable, '-c', RUNNER], input=source,
+                            capture_output=True, text=True, check=True)
+    assert json.loads(result.stdout) == expected
+
+
 def test_clock_upgrade_preserves_custom_date_and_hour_preferences(offline):
     migration = (offline / 'layouts/migrate-status-controls.js').read_text()
     source = HARNESS + '''
@@ -418,4 +433,4 @@ JSON.stringify([updated, original.config.customDateFormat]);
     result = subprocess.run([sys.executable, '-c', RUNNER], input=source,
                             capture_output=True, text=True, check=True)
     assert json.loads(result.stdout) == [
-        [['ddd MMM d', 0], ['yyyy-MM-dd', 1], ['ddd MMM d', 2]], "ddd d ' | '"]
+        [['ddd MMM d', 1], ['yyyy-MM-dd', 1], ['ddd MMM d', 2]], "ddd d ' | '"]

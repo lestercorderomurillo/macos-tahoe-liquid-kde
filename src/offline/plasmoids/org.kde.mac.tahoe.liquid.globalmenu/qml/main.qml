@@ -54,8 +54,8 @@ PlasmoidItem {
 
         // The effect uses these same logical dimensions for pointer motion.
         readonly property real cornerExtent: visible && root.Window.window?.visible
-            && Math.abs(width - root.screenGeometry.width) < 1 ? Math.min(10, height / 3) : 0
-        readonly property real cornerControlFraction: 0.19
+            && Math.abs(width - root.screenGeometry.width) < 1 ? Math.min(12, height / 2) : 0
+        readonly property real cornerControlFraction: 0.28
         Native.GlassSettings {
             window: barTint.cornerExtent > 0 ? root.Window.window : null
             displayCorners: Qt.size(barTint.cornerExtent, barTint.cornerControlFraction)

@@ -90,7 +90,7 @@ clock.writeConfig("fontFamily", "SF Pro Text");
 clock.writeConfig("fontSize", 10);
 clock.writeConfig("fontWeight", 500);
 clock.writeConfig("showDate", "true");
-clock.writeConfig("use24hFormat", 0);
+clock.writeConfig("use24hFormat", 1);
 clock.writeConfig("showSeconds", 0);
 clock.writeConfig("dateDisplayFormat", "BesideTime");
 clock.writeConfig("dateFormat", "custom");
