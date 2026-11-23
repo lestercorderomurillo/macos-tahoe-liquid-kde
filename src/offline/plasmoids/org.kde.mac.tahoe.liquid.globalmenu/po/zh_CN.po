@@ -143,3 +143,6 @@ msgstr "复制详细信息"
 
 msgid "Close %1"
 msgstr "关闭 %1"
+
+msgid "Configure System Menu…"
+msgstr "配置系统菜单…"

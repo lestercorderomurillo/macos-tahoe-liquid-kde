@@ -7,11 +7,17 @@ import json
 import desktop_widget_settings
 import dock_preferences
 import launcher_preferences
+import system_menu_preferences
 import weather_panel_settings
 from launcher_defaults import LAUNCHER_ID
 from theme_switch import _evaluate_plasma_script
 
-TYPED_PREFERENCES = {"dock": dock_preferences, "launcher": launcher_preferences, "weather_panel": weather_panel_settings}
+TYPED_PREFERENCES = {
+    "dock": dock_preferences,
+    "launcher": launcher_preferences,
+    "system_menu": system_menu_preferences,
+    "weather_panel": weather_panel_settings,
+}
 SHORTCUT_WIDGETS = {"dock", "launcher", "trash", "bar_shortcuts", "control_center", "weather_panel"}
 WIDGET_PREFIX = "org.kde.mac-tahoe-liquid-kde."
 BAR_WIDGET_LABELS = {
@@ -57,11 +63,7 @@ SETTINGS = {
         dict.fromkeys(CONTROL_CENTER_FIELDS, True) | {"showNotifications": False, "showSettings": False},
     ),
     "weather_panel": ({weather_panel_settings.PLUGIN}, "General", weather_panel_settings.DEFAULTS),
-    "system_menu": (
-        {"org.kde.mac.tahoe.liquid.globalmenu"}, "Appearance",
-        {"iconAppStore": "software-store-symbolic", "cmdAppStore": "",
-         "cmdLogOut": "qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"},
-    ),
+    "system_menu": ({system_menu_preferences.PLUGIN}, "Appearance", system_menu_preferences.DEFAULTS),
 }
 
 

@@ -12,6 +12,7 @@ import unicodedata
 import subprocess
 import time
 
+from PyQt6 import sip
 from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
@@ -1067,8 +1068,11 @@ class InstallerWindow(OpaqueSurface):
             elif page == "desktop":
                 terms += ("Weather (Panel)", "Temperature unit", "Widget settings", "Clock", "Timer", "Photos")
             elif page == "dock_bar":
+                from system_menu_preferences import FORMS as system_menu_forms
+
+                terms += tuple(label for form in system_menu_forms.values() for label in form.values())
                 terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons",
-                          "System menu", "App Store icon", "App Store command", "Log Out command",
+                          "System menu",
                           "Apps preferences", "Open from Apps", "Launcher position", "Grid icon size",
                           "Activation shortcut", "Hover magnification", "Control Center", "Widget shortcuts",
                           "Wi-Fi", "Bluetooth", "Battery", "Downloads", "Notifications")
@@ -1854,7 +1858,6 @@ class InstallerWindow(OpaqueSurface):
 
     def page_dock_and_menu_widgets(self):
         import dock_preferences
-        import launcher_preferences
         from dock_apps import desktop_applications
         from plasmoid_settings import (
             apply, instances, BAR_WIDGET_LABELS, CONTROL_CENTER_FIELDS, SHORTCUT_WIDGETS, TYPED_PREFERENCES,
@@ -1863,11 +1866,6 @@ class InstallerWindow(OpaqueSurface):
             "trash": (
                 ("emptyIcon", "Empty trash icon", "user-trash"),
                 ("fullIcon", "Full trash icon", "user-trash-full"),
-            ),
-            "system_menu": (
-                ("iconAppStore", "App Store icon", "software-store-symbolic"),
-                ("cmdAppStore", "App Store command", "plasma-discover"),
-                ("cmdLogOut", "Log Out command", ""),
             ),
         }
         for kind, title in (("dock", "Dock preferences"), ("launcher", "Apps preferences"),
@@ -1918,7 +1916,7 @@ class InstallerWindow(OpaqueSurface):
                 tabs.setObjectName("widgetPreferenceTabs")
                 tabs.setFont(relative_font(self, .9))
                 pages = ({"Appearance": dock_preferences.APPEARANCE, "Behavior": dock_preferences.BEHAVIOR}
-                         if kind == "dock" else launcher_preferences.FORMS)
+                         if kind == "dock" else typed.FORMS)
                 for label, labels in pages.items():
                     tab = QWidget()
                     form = QVBoxLayout(tab)
@@ -1957,13 +1955,31 @@ class InstallerWindow(OpaqueSurface):
                             else:
                                 field = QLineEdit()
                                 field.setObjectName("widgetSettingField")
-                                field.setPlaceholderText(self.t("Icon name or file"))
+                                placeholder = "Icon name or file"
+                                if kind == "system_menu":
+                                    placeholder = "plasma-discover" if key == "cmdAppStore" else typed.DEFAULTS[key]
+                                    field.setMinimumWidth(175)
+                                field.setPlaceholderText(self.t(placeholder))
                             field.setAccessibleName(title_label.text())
-                            line.addWidget(field)
+                            line.addWidget(field, 2 if kind == "system_menu" else 0)
                             if key == "customButtonImage":
                                 browse = GlassButton(self.t("Choose…"))
                                 browse.clicked.connect(lambda _, target=field, enabled=controls["useCustomButtonImage"]:
                                                        self.choose_launcher_image(target, enabled))
+                                line.addWidget(browse)
+                            if kind == "system_menu" and (key == "menuIcon" or key.startswith("icon")):
+                                browse = GlassButton(self.t("Choose…"))
+                                browse.setIconSize(QSize(18, 18))
+                                default_icon = typed.DEFAULTS[key]
+
+                                def refresh_menu_icon(value, button=browse, fallback=default_icon):
+                                    name = value or fallback
+                                    path = QUrl(name).toLocalFile() or name
+                                    button.setIcon(QIcon(path) if Path(path).is_absolute() else QIcon.fromTheme(name))
+
+                                field.textChanged.connect(refresh_menu_icon)
+                                refresh_menu_icon(field.text())
+                                browse.clicked.connect(lambda _, target=field: self.choose_system_menu_icon(target))
                                 line.addWidget(browse)
                         field.setProperty("preferenceKey", key)
                         if not isinstance(field, QLineEdit):
@@ -2001,6 +2017,13 @@ class InstallerWindow(OpaqueSurface):
                         form.insertLayout(0, icon_preview)
                     form.addStretch()
                     tabs.addTab(tab, self.t(label))
+                if kind == "system_menu":
+                    def fit_menu_tab(index, target=tabs):
+                        form = target.widget(index).layout()
+                        target.setFixedHeight(target.tabBar().sizeHint().height() + form.sizeHint().height() + 4)
+
+                    tabs.currentChanged.connect(fit_menu_tab)
+                    fit_menu_tab(tabs.currentIndex())
                 column.addWidget(tabs)
             elif kind == "control_center":
                 grid = QGridLayout()
@@ -2170,7 +2193,10 @@ class InstallerWindow(OpaqueSurface):
             picker.currentIndexChanged.connect(load)
             save.clicked.connect(save_widget)
             load()
-            self.body.addWidget(panel)
+            if kind == "system_menu" and preferred >= 0:
+                self.body.insertWidget(0, panel)
+            else:
+                self.body.addWidget(panel)
 
     def choose_launcher_image(self, field, enabled):
         filename, _ = QFileDialog.getOpenFileName(self, self.t("Choose an icon"), "",
@@ -2178,6 +2204,28 @@ class InstallerWindow(OpaqueSurface):
         if filename:
             field.setText(QUrl.fromLocalFile(filename).toString())
             enabled.setChecked(True)
+
+    def choose_system_menu_icon(self, field):
+        picker = shutil.which("kdialog")
+        if picker is None:
+            filename, _ = QFileDialog.getOpenFileName(self, self.t("Choose an icon"), "",
+                                                       self.t("Icons (*.png *.xpm *.svg *.svgz)"))
+            if filename:
+                field.setText(filename)
+            return
+        process = QProcess(self)
+
+        def chosen(code, status):
+            if code == 0 and status == QProcess.ExitStatus.NormalExit:
+                icon = bytes(process.readAllStandardOutput()).decode(errors="replace").strip()
+                if icon and not sip.isdeleted(field):
+                    field.setText(icon)
+            process.deleteLater()
+
+        process.finished.connect(chosen)
+        process.errorOccurred.connect(lambda error: process.deleteLater()
+                                      if error == QProcess.ProcessError.FailedToStart else None)
+        process.start(picker, ["--geticon", "Desktop", "--title", self.t("Choose an icon")])
 
     def page_general(self):
         panel = QFrame()

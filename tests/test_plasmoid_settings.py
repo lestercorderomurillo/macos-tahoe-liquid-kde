@@ -8,22 +8,32 @@ import pytest
 from dock_preferences import APPEARANCE, BEHAVIOR, DEFAULTS, DOCK_ICONS, DOCK_TASKS
 import launcher_preferences
 import plasmoid_settings
+import system_menu_preferences
 
 
 def test_system_menu_preferences_use_the_applet_appearance_group(monkeypatch):
-    expected = {"iconAppStore": "folder-download",
-                "cmdAppStore": '/usr/bin/example "one argument"',
-                "cmdLogOut": "example-logout"}
+    plugin = system_menu_preferences.PLUGIN
+    legacy = Path(__file__).resolve().parents[1] / "src/offline/plasmoids" / plugin / "qml/configSystemMenu.qml"
+    legacy_fields = set(re.findall(r"\bcfg_(\w+)", legacy.read_text()))
+    defaults = system_menu_preferences.DEFAULTS
+    assert defaults.keys() == legacy_fields | {"cmdAppStore"}
+    assert defaults.keys() == {key for form in system_menu_preferences.FORMS.values() for key in form}
+    expected = {
+        key: (not default if isinstance(default, bool) else f"test-{key}")
+        for key, default in defaults.items()
+    }
+    expected["cmdAppStore"] = '/usr/bin/example "one argument"'
     scripts = []
 
     def evaluate(script):
         scripts.append(script)
         request = json.loads(script.split("const request = ", 1)[1].split(";\n", 1)[0])
-        assert request["plugins"] == ["org.kde.mac.tahoe.liquid.globalmenu"]
+        assert request["plugins"] == [plugin]
         assert request["group"] == "Appearance"
         assert request["instance"] == 19
         assert request["changes"] == expected
-        return json.dumps({19: expected})
+        assert request["defaults"] == defaults
+        return json.dumps({19: expected | {"useSystemFont": "true"}})
 
     monkeypatch.setattr(plasmoid_settings, "_evaluate_plasma_script", evaluate)
     assert plasmoid_settings.apply("system_menu", 19, expected) == expected

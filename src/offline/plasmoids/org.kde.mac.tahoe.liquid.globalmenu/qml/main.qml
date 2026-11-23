@@ -24,6 +24,19 @@ import plasma.applet.org.kde.mac.tahoe.liquid.globalmenu
 PlasmoidItem {
     id: root
 
+    SystemMenuSettingsLink {
+        id: settingsLink
+    }
+
+    Plasmoid.contextualActions: [
+        PlasmaCore.Action {
+            text: i18n("Configure System Menu…")
+            icon.name: "configure"
+            visible: settingsLink.available
+            onTriggered: settingsLink.open(Plasmoid.id)
+        }
+    ]
+
     readonly property bool wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool view: Plasmoid.configuration.compactView

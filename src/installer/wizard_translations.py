@@ -182,6 +182,21 @@ Cycle through the hovered task’s windows|Recorrer las ventanas de la tarea baj
 Adjust the hovered task’s volume|Ajustar el volumen de la tarea bajo el puntero|调整悬停任务的音量|Ajustar o volume da tarefa sob o cursor|Lautstärke der Aufgabe unter dem Zeiger ändern
 Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Erscheinungsbild
 System menu|Menú del sistema|系统菜单|Menu do sistema|Systemmenü
+Actions|Acciones|操作|Ações|Aktionen
+Menu icon|Icono del menú|菜单图标|Ícone do menu|Menüsymbol
+Use system font in About This Computer|Usar la tipografía del sistema en Acerca de este equipo|在“关于这台计算机”中使用系统字体|Usar a fonte do sistema em Sobre Este Computador|In „Über diesen Computer“ die Systemschrift verwenden
+About This Computer icon|Icono de Acerca de este equipo|“关于这台计算机”图标|Ícone de Sobre Este Computador|Symbol für „Über diesen Computer“
+System Settings icon|Icono de Ajustes del sistema|系统设置图标|Ícone dos Ajustes do Sistema|Symbol der Systemeinstellungen
+Force Quit icon|Icono de Forzar salida|强制退出图标|Ícone de Forçar Encerramento|Symbol für „Sofort beenden“
+Sleep icon|Icono de Suspender|睡眠图标|Ícone de Repouso|Ruhezustandssymbol
+Restart icon|Icono de Reiniciar|重新启动图标|Ícone de Reiniciar|Neustartsymbol
+Shut Down icon|Icono de Apagar|关机图标|Ícone de Desligar|Ausschaltsymbol
+Lock Screen icon|Icono de Bloquear pantalla|锁定屏幕图标|Ícone de Bloquear Tela|Symbol für „Bildschirm sperren“
+Log Out icon|Icono de Cerrar sesión|注销图标|Ícone de Encerrar Sessão|Abmeldesymbol
+Sleep command|Comando de suspensión|睡眠命令|Comando de repouso|Ruhezustandsbefehl
+Restart command|Comando de reinicio|重新启动命令|Comando para reiniciar|Neustartbefehl
+Shut Down command|Comando de apagado|关机命令|Comando para desligar|Ausschaltbefehl
+Lock Screen command|Comando de bloqueo de pantalla|锁定屏幕命令|Comando para bloquear a tela|Befehl zum Sperren des Bildschirms
 App Store icon|Icono de la tienda|应用商店图标|Ícone da loja de aplicativos|App-Store-Symbol
 App Store command|Comando de la tienda|应用商店命令|Comando da loja de aplicativos|App-Store-Befehl
 Log Out command|Comando de cierre de sesión|注销命令|Comando para encerrar a sessão|Abmeldebefehl
