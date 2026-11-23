@@ -18,6 +18,7 @@
 #include <QJsonObject>
 #include <QQuickWindow>
 #include <QQuickItem>
+#include <QScreen>
 #include <QStandardPaths>
 #include <QTimer>
 #include <cmath>
@@ -33,6 +34,7 @@ public:
     QFileSystemWatcher watcher;
     QTimer debounce;
     QByteArray publishedDocks;
+    QByteArray publishedCorners;
     static GlassSettingsStore *instance()
     {
         static auto *store = new GlassSettingsStore(qGuiApp);
@@ -127,20 +129,31 @@ public:
         // Publish only tagged Dock bounds, including the owning process, so
         // the effect does not guess from panel position or thickness.
         QJsonArray docks;
+        QJsonArray corners;
         for (auto *window : qGuiApp->allWindows()) {
-            if (!window->isVisible() || window->property("_mttkde_glass_component").toString() != QStringLiteral("dock")) continue;
+            if (!window->isVisible()) continue;
+            const auto corner = window->property("_mttkde_display_corners").toSizeF();
+            if (!corner.isEmpty() && window->screen()) {
+                corners.append(QJsonObject{{QStringLiteral("output"), window->screen()->name()},
+                    {QStringLiteral("extent"), corner.width()}, {QStringLiteral("control"), corner.height()}});
+            }
+            if (window->property("_mttkde_glass_component").toString() != QStringLiteral("dock")) continue;
             const QRect g = window->geometry();
             docks.append(QJsonObject{{QStringLiteral("pid"), qGuiApp->applicationPid()},
                 {QStringLiteral("x"), g.x()}, {QStringLiteral("y"), g.y()},
                 {QStringLiteral("width"), g.width()}, {QStringLiteral("height"), g.height()}});
         }
-        const auto json = QJsonDocument(docks).toJson(QJsonDocument::Compact);
-        if (!force && json == publishedDocks) return;
-        publishedDocks = json;
-        auto signal = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
-            QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("windowsChanged"));
-        signal << QString::fromUtf8(json);
-        QDBusConnection::sessionBus().send(signal);
+        const auto publish = [force](const QJsonArray &entries, QByteArray &previous, const QString &name) {
+            const auto json = QJsonDocument(entries).toJson(QJsonDocument::Compact);
+            if (!force && json == previous) return;
+            previous = json;
+            auto signal = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
+                QStringLiteral("org.kde.MacTahoe.Glass"), name);
+            signal << QString::fromUtf8(json);
+            QDBusConnection::sessionBus().send(signal);
+        };
+        publish(docks, publishedDocks, QStringLiteral("windowsChanged"));
+        publish(corners, publishedCorners, QStringLiteral("displayCornersChanged"));
     }
 public Q_SLOTS:
     void republishWindows() { publishWindows(true); }
@@ -170,7 +183,8 @@ protected:
     bool eventFilter(QObject *object, QEvent *event) override
     {
         if (event->type() == QEvent::Show || event->type() == QEvent::Expose
-            || event->type() == QEvent::Hide || event->type() == QEvent::Move || event->type() == QEvent::Resize) {
+            || event->type() == QEvent::Hide || event->type() == QEvent::Move || event->type() == QEvent::Resize
+            || event->type() == QEvent::ScreenChangeInternal) {
             if (auto *window = qobject_cast<QWindow *>(object)) {
                 QPointer<QWindow> guarded(window);
                 QTimer::singleShot(0, this, [this, guarded] { if (guarded) refresh(guarded); publishWindows(); });
@@ -189,6 +203,25 @@ GlassSettings::GlassSettings(QObject *parent) : QObject(parent)
 {
     connect(GlassSettingsStore::instance(), &GlassSettingsStore::changed, this, &GlassSettings::changed);
 }
+GlassSettings::~GlassSettings()
+{
+    if (m_window && !m_displayCorners.isEmpty()) {
+        m_window->setProperty("_mttkde_display_corners", QVariant());
+        GlassSettingsStore::instance()->publishWindows();
+    }
+}
+
+void GlassSettings::setDisplayCorners(QSizeF geometry)
+{
+    if (m_displayCorners == geometry) return;
+    m_displayCorners = geometry;
+    if (m_window) {
+        m_window->setProperty("_mttkde_display_corners", geometry);
+        GlassSettingsStore::instance()->publishWindows();
+    }
+    Q_EMIT changed();
+}
+
 void GlassSettings::setComponent(const QString &component)
 {
     if (m_component == component) return;
@@ -211,7 +244,11 @@ void GlassSettings::setFrameSource(const QString &source)
 void GlassSettings::setWindow(QWindow *window)
 {
     if (m_window == window) return;
+    const bool hasDisplayCorners = !m_displayCorners.isEmpty();
+    if (m_window && hasDisplayCorners) m_window->setProperty("_mttkde_display_corners", QVariant());
     m_window = window;
+    if (m_window && hasDisplayCorners) m_window->setProperty("_mttkde_display_corners", m_displayCorners);
+    if (hasDisplayCorners) GlassSettingsStore::instance()->publishWindows();
     if (m_window) {
         m_window->setProperty("_mttkde_glass_component", m_component);
         m_window->setProperty("_mttkde_glass_frame_source", m_frameSource);

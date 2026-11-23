@@ -19,7 +19,8 @@ public:
     bool watching() const { return m_watching; }
     void setWatching(bool watching);
     quint64 revision() const { return m_revision; }
-    Q_INVOKABLE QColor foregroundAt(QQuickItem *item, int screenNumber, QPointF center, QColor base, QColor panelInk);
+    Q_INVOKABLE QColor foregroundAt(QQuickItem *item, int screenNumber, QPointF center, QColor base);
+    Q_INVOKABLE static qreal scrimOpacityAt(qreal position);
 
 Q_SIGNALS:
     void changed();

@@ -6,7 +6,6 @@ PanelWallpaper {
     id: sampler
     required property Item item
     required property color base
-    property color panelInk: base
     property bool active: true
     readonly property GlassSettings settings: GlassSettings {}
     readonly property int screenNumber: active ? Plasmoid.containment?.screen ?? -1 : -1
@@ -28,6 +27,6 @@ PanelWallpaper {
         window.y
         window.width
         window.height
-        return foregroundAt(item, screenNumber, Qt.point(x, y), base, panelInk)
+        return foregroundAt(item, screenNumber, Qt.point(x, y), base)
     }
 }

@@ -3,6 +3,7 @@
 #include "inktransition.h"
 #include <QObject>
 #include <QPointer>
+#include <QSizeF>
 #include <QWindow>
 #include <qqmlregistration.h>
 
@@ -14,6 +15,7 @@ class GlassSettings : public QObject
     QML_ELEMENT
     Q_PROPERTY(QString component READ component WRITE setComponent NOTIFY changed)
     Q_PROPERTY(QWindow *window READ window WRITE setWindow NOTIFY changed)
+    Q_PROPERTY(QSizeF displayCorners READ displayCorners WRITE setDisplayCorners NOTIFY changed)
     Q_PROPERTY(QString frameSource READ frameSource WRITE setFrameSource NOTIFY changed)
     Q_PROPERTY(quint64 inkRevision READ inkRevision NOTIFY inkChanged)
     Q_PROPERTY(bool dynamicTinting READ dynamicTinting NOTIFY changed)
@@ -21,6 +23,9 @@ class GlassSettings : public QObject
     Q_PROPERTY(qreal darkOpacity READ darkOpacity NOTIFY changed)
 public:
     explicit GlassSettings(QObject *parent = nullptr);
+    ~GlassSettings() override;
+    QSizeF displayCorners() const { return m_displayCorners; }
+    void setDisplayCorners(QSizeF geometry);
     QString component() const { return m_component; }
     QWindow *window() const { return m_window; }
     QString frameSource() const { return m_frameSource; }
@@ -43,4 +48,5 @@ private:
     QString m_component;
     QString m_frameSource;
     QPointer<QWindow> m_window;
+    QSizeF m_displayCorners;
 };

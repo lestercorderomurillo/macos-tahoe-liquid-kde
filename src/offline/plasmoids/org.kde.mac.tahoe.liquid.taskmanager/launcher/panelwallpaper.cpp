@@ -283,7 +283,15 @@ void PanelWallpaper::revise()
     Q_EMIT changed();
 }
 
-QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF center, QColor base, QColor panelInk)
+qreal PanelWallpaper::scrimOpacityAt(qreal position)
+{
+    constexpr double peak = 0.10;
+    constexpr double decay = 5.0;
+    const double tail = std::exp(-decay);
+    return peak * (std::exp(-decay * std::clamp(position, 0., 1.)) - tail) / (1. - tail);
+}
+
+QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF center, QColor base)
 {
     if (!m_watching || screenNumber < 0 || !item || !item->window() || !item->window()->screen()) return base;
     const auto *window = item->window();
@@ -304,7 +312,6 @@ QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF 
     const QPointF point = origin + center;
     const QSizeF radius(std::clamp(item->width() / 3, 3., 42.), std::clamp(item->height() / 4, 2., 6.));
     const double themeLuma = GlassInk::luminance(base);
-    const bool lightPanel = GlassInk::luminance(panelInk) > .179;
     const QColor previous = m_transition.target(item, base);
     QColor alternate = themeLuma > .179 ? Qt::black : Qt::white;
     int votes = 0;
@@ -315,10 +322,13 @@ QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF 
             const QColor pixel = wallpaper->pixel(QPointF(std::clamp(local.x(), 0., double(screen.width() - 1)),
                                                          std::clamp(local.y(), 0., double(screen.height() - 1))));
             if (!pixel.isValid()) continue;
-            // Match the existing top bar scrim behind its applets.
-            const double alpha = (41. / 255) * std::clamp(1 - (sample.y() - origin.y()) / std::max(1, window->height()), 0., 1.);
-            QColor scrim = lightPanel ? Qt::black : Qt::white;
-            scrim.setAlphaF(alpha);
+            // Interpolate the same samples used by the Qt Quick gradient.
+            const double position = std::clamp((sample.y() - origin.y()) / std::max(1, window->height()), 0., 1.);
+            const double segment = position * 8;
+            const double left = std::floor(segment);
+            const double right = std::min(8., left + 1);
+            QColor scrim = Qt::black;
+            scrim.setAlphaF(std::lerp(scrimOpacityAt(left / 8), scrimOpacityAt(right / 8), segment - left));
             const double background = GlassInk::luminance(GlassInk::composite(pixel, scrim));
             const double preferred = GlassInk::contrastRatio(themeLuma, background);
             const double other = GlassInk::contrastRatio(themeLuma > .179 ? 0. : 1., background);

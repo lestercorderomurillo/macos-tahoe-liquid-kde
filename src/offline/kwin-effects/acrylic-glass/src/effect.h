@@ -33,6 +33,8 @@
 
 namespace KWin {
 
+class DisplayCornerInput;
+
 #if defined(GLASS_X11)
 using Region = QRegion;
 using Rect = QRect;
@@ -206,6 +208,9 @@ public:
 
 public Q_SLOTS:
     void slotGlassWindows(const QString &json);
+#if defined(GLASS_WAYLAND)
+    void slotDisplayCorners(const QString &json);
+#endif
     // Window / view bookkeeping (slots)
 
     /// Allocates per-window state and wires up the property / contrast
@@ -420,6 +425,9 @@ private:
     };
     QMap<QString, ComponentMaterial> m_componentMaterials;
     QList<QPair<qint64, QRect>> m_dockWindows;
+#if defined(GLASS_WAYLAND)
+    std::unique_ptr<DisplayCornerInput> m_displayCornerInput;
+#endif
     QString m_aboutTitle;
     QString m_aboutAppPrefix;
     QString m_aboutAppSuffix;
