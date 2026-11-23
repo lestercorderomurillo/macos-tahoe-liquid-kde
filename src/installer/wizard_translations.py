@@ -330,6 +330,8 @@ Keep Firefox as it is|Conservar Firefox como está|保持 Firefox 原样|Manter 
 Recommended · Files theme|Recomendado · Estilo Files del tema|推荐 · Files 风格|Recomendado · Estilo Files do tema|Empfohlen · Files-Stil des Themas
 KDE file manager|Gestor de archivos de KDE|KDE 文件管理器|Gerenciador de arquivos do KDE|Dateimanager von KDE
 Add folder shortcuts to the sidebar|Añadir accesos a mis carpetas en la barra lateral|在侧栏中添加文件夹快捷方式|Adicionar atalhos de pastas à barra lateral|Ordnerverknüpfungen zur Seitenleiste hinzufügen
+Skip widgets|Omitir widgets|跳过小组件|Ignorar widgets|Miniprogramme überspringen
+Install widgets|Instalar widgets|安装小组件|Instalar widgets|Miniprogramme installieren
 Skip widget pack|Omitir paquete de widgets|跳过小组件套装|Ignorar pacote de widgets|Widget-Paket überspringen
 Install Liquid Glass widgets|Instalar widgets Liquid Glass|安装 Liquid Glass 小组件|Instalar widgets Liquid Glass|Liquid-Glass-Widgets installieren
 Remove any widgets previously installed by this theme.|Elimina los widgets instalados anteriormente por este tema.|移除此主题之前安装的小组件。|Remove os widgets instalados anteriormente por este tema.|Entfernt zuvor von diesem Design installierte Widgets.

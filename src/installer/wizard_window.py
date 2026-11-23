@@ -214,7 +214,7 @@ def installer_fonts(app):
 
 def relative_font(widget, scale=1, weight=None):
     font = QFont(widget.font())
-    font.setPointSizeF(font.pointSizeF() * scale)
+    font.setPointSizeF(max(8.5, font.pointSizeF() * scale))
     if weight is not None:
         font.setWeight(weight)
     return font
@@ -604,8 +604,7 @@ class ChoiceCard(QPushButton):
         super().__init__(parent)
         self.setFont(parent.window().font())
         self.independent = independent
-        self.compact = compact
-        self.caption_minimum = 34 if small_caption else 40 if compact else 66
+        self.caption_minimum = 34 if small_caption else 42 if compact or not detail else 58
         self.photo = None
         self.row_cards = [self]
         self.setCheckable(True)
@@ -629,8 +628,8 @@ class ChoiceCard(QPushButton):
         text.setSpacing(4)
         label = QLabel(title)
         label.setWordWrap(True)
-        label.setFont(relative_font(self, .64 if small_caption else .93,
-                                    QFont.Weight.Medium if small_caption else QFont.Weight.Bold))
+        label.setFont(relative_font(self, .64 if small_caption else .86,
+                                    QFont.Weight.Medium if small_caption else QFont.Weight.DemiBold))
         text.addWidget(label)
         if detail:
             description = QLabel(detail)
@@ -676,7 +675,8 @@ class ChoiceCard(QPushButton):
         painter.setPen(QPen(border, 2 if not dashed and (checked or focused) else 1, pen_style))
         painter.setBrush(self.palette().base())
         painter.drawRoundedRect(QRectF(1, 1, self.width()-2, self.height()-2), 8, 8)
-        indicator = QRectF(self.width()-31, self.height()-(29 if self.compact else 36) if self.photo else (self.height()-18)/2, 18, 18)
+        caption_center = self.copy.geometry().center().y()
+        indicator = QRectF(self.width()-31, caption_center-9, 18, 18)
         painter.setPen(QPen(accent if self.isChecked() else QColor(self.window().line), 1))
         painter.setBrush(accent if self.isChecked() else self.palette().base())
         if self.independent:
@@ -859,8 +859,8 @@ class InstallerWindow(OpaqueSurface):
         self.groups = []
         self.setObjectName("installerWindow")
         self.setWindowTitle(self.t("Install") + " " + self.edition)
-        # Keep the desktop text size and scale the SF hierarchy for accessibility.
-        self.settings_font = relative_font(self, 7/6)
+        # Honor the desktop text scale while using the installer’s SF family.
+        self.settings_font = relative_font(self)
         self.setFont(self.settings_font)
         self.setWindowFlags(Qt.WindowType.Window | Qt.WindowType.FramelessWindowHint)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
@@ -1065,7 +1065,7 @@ class InstallerWindow(OpaqueSurface):
         self.footer.setVisible(not self.settings_mode)
         font = QFont(self.settings_font)
         if not self.settings_mode:
-            font.setPointSizeF(font.pointSizeF() * .89)
+            font.setPointSizeF(max(8.5, font.pointSizeF() * .96))
         self.setFont(font)
         self.find_shortcut.setEnabled(self.settings_mode)
         for shortcut in self.history_shortcuts:
@@ -1331,8 +1331,8 @@ class InstallerWindow(OpaqueSurface):
         widget.setTextFormat(Qt.TextFormat.PlainText)
         if heading:
             font = widget.font(); font.setFamily(self._display_family)
-            font.setPointSizeF(font.pointSizeF() * 1.57)
-            font.setWeight(QFont.Weight.Bold); widget.setFont(font)
+            font.setPointSizeF(font.pointSizeF() * 1.36)
+            font.setWeight(QFont.Weight.DemiBold); widget.setFont(font)
             widget.setObjectName("pageTitle")
         return widget
 
@@ -1722,8 +1722,6 @@ class InstallerWindow(OpaqueSurface):
         self.body.addWidget(self.image(f"logo-{variant}.png", 180, 180))
         title = self.label(self.t("Install") + " " + self.edition, heading=True)
         title.setAlignment(Qt.AlignmentFlag.AlignCenter); self.body.addWidget(title)
-        text = self.label("Choose your options and begin installation.")
-        text.setAlignment(Qt.AlignmentFlag.AlignCenter); self.body.addWidget(text)
         if self.update_available:
             text = self.t("Update available:") + " " + self.update_available
             update = QPushButton(text)
@@ -2411,23 +2409,24 @@ class InstallerWindow(OpaqueSurface):
             self.select("wallpaper", "custom")
 
     def page_desktop_widgets(self):
+        from steps.plasmoids import WIDGETS_STATE
+
+        removal = "Remove any widgets previously installed by this theme." if WIDGETS_STATE.is_file() else ""
         self.cards("desktop_widgets", [
-            (False, "Skip widget pack", "Remove any widgets previously installed by this theme.",
-             picture("desktop-widgets-off.jpg", 368, 207, cover=True)),
-            (True, "Install Liquid Glass widgets", "Calendar, weather, clocks, music, timers and photos.",
-             picture("desktop-widgets-on.jpg", 368, 207, cover=True)),
+            (False, "Skip widgets", removal, picture("desktop-widgets-off.jpg", 368, 207, cover=True)),
+            (True, "Install widgets", "", picture("desktop-widgets-on.jpg", 368, 207, cover=True)),
         ], default_first=False)
 
     def launcher_notice(self):
         from steps.clipboard import HISTORY_DIR
         from steps.plasmoids import DEST_DIR, LAUNCHER_ID
         if not self.choices["reset_layout"]:
-            return "Keep the current launcher and clipboard history."
+            return ""
         if HISTORY_DIR.is_dir():
             return "Remove Launchpad and its saved clipboard history."
         if (DEST_DIR / LAUNCHER_ID).is_dir():
             return "Remove the installed Launchpad widget."
-        return "Skip Launchpad and its encrypted clipboard history."
+        return ""
 
     def page_launcher(self):
         self.cards("launcher", [
@@ -2435,15 +2434,19 @@ class InstallerWindow(OpaqueSurface):
             ("golden", "Golden Gate", "Separate search and application grid.", picture("launcher-golden.jpg", 362, 204)),
             ("keep", "Use my launcher", self.launcher_notice(), None),
         ])
-        self.body.addWidget(self.label("Tahoe and Golden Gate include encrypted clipboard history (Meta+V)."))
 
     def page_layout(self):
         self.body.addSpacing(4)
         reset = self.checkbox("reset_layout", "Reset Dock and panel customization")
-        self.body.addWidget(self.label("Clear this option to keep your panels, widgets and pinned apps."))
+        reset_hint = self.label("Clear this option to keep your panels, widgets and pinned apps.")
+        reset_hint.setObjectName("detail")
+        reset_hint.setFont(relative_font(self, .85))
+        self.body.addWidget(reset_hint)
+        reset_hint.setVisible(reset.isChecked())
+        reset.toggled.connect(reset_hint.setVisible)
         self.cards("", [
-            ("panel", "Top bar", "Global menu, clock and system controls.", picture("panel-detail.jpg", 362, 160)),
-            ("dock", "Dock", "Pinned apps and open windows.", picture("dock.jpg", 362, 160)),
+            ("panel", "Top bar", "", picture("panel-detail.jpg", 362, 160)),
+            ("dock", "Dock", "", picture("dock.jpg", 362, 160)),
         ], independent=True)
         def enable_layout_options():
             for key in ("panel", "dock"):
@@ -2452,44 +2455,27 @@ class InstallerWindow(OpaqueSurface):
         reset.toggled.connect(enable_layout_options)
         enable_layout_options()
         row = QHBoxLayout()
-        row.addWidget(self.label("Dock visibility"))
-        row.addStretch()
+        label = self.label("Dock visibility")
+        row.addWidget(label, 1)
+        visibility = GlassComboBox()
+        visibility.setObjectName("dock-visibility")
+        visibility.setAccessibleName(label.text())
+        visibility.setFont(relative_font(self, .86))
+        for value, text in (("autohide", "Auto-hide"),
+                            ("none", "Show outside full screen"),
+                            ("dodgewindows", "Hide on overlap")):
+            visibility.addItem(self.t(text), value)
+        visibility.setCurrentIndex(visibility.findData(self.choices["dock_visibility"]))
+        visibility.setEnabled(self.choices["dock"])
+        visibility.currentIndexChanged.connect(lambda: self.select("dock_visibility", visibility.currentData()))
+        row.addWidget(visibility)
+        self.body.addLayout(row)
+
         button = GlassButton(self.t("Dock apps…"))
         button.setObjectName("edit-dock-apps")
         button.setEnabled(self.choices["dock"])
         button.clicked.connect(self.edit_dock_apps)
-        row.addWidget(button)
-        self.body.addLayout(row)
-
-        visibility = QWidget()
-        visibility.setObjectName("dock-visibility")
-        visibility.setAccessibleName(self.t("Dock visibility"))
-        visibility.setStyleSheet("""
-            QPushButton { border: 1px solid palette(mid); border-radius: 0;
-                          background: palette(button); color: palette(button-text); padding: 4px; }
-            QPushButton#dock-autohide { border-top-left-radius: 7px; border-bottom-left-radius: 7px; }
-            QPushButton#dock-none { border-left: 0; border-right: 0; }
-            QPushButton#dock-dodgewindows { border-top-right-radius: 7px; border-bottom-right-radius: 7px; }
-            QPushButton:checked { background: palette(highlight); color: palette(highlighted-text); }
-            QPushButton:focus { border: 2px solid palette(highlight); }
-            QPushButton:disabled { color: palette(mid); }
-        """)
-        segments = QHBoxLayout(visibility)
-        segments.setContentsMargins(0, 0, 0, 0)
-        segments.setSpacing(0)
-        group = QButtonGroup(visibility)
-        for value, label in [("autohide", "Auto-hide"),
-                                       ("none", "Show outside full screen"),
-                                       ("dodgewindows", "Hide on overlap")]:
-            segment = QPushButton(self.t(label))
-            segment.setObjectName(f"dock-{value}")
-            segment.setCheckable(True)
-            group.addButton(segment)
-            segment.setChecked(self.choices["dock_visibility"] == value)
-            segment.clicked.connect(lambda _, mode=value: self.select("dock_visibility", mode))
-            segments.addWidget(segment, 1)
-        visibility.setEnabled(self.choices["dock"])
-        self.body.addWidget(visibility)
+        self.body.addWidget(button, alignment=Qt.AlignmentFlag.AlignRight)
 
     def edit_dock_apps(self):
         from dock_apps import OPTIONAL, LABELS, installed_apps, recommendation
@@ -2515,10 +2501,7 @@ class InstallerWindow(OpaqueSurface):
         appearance.setEnabled(choices["dock"] and choices["reset_layout"])
         appearance.currentIndexChanged.connect(lambda: choices.update(dock_appearance=appearance.currentData()))
         body.addWidget(appearance)
-        body.addWidget(self.label("Only Dock icons change. Your apps, pin order and desktop icon theme stay the same."))
 
-        intro = self.label("Installed equivalents are reused. Select only the missing apps you want to install.")
-        body.addWidget(intro)
         source = GlassComboBox()
         source.setObjectName("dock-apps-source")
         source.addItem(self.t("Distribution repositories"), "native")
@@ -2530,8 +2513,6 @@ class InstallerWindow(OpaqueSurface):
         remote.setChecked(choices["dock_add_flathub"])
         remote.toggled.connect(lambda checked: choices.update(dock_add_flathub=checked))
         body.addWidget(remote)
-        flatpak_note = self.label("Flatpak apps may use their own appearance. No system remote is changed.")
-        body.addWidget(flatpak_note)
         options = {}
         for category in OPTIONAL:
             option = GlassCheckOption("")
@@ -2547,7 +2528,6 @@ class InstallerWindow(OpaqueSurface):
         def refresh():
             choices["dock_apps_source"] = source.currentData()
             remote.setVisible(source.currentData() == "flatpak")
-            flatpak_note.setVisible(source.currentData() == "flatpak")
             for category, option in options.items():
                 proposal = recommendation(category, source.currentData())
                 existing = installed.get(category)
@@ -2594,17 +2574,16 @@ class InstallerWindow(OpaqueSurface):
     def page_effects(self):
         self.cards("", [
             ("acrylic_glass", "Transparency and blur", "Panels, menus and windows.", picture("glass.jpg", 362, 165, cover=True)),
-            ("rounded_corners", "Rounded corners", "Preserves your radius settings.", self.corner_sample()),
+            ("rounded_corners", "Rounded corners", "", self.corner_sample()),
         ], independent=True)
 
     def page_window_controls(self):
         self.cards("window_controls", [
-            ("flat", "Flat", "Simple, solid colors.",
+            ("flat", "Flat", "",
              picture(f"window-controls-flat-{self.mode}.png", 362, 190)),
-            ("glassy", "Glassy", "Soft gradients and reflective highlights.",
+            ("glassy", "Glassy", "",
              picture(f"window-controls-glassy-{self.mode}.png", 362, 190)),
         ])
-        self.body.addWidget(self.label("Close, minimize and maximize buttons."))
 
     def button_position_sample(self, position):
         dark = self.mode == "dark"
@@ -2655,9 +2634,8 @@ class InstallerWindow(OpaqueSurface):
         self.cards("button_position", [
             ("left", "Left", "Close, minimize, maximize.", self.button_position_sample("left")),
             ("right", "Right", "Minimize, maximize, close.", self.button_position_sample("right")),
-            ("keep", "Keep my layout", "Leave the buttons unchanged.", self.button_position_sample("keep")),
+            ("keep", "Keep my layout", "", self.button_position_sample("keep")),
         ], columns=3)
-        self.body.addWidget(self.label("Close, minimize and maximize buttons."))
 
     def page_glass_style(self):
         mode = self.mode
@@ -2702,9 +2680,9 @@ class InstallerWindow(OpaqueSurface):
         self.body.addSpacing(5)
         group = self.cards("files", [
             ("nautilus", "Install Nautilus", "Install and use as the default file manager.", picture("nautilus-"+self.mode+".jpg", 362, 180)),
-            ("dolphin", "Use Dolphin", "Skip Nautilus and use KDE's file manager.", picture("dolphin-"+self.mode+".jpg", 362, 180)),
+            ("dolphin", "Use Dolphin", "", picture("dolphin-"+self.mode+".jpg", 362, 180)),
         ])
-        keep = RadioOption(self.t("Skip Nautilus and keep my file manager"))
+        keep = RadioOption(self.t("Keep my file manager"))
         keep.setObjectName("choice-files-keep")
         keep.setFont(relative_font(self, .93))
         keep.setChecked(self.choices["files"] == "keep")
@@ -2816,8 +2794,8 @@ class InstallerWindow(OpaqueSurface):
             sections[PANEL_SECTIONS[step]].addWidget(entry)
         self.body.addLayout(summary)
         notices = []
-        if not keep_layout and c["launcher"] == "keep":
-            notices.append(self.launcher_notice())
+        if c["launcher"] == "keep" and (launcher_warning := self.launcher_notice()):
+            notices.append(launcher_warning)
         if c["reset_layout"] and (c["panel"] or c["dock"]):
             notices.append("Reset Dock and panel customization")
         if notices:
@@ -2991,12 +2969,12 @@ class InstallerWindow(OpaqueSurface):
         if self.bridge.summary.warnings:
             title = "Installation completed with warnings"
         self.body.addWidget(self.label(title, heading=True))
-        self.body.addWidget(self.label("Desktop preferences were left unchanged." if skipped else "Your selected components and preferences have been applied."))
+        if skipped:
+            self.body.addWidget(self.label("Desktop preferences were left unchanged."))
         self.completion()
 
     def page_removed(self):
         self.body.addWidget(self.label("Removal completed", heading=True))
-        self.body.addWidget(self.label("The selected theme components have been removed."))
         self.completion()
 
     def completion(self):
@@ -3008,7 +2986,6 @@ class InstallerWindow(OpaqueSurface):
 
     def page_uninstall(self):
         self.body.addWidget(self.label(self.t("Uninstall")+" "+self.edition, heading=True))
-        self.body.addWidget(self.label("The following theme components will be removed:"))
         for text in ("Icons, fonts, sounds and appearance.", "Top bar, Dock and project widgets.",
                      "Effects and scheduled tasks."):
             line = self.label("•  " + self.t(text))

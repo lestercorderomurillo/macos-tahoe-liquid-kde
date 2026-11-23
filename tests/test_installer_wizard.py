@@ -572,6 +572,11 @@ reset = window.content.findChild(CheckOption, 'choice-reset_layout')
 assert not reset.isChecked() and all(not card.isEnabled() for card in cards)
 reset.click(); app.processEvents()
 assert window.choices['reset_layout'] and all(card.isEnabled() for card in cards)
+visibility = window.content.findChild(QComboBox, 'dock-visibility')
+original_visibility = visibility.currentData()
+visibility.setCurrentIndex(visibility.findData('dodgewindows'))
+assert window.choices['dock_visibility'] == 'dodgewindows'
+visibility.setCurrentIndex(visibility.findData(original_visibility))
 assert window.scroll.verticalScrollBar().maximum() == 0
 window.page = 'effects'; window.render(); app.processEvents()
 assert not window.content.findChildren(RadioOption)
@@ -774,8 +779,8 @@ for dark in (False, True):
         assert app.palette() == window.palette()
         assert window.font().family() == 'SF Pro Text'
         assert app.property('installerDesktopFont').family() == font.family()
-        assert abs(window.settings_font.pointSizeF() - font.pointSizeF() * 7/6) < .01
-        assert font.pointSizeF() <= window.font().pointSizeF() < window.settings_font.pointSizeF()
+        assert abs(window.settings_font.pointSizeF() - max(8.5, font.pointSizeF())) < .01
+        assert abs(window.font().pointSizeF() - max(8.5, window.settings_font.pointSizeF() * .96)) < .01
         assert window.palette().highlight().color().name() == '#007aff'
         capture = window.grab().toImage()
         if baseline is None:
