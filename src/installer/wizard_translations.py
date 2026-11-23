@@ -33,6 +33,52 @@ Weather (Panel)|Tiempo en la barra|面板天气|Clima no painel|Wetter in der Le
 Weather|Tiempo|天气|Clima|Wetter
 Temperature unit|Unidad de temperatura|温度单位|Unidade de temperatura|Temperatureinheit
 About|Acerca de|关于|Sobre|Über
+Photos|Fotos|照片|Fotos|Fotos
+Folder|Carpeta|文件夹|Pasta|Ordner
+Change photo every|Cambiar de foto cada|照片切换间隔|Trocar a foto a cada|Foto wechseln alle
+Shuffle|Orden aleatorio|随机播放|Ordem aleatória|Zufällige Reihenfolge
+Browse…|Examinar…|浏览…|Procurar…|Durchsuchen …
+ min| min| 分钟| min| Min.
+Leave empty to use your Pictures folder. Subfolders are not included.|Déjalo vacío para usar tu carpeta Imágenes. Las subcarpetas quedan excluidas.|留空以使用图片文件夹。子文件夹不包含在内。|Deixe vazio para usar a pasta Imagens. Subpastas ficam de fora.|Leer lassen, um den Bilderordner zu verwenden. Unterordner bleiben unberücksichtigt.
+Widget settings|Ajustes de widgets|小组件设置|Ajustes de widgets|Miniprogramm-Einstellungen
+Analog Clock|Reloj analógico|模拟时钟|Relógio analógico|Analoguhr
+Analog Clock II|Reloj analógico II|模拟时钟 II|Relógio analógico II|Analoguhr II
+Analog Clock III|Reloj analógico III|模拟时钟 III|Relógio analógico III|Analoguhr III
+Glass Text Clock|Reloj de texto de cristal|玻璃文字时钟|Relógio de texto de vidro|Glastextuhr
+Digital Clock|Reloj digital|数字时钟|Relógio digital|Digitaluhr
+Timer|Temporizador|计时器|Temporizador|Timer
+Clock|Reloj|时钟|Relógio|Uhr
+Style|Estilo|样式|Estilo|Stil
+Solid|Sólido|实色|Sólido|Deckend
+Switch automatically|Cambiar automáticamente|自动切换|Alternar automaticamente|Automatisch wechseln
+Follow system|Seguir el sistema|跟随系统|Seguir o sistema|Systemeinstellung folgen
+Use 24-hour time|Usar formato de 24 horas|使用 24 小时制|Usar formato de 24 horas|24-Stunden-Format verwenden
+Animate the second hand continuously|Animar el segundero de forma continua|连续动画显示秒针|Animar o ponteiro dos segundos continuamente|Sekundenzeiger kontinuierlich animieren
+Glass tint|Tinte del cristal|玻璃色调|Tonalidade do vidro|Glastönung
+Fully opaque background|Fondo completamente opaco|完全不透明背景|Fundo totalmente opaco|Vollständig deckender Hintergrund
+Corner radius|Radio de las esquinas|圆角半径|Raio dos cantos|Eckenradius
+Corner smoothness|Suavidad de las esquinas|圆角平滑度|Suavidade dos cantos|Eckenweichheit
+Digit font|Fuente de los dígitos|数字字体|Fonte dos dígitos|Ziffernschrift
+Text tint|Tinte del texto|文字色调|Tonalidade do texto|Texttönung
+Text color|Color del texto|文字颜色|Cor do texto|Textfarbe
+Edge thickness|Grosor del borde|边缘厚度|Espessura da borda|Randstärke
+Refraction strength|Intensidad de la refracción|折射强度|Intensidade da refração|Brechungsstärke
+Refraction index|Índice de refracción|折射率|Índice de refração|Brechungsindex
+Color fringing|Franja de color|色边|Franjas de cor|Farbsäume
+Edge highlight|Brillo del borde|边缘高光|Realce da borda|Kantenlicht
+Blur & performance|Desenfoque y rendimiento|模糊与性能|Desfoque e desempenho|Unschärfe und Leistung
+Blur radius|Radio del desenfoque|模糊半径|Raio do desfoque|Unschärferadius
+Blur quality|Calidad del desenfoque|模糊质量|Qualidade do desfoque|Unschärfequalität
+Performance (Dual Kawase)|Rendimiento (Dual Kawase)|性能（Dual Kawase）|Desempenho (Dual Kawase)|Leistung (Dual Kawase)
+Quality (Gaussian)|Calidad (gaussiano)|质量（高斯）|Qualidade (gaussiano)|Qualität (Gauß)
+Update the glass every frame|Actualizar el cristal en cada fotograma|每帧更新玻璃|Atualizar o vidro a cada quadro|Glas in jedem Bild aktualisieren
+Reset glass settings|Restablecer ajustes de cristal|重置玻璃设置|Restaurar ajustes do vidro|Glaseinstellungen zurücksetzen
+Reset blur settings|Restablecer ajustes de desenfoque|重置模糊设置|Restaurar ajustes de desfoque|Unschärfeeinstellungen zurücksetzen
+Copy style|Copiar estilo|复制样式|Copiar estilo|Stil kopieren
+Paste style|Pegar estilo|粘贴样式|Colar estilo|Stil einfügen
+Style copied.|Estilo copiado.|样式已复制。|Estilo copiado.|Stil kopiert.
+The clipboard doesn't contain a copied style.|El portapapeles no contiene un estilo copiado.|剪贴板中没有已复制的样式。|A área de transferência não contém um estilo copiado.|Die Zwischenablage enthält keinen kopierten Stil.
+Style applied. Press Save to keep it.|Estilo aplicado. Pulsa Guardar para conservarlo.|样式已应用。按保存以保留。|Estilo aplicado. Pressione Salvar para mantê-lo.|Stil angewendet. Zum Behalten auf Speichern klicken.
 Widget shortcuts|Atajos de widgets|小组件快捷键|Atalhos de widgets|Miniprogramm-Kürzel
 Control Center|Centro de control|控制中心|Central de Controle|Kontrollzentrum
 Install Acrylic Glass to edit its materials.|Instala Cristal acrílico para editar sus materiales.|安装亚克力玻璃后即可编辑材质。|Instale o Vidro acrílico para editar seus materiais.|Installiere Acrylglas, um seine Materialien zu bearbeiten.

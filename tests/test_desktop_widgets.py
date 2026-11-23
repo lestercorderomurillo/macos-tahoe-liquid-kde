@@ -36,6 +36,30 @@ def test_panel_weather_route_preserves_existing_context_actions(tmp_path):
     assert main.read_text() == updated
 
 
+def test_migrated_desktop_widget_settings_cover_the_bundled_schema_and_clipboard(tmp_path):
+    from xml.etree import ElementTree
+    from desktop_widget_settings import MARKER, NAMES, PREFIX, STYLE_KEYS, read_schema, stage_configuration_route
+
+    archive = ROOT / "src/offline/desktop-widgets/liquidglass-kde-widgets.tar.zst"
+    subprocess.run(["tar", "--zstd", "-xf", str(archive), "-C", str(tmp_path),
+                    *("./" + PREFIX + name for name in NAMES)], check=True)
+    for variant in NAMES:
+        package = tmp_path / (PREFIX + variant)
+        xml = ElementTree.parse(package / "contents/config/main.xml")
+        assert read_schema(package).DEFAULTS.keys() == {
+            node.attrib["name"] for node in xml.findall(".//{*}entry")}
+        stage_configuration_route(package)
+        main = package / "contents/ui/main.qml"
+        updated = main.read_text()
+        assert MARKER in updated
+        assert 'section: "desktop_widget"' in updated
+        assert "commonActions.support] : commonActions.list" in updated
+        stage_configuration_route(package)
+        assert main.read_text() == updated
+        codec = (package / "contents/ui/components/styleCodec.js").read_text()
+        assert all(f'{key}: "{value}"' in codec for key, value in STYLE_KEYS.items())
+
+
 @pytest.fixture
 def widgets(tmp_path, monkeypatch):
     from steps import plasmoids

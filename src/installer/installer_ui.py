@@ -917,7 +917,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--mode", choices=("install", "settings"), default="install",
                         help="Open guided installation or installed settings.")
     parser.add_argument("--section", choices=("appearance", "general", "theme", "desktop", "dock_bar", "windows",
-                                             "acrylic_glass", "weather_panel", "applications", "startup"),
+                                             "acrylic_glass", "weather_panel", "desktop_widget", "applications", "startup"),
                         default="appearance",
                         help="Section to open in settings mode.")
     parser.add_argument("--widget", type=int, help="Open settings for a Plasma widget instance.")
@@ -925,7 +925,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--progress-file", help=argparse.SUPPRESS)
     parser.add_argument("--cancel-file", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
-    if args.widget is not None and (args.mode != "settings" or args.section not in {"dock_bar", "weather_panel"}
+    if args.widget is not None and (args.mode != "settings" or args.section not in {"dock_bar", "weather_panel", "desktop_widget"}
                                     or args.widget <= 0):
         parser.error("--widget requires a positive ID in widget settings")
     if args.mode == "settings" and (args.uninstall or args.supervise or args.check_update):

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+import desktop_widget_settings
 import dock_preferences
 import launcher_preferences
 import weather_panel_settings
@@ -65,9 +66,15 @@ SETTINGS = {
 
 
 def _request(kind, instance=None, changes=None):
-    plugins, group, defaults = SETTINGS[kind]
-    typed = TYPED_PREFERENCES.get(kind)
-    has_shortcut = kind in SHORTCUT_WIDGETS
+    desktop_schema = desktop_widget_settings.installed_schema(kind) if kind not in SETTINGS else None
+    if desktop_schema is None and kind not in SETTINGS:
+        raise RuntimeError("This widget is unavailable in Settings.")
+    if desktop_schema is not None:
+        plugins, group, defaults = {kind}, "General", desktop_schema.DEFAULTS
+    else:
+        plugins, group, defaults = SETTINGS[kind]
+    typed = desktop_schema or TYPED_PREFERENCES.get(kind)
+    has_shortcut = desktop_schema is not None or kind in SHORTCUT_WIDGETS
     valid_keys = defaults | ({"activationShortcut": ""} if has_shortcut else {})
     if instance is not None and (type(instance) is not int or instance <= 0):
         raise ValueError("Invalid widget ID")
@@ -83,7 +90,7 @@ def _request(kind, instance=None, changes=None):
         for key, value in changes.items()
     ):
         raise ValueError({"dock": "Invalid Dock preference value", "launcher": "Invalid launcher preference value",
-                          "weather_panel": "Invalid weather preference value"}[kind])
+                          "weather_panel": "Invalid weather preference value"}.get(kind, "Invalid widget preference value"))
     payload = json.dumps({"plugins": sorted(plugins), "group": group, "defaults": defaults,
                           "instance": instance, "changes": changes, "dock": kind == "dock",
                           "hasShortcut": has_shortcut, "identifyPlugin": kind in {"dock", "bar_shortcuts"}})

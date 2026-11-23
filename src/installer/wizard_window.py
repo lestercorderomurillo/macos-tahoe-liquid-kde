@@ -84,7 +84,7 @@ SETTINGS_PAGES = {
     "general": ("General", "settings", ("#99a9bc", "#3e506a"), ()),
     **SECTIONS,
 }
-SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows", "weather_panel": "desktop"}
+SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows", "weather_panel": "desktop", "desktop_widget": "desktop"}
 PANEL_SECTIONS = {panel: section for section, (_, _, _, panels) in SECTIONS.items() for panel in panels}
 PANEL_STEPS = {panel: step for step, (_, panels) in INSTALL_SECTIONS.items() for panel in panels}
 
@@ -799,12 +799,13 @@ class InstallerWindow(OpaqueSurface):
         self.settings_mode = mode == "settings"
         self.requested_widget = widget
         self.requested_weather_panel = self.settings_mode and section == "weather_panel"
+        self.requested_desktop_widget = self.settings_mode and section == "desktop_widget"
         self.acrylic_glass_editor = None
         self.requested_glass_editor = self.settings_mode and section == "acrylic_glass"
         section = SECTION_ALIASES.get(section, section)
         self.page = section if self.settings_mode else "uninstall" if uninstall else "welcome"
         self.expanded_panels = {"windows": {"acrylic_glass_editor"}} if self.requested_glass_editor else {}
-        if self.requested_weather_panel:
+        if self.requested_weather_panel or self.requested_desktop_widget:
             self.expanded_panels["desktop"] = set()
         self.panel_frames = {}
         self.settings_baseline = None
@@ -1064,7 +1065,7 @@ class InstallerWindow(OpaqueSurface):
             elif page == "theme":
                 terms += ("Light", "Dark", "Auto", "Icon appearance", "Icon color palette", "Tinted")
             elif page == "desktop":
-                terms += ("Weather (Panel)", "Temperature unit")
+                terms += ("Weather (Panel)", "Temperature unit", "Widget settings", "Clock", "Timer", "Photos")
             elif page == "dock_bar":
                 terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons",
                           "System menu", "App Store icon", "App Store command", "Log Out command",
@@ -1734,6 +1735,16 @@ class InstallerWindow(OpaqueSurface):
             self.page_dock_and_menu_widgets()
         if self.settings_mode and self.page == "desktop":
             self.page_weather_panel()
+            from desktop_widget_editor import DesktopWidgetEditor, installed_instances
+            widgets = installed_instances()
+            if widgets:
+                panel = self.option_card()
+                layout = QVBoxLayout(panel)
+                layout.addWidget(DesktopWidgetEditor(widgets, self.requested_widget, self))
+                self.body.addWidget(panel)
+                if self.requested_desktop_widget and self.requested_widget in widgets:
+                    self.widget_settings_target = panel
+                    self.requested_desktop_widget = False
 
     def page_weather_panel(self):
         from plasmoid_settings import apply, instances

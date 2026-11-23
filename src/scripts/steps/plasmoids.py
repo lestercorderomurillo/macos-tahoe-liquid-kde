@@ -360,6 +360,7 @@ def install_desktop_widgets(enabled: bool) -> None:
             warn(tr('Liquid Glass desktop widgets could not be unpacked: {error}', error=result.stderr.strip()))
             return
         installed = _installed_widgets()
+        from desktop_widget_settings import stage_configuration_route as stage_desktop_widget
         from weather_panel_settings import PLUGIN as WEATHER_PANEL, stage_configuration_route
         for entry in sorted(staging.iterdir()):
             name = entry.name
@@ -370,6 +371,8 @@ def install_desktop_widgets(enabled: bool) -> None:
                 continue
             if name == WEATHER_PANEL:
                 stage_configuration_route(entry)
+            else:
+                stage_desktop_widget(entry)
             if install_tree(entry, target, name):
                 installed.add(name)
                 _save_installed_widgets(installed)

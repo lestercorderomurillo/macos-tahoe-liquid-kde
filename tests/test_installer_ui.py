@@ -22,9 +22,10 @@ def stable_installer_language(monkeypatch):
     monkeypatch.setattr(installer_ui, "get_language", lambda: "en")
 
 
-def test_weather_panel_deep_link_accepts_a_widget_id(installer_ui_module, monkeypatch):
+@pytest.mark.parametrize("section", ["weather_panel", "desktop_widget"])
+def test_desktop_widget_deep_links_accept_widget_ids(installer_ui_module, monkeypatch, section):
     monkeypatch.setattr(installer_ui_module, "drop_root_to_invoking_user", lambda: 17)
-    assert installer_ui_module.main(["--mode=settings", "--section=weather_panel", "--widget=42"]) == 17
+    assert installer_ui_module.main(["--mode=settings", "--section", section, "--widget=42"]) == 17
 
 
 @pytest.mark.parametrize("edition", ["MacTahoe", "MacGoldenGate"])
