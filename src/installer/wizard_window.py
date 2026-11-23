@@ -557,8 +557,12 @@ class ChoiceCard(QPushButton):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         accent = QColor(self.window().accent)
-        border = accent if self.isChecked() or self.hasFocus() else QColor(self.window().line)
-        painter.setPen(QPen(border, 2 if self.isChecked() or self.hasFocus() else 1))
+        focused = self.hasFocus()
+        checked = self.isChecked()
+        border = accent if checked or focused else QColor(self.window().line)
+        dashed = self.window().settings_mode and focused and not checked
+        pen_style = Qt.PenStyle.DashLine if dashed else Qt.PenStyle.SolidLine
+        painter.setPen(QPen(border, 2 if not dashed and (checked or focused) else 1, pen_style))
         painter.setBrush(self.palette().base())
         painter.drawRoundedRect(QRectF(1, 1, self.width()-2, self.height()-2), 8, 8)
         indicator = QRectF(self.width()-31, self.height()-(29 if self.compact else 36) if self.photo else (self.height()-18)/2, 18, 18)
@@ -761,65 +765,47 @@ class InstallerWindow(OpaqueSurface):
         self.maximize_button.clicked.connect(self.toggle_maximized)
         lights.addWidget(self.maximize_button)
         lights.addStretch()
-        self.settings_title = self.label("Settings")
-        self.settings_title.setFont(relative_font(self, .86, QFont.Weight.DemiBold))
-        self.settings_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        lights.addWidget(self.settings_title)
-        lights.addStretch()
-        lights.addSpacing(72)
         self.layout.addWidget(self.header)
-        self.step_strip = QScrollArea()
-        self.step_strip.setObjectName("stepStrip")
-        self.step_strip.setFrameShape(QFrame.Shape.NoFrame)
-        self.step_strip.setWidgetResizable(True)
-        self.step_strip.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.step_strip.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        self.step_strip.setFixedHeight(49)
-        step_contents = QWidget()
-        step_contents.setObjectName("stepContents")
-        rail = QHBoxLayout(step_contents)
-        rail.setContentsMargins(4, 3, 4, 7)
-        rail.setSpacing(5)
-        self.step_buttons = {}
-        for page, _ in STEPS:
-            button = QPushButton()
-            button.setProperty("navigation", "step")
-            button.setFont(relative_font(self, .86))
-            button.setCheckable(True)
-            button.clicked.connect(lambda _, target=page: self.navigate_install(target))
-            rail.addWidget(button)
-            self.step_buttons[page] = button
-        rail.addStretch()
-        self.step_strip.setWidget(step_contents)
-        steps_row = QHBoxLayout()
-        steps_row.setContentsMargins(20, 0, 20, 0)
-        steps_row.addWidget(self.step_strip)
-        self.layout.addLayout(steps_row)
 
         self.main_row = QHBoxLayout()
         self.main_row.setSpacing(0)
         self.layout.addLayout(self.main_row, 1)
         self.sidebar = QFrame()
         self.sidebar.setObjectName("settingsSidebar")
-        self.sidebar.setFixedWidth(218)
-        sidebar = QVBoxLayout(self.sidebar)
-        sidebar.setContentsMargins(16, 10, 15, 16)
-        sidebar.setSpacing(6)
+        self.sidebar.setFixedWidth(190)
+        self.sidebar_layout = QVBoxLayout(self.sidebar)
+        self.sidebar_layout.setContentsMargins(0, 0, 1, 0)
+        self.sidebar_layout.setSpacing(0)
+        navigation = QWidget()
+        sidebar = QVBoxLayout(navigation)
+        sidebar.setContentsMargins(10, 2, 10, 12)
+        sidebar.setSpacing(3)
+        self.sidebar_layout.addWidget(navigation, 1)
         self.search = QLineEdit()
         self.search.setObjectName("settingsSearch")
+        self.search.setFont(relative_font(self, .8))
         self.search.setClearButtonEnabled(True)
         self.search.addAction(QIcon.fromTheme("edit-find"), QLineEdit.ActionPosition.LeadingPosition)
         self.search.textChanged.connect(self.filter_settings)
         self.search.returnPressed.connect(self.open_search_result)
         sidebar.addWidget(self.search)
-        self.sidebar_title = self.label(self.edition)
-        self.sidebar_title.setObjectName("settingsProduct")
-        sidebar.addWidget(self.sidebar_title)
+        identity = QHBoxLayout()
+        identity.setContentsMargins(5, 9, 4, 9)
+        identity.setSpacing(8)
+        badge = QLabel()
+        badge.setPixmap(picture("logo-27.png" if self.asset_edition == "golden-gate" else "logo-26.png", 29, 29))
+        identity.addWidget(badge)
+        name = self.label(self.edition)
+        name.setFont(relative_font(self, .82, QFont.Weight.DemiBold))
+        identity.addWidget(name, 1)
+        sidebar.addLayout(identity)
         self.section_buttons = {}
         for page, (icon, _) in SETTINGS_PAGES.items():
             button = QPushButton()
             button.setObjectName("section-" + page)
             button.setProperty("navigation", "section")
+            button.setFont(relative_font(self, .82))
+            button.setIconSize(QSize(16, 16))
             button.setIcon(QIcon.fromTheme(icon))
             button.setCheckable(True)
             button.clicked.connect(lambda _, target=page: self.navigate_settings(target))
@@ -832,10 +818,33 @@ class InstallerWindow(OpaqueSurface):
         self.main_row.addWidget(self.sidebar)
         self.find_shortcut = QShortcut(QKeySequence(QKeySequence.StandardKey.Find), self)
         self.find_shortcut.activated.connect(self.focus_search)
+        self.settings_history = [section]
+        self.settings_index = 0
+        content_column = QVBoxLayout()
+        content_column.setSpacing(0)
+        self.main_row.addLayout(content_column, 1)
+        self.settings_toolbar = WindowHeader(self)
+        self.settings_toolbar.setObjectName("settingsToolbar")
+        self.settings_toolbar.setFixedHeight(44)
+        toolbar = QHBoxLayout(self.settings_toolbar)
+        toolbar.setContentsMargins(14, 5, 16, 5)
+        toolbar.setSpacing(4)
+        self.settings_back = QPushButton("‹")
+        self.settings_back.setObjectName("settingsBack")
+        self.settings_back.clicked.connect(lambda: self.move_settings_history(-1))
+        toolbar.addWidget(self.settings_back)
+        self.settings_forward = QPushButton("›")
+        self.settings_forward.setObjectName("settingsForward")
+        self.settings_forward.clicked.connect(lambda: self.move_settings_history(1))
+        toolbar.addWidget(self.settings_forward)
+        self.settings_title = self.label("")
+        self.settings_title.setFont(relative_font(self, .91, QFont.Weight.DemiBold))
+        toolbar.addWidget(self.settings_title, 1)
+        content_column.addWidget(self.settings_toolbar)
         self.scroll = PageScrollArea()
         self.scroll.setWidgetResizable(True)
         self.scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self.main_row.addWidget(self.scroll, 1)
+        content_column.addWidget(self.scroll, 1)
         self.footer = OpaqueSurface()
         self.footer.setObjectName("footer")
         self.footer_layout = QGridLayout(self.footer)
@@ -904,6 +913,7 @@ class InstallerWindow(OpaqueSurface):
         bridge.logAppended.connect(self.append_log)
         bridge.updateChecked.connect(self.update_checked)
         bridge.updateReturned.connect(self.update_returned)
+        self.configure_window_mode()
         self.render()
         if self.settings_mode:
             self.focus_search()
@@ -917,16 +927,33 @@ class InstallerWindow(OpaqueSurface):
     def visible_steps(self):
         return [page for page, _ in STEPS if page != "glass_style" or self.show_glass_style()]
 
-    def navigate_install(self, page):
-        if (not self.settings_mode and self.page in self.visible_steps()
-                and page in self.visible_steps() and not self.updating):
-            self.editing = False
-            self.page = page
-            self.render()
+    def configure_window_mode(self):
+        self.sidebar.setVisible(self.settings_mode)
+        self.settings_toolbar.setVisible(self.settings_mode)
+        self.footer.setVisible(not self.settings_mode)
+        self.find_shortcut.setEnabled(self.settings_mode)
+        if self.settings_mode:
+            self.layout.removeWidget(self.header)
+            self.sidebar_layout.insertWidget(0, self.header)
+            self.header.show()
+            self.setMinimumSize(700, 425)
+            self.resize(790, 535)
 
     def navigate_settings(self, page):
-        if self.settings_mode and page in SETTINGS_PAGES:
-            self.page = page
+        if not self.settings_mode or page not in SETTINGS_PAGES:
+            return
+        if page != self.page:
+            del self.settings_history[self.settings_index + 1:]
+            self.settings_history.append(page)
+            self.settings_index += 1
+        self.page = page
+        self.render()
+
+    def move_settings_history(self, direction):
+        index = self.settings_index + direction
+        if 0 <= index < len(self.settings_history):
+            self.settings_index = index
+            self.page = self.settings_history[index]
             self.render()
 
     def filter_settings(self):
@@ -1001,7 +1028,9 @@ class InstallerWindow(OpaqueSurface):
             if directory not in self.config_watcher.directories():
                 self.config_watcher.addPath(directory)
         self.sync_appearance_choice()
-        self.navigate_settings("appearance")
+        self.configure_window_mode()
+        self.page = "appearance"
+        self.render()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -1127,8 +1156,6 @@ class InstallerWindow(OpaqueSurface):
                 self.apply_appearance_choice(value)
             return
         self.choices[key] = value
-        if key in ("files", "acrylic_glass"):
-            self.refresh_step_navigation()
         if key == "wallpaper":
             self.choices["wallpaper_explicit"] = True
         if key == "window_controls":
@@ -1230,16 +1257,6 @@ class InstallerWindow(OpaqueSurface):
         finally:
             self.setUpdatesEnabled(updates_enabled)
 
-    def refresh_step_navigation(self):
-        available = self.visible_steps()
-        self.step_strip.setVisible(bool(not self.settings_mode and self.page in available))
-        for page, button in self.step_buttons.items():
-            button.setText(self.t(PAGE_LABELS[page]))
-            button.setVisible(page in available)
-            button.setChecked(page == self.page)
-        if not self.step_strip.isHidden():
-            self.step_strip.ensureWidgetVisible(self.step_buttons[self.page], 12, 0)
-
     def _render(self):
         # Qt stylesheets can resolve child palettes from the application rather
         # than their parent. Keep that application-local palette consistent too.
@@ -1250,6 +1267,8 @@ class InstallerWindow(OpaqueSurface):
         self.accent = "#007aff"
         light = self.window().palette().window().color().lightnessF() > .5
         surface, footer = ("#f6f6f6", "#eeeeee") if light else ("#292929", "#242424")
+        if self.settings_mode:
+            surface = "#fbfcfd" if light else "#25262c"
         self.surface_color = QColor(surface)
         self.scroll.surface_color = QColor(surface)
         self.footer.surface_color = QColor(footer)
@@ -1260,10 +1279,14 @@ class InstallerWindow(OpaqueSurface):
         operation = "Uninstall" if self.page in ("uninstall", "removed") or (self.page in ("progress", "error") and self.action == "uninstall") else "Install"
         title = self.edition + " " + self.t("Settings") if self.settings_mode else self.t(operation) + " " + self.edition
         self.setWindowTitle(title + " · v" + self.bridge.version)
-        self.sidebar.setVisible(self.settings_mode)
-        self.settings_title.setVisible(self.settings_mode)
-        self.settings_title.setText(self.t("Settings"))
-        self.find_shortcut.setEnabled(self.settings_mode)
+        if self.settings_mode:
+            self.settings_title.setText(self.t(PAGE_LABELS[self.page]))
+            self.settings_back.setAccessibleName(self.t("Back"))
+            self.settings_forward.setAccessibleName(self.t("Forward"))
+            self.settings_back.setToolTip(self.settings_back.accessibleName())
+            self.settings_forward.setToolTip(self.settings_forward.accessibleName())
+            self.settings_back.setEnabled(self.settings_index > 0)
+            self.settings_forward.setEnabled(self.settings_index + 1 < len(self.settings_history))
         self.search.setPlaceholderText(self.t("Search settings"))
         self.search.setAccessibleName(self.t("Search settings"))
         self.no_results.setText(self.t("No matching settings"))
@@ -1271,40 +1294,42 @@ class InstallerWindow(OpaqueSurface):
             button.setText(self.t(PAGE_LABELS[page]))
             button.setChecked(page == self.page)
         self.filter_settings()
-        self.refresh_step_navigation()
-        self.footer.setVisible(not self.settings_mode)
-        sidebar_surface = "#eceef1" if light else "#24262a"
-        field_surface = "#ffffff" if light else "#32353b"
-        hover = "#dfe3e9" if light else "#373941"
-        selected = "#d4e4f8" if light else "#384b65"
+        sidebar_surface = "#e9eef2" if light else "#2c3039"
+        field_surface = "#f7f9fa" if light else "#363b47"
+        hover = "#dbe4ec" if light else "#3b4350"
+        selected = "#1764b4" if light else "#3168a8"
+        separator = "#e2e7ec" if light else "#3b4049"
+        panel_surface = "#f0f3f6" if light else "#30343d"
         self.close_button.setAccessibleName(self.t("Close"))
         self.close_button.setToolTip(self.t("Close"))
         self.refresh_window_controls()
         stylesheet = f"""
-            QScrollArea#stepStrip, QWidget#stepContents {{ background: {surface}; }}
-            QScrollArea#stepStrip QScrollBar:horizontal {{ height: 5px; background: transparent; }}
-            QScrollArea#stepStrip QScrollBar::handle:horizontal {{
-                background: {self.line}; border-radius: 2px; min-width: 28px;
-            }}
-            QScrollArea#stepStrip QScrollBar::add-line:horizontal,
-            QScrollArea#stepStrip QScrollBar::sub-line:horizontal {{ width: 0; }}
             QFrame#settingsSidebar {{
-                background: {sidebar_surface}; border-right: 1px solid {self.line};
+                background: {sidebar_surface}; border-right: 1px solid {separator};
             }}
-            QLabel#settingsProduct {{ padding: 14px 8px 3px; font-weight: 600; }}
+            QFrame#settingsPanel {{ background: {panel_surface}; border-radius: 10px; }}
+            QWidget#settingsToolbar {{
+                background: {surface}; border-bottom: 1px solid {separator};
+            }}
+            QPushButton#settingsBack, QPushButton#settingsForward {{
+                color: {foreground}; border: 1px solid transparent;
+                border-radius: 5px; font-size: 21px; min-width: 23px; min-height: 24px;
+            }}
+            QPushButton#settingsBack:disabled, QPushButton#settingsForward:disabled {{ color: {self.line}; }}
+            QPushButton#settingsBack:enabled:hover, QPushButton#settingsForward:enabled:hover {{ background: {hover}; }}
+            QPushButton#settingsBack:focus, QPushButton#settingsForward:focus {{ border-color: {self.accent}; }}
             QLineEdit#settingsSearch {{
                 background: {field_surface}; color: {foreground};
-                border: 1px solid {self.line}; border-radius: 7px; padding: 5px 8px;
+                border: 1px solid {separator}; border-radius: 6px; padding: 3px 5px;
             }}
             QLineEdit#settingsSearch:focus {{ border-color: {self.accent}; }}
-            QPushButton[navigation] {{
-                color: {foreground}; border: 1px solid transparent; border-radius: 7px;
-                padding: 5px 9px;
+            QPushButton[navigation="section"] {{
+                color: {foreground}; text-align: left; border: 1px solid transparent;
+                border-radius: 5px; padding: 4px 6px;
             }}
-            QPushButton[navigation="section"] {{ text-align: left; padding: 7px 9px; }}
-            QPushButton[navigation]:hover {{ background: {hover}; }}
-            QPushButton[navigation]:checked {{ background: {selected}; }}
-            QPushButton[navigation]:focus {{ border-color: {self.accent}; }}
+            QPushButton[navigation="section"]:hover {{ background: {hover}; }}
+            QPushButton[navigation="section"]:checked {{ background: {selected}; color: white; }}
+            QPushButton[navigation="section"]:focus {{ border-color: {self.accent}; }}
             QLabel {{ background: transparent; color: {foreground}; }}
             QLabel#detail, QLabel#versionLabel {{ color: {muted}; }}
             QRadioButton, QCheckBox {{ spacing: 9px; padding: 7px 0; background: transparent; }}
@@ -1326,23 +1351,23 @@ class InstallerWindow(OpaqueSurface):
         self.content.setPalette(self.palette())
         self.content.setFont(self.font())
         self.body = QVBoxLayout(self.content)
-        self.body.setContentsMargins(38, 28, 38, 22)
+        self.body.setContentsMargins(*((18, 16, 18, 18) if self.settings_mode else (38, 28, 38, 22)))
         self.body.setSpacing(12)
-        titles = PAGE_LABELS if self.settings_mode else dict(STEPS)
+        titles = {} if self.settings_mode else dict(STEPS)
         if self.page in titles and titles[self.page]:
             self.body.addWidget(self.label(titles[self.page], heading=True))
             self.body.addSpacing(10)
         getattr(self, "page_" + self.page)()
         self.body.addStretch()
         self.scroll.setWidget(self.content)
-        visible_steps = [item for item in STEPS if item[0] != "glass_style" or self.show_glass_style()]
-        index = next((i for i, item in enumerate(visible_steps) if item[0] == self.page), -1)
+        visible_steps = self.visible_steps()
+        index = visible_steps.index(self.page) if self.page in visible_steps else -1
         self.version_label.setVisible(self.page == "welcome")
         self.welcome_actions.setVisible(self.page == "welcome")
         self.express.setText(self.t("Express install"))
         self.express.setToolTip(self.t("Use the defaults and review before installing."))
         self.express.setEnabled(not self.updating and not self.bridge.running)
-        self.dots.setVisible(0 < index < len(STEPS))
+        self.dots.setVisible(not self.settings_mode and index > 0)
         self.dots.count = len(visible_steps) - 1
         self.dots.index = index
         self.dots.update()
@@ -1384,26 +1409,36 @@ class InstallerWindow(OpaqueSurface):
             self.body.addWidget(update)
 
     def page_general(self):
-        row = QHBoxLayout()
+        panel = QFrame()
+        panel.setObjectName("settingsPanel")
+        row = QHBoxLayout(panel)
+        row.setContentsMargins(12, 9, 12, 9)
         label = self.label("Language")
         selector = self.language_selector()
         selector.setAccessibleName(self.t("Language"))
         row.addWidget(label)
         row.addStretch()
         row.addWidget(selector)
-        self.body.addLayout(row)
+        self.body.addWidget(panel)
 
     def page_appearance(self):
-        self.body.addSpacing(10)
+        if self.settings_mode:
+            title = self.label("Theme")
+            title.setFont(relative_font(self, .86, QFont.Weight.DemiBold))
+            self.body.addWidget(title)
+        else:
+            self.body.addSpacing(10)
         stem = f"desktop-{self.asset_edition}-"
-        self.cards("appearance", [
+        group = self.cards("appearance", [
             ("auto", "Auto", "", picture(stem+"light.jpg", 232, 131, stem+"dark.jpg")),
             ("light", "Light", "", picture(stem+"light.jpg", 232, 131)),
             ("dark", "Dark", "", picture(stem+"dark.jpg", 232, 131)),
         ], columns=3, compact=True, default_first=False)
         if self.settings_mode:
+            for button in group.buttons():
+                button.setMaximumWidth(154)
             if self.appearance_process:
-                for _, button in self.choice_widgets["appearance"]:
+                for button in group.buttons():
                     button.setEnabled(False)
                 self.body.addWidget(self.label("Applying appearance…"))
             if self.appearance_error:

@@ -179,6 +179,7 @@ Your documents and personal applications are kept.|Tus documentos y aplicaciones
 The operation could not be completed|No se pudo completar la operación|无法完成操作|Não foi possível concluir a operação|Der Vorgang konnte nicht abgeschlossen werden
 Next|Siguiente|下一步|Avançar|Weiter
 Back|Atrás|返回|Voltar|Zurück
+Forward|Adelante|前进|Avançar|Vorwärts
 Retry|Reintentar|重试|Tentar novamente|Erneut versuchen
 Save|Guardar|保存|Salvar|Speichern
 Step|Paso|步骤|Etapa|Schritt

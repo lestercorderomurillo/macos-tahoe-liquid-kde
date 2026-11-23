@@ -606,15 +606,19 @@ with tempfile.TemporaryDirectory() as directory:
 theme_switch._wallpapers_from_config = snapshot
 import os
 window.page = 'appearance'; window.render(); app.processEvents()
-assert window.step_strip.isVisible() and not window.sidebar.isVisible()
-window.step_buttons['wallpaper'].click()
-assert window.page == 'wallpaper' and window.step_buttons['wallpaper'].isChecked()
+assert window.dots.isVisible() and not window.sidebar.isVisible()
+window.advance()
+assert window.page == 'icons' and window.dots.isVisible()
 window.page = 'done'
 window.open_installed_settings()
-assert window.sidebar.isVisible() and not window.step_strip.isVisible()
+assert window.sidebar.isVisible() and not window.dots.isVisible()
 window.search.setText('idioma')
 assert window.filter_settings() == ['general']
 window.open_search_result()
+assert window.page == 'general' and window.settings_back.isEnabled()
+window.settings_back.click()
+assert window.page == 'appearance' and window.settings_forward.isEnabled()
+window.settings_forward.click()
 assert window.page == 'general'
 window.search.setText('zzzzz')
 assert window.no_results.isVisible()
