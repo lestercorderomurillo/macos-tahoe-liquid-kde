@@ -27,7 +27,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 Layout.leftMargin: 14; Layout.rightMargin: 14
                 spacing: 7
-                Kirigami.Icon { source: Style.symbol("mac-brightness-low"); roundToIconSize: false; isMask: true; color: Style.foreground(this, Window.window, "white"); implicitWidth: 15; implicitHeight: 15 }
+                Kirigami.Icon { source: Style.symbol("mac-brightness-low"); roundToIconSize: false; isMask: true; color: Style.foreground(this, Window.window, Kirigami.Theme.textColor); implicitWidth: 15; implicitHeight: 15 }
                 GlassSlider {
                 objectName: "brightnessSlider"
                 Layout.fillWidth: true
@@ -35,7 +35,7 @@ ColumnLayout {
                 from: 0; to: model.maxBrightness; value: model.brightness
                 onMoved: view.control.setBrightness(model.displayName, Math.round(value))
                 }
-                Kirigami.Icon { source: Style.symbol("display-brightness"); roundToIconSize: false; isMask: true; color: Style.foreground(this, Window.window, "white"); implicitWidth: 18; implicitHeight: 18 }
+                Kirigami.Icon { source: Style.symbol("display-brightness"); roundToIconSize: false; isMask: true; color: Style.foreground(this, Window.window, Kirigami.Theme.textColor); implicitWidth: 18; implicitHeight: 18 }
             }
         }
     }

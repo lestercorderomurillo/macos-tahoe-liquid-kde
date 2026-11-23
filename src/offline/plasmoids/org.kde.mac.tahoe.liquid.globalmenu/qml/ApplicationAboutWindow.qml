@@ -216,7 +216,7 @@ Window {
                 Item { Layout.preferredHeight: 1.25 * root.unit }
 
                 QQC2.Label {
-                    color: backdrop.foreground
+                    color: backdrop.foregroundFor(this)
                     objectName: "applicationName"
                     text: root.applicationName
                     textFormat: Text.PlainText
@@ -229,7 +229,7 @@ Window {
                 }
 
                 QQC2.Label {
-                    color: backdrop.foreground
+                    color: backdrop.foregroundFor(this)
                     objectName: "applicationDescription"
                     visible: text.length > 0
                     text: root.applicationInfo.description || ""
@@ -244,7 +244,7 @@ Window {
                 Item { Layout.preferredHeight: root.unit }
 
                 QQC2.Label {
-                    color: backdrop.foreground
+                    color: backdrop.foregroundFor(this)
                     text: translations.i18n("Location")
                     textFormat: Text.PlainText
                     font: Kirigami.Theme.smallFont
@@ -259,7 +259,7 @@ Window {
                     readOnly: true
                     selectByMouse: true
                     font: Kirigami.Theme.defaultFont
-                    color: backdrop.foreground
+                    color: backdrop.foregroundFor(this)
                     horizontalAlignment: TextEdit.AlignHCenter
                     wrapMode: TextEdit.WrapAnywhere
                     Layout.fillWidth: true
@@ -271,7 +271,7 @@ Window {
                     visible: text.length > 0
                     textFormat: Text.PlainText
                     font: Kirigami.Theme.smallFont
-                    color: backdrop.withOpacity(Kirigami.Theme.disabledTextColor)
+                    color: backdrop.foregroundFor(this, Kirigami.Theme.disabledTextColor)
                     Layout.fillWidth: true
                     Layout.topMargin: root.unit
                     horizontalAlignment: Text.AlignHCenter
@@ -282,7 +282,7 @@ Window {
 
         GlassButton {
             isDarkTheme: root.isDarkTheme
-            labelColor: backdrop.withOpacity(Qt.tint(Kirigami.Theme.textColor, root.isDarkTheme ? "#66ffffff" : "#66000000"))
+            labelColor: backdrop.foregroundFor(this, Kirigami.Theme.textColor)
             objectName: "copyApplicationDetails"
             text: translations.i18n("Copy Details")
             Layout.alignment: Qt.AlignHCenter

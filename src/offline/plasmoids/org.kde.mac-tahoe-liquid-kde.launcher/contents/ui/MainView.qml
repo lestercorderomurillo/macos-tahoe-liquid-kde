@@ -1,5 +1,4 @@
 import QtQuick
-import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/NotificationContrast.js" as Contrast
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import org.kde.plasma.core as PlasmaCore
@@ -176,19 +175,10 @@ Item {
         if (!root.glassSettings.dynamicTinting) return fallback;
         const sampler = detached ? searchBackdrop : appBackdrop;
         const settings = detached ? searchMaterial : root.glassSettings;
-        sampler.backdropRevision;
-        // Track delegate movement as well as changes behind the stationary popup.
-        for (let parentItem = item; parentItem; parentItem = parentItem.parent) {
-            parentItem.x; parentItem.y;
-        }
-        const point = item.mapToItem(detached ? searchPopup.contentItem : root.contentItem, sampleX, item.height / 2);
-        // Keep samples inside the visible text, including short labels and elided names.
-        const span = Math.max(0, Math.min(textWidth, sampleX * 2, (item.width - sampleX) * 2));
-        const radius = Qt.size(span * 0.4, Math.min(item.height, item.font.pixelSize > 0 ? item.font.pixelSize : item.height / 2) * 0.22);
-        return sampler.animatedLabelForeground(item, point, radius,
-                                      fallback, layerOver(materialFill(settings), overlay));
+        return Tahoe.AdaptiveContrast.foreground(sampler, item, fallback,
+            layerOver(materialFill(settings), overlay), sampleX, textWidth);
     }
-	readonly property color textColor: Contrast.preferredText(glassPalette.Kirigami.Theme.textColor)
+	readonly property color textColor: glassPalette.Kirigami.Theme.textColor
 	readonly property string textFont: Kirigami.Theme.defaultFont.family
 	readonly property real textSize: Kirigami.Theme.defaultFont.pointSize
 	readonly property real appTextSize: textSize * (detachedSearch ? 1.25 : 1)

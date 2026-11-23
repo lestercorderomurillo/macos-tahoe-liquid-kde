@@ -275,9 +275,8 @@ Timer {
                     verifyOptionsMenu(searchBar);
                 }
                 verify(glassPalette.Kirigami.Theme.colorSet === Kirigami.Theme.Window, "labels use the popup color set");
-                const paletteInk = Qt.tint(glassPalette.Kirigami.Theme.textColor,
-                                           expectedDark ? "#66ffffff" : "#66000000");
-                verify(Qt.colorEqual(main.textColor, paletteInk), "window foreground uses the 40% contrast offset");
+                verify(Qt.colorEqual(main.textColor, glassPalette.Kirigami.Theme.textColor),
+                       "popup preserves the active theme's exact foreground");
                 verify(!searchPopup.visible, "inline search has no second popup");
                 verify(main.inlineSearchHeight === 40,
                        "Tahoe reference header preserves Golden Gate geometry");

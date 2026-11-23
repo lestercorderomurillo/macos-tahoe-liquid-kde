@@ -19,6 +19,8 @@ def installed_package():
 
 
 def stage_configuration_route(package):
+    from desktop_widget_settings import stage_glass_text
+    stage_glass_text(package)
     main = package / "contents/ui/main.qml"
     if not main.is_file():
         return

@@ -5,7 +5,7 @@ import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 QQC.ToolButton {
     id: button
-    icon.color: "white"
+    icon.color: Kirigami.Theme.textColor
     display: QQC.AbstractButton.IconOnly
     Accessible.name: text
     // The desktop style paints an icon inside its native ToolButton background.
@@ -14,7 +14,7 @@ QQC.ToolButton {
         radius: height / 2
         color: button.down ? "#33ffffff" : button.hovered || button.visualFocus ? "#1affffff" : "transparent"
         border.width: button.visualFocus ? 1 : 0
-        border.color: "white"
+        border.color: button.icon.color
     }
     contentItem: Item {
         implicitWidth: button.icon.width > 0 ? button.icon.width : 20

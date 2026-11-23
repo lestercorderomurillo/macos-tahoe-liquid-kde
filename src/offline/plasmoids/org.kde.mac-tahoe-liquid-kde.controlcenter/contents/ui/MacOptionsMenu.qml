@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import "NotificationContrast.js" as Contrast
+import org.kde.mac.tahoe.launcher as NativeGlass
 import QtQuick.Window
 import QtQuick.Controls as Controls
 import QtQuick.Shapes
@@ -11,11 +11,14 @@ import org.kde.ksvg as KSvg
 
 PlasmaCore.Dialog {
     id: menu
+    title: "mttkde-options"
+    property NativeGlass.PopupBackdrop backdrop: NativeGlass.PopupBackdrop { window: menu }
+    property NativeGlass.GlassSettings contrastSettings: NativeGlass.GlassSettings {}
     objectName: "macOptionsMenu"
     property var availableGeometry: () => Qt.rect(Screen.virtualX, Screen.virtualY, Screen.width, Screen.height)
     property string textFont: Kirigami.Theme.defaultFont.family
     property real textSize: Kirigami.Theme.defaultFont.pointSize
-    property color textColor: Contrast.preferredText(Kirigami.Theme.textColor)
+    property color textColor: Kirigami.Theme.textColor
     property bool isDarkTheme: textColor.r * 0.2126 + textColor.g * 0.7152 + textColor.b * 0.0722 > 0.5
     property int preferredWidth: 154
     property bool fitContents: false
@@ -85,7 +88,11 @@ PlasmaCore.Dialog {
 
     mainItem: FocusScope {
         id: menuBody
-        width: Math.max(menu.preferredWidth, menu.fitContents ? contentWidth() : 0) - dialogSvg.margins.left - dialogSvg.margins.right
+        Binding on width {
+            delayed: true
+            value: Math.max(menu.preferredWidth, menu.fitContents ? menuBody.contentWidth() : 0)
+                - dialogSvg.margins.left - dialogSvg.margins.right
+        }
         function contentWidth() {
             let width = 0;
             for (const action of menu.actions) {
@@ -190,9 +197,12 @@ PlasmaCore.Dialog {
                             font.family: menu.textFont
                             font.pointSize: menu.textSize * (row.modelData.section ? 0.85 : 1.05)
                             font.weight: row.modelData.section ? Font.DemiBold : Font.Normal
-                            color: row.enabled && menu.selectedIndex === row.index ? "white"
+                            readonly property color baseInk: row.enabled && menu.selectedIndex === row.index ? "white"
                                 : row.modelData.section ? Qt.rgba(menu.textColor.r, menu.textColor.g, menu.textColor.b, 0.55)
                                 : menu.textColor
+                            color: menu.contrastSettings.dynamicTinting
+                                ? NativeGlass.AdaptiveContrast.foreground(menu.backdrop, label, baseInk, row.background.color)
+                                : baseInk
                         }
                     }
                     padding: 0

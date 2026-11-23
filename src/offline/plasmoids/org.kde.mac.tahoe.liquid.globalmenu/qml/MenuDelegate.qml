@@ -15,7 +15,7 @@ AbstractButton {
     font.weight: horizontalBar ? Font.Medium : Font.Normal
     readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
                                       === Kirigami.ColorUtils.Light
-    property color baseForeground: Qt.tint(Kirigami.Theme.textColor, lightText ? "#66ffffff" : "#66000000")
+    property color baseForeground: Kirigami.Theme.textColor
     property color foregroundColor: baseForeground
 
     property bool horizontalBar: true

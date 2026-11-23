@@ -216,7 +216,7 @@ for light in (True, False):
                           height=pane.height(), rgb=[channel] * 3)
             QMetaObject.invokeMethod(pane, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
         QTest.qWait(30)
-        inks = [child(pane.property('mainItem'), 'notificationCard').property('foregroundColor')
+        inks = [child(pane.property('mainItem'), 'notificationSummary').property('color')
                 for pane in expanded_notices]
         assert all((ink.lightnessF() > .5) == light for ink in inks), ([ink.name() for ink in inks], errors)
 noticeHost.setProperty('notificationTextColor', QColor('black'))
@@ -294,9 +294,15 @@ for base in ('#eeeeee', '#333333'):
         contrast.setProperty('backdrop', QColor(backdrop)); QTest.qWait(10)
         adjusted = contrast.property('foreground')
         original = QColor(base)
-        assert (adjusted.red() > 118) == (original.red() > 118), (base, backdrop)
-        assert abs(adjusted.red() - original.red()) <= 51, (base, backdrop)
-        assert contrast.property('contrastRatio') >= contrast.property('baseRatio'), (base, backdrop)
+        assert abs(adjusted.red() - original.red()) <= 51
+        def separation(color):
+            y = ((color.redF() + .055) / 1.055) ** 2.4 if color.redF() > .04045 else color.redF() / 12.92
+            return 1.16 * y ** (1/3) - .16 if y > 216/24389 else y * 24389/2700
+        surface = separation(QColor(backdrop))
+        before = abs(separation(original) - surface)
+        assert abs(separation(adjusted) - surface) >= before
+        if before >= .20:
+            assert adjusted == original
         if not contrast.property('enabledContrast'):
             assert adjusted == original, (base, backdrop)
 

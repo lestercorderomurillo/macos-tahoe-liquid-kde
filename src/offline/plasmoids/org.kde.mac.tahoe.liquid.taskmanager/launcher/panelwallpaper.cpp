@@ -111,10 +111,11 @@ struct WallpaperSpec {
     int mode;
     bool blur;
     bool dark;
+    bool panelScrim;
     bool operator==(const WallpaperSpec &) const = default;
 };
 
-GlassInk::Samples panelSamples(const WallpaperSpec &spec)
+QImage panelSamples(const WallpaperSpec &spec)
 {
     QImage image;
     if (spec.plugin != u"org.kde.color") {
@@ -124,17 +125,26 @@ GlassInk::Samples panelSamples(const WallpaperSpec &spec)
     }
     const Wallpaper wallpaper{spec.screen, std::move(image), spec.color, spec.mode, spec.blur};
     const QRectF panel(spec.panel);
-    return GlassInk::sample(GlassInk::component, panel.center(), panel.size() * .49, [&](QPointF point) {
-        const QColor pixel = wallpaper.pixel(point);
-        if (!pixel.isValid()) return QColor();
-        // Interpolate the same stops painted by the top bar's scrim.
-        const double segment = std::clamp((point.y() - panel.top()) / panel.height(), 0., 1.) * 8;
-        const double left = std::floor(segment);
-        const double right = std::min(8., left + 1);
-        QColor scrim = Qt::black;
-        scrim.setAlphaF(std::lerp(PanelWallpaper::scrimOpacityAt(left / 8), PanelWallpaper::scrimOpacityAt(right / 8), segment - left));
-        return GlassInk::composite(pixel, scrim);
-    });
+    QImage grid(std::min(512, spec.panel.width()), std::min(spec.panelScrim ? 16 : 288, spec.panel.height()), QImage::Format_RGB32);
+    for (int y = 0; y < grid.height(); ++y) {
+        for (int x = 0; x < grid.width(); ++x) {
+            const QPointF point(panel.x() + (x + .5) * panel.width() / grid.width(),
+                                panel.y() + (y + .5) * panel.height() / grid.height());
+            const QColor pixel = wallpaper.pixel(point);
+            if (!spec.panelScrim) {
+                grid.setPixelColor(x, y, pixel);
+                continue;
+            }
+            // Interpolate the same stops painted by the top bar's scrim.
+            const double segment = std::clamp((point.y() - panel.top()) / panel.height(), 0., 1.) * 8;
+            const double left = std::floor(segment);
+            const double right = std::min(8., left + 1);
+            QColor scrim = Qt::black;
+            scrim.setAlphaF(std::lerp(PanelWallpaper::scrimOpacityAt(left / 8), PanelWallpaper::scrimOpacityAt(right / 8), segment - left));
+            grid.setPixelColor(x, y, GlassInk::composite(pixel, scrim));
+        }
+    }
+    return grid;
 }
 
 // One observer and one result for all applets sharing this panel window.
@@ -142,7 +152,7 @@ class PanelInk : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QColor baseForeground READ baseForeground NOTIFY changed)
-    Q_PROPERTY(QColor foreground READ foreground NOTIFY changed)
+    Q_PROPERTY(quint64 revision READ revision NOTIFY changed)
 public:
     PanelInk(QQuickWindow *window, Plasma::Containment *panel)
         : QObject(window), m_window(window), m_panel(panel)
@@ -167,7 +177,16 @@ public:
         schedule();
     }
     QColor baseForeground() const { return qGuiApp->palette().color(QPalette::Active, QPalette::WindowText); }
-    QColor foreground() const { return m_samples.tone(baseForeground()); }
+    quint64 revision() const { return m_revision; }
+    Q_INVOKABLE QColor foregroundFor(QRectF bounds, QColor base, QColor fill) const
+    {
+        if (m_grid.isNull() || m_window->size().isEmpty()) return base;
+        return GlassInk::sample(GlassInk::label, bounds.center(), bounds.size() * .4, [&](QPointF p) {
+            const int x = std::clamp(int(p.x() * m_grid.width() / m_window->width()), 0, m_grid.width() - 1);
+            const int y = std::clamp(int(p.y() * m_grid.height() / m_window->height()), 0, m_grid.height() - 1);
+            return GlassInk::composite(m_grid.pixelColor(x, y), fill);
+        }).tone(base);
+    }
     bool observes(Plasma::Containment *panel) const { return m_panel == panel; }
 
 Q_SIGNALS:
@@ -190,7 +209,8 @@ private:
     {
         ++m_generation;
         m_requested.reset();
-        m_samples = {};
+        m_grid = {};
+        ++m_revision;
         Q_EMIT changed();
     }
 
@@ -245,16 +265,18 @@ private:
             && QFileInfo(url.isLocalFile() ? url.toLocalFile() : source).isDir();
         const WallpaperSpec spec{screen.size(), QRect(origin, m_window->size()), plugin,
             source, background, fillMode.isValid() ? fillMode.toInt() : 2,
-            setting("Blur").toBool(), automaticVariant && GlassInk::luminance(qGuiApp->palette().color(QPalette::Window)) < .179};
+            setting("Blur").toBool(), automaticVariant && GlassInk::luminance(qGuiApp->palette().color(QPalette::Window)) < .179,
+            m_panel->containmentType() != Plasma::Containment::Desktop};
         if (m_requested == spec) return;
         m_requested = spec;
         // Keep the displayed ink while decoding. A superseded job cannot publish.
         const auto generation = ++m_generation;
-        auto *job = new QFutureWatcher<GlassInk::Samples>(this);
-        connect(job, &QFutureWatcher<GlassInk::Samples>::finished, this, [this, job, generation] {
+        auto *job = new QFutureWatcher<QImage>(this);
+        connect(job, &QFutureWatcher<QImage>::finished, this, [this, job, generation] {
             job->deleteLater();
             if (generation != m_generation) return;
-            m_samples = job->result();
+            m_grid = job->result();
+            ++m_revision;
             Q_EMIT changed();
         });
         job->setFuture(QtConcurrent::run(panelSamples, spec));
@@ -266,7 +288,8 @@ private:
     QTimer m_refresh;
     std::optional<WallpaperSpec> m_requested;
     quint64 m_generation = 0;
-    GlassInk::Samples m_samples;
+    QImage m_grid;
+    quint64 m_revision = 0;
 };
 }
 

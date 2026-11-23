@@ -2087,7 +2087,7 @@ void BlurEffect::blur(
     const bool plasma = resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell");
     // Native QMenus are xdg_popups on Wayland and have no client title.
     const bool namedPopup = GlassMaterials::isControlPanel(w->caption()) || w->caption() == QStringLiteral("mttkde-apps")
-        || w->caption() == QStringLiteral("mttkde-search");
+        || w->caption() == QStringLiteral("mttkde-search") || w->caption() == QStringLiteral("mttkde-options");
     const bool notification = isProjectNotification(resourceClass, w->caption());
     const bool shellMenu = plasma && !namedPopup && !notification && (w->isPopupMenu() || w->isDropdownMenu() || w->isMenu()
         || (w->isPopupWindow() && !w->isAppletPopup() && !w->isTooltip()));
@@ -2096,16 +2096,15 @@ void BlurEffect::blur(
         && caption.startsWith(m_aboutAppPrefix) && caption.endsWith(m_aboutAppSuffix)
         && caption.size() > m_aboutAppPrefix.size() + m_aboutAppSuffix.size();
     const bool about = plasma && (aboutApp || caption == m_aboutTitle || caption == QStringLiteral("About This Computer"));
-    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about;
-    if (BlurConfig::dynamicTinting() && (spatialBackdrop || notification)) {
+    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about || notification;
+    if (BlurConfig::dynamicTinting() && spatialBackdrop) {
         const int sampleInterval = about ? 40 : 200;
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
             blurInfo.contrastTimer.start();
-            // A Launchpad label can be shorter than a single cell in the menu grid.
-            const bool launcher = caption == QStringLiteral("mttkde-apps") || caption == QStringLiteral("mttkde-search");
-            const int side = launcher ? 64 : 8;
-            auto &texture = launcher ? m_launcherContrastTexture : m_contrastTexture;
-            auto &framebuffer = launcher ? m_launcherContrastFramebuffer : m_contrastFramebuffer;
+            // Resolve individual labels within each compositor frame.
+            constexpr int side = 64;
+            auto &texture = m_contrastTexture;
+            auto &framebuffer = m_contrastFramebuffer;
             if (!texture) {
                 texture = GLTexture::allocate(GL_RGBA8, QSize(side, side));
                 if (texture) {
@@ -2208,8 +2207,9 @@ void BlurEffect::blur(
                                 << (shellMenu ? QStringLiteral("mttkde-shell-menu") : w->caption());
                         QDBusConnection::sessionBus().send(message);
                     }
-                } else {
-                    const auto average = total / 64;
+                }
+                if (notification) {
+                    const auto average = total / (side * side);
                     const QColor color = QColor::fromRgbF(average.x(), average.y(), average.z());
                     const QRect bounds = w->frameGeometry().toAlignedRect();
                     if (color != blurInfo.contrastColor || bounds != blurInfo.contrastBounds) {

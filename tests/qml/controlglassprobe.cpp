@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     const auto overBlack = localTone(Qt::black, theme);
     const auto overWhite = localTone(Qt::white, theme);
 
-    // Different labels keep their own base family on both sides of the same popup.
+    // Different labels keep readable base colors on both sides of the same popup.
     QByteArray split(8 * 8 * 3, 0);
     for (int y = 0; y < 8; ++y) std::fill_n(split.data() + (y * 8 + 6) * 3, 6, char(255));
     const QRect frame(window.position(), window.size());
@@ -73,6 +73,10 @@ int main(int argc, char **argv)
     const QColor darkOnLight = glass.animatedLabelForeground(&label, {390, 75}, {}, Qt::black, Qt::transparent);
     if (lightOnDark != theme || darkOnLight != QColor(Qt::black)
         || glass.groupForeground(&label, theme, {Qt::white}) != overWhite) return 12;
+    // Two labels using exactly the same theme role can need different ink.
+    QObject secondLabel;
+    if (glass.animatedLabelForeground(&secondLabel, {390, 75}, {}, theme, Qt::transparent) != overWhite
+        || overWhite == lightOnDark) return 29;
     if (glass.animatedLabelForeground(&label, {390, 75}, {}, theme, Qt::black) != theme) return 19;
 
     const auto ink = [&] { return glass.animatedForegroundAt(&label, center, radius, theme, Qt::transparent); };
@@ -101,15 +105,21 @@ int main(int argc, char **argv)
         for (int gray = 0; gray <= 255; ++gray) {
             const QColor backdrop(gray, gray, gray);
             const QColor tone = localTone(backdrop, base);
-            const double surface = GlassInk::luminance(backdrop);
-            if (GlassInk::familyOf(tone) != GlassInk::familyOf(base)
-                || std::abs(tone.red() - base.red()) > 51 || tone.alpha() != base.alpha()
-                || GlassInk::contrastRatio(GlassInk::luminance(tone), surface)
-                    < GlassInk::contrastRatio(GlassInk::luminance(base), surface)) return 27;
+            const double surface = GlassInk::lightness(backdrop);
+            const double before = std::abs(GlassInk::lightness(base) - surface);
+            const double after = std::abs(GlassInk::lightness(tone) - surface);
+            if ((before >= .20 && tone != base) || after < before
+                || GlassInk::familyOf(tone) != GlassInk::familyOf(base)
+                || tone.alpha() != base.alpha() || std::abs(tone.red() - base.red()) > 51) return 27;
         }
     }
-    if (localTone(Qt::black, Qt::black).red() != 51 || localTone(Qt::white, Qt::white).red() != 204
+    if (localTone(Qt::black, Qt::black).red() != 49 || localTone(Qt::white, Qt::white).red() != 204
         || overWhite.red() >= theme.red() || overBlack != theme) return 28;
+    const QColor translucent(36, 36, 36, 128);
+    const QColor corrected = localTone(Qt::black, translucent);
+    if (corrected.alpha() != translucent.alpha() || corrected == translucent
+        || GlassInk::lightness(GlassInk::composite(Qt::black, corrected))
+            <= GlassInk::lightness(GlassInk::composite(Qt::black, translucent))) return 30;
     const QRectF clipped(center.x(), 0, radius.width(), window.height());
     const auto visibleSamples = glass.categorySamples(center, radius, clipped, Qt::transparent);
     if (visibleSamples.size() != 2 || visibleSamples.front() != QColor(160, 160, 160)) return 24;

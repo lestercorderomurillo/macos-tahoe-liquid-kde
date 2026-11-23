@@ -8,7 +8,6 @@ import org.kde.notificationmanager as Notifications
 import org.kde.plasma.extras as PlasmaExtras
 import QtQml.Models
 import org.kde.mac.tahoe.launcher as Native
-import "NotificationContrast.js" as Contrast
 
 Item {
     id: row
@@ -31,14 +30,10 @@ Item {
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
     property color backdropColor: "transparent"
     property color surfaceColor: "transparent"
-    Native.GlassSettings { id: inkSettings; component: "notifications" }
-    readonly property color foregroundColor: {
-        const base = Contrast.preferredText(Kirigami.Theme.textColor);
-        if (!inkSettings.dynamicTinting) return base;
-        const window = row.Window.window;
-        if (window && typeof window.foregroundFor === "function") return window.foregroundFor(row, base);
-        inkSettings.inkRevision;
-        return inkSettings.animatedNotificationForeground(row, row.Window.window, base, backdropColor, surfaceColor);
+    function foregroundFor(item) {
+        const base = Kirigami.Theme.textColor;
+        const window = item.Window.window;
+        return window && typeof window.foregroundFor === "function" ? window.foregroundFor(item, base) : base;
     }
     readonly property bool hovered: hover.hovered
     readonly property bool interacting: hovered || dismiss.hovered || reply.activeFocus || options.visible
@@ -84,27 +79,30 @@ Item {
                 Layout.fillWidth: true
                 spacing: 0
                 ControlLabel {
+                    baseForeground: row.Kirigami.Theme.textColor
                     objectName: "notificationApplicationName"
                     Layout.fillWidth: true
                     text: /^discord$/i.test(row.model.applicationName || "") ? "Discord" : row.model.applicationName || ""
                     visible: text.length > 0
-                    color: row.foregroundColor
+                    color: row.foregroundFor(this)
                     font.family: "SF Pro Display"; font.pixelSize: 13; font.weight: Font.DemiBold
                     lineHeightMode: Text.FixedHeight; lineHeight: 16
                     elide: Text.ElideRight
                 }
                 ControlLabel {
+                    baseForeground: row.Kirigami.Theme.textColor
                     Layout.fillWidth: true
                     objectName: "notificationSummary"
                     text: row.model.summary || ""
                     visible: (!row.model.isGroup || !row.model.isGroupExpanded) && text.length > 0
                     textFormat: Text.PlainText
-                    color: row.foregroundColor
+                    color: row.foregroundFor(this)
                     font.family: "SF Pro Display"; font.pixelSize: 13; font.weight: Font.DemiBold
                     lineHeightMode: Text.FixedHeight; lineHeight: 16
                     maximumLineCount: 1; elide: Text.ElideRight
                 }
                 ControlLabel {
+                    baseForeground: row.Kirigami.Theme.textColor
                     id: description
                     objectName: "notificationBody"
                     Layout.fillWidth: true
@@ -125,7 +123,7 @@ Item {
                     }
                     visible: (!row.model.isGroup || !row.model.isGroupExpanded) && text.length > 0
                     textFormat: Text.StyledText
-                    color: row.foregroundColor
+                    color: row.foregroundFor(this)
                     font.family: "SF Pro Display"; font.pixelSize: 13; font.weight: Font.Normal
                     lineHeightMode: Text.FixedHeight; lineHeight: 16
                     wrapMode: Text.WordWrap
@@ -192,7 +190,7 @@ Item {
         Accessible.name: i18n("Dismiss")
         background: Rectangle {
             radius: 10
-            color: row.foregroundColor.r < 0.5
+            color: Kirigami.Theme.textColor.r < 0.5
                 ? Qt.rgba(1, 1, 1, dismiss.hovered ? 0.85 : 0.65)
                 : Qt.rgba(0.22, 0.22, 0.22, dismiss.hovered ? 0.95 : 0.85)
             border.width: 0.5
@@ -201,7 +199,7 @@ Item {
         contentItem: Kirigami.Icon {
             source: Qt.resolvedUrl("symbols/mttkde-control-notification-close.svg")
             isMask: true
-            color: row.foregroundColor
+            color: row.foregroundFor(this)
             opacity: dismiss.hovered ? 0.85 : 0.65
         }
         onClicked: row.history.close(row.itemIndex())
@@ -221,13 +219,13 @@ Item {
             spacing: 4
             Text {
                 text: more.text; font: more.font
-                color: row.foregroundColor
+                color: row.foregroundFor(this)
                 Layout.alignment: Qt.AlignVCenter
             }
             Kirigami.Icon {
                 source: Qt.resolvedUrl("symbols/mttkde-control-notification-options.svg")
                 isMask: true
-                color: row.foregroundColor
+                color: row.foregroundFor(this)
                 Layout.preferredWidth: 12; Layout.preferredHeight: 12
                 Layout.alignment: Qt.AlignVCenter
             }

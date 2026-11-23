@@ -2,6 +2,7 @@
 #pragma once
 #include <QColor>
 #include <QPointF>
+#include <QList>
 #include <QSizeF>
 #include <algorithm>
 #include <cmath>
@@ -11,11 +12,6 @@ inline double luminance(const QColor &color)
 {
     const auto linear = [](double x) { return x <= .04045 ? x / 12.92 : std::pow((x + .055) / 1.055, 2.4); };
     return .2126 * linear(color.redF()) + .7152 * linear(color.greenF()) + .0722 * linear(color.blueF());
-}
-
-inline double contrastRatio(double ink, double surface)
-{
-    return (std::max(ink, surface) + .05) / (std::min(ink, surface) + .05);
 }
 
 inline QColor composite(const QColor &backdrop, const QColor &fill)
@@ -50,36 +46,65 @@ inline constexpr Profile control{3, 3, .65};
 inline constexpr Profile label{5, 3};
 inline constexpr Profile categoryRow{5, 1};
 
+// CIE L* on a 0..1 scale. A separation of .20 is twenty lightness points.
+inline double lightness(QColor color)
+{
+    const double y = luminance(color);
+    return y <= 216. / 24389. ? y * (24389. / 2700.) : 1.16 * std::cbrt(y) - .16;
+}
+
 class Samples {
 public:
     void add(const QColor &surface, double weight = 1.)
     {
-        if (!(weight > 0.) || !std::isfinite(weight)) return;
-        if (!surface.isValid() || !surface.alpha()) return;
-        m_luminance += weight * luminance(surface);
-        m_weight += weight;
+        if (!(weight > 0.) || !surface.isValid() || !surface.alpha()) return;
+        // Adjacent sample points often fall in the same compositor grid cell.
+        for (const auto &sample : m_samples)
+            if (sample.color == surface) return;
+        m_samples.append(Sample{surface, lightness(surface)});
     }
 
     QColor tone(QColor base) const
     {
-        if (!m_weight || !base.isValid() || !base.alpha()) return base;
-        const double surface = m_luminance / m_weight;
-        const double original = contrastRatio(luminance(base), surface);
-        const auto family = familyOf(base);
-        const double endpoint = family == Family::Light ? 0. : 1.;
-        const double need = std::clamp((3. - original) / 2., 0., 1.);
-        const double amount = .20 * need * need * (3. - 2. * need);
-        const QColor tone = QColor::fromRgbF(std::lerp(base.redF(), endpoint, amount),
-                                             std::lerp(base.greenF(), endpoint, amount),
-                                             std::lerp(base.blueF(), endpoint, amount),
-                                             base.alphaF());
-        return familyOf(tone) == family && contrastRatio(luminance(tone), surface) > original
-            ? tone : base;
+        if (m_samples.isEmpty() || !base.isValid() || !base.alpha()) return base;
+        constexpr double minimum = .20;
+        constexpr int maximumShift = 51; // At most one fifth of the encoded channel range.
+        double best = separation(base);
+        if (best >= minimum) return base;
+        QColor result = base;
+        const Family family = familyOf(base);
+        for (int step = 1; step <= maximumShift; ++step) {
+            for (int direction : {-1, 1}) {
+                const double delta = direction * step / 255.;
+                const auto shift = [delta](double channel) { return std::clamp(channel + delta, 0., 1.); };
+                const QColor candidate = QColor::fromRgbF(shift(base.redF()), shift(base.greenF()),
+                                                          shift(base.blueF()), base.alphaF());
+                if (familyOf(candidate) != family) continue;
+                const double distance = separation(candidate);
+                if (distance >= minimum) return candidate;
+                if (distance > best) {
+                    result = candidate;
+                    best = distance;
+                }
+            }
+        }
+        return result;
     }
 
 private:
-    double m_weight = 0.;
-    double m_luminance = 0.;
+    struct Sample { QColor color; double lightness; };
+    QList<Sample> m_samples;
+
+    double separation(QColor ink) const
+    {
+        double worst = 1.;
+        const double opaque = lightness(ink);
+        for (const auto &sample : m_samples) {
+            const double visible = ink.alphaF() == 1. ? opaque : lightness(composite(sample.color, ink));
+            worst = std::min(worst, std::abs(visible - sample.lightness));
+        }
+        return worst;
+    }
 };
 
 template <typename Visit>

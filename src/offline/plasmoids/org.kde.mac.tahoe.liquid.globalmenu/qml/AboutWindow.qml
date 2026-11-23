@@ -44,10 +44,10 @@ Window {
     }
 
     component PrimaryLabel: Text {
-        color: backdrop.foreground
+        color: backdrop.foregroundFor(this)
     }
     component SecondaryLabel: Text {
-        color: backdrop.withOpacity(aboutWindow.secondaryTextColor)
+        color: backdrop.foregroundFor(this, aboutWindow.secondaryTextColor)
     }
 
     KI18n.KI18nContext {
@@ -128,7 +128,7 @@ Window {
         let bg = Kirigami.Theme.backgroundColor;
         return (bg.r * 0.299 + bg.g * 0.587 + bg.b * 0.114) < 0.5;
     }
-    readonly property color primaryTextColor: Qt.tint(Kirigami.Theme.textColor, isDarkTheme ? "#66ffffff" : "#66000000")
+    readonly property color primaryTextColor: Kirigami.Theme.textColor
     readonly property color secondaryTextColor: Qt.rgba(primaryTextColor.r,
                                                         primaryTextColor.g,
                                                         primaryTextColor.b,
@@ -642,7 +642,7 @@ Window {
 
                     GlassButton {
                         id: moreInfoButton
-                        labelColor: backdrop.foreground
+                        labelColor: backdrop.foregroundFor(this)
                         isDarkTheme: aboutWindow.isDarkTheme
                         text: translations.i18n("More Info…")
                         onClicked: {
@@ -653,7 +653,7 @@ Window {
 
                     GlassButton {
                         id: reportButton
-                        labelColor: backdrop.foreground
+                        labelColor: backdrop.foregroundFor(this)
                         isDarkTheme: aboutWindow.isDarkTheme
                         text: translations.i18n("Report a Bug…")
                         onClicked: {
@@ -663,7 +663,7 @@ Window {
                     }
 
                     GlassButton {
-                        labelColor: backdrop.foreground
+                        labelColor: backdrop.foregroundFor(this)
                         isDarkTheme: aboutWindow.isDarkTheme
                         id: copyButton
                         property bool justCopied: false
@@ -701,7 +701,7 @@ Window {
                                 width: 18
                                 height: 18
                                 source: "dialog-ok"
-                                color: backdrop.foreground
+                                color: backdrop.foregroundFor(this)
                                 visible: copyButton.justCopied
                             }
                         }

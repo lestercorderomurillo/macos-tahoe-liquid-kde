@@ -40,6 +40,14 @@ PlasmoidItem {
             if (active) hadFocus = true;
             else if (hadFocus) visible = false;
         }
+        property Native.PopupBackdrop inkBackdrop: Native.PopupBackdrop { window: popup }
+        property Native.GlassSettings inkSettings: Native.GlassSettings { component: "notifications" }
+        function foregroundFor(item, base) {
+            if (!inkSettings.dynamicTinting) return base;
+            let tile = item;
+            while (tile && tile.fillColor === undefined) tile = tile.parent;
+            return Native.AdaptiveContrast.foreground(inkBackdrop, item, base, tile ? tile.fillColor : "transparent");
+        }
         mainItem: Item {
             id: tile
             width: popup.width; height: popup.height
