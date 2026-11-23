@@ -53,7 +53,7 @@ This project customizes the look and feel of your KDE desktop on Linux. It does 
 > Experimental. Receives daily updates. Updates may break compatibility. Avoid production systems; [report issues here](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 > [!NOTE]
-> **Next release goal.** The feature freeze starts with the next release. All releases from then through the entire 0.90.x series will focus on bug fixes.
+> The feature freeze is in effect for the 0.8x series, with releases focused on bug fixes until 0.90.
 
 > [!WARNING]
 > **Beware of paywall repackers: this theme is FREE.**
