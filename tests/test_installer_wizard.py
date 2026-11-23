@@ -554,6 +554,11 @@ from wizard_window import WallpaperStrip
 strip, = content.findChildren(WallpaperStrip)
 cards = strip.findChildren(ChoiceCard)
 assert len(cards) == 20 and all(card.accessibleName() and not card.findChildren(QLabel) for card in cards)
+for card in cards:
+    preview = card.photo.pixmap.toImage()
+    mid_x, mid_y = preview.width() // 2, preview.height() // 2
+    seam = [preview.pixelColor(x, mid_y) for x in range(mid_x - 1, mid_x + 2)]
+    assert any(min(pixel.red(), pixel.green(), pixel.blue()) >= 200 for pixel in seam), card.objectName()
 row_positions = sorted({card.y() for card in cards})
 assert len(row_positions) == 2
 assert [sum(card.y() == y for card in cards) for y in row_positions] == [10, 10]

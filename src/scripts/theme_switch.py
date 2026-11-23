@@ -677,7 +677,7 @@ WALLPAPER_PAIRS = {
     "tahoe": ("MacTahoe", "MacTahoe"),
     "golden": ("MacGoldenGate", "MacGoldenGate"),
     "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),
-    "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon"),
+    "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma"),
     "big-sur": ("MacHeritage-BigSur", "MacHeritage-BigSur"),
     "ventura": ("MacHeritage-Ventura", "MacHeritage-Ventura"),
     "sequoia": ("MacHeritage-Sequoia", "MacHeritage-Sequoia"),
@@ -692,6 +692,7 @@ WALLPAPER_PAIRS = {
     "anime-meadow": ("MacAnime-AlpineMeadow", "MacAnime-AlpineMeadow"),
     "anime-moon": ("MacAnime-MoonlitShrine", "MacAnime-MoonlitShrine"),
 }
+LEGACY_WALLPAPER_PACKAGES = {"MacHeritage-Sonoma-Horizon": "sonoma"}
 
 
 def _selected_wallpaper() -> str | None:
@@ -715,6 +716,9 @@ def _wallpaper_path(mode: str) -> Path | None:
             choice = next((key for key, pair in WALLPAPER_PAIRS.items()
                            if key not in ("tahoe", "golden") and
                            any(str(base / name) in owned for name in pair)), None)
+            if choice is None:
+                choice = next((key for name, key in LEGACY_WALLPAPER_PACKAGES.items()
+                               if str(base / name) in owned), None)
     if choice == "custom":
         custom = base / "MacTahoe-Custom" / "wallpaper"
         return custom if custom.is_file() else None
@@ -1019,6 +1023,7 @@ def _wallpaper_image_is_theme_managed(
     base = Path(os.environ.get("XDG_DATA_HOME") or
                 str(Path.home() / ".local/share")) / "wallpapers"
     names = {name for pair in WALLPAPER_PAIRS.values() for name in pair}
+    names.update(LEGACY_WALLPAPER_PACKAGES)
     managed = [str(base / name) for name in names | {"MacTahoe-Light", "MacTahoe-Dark"}]
     if image.startswith("file://"):
         image = image[7:]

@@ -1,5 +1,6 @@
 """Edition defaults must survive installation and scheduled invocations."""
 
+from hashlib import sha256
 import json
 import runpy
 
@@ -36,21 +37,52 @@ def test_invalid_defaults_fall_back_safely(tmp_path, monkeypatch, raw):
     assert theme_switch.default_wallpaper() == "MacTahoe"
 
 
-@pytest.mark.parametrize("choice", [key for key in WALLPAPERS if key.startswith("anime-")])
-def test_anime_wallpaper_is_packaged_and_survives_switching(repo, monkeypatch, choice):
+@pytest.mark.parametrize("choice", WALLPAPERS)
+def test_wallpaper_pairs_match_the_picker_and_appearance_switcher(repo, monkeypatch, choice):
     from PIL import Image
 
-    monkeypatch.setenv("XDG_DATA_HOME", str(repo / "src/offline"))
+    offline = repo / "src/offline"
+    assets = repo / "src/installer/assets"
+    previews = json.loads((assets / "sources.json").read_text())
+    monkeypatch.setenv("XDG_DATA_HOME", str(offline))
     monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", json.dumps(validate({"wallpaper": choice})))
-    package = repo / "src/offline/wallpapers" / WALLPAPERS[choice][0]
-    assert theme_switch._wallpaper_path("light") == theme_switch._wallpaper_path("dark") == package
-    assert theme_switch._wallpaper_image_is_theme_managed(package.as_uri())
-    day = package / "contents/images/3840x2160.jpg"
-    night = package / "contents/images_dark/3840x2160.jpg"
-    assert day.read_bytes() != night.read_bytes()
-    for variant in (day, night):
+    variant_hashes = []
+    preview_hashes = []
+    for mode, package_id in zip(("light", "dark"), WALLPAPERS[choice]):
+        package = offline / "wallpapers" / package_id
+        assert theme_switch._wallpaper_path(mode) == package
+        assert theme_switch._wallpaper_image_is_theme_managed(package.as_uri())
+        contents = package / "contents"
+        dark = contents / "images_dark"
+        images = dark if mode == "dark" and dark.is_dir() else contents / "images"
+        variant, = images.glob("*.jpg")
+        record = previews[choice + ("-dark.jpg" if mode == "dark" else ".jpg")]
+        assert repo / record["source"] == variant
+        variant_hashes.append(sha256(variant.read_bytes()).hexdigest())
+        preview_hashes.append(sha256((assets / record["file"]).read_bytes()).hexdigest())
+        assert variant_hashes[-1] == record["source_sha256"]
+        assert preview_hashes[-1] == record["sha256"]
         with Image.open(variant) as image:
-            assert image.size == (3840, 2160) and image.format == "JPEG"
+            assert image.format == "JPEG" and image.width >= 1920 and image.height >= 1080
+            if "size" in record:
+                assert image.size == tuple(record["size"])
+    assert variant_hashes[0] != variant_hashes[1]
+    assert preview_hashes[0] != preview_hashes[1]
+
+
+def test_sonoma_keeps_its_pair_for_legacy_wallpaper_state(repo, tmp_path, monkeypatch):
+    offline = repo / "src/offline"
+    monkeypatch.setenv("XDG_DATA_HOME", str(offline))
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path))
+    monkeypatch.delenv("MTTKDE_WIZARD_OPTIONS", raising=False)
+    legacy = (offline / "wallpapers/MacHeritage-Sonoma-Horizon").as_uri()
+    theme_switch._save_wallpaper_state({
+        "version": 2,
+        "initialized": True,
+        "last_applied": [{"screen": 0, "image": legacy}],
+    })
+    assert theme_switch._wallpaper_image_is_theme_managed(legacy)
+    assert theme_switch._wallpaper_path("dark") == offline / "wallpapers/MacHeritage-Sonoma"
 
 
 def test_installed_default_survives_without_checkout(tmp_path, monkeypatch):

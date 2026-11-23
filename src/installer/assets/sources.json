@@ -658,11 +658,24 @@
     "file": "landscape-dark-10709187f9bb.jpg"
   },
   "iridescence.jpg": {
+    "file": "iridescence-6c7b941351da.jpg",
+    "sha256": "6c7b941351dad7b633308ebb10f8f981996aa3008d3ca62c03f556434d26a5cb",
     "source": "src/offline/wallpapers/MacTahoe-Iridescence/contents/images/3840x2160.jpg",
-    "source_sha256": "070e0daac18004b3fa3c1875b7d75e7f9d00e31c62e32aa21f136bbc2c175b62",
-    "crop": null,
-    "sha256": "a7522c9a93df2ef2ea4235031233a29d23e78a79ae916ecf7685a021bce005ec",
-    "file": "iridescence-a7522c9a93df.jpg"
+    "source_sha256": "498591b02d28ae899241ce3496e360f36ccfb1640aebc9630d6592451d1e7a67",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Convert the near-black studio backdrop and surface to a luminous pearl-white and pale neutral-blue daylight material. Retain the exact ribbon curves and perspective of the iridescent folds, with fine champagne, lavender, cyan and rose highlights. Preserve the clean photographic treatment, depth and horizontal flow. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "f974890cea279685743a68f54a11fafc514bbf4eaad322b0b11b3a5afed3d66c",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "070e0daac18004b3fa3c1875b7d75e7f9d00e31c62e32aa21f136bbc2c175b62"
   },
   "glass.jpg": {
     "source": "context.png",
@@ -2912,11 +2925,24 @@
     "crop": null
   },
   "exuma-dark.jpg": {
-    "source": "src/offline/wallpapers/MacExuma/contents/images/4928x3280.jpg",
-    "source_sha256": "1fab739508f0710d5b4234374b61a8e421d22ccc6e9508159b9b6ed912a75094",
-    "sha256": "b01d56293e69baed6dfb83fa2f256390e91a3cfd029670f162808900d163716b",
-    "file": "exuma-b01d56293e69.jpg",
-    "crop": null
+    "file": "exuma-dark-65a1720c826e.jpg",
+    "sha256": "65a1720c826e7b96d8ae6c8cda001faac03a2ec1b8375e503109bad7c177d79f",
+    "source": "src/offline/wallpapers/MacExuma/contents/images_dark/4928x3280.jpg",
+    "source_sha256": "489ffb0f07a92ab5383ad68f7ee3efc9e84f50f903d896f14708b3716e168a36",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 3:2 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Change the daylight turquoise shoals to an elegant moonlit aerial seascape. Match the exact shoreline, sandbars, cloud shapes and every shallow channel. Use dark indigo, deep teal and a faint silvery reflection, with the intricate original sand geometry still readable. Keep the camera directly overhead. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1536,
+      1024
+    ],
+    "generated_sha256": "20da801fdd2f42b285dedb0807cf26d7cac0fc8836a34dfc34488be05f7e29e3",
+    "size": [
+      4928,
+      3280
+    ],
+    "variant": "night",
+    "reference_sha256": "1fab739508f0710d5b4234374b61a8e421d22ccc6e9508159b9b6ed912a75094"
   },
   "desktop-widgets-off.jpg": {
     "source": "candidate-off.png",
@@ -2997,16 +3023,44 @@
     "source_sha256": "931820958784e5fb20edadeb6d06ce29e8683086e114a389ac0031c10260c8ab"
   },
   "beach-night.jpg": {
-    "file": "beach-night-daab344c113f.jpg",
-    "sha256": "daab344c113f0749caceba57c37c4b09c3ad3e3567311100eead29e1e0316261",
+    "file": "beach-night-1e0c95a0507e.jpg",
+    "sha256": "1e0c95a0507ef730485336923273a3854e93ce3be95f0469631495d3f91a96ca",
     "source": "src/offline/wallpapers/MacTahoe-Beach-Night/contents/images/3840x2160.jpg",
-    "source_sha256": "73296227d1cce2f3483045a7b40fc8ac500cf1659ce6b0fe829b95cc2896ed1a"
+    "source_sha256": "0d3eb6fcf07c78f8b20ea1e474f8bce72f9414e781260a9c0713ebe3f4a1dfc9",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Relight the moonlit shoreline into a crisp overcast dawn turning to daylight. Preserve the precise water ripple geometry, boulders, trees and camera viewpoint. Use pale blue and soft grey clouds, silvery clear water and natural pale golden foreground highlights. Keep the shadows and atmosphere photographic. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "4e36ae2376227f6e4c001ece90155a38a13ce96f2bcfb16c1b6598aa975e25c1",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "73296227d1cce2f3483045a7b40fc8ac500cf1659ce6b0fe829b95cc2896ed1a"
   },
   "landscape-evening.jpg": {
-    "file": "landscape-evening-143839cd771b.jpg",
-    "sha256": "143839cd771bf39a058623d2b37962cd85f7e846bd726f9b1338f596d1dcd29c",
+    "file": "landscape-evening-23b3c7657f6f.jpg",
+    "sha256": "23b3c7657f6f31ba49f01ea6d16d59c8d49a16c56e469bd040830210b8f5685f",
     "source": "src/offline/wallpapers/MacTahoe-Landscape-Evening/contents/images/3840x2160.jpg",
-    "source_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
+    "source_sha256": "ffbac0c9fc8295e33f95a4753992b17a3cf31f7e2c77adb6e2394ed4cdc0052d",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Relight the dark early evening photo into a bright morning shortly after a rain shower. Match the exact rocks, mountains, tree, lake and camera crop. Keep the same bank of large clouds in a brighter blue-silver sky and show mild warm highlights on the rocks and soft reflections on the lake. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "b57b768858f494422070fb46242a98dbd6ee3d04507ac5f638c4e6b7986109c7",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
   },
   "anime-coast.jpg": {
     "file": "anime-coast-8a6eaa5417cd.jpg",
@@ -3202,5 +3256,64 @@
       2160
     ],
     "variant": "night"
+  },
+  "iridescence-dark.jpg": {
+    "source": "src/offline/wallpapers/MacTahoe-Iridescence/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "070e0daac18004b3fa3c1875b7d75e7f9d00e31c62e32aa21f136bbc2c175b62",
+    "crop": null,
+    "sha256": "a7522c9a93df2ef2ea4235031233a29d23e78a79ae916ecf7685a021bce005ec",
+    "file": "iridescence-a7522c9a93df.jpg"
+  },
+  "beach-dawn-dark.jpg": {
+    "file": "beach-dawn-dark-d5d26c654cc5.jpg",
+    "sha256": "d5d26c654cc50ceefe57245c0369e65dd574b34639e657d2d0e66a9c3a9e42a3",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Dawn/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "f039423bd9451bc81a18987db19575f0c135b30cd091b2be9688f07594ee6502",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Change the pink dawn photograph to moonlit blue hour, with a deep indigo sky, faint rose near the horizon, and quiet cool reflections. Preserve the precise shape and position of every boulder, mountain ridge, reflection and stand of trees. Same naturalistic photograph, new light only. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "0512aced955f686fef304af7796614f27570333817d130950011164c407ac8db",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "8486c27cce985a0eb112ae29a4acd0391c4551c2ca110c5d6815ba207a83aff0"
+  },
+  "beach-day-dark.jpg": {
+    "file": "beach-day-dark-0055abe38798.jpg",
+    "sha256": "0055abe3879874f2ffea373ad68e861e581e341cbfb2356ea9d53b1a154f406f",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Day/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "62998b7d271baef33f4e91868b55df0fd0e1b31dbb7362871bcae97eb72da926",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Relight the clear sunny Tahoe cove as a crisp night under moonlight. Keep the exact rocks above and under the water, mountain horizon, and trees. Use a restrained navy sky and moonlit cyan shallows; keep the background dark enough for desktop icons and make it clearly night. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "232fe745fc0e26af2cffb45ac0f94363dc5c377d797d1d05ecefe53f10a7b4e1",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "931820958784e5fb20edadeb6d06ce29e8683086e114a389ac0031c10260c8ab"
+  },
+  "beach-night-dark.jpg": {
+    "file": "beach-night-daab344c113f.jpg",
+    "sha256": "daab344c113f0749caceba57c37c4b09c3ad3e3567311100eead29e1e0316261",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Night/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "73296227d1cce2f3483045a7b40fc8ac500cf1659ce6b0fe829b95cc2896ed1a"
+  },
+  "landscape-evening-dark.jpg": {
+    "file": "landscape-evening-143839cd771b.jpg",
+    "sha256": "143839cd771bf39a058623d2b37962cd85f7e846bd726f9b1338f596d1dcd29c",
+    "source": "src/offline/wallpapers/MacTahoe-Landscape-Evening/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
   }
 }

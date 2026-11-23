@@ -143,6 +143,7 @@ def picture(name, width, height, other=None, *, cover=False, crop=None):
     painter = QPainter(canvas)
     painter.scale(2, 2)
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    start, end = QPointF(width * .61, 0), QPointF(width * .39, height)
     for index, filename in enumerate((name, other)):
         if not filename:
             continue
@@ -155,14 +156,17 @@ def picture(name, width, height, other=None, *, cover=False, crop=None):
                                Qt.TransformationMode.SmoothTransformation)
         fitted.setDevicePixelRatio(2)
         if index:
-            painter.setClipRegion(QRegion(
-                QPolygonF([QPointF(width * .61, 0), QPointF(width, 0),
-                           QPointF(width, height), QPointF(width * .39, height)]).toPolygon()))
+            clip = QPainterPath()
+            clip.addPolygon(QPolygonF([start, QPointF(width, 0), QPointF(width, height), end]))
+            clip.closeSubpath()
+            painter.setClipPath(clip)
         painter.drawPixmap(round((width - fitted.width()/2) / 2), round((height - fitted.height()/2) / 2), fitted)
     if other:
         painter.setClipping(False)
-        painter.setPen(QPen(QColor("#baffffff"), 1))
-        painter.drawLine(QPointF(width*.61, 0), QPointF(width*.39, height))
+        painter.setPen(QPen(QColor("#78000000"), 2))
+        painter.drawLine(start, end)
+        painter.setPen(QPen(QColor("#eeffffff"), 1))
+        painter.drawLine(start, end)
     painter.end()
     canvas.setDevicePixelRatio(2)
     return canvas
@@ -2643,8 +2647,7 @@ class InstallerWindow(OpaqueSurface):
         layout.setContentsMargins(0, 0, 0, 0)
         items = []
         for key, label in WALLPAPER_TITLES.items():
-            companion = f"{key}-dark.jpg"
-            preview = picture(f"{key}.jpg", 170, 96, companion if companion in ASSET_FILES else None, cover=True)
+            preview = picture(f"{key}.jpg", 170, 96, f"{key}-dark.jpg", cover=True)
             items.append((key, label, "", preview))
         group = self.cards("wallpaper", items, columns=columns, compact=True, layout=layout, fixed_width=166)
         strip.setWidget(content)
