@@ -298,6 +298,7 @@ Light and dark, following your appearance.|Claros y oscuros, según la aparienci
 Glass|Cristal|玻璃|Vidro|Glas
 Translucent, with your chosen color.|Translúcidos, con el color que elijas.|半透明，使用所选颜色。|Translúcidos, com a cor escolhida.|Durchscheinend, in deiner gewählten Farbe.
 Keep my icons|Conservar mis iconos|保留我的图标|Manter meus ícones|Meine Symbole beibehalten
+Use the theme icons|Usar iconos del tema|使用主题图标|Usar os ícones do tema|Symbole des Designs verwenden
 Theme color|Color del tema|主题颜色|Cor do tema|Themenfarbe
 Blue|Azul|蓝色|Azul|Blau
 Purple|Violeta|紫色|Roxo|Violett

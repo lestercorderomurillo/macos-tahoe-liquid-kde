@@ -593,11 +593,13 @@ class RadioOption(QRadioButton):
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         accent = QColor(self.window().accent)
         center = QPointF(9, self.height()/2)
-        painter.setPen(QPen(accent if self.isChecked() or self.hasFocus() else QColor(self.window().line), 1))
+        active = self.isEnabled() and (self.isChecked() or self.hasFocus())
+        painter.setPen(QPen(accent if active else QColor(self.window().line), 1))
         painter.setBrush(self.palette().base())
         painter.drawEllipse(center, 7.5, 7.5)
         if self.isChecked():
-            painter.setPen(Qt.PenStyle.NoPen); painter.setBrush(accent)
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(accent if active else self.palette().text().color())
             painter.drawEllipse(center, 4, 4)
         painter.setPen(self.palette().text().color())
         painter.drawText(QRectF(26, 0, self.width()-26, self.height()),
@@ -885,6 +887,7 @@ class InstallerWindow(OpaqueSurface):
         self.defaults = defaults()
         self.defaults["wallpaper_explicit"] = False
         self.choices = dict(self.defaults)
+        self.theme_icon_style = self.defaults["icons"]
         self.edition = "Golden Gate" if bridge.editionName == "MacGoldenGate" else "Tahoe"
         self.asset_edition = "golden-gate" if self.edition == "Golden Gate" else "tahoe"
         self.settings_mode = mode == "settings"
@@ -1443,7 +1446,11 @@ class InstallerWindow(OpaqueSurface):
         finally:
             for group in groups:
                 group.setExclusive(True)
-        if key == "color" and "icons" in self.choice_widgets:
+        if key == "icons" and controls:
+            if value != "keep":
+                self.theme_icon_style = value
+            self.refresh_icon_controls()
+        elif key == "color" and "icons" in self.choice_widgets:
             self.glass_preview.setIcon(self.icon_sample("glass"))
         elif key == "wallpaper":
             self.wallpaper_filename.setText(Path(self.choices["wallpaper_path"]).name)
@@ -2378,14 +2385,16 @@ class InstallerWindow(OpaqueSurface):
         return QIcon(picture(f"weather-{style}-{mode}-{color}.png", 34, 34))
 
     def page_icons(self):
+        if self.choices["icons"] != "keep":
+            self.theme_icon_style = self.choices["icons"]
         rows = QGridLayout()
         rows.setHorizontalSpacing(12)
         rows.setVerticalSpacing(6)
         rows.setColumnStretch(0, 1)
-        for index, text in ((0, "Icons"), (2, "Icon appearance"), (3, "Color")):
+        for index, text in ((0, "Icons"), (2, "Icon appearance"), (4, "Color")):
             label = self.label(text)
             label.setFont(relative_font(self, .78, QFont.Weight.Medium))
-            rows.addWidget(label, index, 0)
+            rows.addWidget(label, index, 0, 1, 2 if index == 2 else 1)
 
         group = QButtonGroup(self.content)
         self.groups.append(group)
@@ -2410,22 +2419,28 @@ class InstallerWindow(OpaqueSurface):
                 self.glass_preview = button
         rows.addLayout(styles, 0, 1)
 
-        keep = RadioOption(self.t("Keep my icons"))
-        keep.setObjectName("choice-icons-keep")
-        keep.setFont(relative_font(self, .76))
-        group.addButton(keep)
-        keep.setChecked(self.choices["icons"] == "keep")
-        keep.clicked.connect(lambda: self.select("icons", "keep"))
-        self.bind_choice("icons", "keep", keep)
-        rows.addWidget(keep, 1, 1, Qt.AlignmentFlag.AlignRight)
+        source = QVBoxLayout()
+        source.setSpacing(0)
+        sources = QButtonGroup(self.content)
+        self.groups.append(sources)
+        self.keep_icons = RadioOption(self.t("Keep my icons"))
+        self.use_theme_icons = RadioOption(self.t("Use the theme icons"))
+        for button, value in ((self.keep_icons, "keep"), (self.use_theme_icons, "theme")):
+            button.setObjectName(f"choice-icons-{value}")
+            button.setFont(relative_font(self, .76))
+            sources.addButton(button)
+            source.addWidget(button)
+        self.keep_icons.clicked.connect(lambda _: self.select("icons", "keep"))
+        self.use_theme_icons.clicked.connect(lambda _: self.select("icons", self.theme_icon_style))
+        rows.addLayout(source, 1, 0, 1, 2)
 
-        appearance = QHBoxLayout()
-        # The radio and color swatch centers share the same left guide.
-        appearance.setContentsMargins(4, 0, 0, 0)
-        appearance.setSpacing(8)
+        self.icon_appearance_options = QWidget()
+        appearance = QVBoxLayout(self.icon_appearance_options)
+        appearance.setContentsMargins(0, 0, 0, 0)
+        appearance.setSpacing(0)
         self.radio("icon_appearance", [("auto", "Automatic"), ("light", "Light"), ("dark", "Dark")],
-                   inline=True, font_scale=.76, option_layout=appearance)
-        rows.addLayout(appearance, 2, 1)
+                   font_scale=.76, option_layout=appearance)
+        rows.addWidget(self.icon_appearance_options, 3, 0, 1, 2)
 
         colors = QHBoxLayout()
         colors.setSpacing(3)
@@ -2442,8 +2457,17 @@ class InstallerWindow(OpaqueSurface):
             self.color_buttons[name] = button
             button.clicked.connect(lambda _, value=name: self.select("color", value))
             colors.addWidget(button)
-        rows.addLayout(colors, 3, 1)
+        rows.addLayout(colors, 4, 1)
         self.body.addLayout(rows)
+        self.refresh_icon_controls()
+
+    def refresh_icon_controls(self):
+        using_theme = self.choices["icons"] != "keep"
+        mode = self.use_theme_icons if using_theme else self.keep_icons
+        mode.setChecked(True)
+        self.icon_appearance_options.setEnabled(using_theme)
+        for _, button in self.choice_widgets["icons"]:
+            button.setEnabled(using_theme)
 
     @property
     def mode(self):

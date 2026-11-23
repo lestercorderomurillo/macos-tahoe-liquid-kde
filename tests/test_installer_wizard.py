@@ -392,9 +392,22 @@ window.content.findChild(ChoiceCard, 'choice-button_position-left').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['button_position'] == 'left'
 window.page = 'icons'; window.render(); app.processEvents()
-window.content.findChild(RadioOption, 'choice-icons-keep').click(); app.processEvents()
+styles = dict(window.choice_widgets['icons'])
+keep = window.content.findChild(RadioOption, 'choice-icons-keep')
+theme = window.content.findChild(RadioOption, 'choice-icons-theme')
+appearance = [window.content.findChild(RadioOption, 'choice-icon_appearance-' + value)
+              for value in ('auto', 'light', 'dark')]
+styles['clear'].click()
+appearance[-1].click()
+keep.click(); app.processEvents()
 assert window.choices['icons'] == 'keep'
-assert sum(button.isChecked() for _, button in window.choice_widgets['icons']) == 1
+assert keep.isChecked() and not theme.isChecked()
+assert all(not style.isChecked() and not style.isEnabled() for style in styles.values())
+assert all(not option.isEnabled() for option in appearance)
+theme.click(); app.processEvents()
+assert theme.isChecked() and not keep.isChecked() and styles['clear'].isChecked()
+assert window.choices['icons'] == 'clear' and window.choices['icon_appearance'] == 'dark'
+assert all(option.isEnabled() for option in appearance)
 window.content.findChild(QPushButton, 'color-green').click(); app.processEvents()
 assert window.choices['color'] == 'green'
 
@@ -531,7 +544,8 @@ assert regular.icon().pixmap(QSize(32, 32)).toImage() == regular_image
 assert window.color_buttons['green'].isChecked() and not window.color_buttons['blue'].isChecked()
 window.select('icons', 'glass')
 window.select('icons', 'keep')
-assert [style for style, button in window.choice_widgets['icons'] if button.isChecked()] == ['keep']
+assert window.content.findChild(RadioOption, 'choice-icons-keep').isChecked()
+assert not any(button.isChecked() for _, button in window.choice_widgets['icons'])
 window.page = 'wallpaper'; window.render(); app.processEvents()
 content = window.content
 import tempfile
