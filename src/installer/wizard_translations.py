@@ -21,6 +21,58 @@ Less than a minute remaining|Falta menos de un minuto|剩余不到一分钟|Falt
 Finishing…|Finalizando…|正在完成…|Finalizando…|Wird abgeschlossen…
 Show installation details|Mostrar detalles de instalación|显示安装详情|Mostrar detalhes da instalação|Installationsdetails anzeigen
 Hide installation details|Ocultar detalles de instalación|隐藏安装详情|Ocultar detalhes da instalação|Installationsdetails ausblenden
+Dock preferences|Preferencias del Dock|程序坞偏好设置|Preferências do Dock|Dock-Einstellungen
+Behavior|Comportamiento|行为|Comportamento|Verhalten
+Hover magnification|Ampliación al pasar el puntero|悬停放大|Ampliação ao passar o cursor|Vergrößerung beim Überfahren
+Show window previews|Mostrar vistas previas de las ventanas|显示窗口预览|Mostrar prévias das janelas|Fenstervorschauen anzeigen
+Highlight the hovered window|Resaltar la ventana bajo el puntero|突出显示悬停窗口|Destacar a janela sob o cursor|Fenster unter dem Zeiger hervorheben
+Show audio indicators|Mostrar indicadores de audio|显示音频指示器|Mostrar indicadores de áudio|Audioindikatoren anzeigen
+Mute by clicking the audio indicator|Silenciar al pulsar el indicador de audio|点击音频指示器静音|Silenciar ao clicar no indicador de áudio|Beim Klick auf den Audioindikator stummschalten
+Show media and volume controls in previews|Mostrar controles multimedia y de volumen en las vistas previas|在预览中显示媒体和音量控件|Mostrar controles de mídia e volume nas prévias|Medien- und Lautstärkeregler in Vorschauen anzeigen
+Fill free space on the panel|Ocupar el espacio libre del panel|填充面板的空闲空间|Preencher o espaço livre do painel|Freien Platz in der Leiste ausfüllen
+Maximum task width|Anchura máxima de las tareas|任务最大宽度|Largura máxima da tarefa|Maximale Aufgabenbreite
+Maximum rows or columns|Máximo de filas o columnas|最大行数或列数|Máximo de linhas ou colunas|Maximale Anzahl an Zeilen oder Spalten
+Always use multiple rows or columns|Usar siempre varias filas o columnas|始终使用多行或多列|Sempre usar várias linhas ou colunas|Immer mehrere Zeilen oder Spalten verwenden
+Group tasks|Agrupar tareas|任务分组|Agrupar tarefas|Aufgaben gruppieren
+When clicking a grouped task|Al pulsar una tarea agrupada|点击分组任务时|Ao clicar em uma tarefa agrupada|Beim Klick auf eine gruppierte Aufgabe
+Combine grouped tasks into one button|Combinar tareas agrupadas en un botón|将分组任务合并为一个按钮|Combinar tarefas agrupadas em um botão|Gruppierte Aufgaben zu einer Schaltfläche zusammenfassen
+Group only when the task manager is full|Agrupar solo cuando el gestor de tareas esté lleno|仅在任务管理器已满时分组|Agrupar apenas quando o gerenciador de tarefas estiver cheio|Nur bei voller Aufgabenleiste gruppieren
+Sort tasks|Ordenar tareas|任务排序|Ordenar tarefas|Aufgaben sortieren
+Keep launchers separate|Mantener los lanzadores separados|单独显示启动器|Manter lançadores separados|Starter getrennt halten
+Hide launchers after application startup|Ocultar los lanzadores al abrir la aplicación|启动应用后隐藏启动器|Ocultar lançadores após iniciar o aplicativo|Starter nach dem Anwendungsstart ausblenden
+Minimize the active task when clicked|Minimizar la tarea activa al pulsarla|点击时最小化活动任务|Minimizar a tarefa ativa ao clicar|Aktive Aufgabe beim Klick minimieren
+Middle-click action|Acción del botón central|鼠标中键操作|Ação do botão do meio|Aktion der mittleren Maustaste
+Scrolling behavior|Acción al desplazar la rueda|滚动行为|Comportamento da rolagem|Scrollverhalten
+Skip minimized tasks when scrolling|Omitir tareas minimizadas al desplazar|滚动时跳过最小化任务|Ignorar tarefas minimizadas ao rolar|Minimierte Aufgaben beim Scrollen überspringen
+Show tasks only from the current desktop|Mostrar solo tareas del escritorio actual|仅显示当前桌面的任务|Mostrar apenas tarefas da área de trabalho atual|Nur Aufgaben der aktuellen Arbeitsfläche anzeigen
+Show tasks only from the current activity|Mostrar solo tareas de la actividad actual|仅显示当前活动的任务|Mostrar apenas tarefas da atividade atual|Nur Aufgaben der aktuellen Aktivität anzeigen
+Show tasks only from the current display|Mostrar solo tareas de la pantalla actual|仅显示当前屏幕的任务|Mostrar apenas tarefas da tela atual|Nur Aufgaben des aktuellen Bildschirms anzeigen
+Show only minimized tasks|Mostrar solo tareas minimizadas|仅显示最小化任务|Mostrar apenas tarefas minimizadas|Nur minimierte Aufgaben anzeigen
+Show the hidden panel when a window wants attention|Mostrar el panel oculto cuando una ventana solicite atención|窗口请求关注时显示隐藏面板|Mostrar o painel oculto quando uma janela solicitar atenção|Ausgeblendete Leiste bei Aufmerksamkeitsanforderung anzeigen
+Reverse where new tasks appear|Invertir la posición de las nuevas tareas|反转新任务的显示位置|Inverter a posição das novas tarefas|Position neuer Aufgaben umkehren
+Narrow|Estrecha|窄|Estreita|Schmal
+Wide|Ancha|宽|Larga|Breit
+Do not group|Sin agrupar|不分组|Não agrupar|Nicht gruppieren
+By program name|Por nombre de programa|按程序名称|Por nome do programa|Nach Programmname
+Cycle through tasks|Recorrer tareas|循环切换任务|Percorrer tarefas|Zwischen Aufgaben wechseln
+Small window previews|Vistas previas pequeñas|小窗口预览|Prévias pequenas das janelas|Kleine Fenstervorschauen
+Large window previews|Vistas previas grandes|大窗口预览|Prévias grandes das janelas|Große Fenstervorschauen
+Text list|Lista de texto|文本列表|Lista de texto|Textliste
+Do not sort|Sin ordenar|不排序|Não ordenar|Nicht sortieren
+Manually|Manualmente|手动|Manualmente|Manuell
+Alphabetically|Alfabéticamente|按字母顺序|Em ordem alfabética|Alphabetisch
+By desktop|Por escritorio|按桌面|Por área de trabalho|Nach Arbeitsfläche
+By activity|Por actividad|按活动|Por atividade|Nach Aktivität
+By horizontal window position|Por posición horizontal de la ventana|按窗口水平位置|Pela posição horizontal da janela|Nach horizontaler Fensterposition
+Do nothing|No hacer nada|不执行操作|Não fazer nada|Nichts unternehmen
+Close window or group|Cerrar ventana o grupo|关闭窗口或分组|Fechar janela ou grupo|Fenster oder Gruppe schließen
+Open a new window|Abrir una ventana nueva|打开新窗口|Abrir uma nova janela|Neues Fenster öffnen
+Minimize or restore|Minimizar o restaurar|最小化或还原|Minimizar ou restaurar|Minimieren oder wiederherstellen
+Toggle grouping|Alternar la agrupación|切换分组|Alternar agrupamento|Gruppierung umschalten
+Bring to current desktop|Traer al escritorio actual|移至当前桌面|Trazer para a área de trabalho atual|Auf die aktuelle Arbeitsfläche holen
+Cycle through all tasks|Recorrer todas las tareas|循环切换所有任务|Percorrer todas as tarefas|Alle Aufgaben durchlaufen
+Cycle through the hovered task’s windows|Recorrer las ventanas de la tarea bajo el puntero|循环切换悬停任务的窗口|Percorrer janelas da tarefa sob o cursor|Fenster der Aufgabe unter dem Zeiger durchlaufen
+Adjust the hovered task’s volume|Ajustar el volumen de la tarea bajo el puntero|调整悬停任务的音量|Ajustar o volume da tarefa sob o cursor|Lautstärke der Aufgabe unter dem Zeiger ändern
 Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Erscheinungsbild
 System menu|Menú del sistema|系统菜单|Menu do sistema|Systemmenü
 App Store icon|Icono de la tienda|应用商店图标|Ícone da loja de aplicativos|App-Store-Symbol

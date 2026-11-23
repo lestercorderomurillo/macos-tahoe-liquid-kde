@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 
 from theme_switch import _evaluate_plasma_script
+from dock_preferences import DEFAULTS, DOCK_ICONS, DOCK_TASKS, CHOICES, RANGES
 
 SETTINGS = {
     "trash": (
@@ -12,8 +13,7 @@ SETTINGS = {
         {"emptyIcon": "user-trash", "fullIcon": "user-trash-full"},
     ),
     "dock": (
-        {"org.kde.mac.tahoe.liquid.icontasks", "org.kde.mac.tahoe.liquid.taskmanager"}, "General",
-        {"macOSDockIcons": False},
+        {DOCK_ICONS, DOCK_TASKS}, "General", DEFAULTS,
     ),
     "system_menu": (
         {"org.kde.mac.tahoe.liquid.globalmenu"}, "Appearance",
@@ -33,8 +33,14 @@ def _request(kind, instance=None, changes=None):
         for key, value in changes.items()
     )):
         raise ValueError("Invalid widget preferences")
+    if kind == "dock" and changes and any(
+        (key in CHOICES and value not in CHOICES[key])
+        or (key in RANGES and not RANGES[key][0] <= value <= RANGES[key][1])
+        for key, value in changes.items()
+    ):
+        raise ValueError("Invalid Dock preference value")
     payload = json.dumps({"plugins": sorted(plugins), "group": group, "defaults": defaults,
-                          "instance": instance, "changes": changes})
+                          "instance": instance, "changes": changes, "dock": kind == "dock"})
     script = """
 const request = REQUEST;
 const result = {};
@@ -61,6 +67,10 @@ for (const container of containers) {
             }
             values[key] = widget.readConfig(key, fallback);
         }
+        if (request.dock) {
+            values._plugin = widget.type;
+            values._vertical = container.formFactor === "vertical";
+        }
         result[widget.id] = values;
     }
 }
@@ -71,6 +81,17 @@ print(JSON.stringify(result));
         decoded = json.loads(result)
         if not isinstance(decoded, dict):
             raise ValueError
+        if kind == "dock":
+            for values in decoded.values():
+                for key, default in defaults.items():
+                    value = values.get(key, default)
+                    if isinstance(default, bool):
+                        values[key] = value is True or str(value).lower() == "true"
+                    elif type(value) is not int:
+                        try:
+                            values[key] = int(value)
+                        except (ValueError, TypeError):
+                            values[key] = default
         return {int(key): value for key, value in decoded.items()}
     except (TypeError, ValueError):
         raise RuntimeError("Could not read widget preferences from Plasma.") from None

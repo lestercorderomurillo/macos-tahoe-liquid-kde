@@ -751,7 +751,8 @@ PlasmaExtras.Menu {
 
     PlasmaExtras.MenuItem {
         property PlasmaCore.Action configureAction: menu.visualParent?.appsButton && tasks.launcherCell
-            ? tasks.launcherCell.applet.dockConfigureAction : Plasmoid.internalAction("configure")
+            ? tasks.launcherCell.applet.dockConfigureAction
+            : (tasks.dockSettingsAction.visible ? tasks.dockSettingsAction : Plasmoid.internalAction("configure"))
 
         enabled: configureAction && configureAction.enabled
         visible: configureAction && configureAction.visible

@@ -12,12 +12,12 @@ import unicodedata
 import subprocess
 import time
 
-from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
+from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
     QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
-    QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QVBoxLayout, QWidget,
+    QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QTabWidget, QVBoxLayout, QWidget,
 )
 
 from installer_choices import COLORS, GLASS_PRESETS, defaults, validate
@@ -1484,6 +1484,17 @@ class InstallerWindow(OpaqueSurface):
             QFrame#settingsOptionPanel {{
                 background: {panel_surface}; border: 1px solid {separator}; border-radius: 8px;
             }}
+            QTabWidget#dockPreferenceTabs::pane {{ border: 0; }}
+            QTabWidget#dockPreferenceTabs QTabBar::tab {{
+                background: {field_surface}; color: {muted}; padding: 5px 12px;
+                border: 1px solid {separator}; border-radius: 6px;
+                margin-right: 4px;
+            }}
+            QTabWidget#dockPreferenceTabs QTabBar::tab:selected {{
+                background: {hover}; color: {foreground};
+            }}
+            QTabWidget#dockPreferenceTabs QTabBar::tab:focus {{ border-color: {self.accent}; }}
+            QWidget[dockPreferenceRow="true"] QCheckBox {{ padding: 3px 0; }}
             QPushButton#optionPanelTitle {{
                 color: {foreground}; background: transparent; text-align: left;
                 border: 1px solid transparent; border-radius: 7px; padding: 7px 10px;
@@ -1682,11 +1693,13 @@ class InstallerWindow(OpaqueSurface):
 
     def reveal_requested_widget(self):
         if self.widget_settings_target is not None:
-            self.scroll.ensureWidgetVisible(self.widget_settings_target, 8, 12)
+            top = self.widget_settings_target.mapTo(self.content, QPoint(0, 0)).y()
+            self.scroll.verticalScrollBar().setValue(max(0, top - 10))
             self.widget_settings_target = None
             self.requested_widget = None
 
     def page_dock_and_menu_widgets(self):
+        from dock_preferences import APPEARANCE, BEHAVIOR, CHOICES, DEFAULTS, DOCK_ICONS, ICONS_ONLY, RANGES, TASKS_ONLY
         from plasmoid_settings import apply, instances
         text_fields = {
             "trash": (
@@ -1699,13 +1712,15 @@ class InstallerWindow(OpaqueSurface):
                 ("cmdLogOut", "Log Out command", ""),
             ),
         }
-        for kind, title in (("dock", "Dock icons"), ("trash", "Trash"), ("system_menu", "System menu")):
+        for kind, title in (("dock", "Dock preferences"), ("trash", "Trash"), ("system_menu", "System menu")):
             panel = self.option_card()
             column = QVBoxLayout(panel)
             column.setContentsMargins(12, 10, 12, 10)
             heading = self.label(title)
             heading.setFont(relative_font(self, .85, QFont.Weight.DemiBold))
-            column.addWidget(heading)
+            header = QHBoxLayout()
+            header.addWidget(heading, 1)
+            column.addLayout(header)
             try:
                 widgets = instances(kind)
             except RuntimeError:
@@ -1726,10 +1741,49 @@ class InstallerWindow(OpaqueSurface):
             picker.setVisible(len(widgets) > 1)
             column.addWidget(picker)
             controls = {}
+            rows = {}
+            displayed = {}
             if kind == "dock":
-                toggle = CheckOption(self.t("macOS-style Dock icons"))
-                column.addWidget(toggle)
-                controls["macOSDockIcons"] = toggle
+                tabs = QTabWidget()
+                tabs.setObjectName("dockPreferenceTabs")
+                tabs.setFont(relative_font(self, .9))
+                for label, labels in (("Appearance", APPEARANCE), ("Behavior", BEHAVIOR)):
+                    tab = QWidget()
+                    form = QVBoxLayout(tab)
+                    form.setContentsMargins(0, 6, 0, 0)
+                    form.setSpacing(4)
+                    for key, text in labels.items():
+                        row = QWidget()
+                        row.setProperty("dockPreferenceRow", True)
+                        line = QHBoxLayout(row)
+                        line.setContentsMargins(0, 0, 0, 0)
+                        if isinstance(DEFAULTS[key], bool):
+                            field = CheckOption(self.t(text))
+                            line.addWidget(field, 1)
+                        else:
+                            title_label = self.label(text)
+                            title_label.setWordWrap(True)
+                            title_label.setMinimumWidth(130)
+                            line.addWidget(title_label, 1)
+                            if key in CHOICES:
+                                field = GlassComboBox()
+                                for value, choice in CHOICES[key].items():
+                                    field.addItem(self.t(choice), value)
+                            else:
+                                field = QSpinBox()
+                                field.setRange(*RANGES[key])
+                                if key == "dockMagnification":
+                                    field.setSuffix("%")
+                                    field.setSingleStep(5)
+                            field.setAccessibleName(title_label.text())
+                            line.addWidget(field)
+                        field.setObjectName(key)
+                        rows[key] = row
+                        controls[key] = field
+                        form.addWidget(row)
+                    form.addStretch()
+                    tabs.addTab(tab, self.t(label))
+                column.addWidget(tabs)
             else:
                 grid = QGridLayout()
                 grid.setColumnStretch(0, 1)
@@ -1754,9 +1808,13 @@ class InstallerWindow(OpaqueSurface):
             buttons = QHBoxLayout()
             result = self.label("")
             result.setObjectName("detail")
-            buttons.addWidget(result, 1)
             save = GlassButton(self.t("Save"))
-            buttons.addWidget(save)
+            if kind == "dock":
+                header.addWidget(result)
+                header.addWidget(save)
+            else:
+                buttons.addWidget(result, 1)
+                buttons.addWidget(save)
             if kind == "trash":
                 storage = GlassButton(self.t("Trash Settings…"))
                 shell = shutil.which("kcmshell6")
@@ -1765,29 +1823,83 @@ class InstallerWindow(OpaqueSurface):
                     storage.clicked.connect(lambda: subprocess.Popen(
                         [shell, "kcm_trash"], start_new_session=True))
                 buttons.addWidget(storage)
-            column.addLayout(buttons)
+            if kind != "dock":
+                column.addLayout(buttons)
 
-            def load(*_, selected=picker, fields=controls, values=widgets, status=result):
+            def update_dock_dependencies(*_, fields=controls):
+                grouped = fields["groupingStrategy"].currentData() != 0
+                fields["groupedTaskVisualization"].setEnabled(grouped)
+                fields["groupPopups"].setEnabled(grouped)
+                fields["onlyGroupWhenFull"].setEnabled(grouped and fields["groupPopups"].isChecked())
+                fields["interactiveMute"].setEnabled(fields["indicateAudioStreams"].isChecked())
+                fields["wheelSkipMinimized"].setEnabled(fields["wheelEnabled"].currentData() != 0)
+                fields["separateLaunchers"].setEnabled(fields["sortingStrategy"].currentData() == 1)
+                fields["forceStripes"].setEnabled(fields["maxStripes"].value() > 1)
+
+            def field_value(field):
+                if isinstance(field, QLineEdit):
+                    return field.text()
+                if isinstance(field, QSpinBox):
+                    return field.value()
+                if isinstance(field, QComboBox):
+                    return field.currentData()
+                return field.isChecked()
+
+            def load(*_, selected=picker, fields=controls, values=widgets, status=result,
+                     dock_rows=rows, dependencies=update_dock_dependencies, baseline=displayed):
+                saved = values[selected.currentData()]
+                icons_only = saved.get("_plugin") == DOCK_ICONS
+                for key, row in dock_rows.items():
+                    row.setVisible((key not in ICONS_ONLY or icons_only)
+                                   and (key not in TASKS_ONLY or not icons_only)
+                                   and (key != "taskMaxWidth" or not saved.get("_vertical")))
                 for key, field in fields.items():
-                    value = values[selected.currentData()][key]
+                    value = saved[key]
                     if isinstance(field, QLineEdit):
                         field.setText(value)
                         field.setCursorPosition(0)
+                    elif isinstance(field, QSpinBox):
+                        field.setValue(value)
+                    elif isinstance(field, QComboBox):
+                        field.setCurrentIndex(field.findData(value))
                     else:
                         field.setChecked(value is True or str(value).lower() == "true")
+                    baseline[key] = field_value(field)
+                if dock_rows:
+                    dependencies()
                 status.clear()
 
-            def save_widget(*_, selected=picker, fields=controls, values=widgets, category=kind, status=result):
+            def save_widget(*_, selected=picker, fields=controls, values=widgets, category=kind, status=result,
+                            dock_rows=rows, baseline=displayed):
                 identifier = selected.currentData()
-                desired = {key: field.text() if isinstance(field, QLineEdit) else field.isChecked()
-                           for key, field in fields.items()}
+                desired = {}
+                for key, field in fields.items():
+                    if key in dock_rows and dock_rows[key].isHidden():
+                        continue
+                    value = field_value(field)
+                    if value is not None and value != baseline[key]:
+                        desired[key] = value
+                if desired.get("maxStripes") == 1:
+                    desired["forceStripes"] = False
                 try:
-                    values[identifier] = apply(category, identifier, desired)
+                    if desired:
+                        values[identifier] = apply(category, identifier, desired)
                 except (RuntimeError, ValueError) as error:
                     status.setText(self.t(str(error)))
                 else:
+                    for key in desired:
+                        baseline[key] = field_value(fields[key])
+                    if desired.get("maxStripes") == 1:
+                        fields["forceStripes"].setChecked(False)
+                        baseline["forceStripes"] = False
                     status.setText(self.t("Saved"))
 
+            if kind == "dock":
+                for key in ("groupingStrategy", "wheelEnabled", "sortingStrategy"):
+                    controls[key].currentIndexChanged.connect(update_dock_dependencies)
+                for key in ("groupPopups", "indicateAudioStreams"):
+                    controls[key].toggled.connect(update_dock_dependencies)
+                controls["maxStripes"].valueChanged.connect(update_dock_dependencies)
             picker.currentIndexChanged.connect(load)
             save.clicked.connect(save_widget)
             load()

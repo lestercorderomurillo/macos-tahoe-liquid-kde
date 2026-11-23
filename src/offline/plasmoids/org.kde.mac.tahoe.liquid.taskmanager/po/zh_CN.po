@@ -44,3 +44,6 @@ msgstr "应用商店"
 
 msgid "System Settings"
 msgstr "系统设置"
+
+msgid "Configure Dock…"
+msgstr "配置程序坞…"
