@@ -126,14 +126,12 @@ public:
             }
         }
         QColor fill = sample.pixelColor(0, 0);
-        if (widget->property("_mttkde_shell_menu").toBool()) {
-            // Thicken only the Shell's top-left menus. Composite onto the
-            // configured material so custom opacity and opaque fallbacks work.
+        if (widget->property("_mttkde_shell_menu").toBool()
+            && option->palette.color(QPalette::Window).lightnessF() <= .5) {
+            // Keep the dark menu's existing material. Light menus already
+            // carry their configured white fill in the Kvantum surface.
             QPainter overlay(&sample);
-            const bool light = option->palette.color(QPalette::Window).lightnessF() > .5;
-            overlay.fillRect(sample.rect(), light ? QColor(255,255,255,102) : QColor(0,0,0,25));
-            const auto wash = widget->property("menuContrastWash").value<QColor>();
-            if (wash.isValid() && wash.alpha()) overlay.fillRect(sample.rect(), wash);
+            overlay.fillRect(sample.rect(), QColor(0, 0, 0, 25));
             overlay.end();
             fill = sample.pixelColor(0, 0);
         }

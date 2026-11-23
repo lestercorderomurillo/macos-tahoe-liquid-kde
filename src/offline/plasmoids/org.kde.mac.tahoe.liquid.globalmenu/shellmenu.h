@@ -12,7 +12,6 @@
 class ShellMenu final : public QMenu
 {
     Q_OBJECT
-    Q_PROPERTY(QColor menuContrastWash READ menuContrastWash)
 public:
     explicit ShellMenu(QWidget *parent = nullptr);
 
@@ -25,11 +24,8 @@ private Q_SLOTS:
     void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &grid, const QString &role);
 
 private:
-    QColor menuContrastWash() const { return m_paintingMenu ? m_contrastWash : QColor(Qt::transparent); }
-    bool m_paintingMenu = false;
     QImage m_lastMaterial;
     GlassInk::Family m_family = GlassInk::Family::Dark;
-    QColor m_contrastWash = Qt::transparent;
     bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;

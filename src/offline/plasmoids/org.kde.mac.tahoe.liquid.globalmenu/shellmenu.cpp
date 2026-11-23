@@ -11,16 +11,16 @@
 #include <cmath>
 
 namespace {
-// Smallest neutral overlay that supports readable text in the chosen family.
-QColor contrastWash(QColor surface, GlassInk::Family family, double maxOpacity, double target)
+// Preserve the highlight hue while giving selected text enough contrast.
+QColor selectionFill(QColor surface, GlassInk::Family family)
 {
     const bool lightInk = family == GlassInk::Family::Light;
     const auto readable = [&](QColor fill) {
-        return GlassInk::contrastRatio(lightInk ? 1. : 0., GlassInk::luminance(fill)) >= target;
+        return GlassInk::contrastRatio(lightInk ? 1. : 0., GlassInk::luminance(fill)) >= 4.5;
     };
-    if (readable(surface)) return Qt::transparent;
+    if (readable(surface)) return surface;
     QColor overlay = lightInk ? Qt::black : Qt::white;
-    double lo = 0., hi = maxOpacity;
+    double lo = 0., hi = 1.;
     for (int i = 0; i < 8; ++i) {
         const double blend = (lo + hi) / 2;
         overlay.setAlphaF(blend);
@@ -28,7 +28,7 @@ QColor contrastWash(QColor surface, GlassInk::Family family, double maxOpacity, 
         else lo = blend;
     }
     overlay.setAlphaF(hi);
-    return overlay;
+    return GlassInk::composite(surface, overlay);
 }
 }
 
@@ -106,35 +106,19 @@ void ShellMenu::paintEvent(QPaintEvent *event)
         const QColor preferred = palette().color(QPalette::WindowText);
         if (panel != m_lastMaterial) {
             m_lastMaterial = panel;
-            QColor darkest = Qt::white, brightest = Qt::black;
-            double minLight = 1., maxLight = 0.;
-            const auto component = GlassInk::sample(GlassInk::component, QRectF(m_bounds).center(),
-                QSizeF(m_bounds.size()) * .45, [&](QPointF point) {
-                    const auto color = surfaceAt(point);
-                    const auto y = GlassInk::luminance(color);
-                    if (y < minLight) { minLight = y; darkest = color; }
-                    if (y > maxLight) { maxLight = y; brightest = color; }
-                    return color;
-                });
-            m_family = component.family(preferred);
-            // Lift or darken the whole material just enough for its difficult
-            // end, with a cap that lets the original glass show through.
-            m_contrastWash = contrastWash(m_family == GlassInk::Family::Dark ? darkest : brightest, m_family, .18, GlassInk::targetContrast);
+            m_family = GlassInk::sample(GlassInk::component, QRectF(m_bounds).center(),
+                QSizeF(m_bounds.size()) * .45, surfaceAt).family(preferred);
         }
-        m_paintingMenu = true;
         for (QAction *action : actions()) {
             if (!action->isVisible() || action->isSeparator()) continue;
             const QRect row = actionGeometry(action);
             const QPoint point(row.left() + row.width() / 3, row.center().y());
             const auto local = GlassInk::sample(GlassInk::menu, point,
-                QSizeF(row.width() / 4., row.height() / 4.), [&](QPointF p) {
-                    return GlassInk::composite(surfaceAt(p), m_contrastWash);
-                });
+                QSizeF(row.width() / 4., row.height() / 4.), surfaceAt);
             m_rowInks.insert(action, local.tone(preferred, m_family));
         }
     }
     QMenu::paintEvent(event);
-    m_paintingMenu = false;
     m_rowInks.clear();
 }
 
@@ -149,7 +133,7 @@ void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *act
         if (option->state.testFlag(QStyle::State_Selected)) {
             const auto family = GlassInk::familyOf(sampledInk);
             const auto accent = option->palette.color(group, QPalette::Highlight);
-            const auto fill = GlassInk::composite(accent, contrastWash(accent, family, 1., 4.5));
+            const auto fill = selectionFill(accent, family);
             GlassInk::Samples selection;
             selection.add(fill);
             color = selection.tone(color, family);
