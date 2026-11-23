@@ -1,28 +1,46 @@
 {
-  "version": "0.82.19",
+  "version": "0.83.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "implementation_commit": "c1836fc901bfec677abe52bd782de9b1f960ea8d",
-  "scope": "Make the top panel continuous corners more noticeable and normalize the localized clock date. New layouts use the regional hour format.",
-  "approval": "The maintainer approved both edition comparisons and requested publication.",
+  "scope": "Unify the installer and desktop Settings, fit the compact wizard steps, add paired wallpaper previews, and route bundled widget preferences into Settings.",
+  "approval": "The maintainer tested the dev build, approved the shown Settings views, and requested the paired v0.83.0 release on 2026-11-23.",
   "checks": [
     {
-      "command": "Ran 87 Tahoe layout and Dock tests, including the new clock defaults and saved preference migration.",
+      "command": "Verified both dev versions, the Golden Gate immutable Tahoe pin, and the codeload archive SHA-256.",
       "result": "passed"
     },
     {
-      "command": "Upgraded v0.82.18 to the candidate with the layout preserved in Tahoe and Golden Gate. Verified the installed clock fingerprint, existing applet and its hour setting, and captured both corners and the localized clock in light and dark on KDE neon Wayland.",
+      "command": "Validated installer navigation, widget settings, and localization against both editions, including Golden Gate’s archive-staged source.",
       "result": "passed"
     },
     {
-      "command": "Verified the approved preview hashes and the Tahoe component installation fingerprint ledger.",
+      "command": "Installed and reinstalled both editions in isolated KDE neon, preserving panel instances and Dock pins. Verified that Tahoe uninstall removed the Settings launcher and desktop entry.",
+      "result": "passed"
+    },
+    {
+      "command": "Verified 28 project context routes. Captured the Settings windows opened for individual applet IDs and tested both pinned and standalone Apps.",
+      "result": "passed"
+    },
+    {
+      "command": "Observed the scheduled 18:00 theme change in Golden Gate with the same Nautilus and Dolphin windows open.",
+      "result": "passed"
+    },
+    {
+      "command": "Verified Golden Gate retained the installed Settings source when the wrapper prepared a second snapshot.",
+      "result": "passed"
+    },
+    {
+      "command": "Checked all CI jobs on the exact verified dev revisions, including the Tahoe distro matrix and Nix.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "Visual upgrade checks used KDE neon Plasma 6.8.1 Wayland with one 2x output and LC_TIME=es_CR.UTF-8. Automated layout tests checked regional defaults and preservation of a saved 24-hour setting.",
+  "coverage_limits": "Desktop lifecycle and native context checks used KDE neon Plasma 6.8.1 on Wayland. CI supplied builds and compatibility checks across the other supported environments.",
+  "source_sha256": "3c20fad4b032553526358729733149f1d8d78de9aac2eea735207445409c8226",
   "approved_preview_sha256": {
-    "tahoe-comparacion.png": "c6a7232b827bddc701852edeabae7d021b927c4cf143e7d41ff8e2dd49a602d4",
-    "golden-gate-comparacion.png": "dc3d9232c54e5e0d91dd59dd917d73eedac8940c6c9c0f1fdc7bbdc3cb91bbda"
-  },
-  "source_sha256": "60b4e9483eb44d20d3d11014b49d340b31606f295cc9080d5b9df452c5dfcc67"
+    "instalador-compacto-claro.png": "544dc7059cc8c7d952ec1f25cc855d5f95a9472698be62b8e3b370dadda0e2c9",
+    "instalador-compacto-oscuro.png": "5f6923521f9e717b9d96725747a3e3c5ca006b1b6371f04ae891ffc9f813105b",
+    "cristales.png": "396f3d75819fcac46d1bed3dc3423d69885d719b37c7b409cc68cf0e649e14d7",
+    "ajustes-widgets-v083.png": "dcad79a87ac189850c379df4b4d1e26b996a021be4a244ef4af7ec03302d334e"
+  }
 }
