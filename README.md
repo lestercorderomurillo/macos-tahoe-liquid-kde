@@ -565,7 +565,7 @@ Plasma 6.6–6.8 is supported; compiled effects use the host SDK.
 
 ![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-What works now and what we plan to add.
+**Next release goal.** The next release begins a feature freeze. Every release through 0.90 (inclusive) will focus on fixing bugs.
 
 <details>
 <summary><b>Component status</b></summary>
