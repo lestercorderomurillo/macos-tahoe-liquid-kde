@@ -242,7 +242,7 @@ def paint_glass_control(widget, painter, *, pressed=False, backed=False):
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(widget.window().surface_color)
         painter.drawRoundedRect(rect, radius, radius)
-    else:
+    elif not getattr(widget.window(), "settings_mode", False):
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.setPen(QPen(QColor(0, 0, 0, 12 if light else 28), 1))
         painter.drawRoundedRect(rect.translated(0, .8), radius, radius)
@@ -1807,7 +1807,7 @@ class InstallerWindow(OpaqueSurface):
         self.refresh_sidebar_material()
         field_surface = "rgba(255, 255, 255, 163)" if light else "rgba(255, 255, 255, 22)"
         hover = "rgba(94, 134, 175, 28)" if light else "rgba(153, 182, 226, 32)"
-        selected_top, selected_bottom = ("#1976d3", "#0863bf") if light else ("#297bc6", "#1c60a1")
+        selected_fill = "#126ac8" if light else "#236db3"
         search_surface = "rgba(40, 69, 95, 24)" if light else "rgba(255, 255, 255, 24)"
         search_focus = "rgba(255, 255, 255, 168)" if light else "rgba(255, 255, 255, 32)"
         separator = "#e2e7ec" if light else "#3b4049"
@@ -1910,8 +1910,7 @@ class InstallerWindow(OpaqueSurface):
             }}
             QPushButton[navigation="section"]:hover {{ background: {hover}; }}
             QPushButton[navigation="section"]:checked {{
-                background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-                    stop: 0 {selected_top}, stop: 1 {selected_bottom});
+                background: {selected_fill};
                 color: white;
             }}
             QPushButton[navigation="section"]:focus {{ border-color: {self.accent}; }}
@@ -2032,8 +2031,8 @@ class InstallerWindow(OpaqueSurface):
     def option_card(self):
         frame = QFrame(self.content)
         frame.setObjectName("settingsOptionPanel" if self.settings_mode else "optionPanel")
-        add_surface_shadow(frame, radius=14 if self.settings_mode else 15, offset=2,
-                           opacity=42 if self.settings_mode else 30)
+        if not self.settings_mode:
+            add_surface_shadow(frame, radius=15, offset=2, opacity=30)
         return frame
 
     def page_section(self):
@@ -2596,7 +2595,6 @@ class InstallerWindow(OpaqueSurface):
     def page_general(self):
         panel = QFrame()
         panel.setObjectName("settingsPanel")
-        add_surface_shadow(panel, radius=14, offset=2, opacity=42)
         row = QHBoxLayout(panel)
         row.setContentsMargins(12, 9, 12, 9)
         label = self.label("Language")
