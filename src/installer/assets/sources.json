@@ -3310,20 +3310,20 @@
     "generated_sha256": "3eed23a53ecbc26ba63592bce42c5222f54d4fa5c8153175a88199d071e19d8b"
   },
   "menu-bar-art.jpg": {
-    "file": "menu-bar-art-a331fab6bf8c.jpg",
-    "sha256": "a331fab6bf8c8dbfed65179bfcc76fa4abb0d52eb6107b0c3e4566653c872065",
+    "file": "menu-bar-art-06e3bc3374b0.jpg",
+    "sha256": "06e3bc3374b0453855fa9b7262299a4dea35ef342ec166409ed6c27141651f4f",
     "kind": "generated-layout-illustration",
     "generator": "OpenAI ImageGen",
-    "prompt": "Use case: precise-object-edit. Make the companion Menu Bar illustration for the same Linux desktop theme installer, at the same approximately 2.26:1 aspect ratio. Use the supplied original Dock illustration as the edit target. Preserve its painterly alpine lake, paper and gouache texture, exact perspective, framing, pale lilac sky, periwinkle mountains, teal water, sage hills, peach evening clouds and existing light. Remove the entire Dock and all its app icons, restoring the lake and foreground naturally. Add one shallow menubar across the very top of the painted desktop, straight-on and almost full width, just 3–4% in from the edges. The panel is slim, about one twelfth the height of the illustration, with a quiet milk-glass tint, subtle transparency so the lavender sky softly shows through, a straight lower hairline and understated corners. It should read as an attached desktop menu bar inspired by macOS proportions, not a thick floating capsule or a hardware object. Inside it place a simple original mountain-diamond emblem at the far left, then three short dark muted blue strokes suggesting menu labels, with generous empty space in the middle. At the far right place subtle, clearly recognizable charcoal Wi-Fi arcs, a battery outline, and two small slider marks. Give the thin bar enough contrast against the sky to read at 362×160. Preserve the rich painting as the primary background. No Dock, text, numbers, actual brand logos, window frames, perspective tilt, neon glow or 3D extrusion.",
+    "prompt": "Use case: precise-object-edit. Make an enlarged product-detail interpretation of the Menu Bar tile, using the supplied original canyon artwork as the edit target. Keep its handmade gouache treatment and indigo-to-apricot canyon palette. The visual priority changes dramatically: the pale frosted-glass menu bar is the hero of the picture. Enlarge it to occupy about 76–80% of the frame width and about 29–32% of its height, positioned dead center both horizontally and vertically. Keep both ends fully visible with a modest 10–12% breathing margin on each side, so it reads as a compact menu strip. One bar only. Straight-on orthographic view with no tilt. Preserve the recognizable original diamond/mountain mark at the left, two short dark menu dashes, and the Wi-Fi, battery and slider pictograms at the right, redrawn cleanly at the new larger scale with generous internal spacing. Slightly rounded thin hairline border, subtle frosted translucence and soft color bleed from the background. The backdrop is secondary: soften and simplify the valley into broad painterly indigo and terracotta silhouettes, with a small suggestion of the river visually behind the hero, muted contrast and no finely detailed landscape drawing competing for attention. Maintain a warm, premium editorial look with very readable controls. Finished image 2.26:1 panoramic for a 362×160 card. No letters, numbers, logos, desktop screenshots, oversized physical tray, long full-width panel, thick extrusion or neon glow.",
     "size": [
       1086,
       480
     ],
     "generated_size": [
-      1881,
-      836
+      1884,
+      835
     ],
-    "generated_sha256": "b2b53f178831b5ba3870ed4206e21666f27c0987651c4dc3b7a212c09ae7cb2a",
-    "reference_sha256": "3eed23a53ecbc26ba63592bce42c5222f54d4fa5c8153175a88199d071e19d8b"
+    "generated_sha256": "2479aad2f95994d551663c765c2802870fcb0620e5e0beff05b5050c64b6457f",
+    "reference_sha256": "b87ee52019350a2043a3099a173be1dcc2adab328196b5e8117da4dc194195b4"
   }
 }
