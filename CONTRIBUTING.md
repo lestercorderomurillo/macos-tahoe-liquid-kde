@@ -6,7 +6,7 @@ Thanks for considering a contribution. The project as a whole is GPL-3.0; indivi
 
 - **Open an issue first** for anything bigger than a one-line fix. I'd rather discuss the approach than reject a finished PR over scope.
 - **One concern per PR.** Bugfix + refactor + new feature in the same PR is three PRs.
-- **AI assistants are fine** — just review what they produce. You're the author on the PR; make sure you can explain the change and that it actually fits the codebase.
+- **AI assistants are fine:** just review what they produce. You're the author on the PR; make sure you can explain the change and that it actually fits the codebase.
 
 ## Setup
 

@@ -9,6 +9,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Shapes
 import QtQml
 
 import org.kde.plasma.plasmoid
@@ -39,18 +40,76 @@ PlasmoidItem {
     Rectangle {
         id: barTint
 
-        // Attach to the top panel window so the tint also sits behind its other applets.
-        parent: Plasmoid.location === PlasmaCore.Types.TopEdge ? root.Window.window?.contentItem ?? null : null
+        // Paint in the panel window behind the existing menu and status applets.
+        parent: root.wallpaperTint ? root.Window.window?.contentItem ?? null : null
         anchors.fill: parent
         visible: parent !== null
+        opacity: root.Window.window?.visible && visible ? 1 : 0
         z: -1
 
-        readonly property bool lightText: Kirigami.ColorUtils.brightnessForColor(Kirigami.Theme.textColor)
-                                          === Kirigami.ColorUtils.Light
+        Behavior on opacity {
+            enabled: barTint.visible
+            NumberAnimation { duration: 110; easing.type: Easing.OutExpo }
+        }
 
+        // The effect uses these same logical dimensions for pointer motion.
+        readonly property real cornerExtent: visible && root.Window.window?.visible
+            && Math.abs(width - root.screenGeometry.width) < 1 ? Math.min(10, height / 3) : 0
+        readonly property real cornerControlFraction: 0.19
+        Native.GlassSettings {
+            window: barTint.cornerExtent > 0 ? root.Window.window : null
+            displayCorners: Qt.size(barTint.cornerExtent, barTint.cornerControlFraction)
+        }
+
+        Native.PanelWallpaper { id: scrim }
+        function scrimColor(position: real): color {
+            return Qt.rgba(0, 0, 0, scrim.scrimOpacityAt(position))
+        }
+
+        // Share the rendered stops with the wallpaper contrast sampler.
         gradient: Gradient {
-            GradientStop { position: 0; color: barTint.lightText ? "#29000000" : "#29ffffff" }
+            GradientStop { position: 0; color: barTint.scrimColor(0) }
+            GradientStop { position: 0.125; color: barTint.scrimColor(0.125) }
+            GradientStop { position: 0.25; color: barTint.scrimColor(0.25) }
+            GradientStop { position: 0.375; color: barTint.scrimColor(0.375) }
+            GradientStop { position: 0.5; color: barTint.scrimColor(0.5) }
+            GradientStop { position: 0.625; color: barTint.scrimColor(0.625) }
+            GradientStop { position: 0.75; color: barTint.scrimColor(0.75) }
+            GradientStop { position: 0.875; color: barTint.scrimColor(0.875) }
             GradientStop { position: 1; color: "transparent" }
+        }
+
+        Repeater {
+            model: barTint.cornerExtent > 0 ? 2 : 0
+
+            delegate: Shape {
+                id: corner
+                required property int index
+                readonly property real extent: barTint.cornerExtent
+                x: index === 0 ? 0 : barTint.width - width
+                width: extent
+                height: extent
+                antialiasing: true
+                preferredRendererType: Shape.CurveRenderer
+                transform: Scale {
+                    origin.x: corner.width / 2
+                    xScale: corner.index === 0 ? 1 : -1
+                }
+
+                ShapePath {
+                    fillColor: "#f20e1117"
+                    strokeWidth: -1
+                    startX: 0
+                    startY: 0
+                    PathLine { x: corner.extent; y: 0 }
+                    PathCubic {
+                        x: 0; y: corner.extent
+                        control1X: corner.extent * barTint.cornerControlFraction; control1Y: 0
+                        control2X: 0; control2Y: corner.extent * barTint.cornerControlFraction
+                    }
+                    PathLine { x: 0; y: 0 }
+                }
+            }
         }
     }
 
@@ -112,7 +171,6 @@ PlasmoidItem {
             id: ink
             item: button
             base: button.baseForeground
-            panelInk: Kirigami.Theme.textColor
             active: root.wallpaperTint
         }
     }

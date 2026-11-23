@@ -1588,7 +1588,9 @@ class InstallerWindow(OpaqueSurface):
 
     def page_welcome(self):
         self.body.addStretch()
-        self.body.addWidget(self.image("logo-27.png" if self.edition == "Golden Gate" else "logo-26.png", 180, 180))
+        dark = self.surface_color.lightnessF() <= .5
+        variant = "golden-gate-dark" if self.asset_edition == "golden-gate" and dark else self.asset_edition
+        self.body.addWidget(self.image(f"logo-{variant}.png", 180, 180))
         title = self.label(self.t("Install") + " " + self.edition, heading=True)
         title.setAlignment(Qt.AlignmentFlag.AlignCenter); self.body.addWidget(title)
         text = self.label("Choose your options and begin installation.")

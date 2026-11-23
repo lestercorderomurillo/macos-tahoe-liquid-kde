@@ -1,14 +1,15 @@
 # Installer testing
 
-**v0.82.7**. Verified that stock Networks moves under the tray arrow while the theme’s Wi-Fi and pinned icons remain visible. [Evidence and coverage](release-evidence.json).
+**v0.82.14**. Verified that the installer Welcome page shows the Glass Tux emblem for Tahoe and Golden Gate in light and dark appearance. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
 ## Installation steps
 
+The Welcome page uses the [current edition emblem](README.md).
+
 <table>
 <tr><th>Step</th><th>Light</th><th>Dark</th></tr>
-<tr><th>Welcome</th><td><a href="src/screenshots/previews/wizard-tahoe-light-welcome-e760ba6623d9.webp"><img src="src/screenshots/previews/wizard-tahoe-light-welcome-e760ba6623d9.webp" width="480" alt="Welcome, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-welcome-43b2194cafac.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-welcome-43b2194cafac.webp" width="480" alt="Welcome, dark"></a></td></tr>
 <tr><th>Appearance</th><td><a href="src/screenshots/previews/wizard-tahoe-light-appearance-8f7633f43ea0.webp"><img src="src/screenshots/previews/wizard-tahoe-light-appearance-8f7633f43ea0.webp" width="480" alt="Appearance, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-appearance-e2feef6a12e6.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-appearance-e2feef6a12e6.webp" width="480" alt="Appearance, dark"></a></td></tr>
 <tr><th>Icons</th><td><a href="src/screenshots/previews/wizard-tahoe-light-icons-45d8dcfdc33e.webp"><img src="src/screenshots/previews/wizard-tahoe-light-icons-45d8dcfdc33e.webp" width="480" alt="Icons, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-icons-32091ec6eabf.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-icons-32091ec6eabf.webp" width="480" alt="Icons, dark"></a></td></tr>
 <tr><th>Wallpaper</th><td><a href="src/screenshots/previews/wizard-tahoe-light-wallpaper-a27c9231db35.webp"><img src="src/screenshots/previews/wizard-tahoe-light-wallpaper-a27c9231db35.webp" width="480" alt="Wallpaper, light"></a></td><td><a href="src/screenshots/previews/wizard-tahoe-dark-wallpaper-13de25dca930.webp"><img src="src/screenshots/previews/wizard-tahoe-dark-wallpaper-13de25dca930.webp" width="480" alt="Wallpaper, dark"></a></td></tr>

@@ -1,6 +1,6 @@
 <p align="center">
-  <!-- Adapted with ImageGen from artwork by Apple: https://developer.apple.com/assets/elements/icons/macos-26/macos-26-128x128_2x.png -->
-  <img src="docs/artwork/kde-26-5bc32be65b24.png" alt="26 · KDE" width="180" height="180">
+  <!-- Adapted with ImageGen from artwork by Apple: https://developer.apple.com/assets/elements/icons/macos-26/macos-26-128x128_2x.png. Tux design by Larry Ewing. -->
+  <img src="src/installer/assets/glass-tux-tahoe-d9301a4b323e.png" alt="Tahoe · Glass Tux" width="180" height="180">
 </p>
 
 <h1 align="center">适用于 Linux KDE 桌面的 macOS Tahoe 外观与操作体验</h1>
@@ -370,20 +370,20 @@ Wi-Fi、声音、亮度和通知集中在一个玻璃菜单中。外观按钮用
 
 ![功能](https://img.shields.io/badge/features-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-- **语言：**安装程序支持英语、西班牙语、简体中文、巴西葡萄牙语、德语和法语；Plasma 组件已翻译。
-- **安装程序：**图形化组件选择、随附主题资源和更新支持。
-- **发行版：**为基于 Arch、基于 Fedora、openSUSE、Debian 和 KDE neon 的系统安装依赖。
-- **调度：**通过 systemd 用户定时器或 OpenRC 上的 cron 自动切换主题并提供 OLED 保护。
-- **玻璃特效：**浅色和深色模式下可调节的模糊、折射和三色渐变。
-- **兼容性：**Plasma 6.6–6.8，原生特效根据已安装的 Qt 和 KWin 版本编译。
-- **Launchpad：**两种布局、内嵌或独立搜索、收藏和可滚动应用分类。
-- **Dock** Dock 会移到指针触及底边的屏幕，并保留固定的应用。安装时可选择自动隐藏（默认）、非全屏时显示或窗口重叠时隐藏。 多屏时，指针需在另一屏幕底边停留 2 秒 Dock 才会移过去，避免点击窗口底部时 Dock 挡住窗口。 Dock 始终显示时保持悬浮和圆角：在其屏幕上最大化的窗口会停在 Dock 正上方，Dock 则贴紧屏幕底边，与 macOS 一致。
-- **菜单栏** 多屏时所有菜单栏保持一致：显示或隐藏托盘图标、更改小组件设置（时钟、苹果菜单、控制中心）会应用到每个屏幕的菜单栏。添加、移除或移动小组件仍只作用于单个菜单栏。
-- **外观：**桌面、应用、图标和窗口装饰的浅色/深色风格同步；每个显示器独立壁纸。
-- **应用集成：**全局菜单、GTK 菜单修复、Finder 风格 Nautilus，以及带配置备份的 Firefox 主题。
-- **恢复：**要求检查、设置备份和卸载还原。
-- **可选功能：**OLED 面板位移、带固定项和图片预览的剪贴板历史，以及实验性 NixOS 和 Home Manager 模块。
-- **测试：**回归测试、发行版容器和 Plasma 虚拟机。
+- **外观：**桌面、应用、图标和窗口装饰采用统一的浅色与深色主题，支持自动切换和为每台显示器单独设置壁纸。
+- **玻璃特效：**可调节模糊、折射和色调，支持的菜单会根据背景调整文字颜色。
+- **Dock：**支持固定应用、悬停放大、通知角标和隐藏设置，可随操作在不同显示器之间移动。
+- **菜单栏与控制中心：**提供全局应用菜单和系统快捷控制，菜单栏设置可在不同显示器之间同步。
+- **Launchpad：**提供两种布局，可搜索应用、浏览分类和收藏常用应用。
+- **桌面小部件：**可将 Liquid Glass 小部件直接添加到桌面。
+- **通知：**玻璃风格的通知横幅和分组历史记录，在应用支持时可使用快捷操作和回复。
+- **剪贴板历史：**查找并重复使用复制过的文字和图片，也可以固定想保留的条目。
+- **应用集成：**Nautilus 提供 Finder 风格的文件浏览体验，并支持 GTK 菜单集成和带配置备份的 Firefox 主题。
+- **系统信息与启动：**主题化的系统信息窗口和可选的配套启动画面。
+- **安装与恢复：**图形化安装程序随附主题资源，支持更新和设置备份，可在卸载时恢复设置。
+- **语言：**安装程序支持英语、西班牙语、简体中文、巴西葡萄牙语、德语和法语，Plasma 小部件也提供翻译。
+- **兼容性：**支持基于 Arch 或 Fedora 的系统以及 openSUSE、Debian 和 KDE neon 上的 Plasma 6.6–6.8。
+- **可选功能：**OLED 屏幕保护，以及对 NixOS 和 Home Manager 的实验性支持。
 
 <br>
 
@@ -688,6 +688,8 @@ macOS 徽标、随附壁纸、系统声音及 SF Pro / SF Mono 字体仍属于 A
 - **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: 基础图标和光标；GTK 设计参考。 [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) 在此作为 MIT 许可的分支维护，支持配置备份和恢复。
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** 和 **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur 及其玻璃分支：Acrylic Glass 使用的上游代码（KWin 模糊效果作者的署名保留在源码头部）。
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0，离线随附并由布局步骤安装，用于为面板着色（GPL-3.0，附带许可证）。
+- **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**：`liquidglass-kde-widgets` 提供主题随附的 Liquid Glass 桌面小部件套件（GPL-3.0，附带许可证）。
+- **[RoxasYTB](https://github.com/RoxasYTB)**：[照片小部件](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/41)可在桌面上显示照片。[Solid/Glass 样式自动切换](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/40)会在屏幕上有窗口打开时启用 Glass 样式。
 - **[Matin Lotfaliei / KDE-Rounded-Corners](https://github.com/matinlotfali/KDE-Rounded-Corners)**: GPL-3.0 许可的 KWin 窗口圆角特效，从固定的 v0.9.0 版本获取并在线基于宿主 KWin SDK 构建（同时安装许可证）。
 - **[ful1e5](https://github.com/ful1e5)**: `apple_cursor`: 替代光标设计参考。
 - **[sahibjotsaggu](https://github.com/sahibjotsaggu)**: `San-Francisco-Pro-Fonts`: SF Pro / SF Mono 包的来源。

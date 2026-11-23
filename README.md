@@ -1,6 +1,6 @@
 <p align="center">
-  <!-- Adapted with ImageGen from artwork by Apple: https://developer.apple.com/assets/elements/icons/macos-26/macos-26-128x128_2x.png -->
-  <img src="docs/artwork/kde-26-5bc32be65b24.png" alt="26 · KDE" width="180" height="180">
+  <!-- Adapted with ImageGen from artwork by Apple: https://developer.apple.com/assets/elements/icons/macos-26/macos-26-128x128_2x.png. Tux design by Larry Ewing. -->
+  <img src="src/installer/assets/glass-tux-tahoe-d9301a4b323e.png" alt="Tahoe · Glass Tux" width="180" height="180">
 </p>
 
 <h1 align="center">macOS Tahoe Look &amp; Feel for KDE Linux</h1>
@@ -302,20 +302,20 @@ A matching look from startup to shutdown, with built-in unlocking for LUKS2-encr
 
 ![Features](https://img.shields.io/badge/features-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-- **Languages:** English, Spanish, Simplified Chinese, Brazilian Portuguese, German and French installer; translated Plasma widgets.
-- **Installer:** graphical component selection, bundled theme assets and update support.
-- **Distributions:** dependency installation for Arch-based, Fedora-based, openSUSE, Debian and KDE neon systems.
-- **Scheduling:** automatic theme switching and OLED care through systemd user timers or cron on OpenRC.
-- **Glass effects:** adjustable blur, refraction and three-color gradients for light and dark modes.
-- **Compatibility:** Plasma 6.6–6.8, with native effects compiled against the installed Qt and KWin versions.
-- **Launchpad:** two layouts, integrated or detached search, favorites and scrollable app categories.
-- **Dock** The Dock follows the bottom edge you touch and keeps your pins. In the installer, choose auto-hide (default), show outside full screen, or hide when a window overlaps. With several screens, the Dock slides down off one screen and up onto the next, as on macOS. It moves to another screen once the pointer has rested 2 seconds on its bottom edge, so a click near the bottom of a window does not pull it over that window. When the Dock is always shown, it keeps floating with its rounded corners: a window maximized on its screen stops right above it, and the Dock sits flush with the screen edge next to it, as on macOS.
-- **Menu bar** On several screens, every menu bar stays the same: showing or hiding a tray icon, or changing a widget's settings (clock, Apple menu, Control Center), applies to the menu bar of every screen. Adding, removing or moving widgets still applies to one menu bar only.
-- **Appearance:** synchronized light/dark styles for the desktop, apps, icons and window decorations; per-monitor wallpapers. See [matching window decorations](docs/app-window-decorations.md) for app-specific settings and GTK theming.
-- **App integration:** global menus, GTK menu fixes, Finder-style Nautilus and Firefox theming with profile backups.
-- **Recovery:** requirement checks, settings backups and uninstall restoration.
-- **Optional features:** OLED panel shifts, clipboard history with pins and image previews, and experimental NixOS and Home Manager modules.
-- **Testing:** regression tests, distro containers and Plasma VMs.
+- **Appearance:** Coordinated light and dark themes for the desktop, apps, icons and window decorations, with automatic switching and per-monitor wallpapers. [App-specific window decoration settings](docs/app-window-decorations.md)
+- **Glass effects:** Adjustable blur, refraction and tint, with text that adapts to the background in supported menus.
+- **Dock:** Pinned apps, hover zoom, notification badges and configurable hiding. The Dock follows you between displays.
+- **Menu bar and Control Center:** Global app menus and quick system controls, with shared menu bar settings across displays.
+- **Launchpad:** Search apps, browse categories and save favorites in either of two layouts.
+- **Desktop widgets:** Add and arrange the bundled Liquid Glass widgets on your desktop.
+- **Notifications:** Glass banners and grouped history, with quick actions and replies where apps support them.
+- **Clipboard history:** Find and reuse copied text and images, and pin items you want to keep.
+- **App integration:** Finder-style browsing in Nautilus, GTK menu integration and Firefox theming with profile backups.
+- **System information and startup:** A themed system information window and an optional matching boot splash.
+- **Setup and recovery:** A graphical installer with bundled theme assets, updates and settings backups that can be restored on uninstall.
+- **Languages:** The installer is available in English, Spanish, Simplified Chinese, Brazilian Portuguese, German and French. Plasma widgets are also translated.
+- **Compatibility:** Plasma 6.6–6.8 on Arch- and Fedora-based systems, openSUSE, Debian and KDE neon.
+- **Optional features:** OLED panel protection and experimental NixOS and Home Manager support.
 
 <br>
 
@@ -658,6 +658,8 @@ Project references and third-party components:
 - **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: base icons and cursors; GTK design reference. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) is maintained here as an MIT-licensed fork with profile backup and restore support.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** and **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur and its glass fork: upstream code used by Acrylic Glass (the KWin blur authors stay credited in the source headers).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0, bundled offline and installed by the layout step to tint the panels (GPL-3.0, license shipped alongside).
+- **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**: `liquidglass-kde-widgets` provides the bundled collection of Liquid Glass desktop widgets (GPL-3.0, license included).
+- **[RoxasYTB](https://github.com/RoxasYTB)**: [Photos widget](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/41) displays photos on the desktop. [Automatic Solid/Glass switching](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/40) switches the widgets to Glass when a window is open on the screen.
 - **[Matin Lotfaliei / KDE-Rounded-Corners](https://github.com/matinlotfali/KDE-Rounded-Corners)**: the GPL-3.0 KWin rounded-window effect, fetched from the pinned v0.9.0 release and built online against the host KWin SDK (license installed alongside).
 - **[ful1e5](https://github.com/ful1e5)**: `apple_cursor`: alternate cursor design reference.
 - **[sahibjotsaggu](https://github.com/sahibjotsaggu)**: `San-Francisco-Pro-Fonts`: source of the SF Pro / SF Mono bundle.

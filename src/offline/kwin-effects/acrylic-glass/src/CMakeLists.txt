@@ -83,7 +83,7 @@ kconfig_add_kcfg_files(liquidglass_SOURCES
 )
 
 if(GLASS_WAYLAND)
-    add_library(liquidglass MODULE ${liquidglass_SOURCES})
+    add_library(liquidglass MODULE ${liquidglass_SOURCES} displaycornerinput.cpp)
     target_include_directories(liquidglass PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
     target_link_libraries(liquidglass PRIVATE
         KDecoration3::KDecoration

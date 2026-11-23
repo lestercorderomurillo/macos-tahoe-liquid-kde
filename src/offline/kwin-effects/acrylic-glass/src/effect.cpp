@@ -7,6 +7,10 @@
 */
 
 #include "effect.h"
+#if defined(GLASS_WAYLAND)
+#include "displaycornerinput.h"
+#include <QDBusServiceWatcher>
+#endif
 #include "surfaceoptics.h"
 #include "build_identity.h"
 // KConfigSkeleton
@@ -492,6 +496,15 @@ BlurEffect::BlurEffect()
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.plasmashell"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("windowsChanged"), this, SLOT(slotGlassWindows(QString)));
+#if defined(GLASS_WAYLAND)
+    m_displayCornerInput = std::make_unique<DisplayCornerInput>();
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.plasmashell"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("displayCornersChanged"), this, SLOT(slotDisplayCorners(QString)));
+    auto *shell = new QDBusServiceWatcher(QStringLiteral("org.kde.plasmashell"), QDBusConnection::sessionBus(),
+                                         QDBusServiceWatcher::WatchForUnregistration, this);
+    connect(shell, &QDBusServiceWatcher::serviceUnregistered, this, [this] { slotDisplayCorners({}); });
+#endif
     QDBusConnection::sessionBus().send(QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
         QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("requestWindows")));
 
@@ -693,6 +706,13 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     effects->addRepaintFull();
 }
 
+
+#if defined(GLASS_WAYLAND)
+void BlurEffect::slotDisplayCorners(const QString &json)
+{
+    m_displayCornerInput->setCorners(json);
+}
+#endif
 
 void BlurEffect::slotGlassWindows(const QString &json)
 {
