@@ -1968,17 +1968,20 @@ class InstallerWindow(OpaqueSurface):
                                                        self.choose_launcher_image(target, enabled))
                                 line.addWidget(browse)
                             if kind == "system_menu" and (key == "menuIcon" or key.startswith("icon")):
-                                browse = GlassButton(self.t("Choose…"))
-                                browse.setIconSize(QSize(18, 18))
+                                preview = QLabel()
+                                preview.setFixedSize(18, 18)
+                                line.insertWidget(line.indexOf(field), preview)
                                 default_icon = typed.DEFAULTS[key]
 
-                                def refresh_menu_icon(value, button=browse, fallback=default_icon):
+                                def refresh_menu_icon(value, target=preview, fallback=default_icon):
                                     name = value or fallback
                                     path = QUrl(name).toLocalFile() or name
-                                    button.setIcon(QIcon(path) if Path(path).is_absolute() else QIcon.fromTheme(name))
+                                    icon = QIcon(path) if Path(path).is_absolute() else QIcon.fromTheme(name)
+                                    target.setPixmap(icon.pixmap(target.size(), target.devicePixelRatioF()))
 
                                 field.textChanged.connect(refresh_menu_icon)
                                 refresh_menu_icon(field.text())
+                                browse = GlassButton(self.t("Choose…"))
                                 browse.clicked.connect(lambda _, target=field: self.choose_system_menu_icon(target))
                                 line.addWidget(browse)
                         field.setProperty("preferenceKey", key)
