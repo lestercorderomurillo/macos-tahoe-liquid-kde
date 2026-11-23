@@ -5,7 +5,7 @@ import runpy
 
 import pytest
 
-from installer_choices import validate
+from installer_choices import WALLPAPERS, validate
 import theme_switch
 from steps import theme_switch as step
 from steps import wallpapers
@@ -36,16 +36,21 @@ def test_invalid_defaults_fall_back_safely(tmp_path, monkeypatch, raw):
     assert theme_switch.default_wallpaper() == "MacTahoe"
 
 
-def test_anime_wallpaper_is_packaged_and_survives_switching(repo, monkeypatch):
+@pytest.mark.parametrize("choice", [key for key in WALLPAPERS if key.startswith("anime-")])
+def test_anime_wallpaper_is_packaged_and_survives_switching(repo, monkeypatch, choice):
     from PIL import Image
 
     monkeypatch.setenv("XDG_DATA_HOME", str(repo / "src/offline"))
-    monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", json.dumps(validate({"wallpaper": "anime-city"})))
-    package = repo / "src/offline/wallpapers/MacAnime-RainyCrossing"
+    monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", json.dumps(validate({"wallpaper": choice})))
+    package = repo / "src/offline/wallpapers" / WALLPAPERS[choice][0]
     assert theme_switch._wallpaper_path("light") == theme_switch._wallpaper_path("dark") == package
     assert theme_switch._wallpaper_image_is_theme_managed(package.as_uri())
-    with Image.open(package / "contents/images/3840x2160.jpg") as image:
-        assert image.size == (3840, 2160) and image.format == "JPEG"
+    day = package / "contents/images/3840x2160.jpg"
+    night = package / "contents/images_dark/3840x2160.jpg"
+    assert day.read_bytes() != night.read_bytes()
+    for variant in (day, night):
+        with Image.open(variant) as image:
+            assert image.size == (3840, 2160) and image.format == "JPEG"
 
 
 def test_installed_default_survives_without_checkout(tmp_path, monkeypatch):

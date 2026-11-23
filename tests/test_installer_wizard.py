@@ -782,6 +782,32 @@ assert window.page == 'summary' and not window.settings_mode and window.reconfig
 assert not window.choices['reset_layout']
 window.previous()
 assert window.page == 'startup' and window.settings_mode and window.settings_review.isVisible()
+window.select('oled_care', window.settings_baseline['oled_care'])
+window.navigate_settings('general')
+assert not window.settings_review.isVisible()
+original_calls = len(calls)
+window.content.findChild(QPushButton, 'settingsReinstall').click()
+assert window.page == 'summary' and window.next.text() == window.t('Reinstall')
+assert len(calls) == original_calls and not window.choices['reset_layout']
+window.back.click()
+assert window.page == 'general' and window.settings_mode
+window.content.findChild(QPushButton, 'settingsReinstall').click()
+window.next.click()
+assert window.page == 'progress' and calls[-1][0] == 'install'
+assert not calls[-1][1]['reset_layout']
+bridge._running = False; bridge.finished.emit(0)
+window.next.click()
+assert window.page == 'general' and window.settings_mode
+window.content.findChild(QPushButton, 'settingsUninstall').click()
+assert window.page == 'uninstall' and window.next.text() == window.t('Uninstall')
+assert len(calls) == original_calls + 1
+window.back.click()
+assert window.page == 'general' and window.settings_mode
+window.content.findChild(QPushButton, 'settingsUninstall').click()
+window.next.click()
+assert window.page == 'progress' and calls[-1][0] == 'uninstall'
+bridge._running = False; bridge.finished.emit(0)
+assert window.page == 'removed'
 window.close()
 print('native wizard flow passed')
 '''

@@ -380,6 +380,9 @@ Auto|Automática|自动|Automática|Automatisch
 Custom|Archivo elegido|所选文件|Arquivo escolhido|Gewählte Datei
 Settings|Ajustes|设置|Ajustes|Einstellungen
 General|General|通用|Geral|Allgemein
+Restoration|Restauración|恢复|Restauração|Wiederherstellung
+Reinstall|Reinstalar|重新安装|Reinstalar|Neu installieren
+Review your reinstallation|Revisa la reinstalación|检查重新安装选项|Revise a reinstalação|Neuinstallation überprüfen
 Language|Idioma|语言|Idioma|Sprache
 Search settings|Buscar ajustes|搜索设置|Buscar ajustes|Einstellungen suchen
 No matching settings|No se encontraron ajustes|未找到匹配的设置|Nenhum ajuste encontrado|Keine passenden Einstellungen

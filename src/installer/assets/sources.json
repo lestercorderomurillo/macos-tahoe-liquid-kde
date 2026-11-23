@@ -3024,12 +3024,53 @@
     "size": [
       3840,
       2160
-    ]
+    ],
+    "variant": "day"
+  },
+  "anime-coast-dark.jpg": {
+    "file": "anime-coast-dark-e48b1c2d200d.jpg",
+    "sha256": "e48b1c2d200d40934f5c764662384d0942b8ad3345d951148a6aa351caa6e8b6",
+    "source": "src/offline/wallpapers/MacAnime-CoastalRailway/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "ff5cfb995a907f29cd9902d6faa93cc0e96a5108153a7bb3c6b5da8d8a56e179",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Edit the supplied original landscape wallpaper as a single 16:9 frame. It is an appearance-mode pair, so preserve the reference's camera position, crop, perspective, horizon, silhouettes and the placement, sizes and shapes of all major objects. Match the precise painterly anime linework and textures. Change the time and quality of light only. Turn bright summer afternoon into a deep indigo, moonlit summer night. Keep the exact coastline, summer foliage, railway signal, train, hut, track and cloud silhouettes. A little warm light comes through the same station and train windows. Use quiet blue reflections along the coast and sufficient moonlit detail in the foreground. Full bleed, with no text, logo, watermark, interface, new subjects, borders or decorative effects.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "1ef420b096d13cc57f10f9dc6e2a4fca8c2b305e367b3edaa8b1eee13821450d",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "189f1ac4e443a3481a3c2f9d307632a6e9575f4008d3b742d85cd4c25646e61c"
   },
   "anime-village.jpg": {
-    "file": "anime-village-73edad94fdea.jpg",
-    "sha256": "73edad94fdea5b0b2631c8715fe7e051afb0d2f866e7989e3c9c88b7aa4a27f4",
+    "file": "anime-village-3d303b05e663.jpg",
+    "sha256": "3d303b05e663363957bf57ed07887e2e7597a3385d7eb9664ef27a92d7c688f5",
     "source": "src/offline/wallpapers/MacAnime-SnowLanterns/contents/images/3840x2160.jpg",
+    "source_sha256": "d447094499acce6e76b5dda9ccfe5e701b6acbda52fd1688574d71a163f351f6",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Edit the supplied original landscape wallpaper as a single 16:9 frame. It is an appearance-mode pair, so preserve the reference's camera position, crop, perspective, horizon, silhouettes and the placement, sizes and shapes of all major objects. Match the precise painterly anime linework and textures. Change the time and quality of light only. Change blue hour to a clear winter morning. Keep the timber houses, snowbanks, footpath, silhouettes of the trees and mountains, and lantern positions. Use crisp pale gold morning light, blue snow shadows, gently lit snowflakes, and a bright blue sky. Existing lanterns may be dim or unlit. Full bleed, with no text, logo, watermark, interface, new subjects, borders or decorative effects.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "108afa6815cf9db9e156db57661e8867b6d632653ab24713f96568189d94a40d",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "13451c478e822a12a09b2e696626834a7cc3c102d0e51bc0c275f773bdae3206"
+  },
+  "anime-village-dark.jpg": {
+    "file": "anime-village-dark-73edad94fdea.jpg",
+    "sha256": "73edad94fdea5b0b2631c8715fe7e051afb0d2f866e7989e3c9c88b7aa4a27f4",
+    "source": "src/offline/wallpapers/MacAnime-SnowLanterns/contents/images_dark/3840x2160.jpg",
     "source_sha256": "29420141c3321e6d51a115429eb06cde44d8b631d71657468f4d001d71738838",
     "kind": "generated-wallpaper",
     "generator": "OpenAI ImageGen",
@@ -3042,7 +3083,8 @@
     "size": [
       3840,
       2160
-    ]
+    ],
+    "variant": "night"
   },
   "anime-city.jpg": {
     "file": "anime-city-aa65739e3727.jpg",
@@ -3060,7 +3102,28 @@
     "size": [
       3840,
       2160
-    ]
+    ],
+    "variant": "day"
+  },
+  "anime-city-dark.jpg": {
+    "file": "anime-city-dark-56b18904c2d8.jpg",
+    "sha256": "56b18904c2d83e2b74c2ccced9583f0dd0f34751f89a8c48622240980eff9249",
+    "source": "src/offline/wallpapers/MacAnime-RainyCrossing/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "ca905b3cc636630f2cfd74c7987c57df56973b460d07d94790e5c32893c1a853",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Make a night companion to the supplied animation background. Keep the exact same viewpoint, aspect ratio, crop, tram rails, crossing, house shapes, utility cables, trees, and puddles, with the precise same anime paintwork. Change the lighting to fully dark after the rain, with a deep midnight-blue sky, a few warm existing storefront windows and restrained amber or blue street reflections on the wet pavement. The whole scene must clearly read as night. Keep it quiet and empty, with no new subjects, no text or logo and no compositional changes. Single full-bleed 16:9 wallpaper.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "6df4b3b05e1af7cc5a87ba3f609ebfc8f382ec4eefe84cbd87e0636601c9c5d8",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "d8ca87cff8fe6ce287b5507b398d821705ec51457f9ea05e3d5ea714e3af213c"
   },
   "anime-meadow.jpg": {
     "file": "anime-meadow-95ad5081ec27.jpg",
@@ -3078,12 +3141,53 @@
     "size": [
       3840,
       2160
-    ]
+    ],
+    "variant": "day"
+  },
+  "anime-meadow-dark.jpg": {
+    "file": "anime-meadow-dark-46bdd3af4122.jpg",
+    "sha256": "46bdd3af4122dee5f52412af3cfd43e55fbdc70770f19c4f448dcefb91b8b52f",
+    "source": "src/offline/wallpapers/MacAnime-AlpineMeadow/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "578b4123023dad17391395509920260de5b50866eebb4545b0a7da646c84394b",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Edit the supplied original landscape wallpaper as a single 16:9 frame. It is an appearance-mode pair, so preserve the reference's camera position, crop, perspective, horizon, silhouettes and the placement, sizes and shapes of all major objects. Match the precise painterly anime linework and textures. Change the time and quality of light only. Change the clear mountain morning into a quiet night with moonlit mountains and a deep indigo sky. Keep the same path, wildflowers, lake, wooden refuge, skyline and landforms at the same positions. Use softly lit cool-blue grasses and flowers, a subtle warm light in the existing refuge, and enough contrast to read the original scene. Full bleed, with no text, logo, watermark, interface, new subjects, borders or decorative effects.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "2edc3163f58193b3cc9d55e83b8c3547eae34773930357c92013b42d36496e75",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "54c0602bef6f7f06f0ef1a4a174e7acc777c932c4d03f40da6eb136a9a02c869"
   },
   "anime-moon.jpg": {
-    "file": "anime-moon-56e0c6f13da3.jpg",
-    "sha256": "56e0c6f13da3d03620da4421b393330f22fe1ebe7060cfdae644389a41ad24ed",
+    "file": "anime-moon-32805d72f97e.jpg",
+    "sha256": "32805d72f97e546c8f2117e929a0214406e74dfa2e930bef040795709c26cc83",
     "source": "src/offline/wallpapers/MacAnime-MoonlitShrine/contents/images/3840x2160.jpg",
+    "source_sha256": "08c248f17835a34b9e9e33ec45a38ceb1cd54d64445f9fcb6031aa9c23db59fd",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Edit the supplied original landscape wallpaper as a single 16:9 frame. It is an appearance-mode pair, so preserve the reference's camera position, crop, perspective, horizon, silhouettes and the placement, sizes and shapes of all major objects. Match the precise painterly anime linework and textures. Change the time and quality of light only. Change the moonlit grove into a soft misty morning. Use a bright pale area of early sunlight in the same part of sky instead of the conspicuous moon. Keep exactly the cedar silhouettes, old stone steps, gate and their perspective. Use silvery fog with muted jade foliage and pale morning blue in the distance. Full bleed, with no text, logo, watermark, interface, new subjects, borders or decorative effects.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "fa84115d86c6de1ea46a45a262537ef810fbcd4c510f4a6bde837fa7f6d5b77f",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "b66478473f0b37190302f34f1d76ec5f8fea7ff02da3e3c9454591a5883e0abf"
+  },
+  "anime-moon-dark.jpg": {
+    "file": "anime-moon-dark-56e0c6f13da3.jpg",
+    "sha256": "56e0c6f13da3d03620da4421b393330f22fe1ebe7060cfdae644389a41ad24ed",
+    "source": "src/offline/wallpapers/MacAnime-MoonlitShrine/contents/images_dark/3840x2160.jpg",
     "source_sha256": "a3710b8fd780a200ea8bc5ba1fbc351a938f2b1534f922609f287d359b4b7c5d",
     "kind": "generated-wallpaper",
     "generator": "OpenAI ImageGen",
@@ -3096,6 +3200,7 @@
     "size": [
       3840,
       2160
-    ]
+    ],
+    "variant": "night"
   }
 }

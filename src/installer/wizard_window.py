@@ -942,6 +942,7 @@ class InstallerWindow(OpaqueSurface):
         self.panel_frames = {}
         self.settings_baseline = None
         self.reconfiguring = False
+        self.reinstall_requested = False
         self.appearance_process = None
         self.appearance_error = ""
         if self.settings_mode:
@@ -1206,7 +1207,7 @@ class InstallerWindow(OpaqueSurface):
             title, _, _, panels = SETTINGS_PAGES[page]
             terms = (title, *(PANEL_LABELS[panel] for panel in panels))
             if page == "general":
-                terms += ("Language",)
+                terms += ("Language", "Restoration", "Reinstall", "Uninstall")
             elif page == "theme":
                 terms += ("Light", "Dark", "Auto", "Icon appearance", "Icon color palette", "Tinted")
             elif page == "desktop":
@@ -1302,9 +1303,15 @@ class InstallerWindow(OpaqueSurface):
     def review_settings_changes(self):
         if self.settings_baseline is None or self.choices == self.settings_baseline:
             return
+        self.open_settings_operation("summary")
+
+    def open_settings_operation(self, page, *, reinstall=False):
+        if not self.settings_mode or self.bridge.running or self.appearance_process is not None or self.updating:
+            return
         self.reconfiguring = True
+        self.reinstall_requested = reinstall
         self.settings_mode = False
-        self.page = "summary"
+        self.page = page
         self.configure_window_mode()
         self.render()
 
@@ -1321,6 +1328,7 @@ class InstallerWindow(OpaqueSurface):
         target, _ = self.settings_history[self.settings_index]
         self.load_settings_choices(self.choices)
         self.reconfiguring = False
+        self.reinstall_requested = False
         self.configure_window_mode()
         self.page = target
         self.render()
@@ -1770,6 +1778,8 @@ class InstallerWindow(OpaqueSurface):
         if not self.settings_mode and self.page in INSTALL_SECTIONS:
             self.body.setContentsMargins(28, 20, 28, 22)
         titles = {} if self.settings_mode else (dict(STEPS) | {key: value[0] for key, value in INSTALL_SECTIONS.items()})
+        if self.reinstall_requested and self.page == "summary":
+            titles["summary"] = "Review your reinstallation"
         if self.page in titles and titles[self.page]:
             self.body.addWidget(self.label(titles[self.page], heading=True))
             self.body.addSpacing(10)
@@ -1815,9 +1825,11 @@ class InstallerWindow(OpaqueSurface):
         self.dots.update()
         self.dots.setAccessibleName(self.t("Step") + f" {index}/{len(visible_steps)-1}")
         self.back.setVisible(self.page not in ("progress", "done", "removed"))
-        self.back.setText(self.t("Cancel" if self.reconfiguring and self.page == "summary" else "Uninstall" if self.page == "welcome" else "Back"))
+        self.back.setText(self.t("Cancel" if self.reconfiguring and self.page in ("summary", "uninstall")
+                                 else "Uninstall" if self.page == "welcome" else "Back"))
         self.next.setText(self.t(
             "Save" if self.editing else
+            "Reinstall" if self.reinstall_requested and self.page == "summary" else
             "Install" if self.page in ("welcome", "summary") else
             "Uninstall" if self.page == "uninstall" else
             "Cancel" if self.page == "progress" else
@@ -2409,6 +2421,20 @@ class InstallerWindow(OpaqueSurface):
         row.addWidget(selector)
         self.body.addWidget(panel)
 
+        restoration = self.option_card()
+        actions = QHBoxLayout(restoration)
+        actions.setContentsMargins(12, 9, 12, 9)
+        actions.addWidget(self.label("Restoration"), 1)
+        reinstall = GlassButton(self.t("Reinstall"))
+        reinstall.setObjectName("settingsReinstall")
+        reinstall.clicked.connect(lambda: self.open_settings_operation("summary", reinstall=True))
+        actions.addWidget(reinstall)
+        uninstall = GlassButton(self.t("Uninstall"))
+        uninstall.setObjectName("settingsUninstall")
+        uninstall.clicked.connect(lambda: self.open_settings_operation("uninstall"))
+        actions.addWidget(uninstall)
+        self.body.addWidget(restoration)
+
     def page_appearance(self):
         if self.page not in SECTIONS and self.page not in INSTALL_SECTIONS:
             self.body.addSpacing(10)
@@ -2910,7 +2936,10 @@ class InstallerWindow(OpaqueSurface):
     def page_summary(self):
         self.body.setSpacing(8)
         if self.reconfiguring:
-            notice = self.label("Applying these changes may reinstall components and restart Plasma.")
+            notice = self.label(
+                "Reinstall keeps your layout, sizes, hiding behavior and widgets unless reset is selected."
+                if self.reinstall_requested else "Applying these changes may reinstall components and restart Plasma."
+            )
             notice.setObjectName("detail")
             self.body.addWidget(notice)
         summary = QHBoxLayout()
@@ -3199,8 +3228,9 @@ class InstallerWindow(OpaqueSurface):
         self.full_output_toggle.setChecked(True)
 
     def previous(self):
-        if self.reconfiguring and self.page in ("summary", "error"):
+        if self.reconfiguring and self.page in ("summary", "uninstall", "error"):
             self.reconfiguring = False
+            self.reinstall_requested = False
             self.settings_mode = True
             self.page, _ = self.settings_history[self.settings_index]
             self.configure_window_mode()
