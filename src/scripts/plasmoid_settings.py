@@ -1,4 +1,4 @@
-"""Read and update the small Dock preferences through Plasma's live instance API."""
+"""Read and update widget preferences through Plasma's live instance API."""
 
 from __future__ import annotations
 
@@ -6,20 +6,25 @@ import json
 
 from theme_switch import _evaluate_plasma_script
 
-DOCK_SETTINGS = {
+SETTINGS = {
     "trash": (
-        {"org.kde.mac-tahoe-liquid-kde.trashcan"},
+        {"org.kde.mac-tahoe-liquid-kde.trashcan"}, "General",
         {"emptyIcon": "user-trash", "fullIcon": "user-trash-full"},
     ),
     "dock": (
-        {"org.kde.mac.tahoe.liquid.icontasks", "org.kde.mac.tahoe.liquid.taskmanager"},
+        {"org.kde.mac.tahoe.liquid.icontasks", "org.kde.mac.tahoe.liquid.taskmanager"}, "General",
         {"macOSDockIcons": False},
+    ),
+    "system_menu": (
+        {"org.kde.mac.tahoe.liquid.globalmenu"}, "Appearance",
+        {"iconAppStore": "software-store-symbolic", "cmdAppStore": "",
+         "cmdLogOut": "qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"},
     ),
 }
 
 
 def _request(kind, instance=None, changes=None):
-    plugins, defaults = DOCK_SETTINGS[kind]
+    plugins, group, defaults = SETTINGS[kind]
     if instance is not None and (type(instance) is not int or instance <= 0):
         raise ValueError("Invalid widget ID")
     if changes is not None and (instance is None or any(
@@ -28,7 +33,7 @@ def _request(kind, instance=None, changes=None):
         for key, value in changes.items()
     )):
         raise ValueError("Invalid widget preferences")
-    payload = json.dumps({"plugins": sorted(plugins), "defaults": defaults,
+    payload = json.dumps({"plugins": sorted(plugins), "group": group, "defaults": defaults,
                           "instance": instance, "changes": changes})
     script = """
 const request = REQUEST;
@@ -40,15 +45,22 @@ for (const container of containers) {
             || (request.instance !== null && widget.id !== request.instance)
             || Object.prototype.hasOwnProperty.call(result, widget.id))
             continue;
-        widget.currentConfigGroup = ["General"];
+        widget.currentConfigGroup = [request.group];
         if (request.changes !== null) {
             for (const key of Object.keys(request.changes))
                 widget.writeConfig(key, request.changes[key]);
             widget.reloadConfig();
         }
         const values = {};
-        for (const key of Object.keys(request.defaults))
-            values[key] = widget.readConfig(key, request.defaults[key]);
+        for (const key of Object.keys(request.defaults)) {
+            let fallback = request.defaults[key];
+            if (request.group === "Appearance") {
+                widget.currentConfigGroup = [];
+                fallback = widget.readConfig(key, fallback);
+                widget.currentConfigGroup = [request.group];
+            }
+            values[key] = widget.readConfig(key, fallback);
+        }
         result[widget.id] = values;
     }
 }

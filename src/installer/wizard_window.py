@@ -1057,7 +1057,8 @@ class InstallerWindow(OpaqueSurface):
             elif page == "theme":
                 terms += ("Light", "Dark", "Auto", "Color")
             elif page == "dock_bar":
-                terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons")
+                terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons",
+                          "System menu", "App Store icon", "App Store command", "Log Out command")
             keywords = search_text(" ".join((*terms, *(self.t(term) for term in terms))))
             match = all(term in keywords for term in query)
             button.setVisible(match)
@@ -1448,7 +1449,7 @@ class InstallerWindow(OpaqueSurface):
         self.search.setAccessibleName(self.t("Search settings"))
         self.no_results.setText(self.t("No matching settings"))
         for page, button in self.section_buttons.items():
-            button.setText(self.t(SETTINGS_PAGES[page][0]))
+            button.setText(self.t(SETTINGS_PAGES[page][0]).replace("&", "&&"))
             button.setChecked(page == self.page)
         self.filter_settings()
         sidebar_top, sidebar_bottom = (("rgba(244, 250, 253, 238)", "rgba(223, 233, 241, 232)") if light
@@ -1499,11 +1500,11 @@ class InstallerWindow(OpaqueSurface):
             QPushButton#settingsBack:disabled, QPushButton#settingsForward:disabled {{ color: {self.line}; }}
             QPushButton#settingsBack:enabled:hover, QPushButton#settingsForward:enabled:hover {{ background: {hover}; }}
             QPushButton#settingsBack:focus, QPushButton#settingsForward:focus {{ border-color: {self.accent}; }}
-            QLineEdit#settingsSearch {{
+            QLineEdit#settingsSearch, QLineEdit#widgetSettingField {{
                 background: {field_surface}; color: {foreground};
                 border: 1px solid {separator}; border-radius: 8px; padding: 3px 6px;
             }}
-            QLineEdit#settingsSearch:focus {{ border-color: {self.accent}; }}
+            QLineEdit#settingsSearch:focus, QLineEdit#widgetSettingField:focus {{ border-color: {self.accent}; }}
             QPushButton[navigation="section"] {{
                 color: {foreground}; text-align: left; border: 1px solid transparent;
                 border-radius: 7px; padding: 3px 6px;
@@ -1677,7 +1678,7 @@ class InstallerWindow(OpaqueSurface):
             self.panel_frames["glass_style"].setVisible(self.show_glass_style())
 
         if self.settings_mode and self.page == "dock_bar":
-            self.page_dock_widgets()
+            self.page_dock_and_menu_widgets()
 
     def reveal_requested_widget(self):
         if self.widget_settings_target is not None:
@@ -1685,9 +1686,20 @@ class InstallerWindow(OpaqueSurface):
             self.widget_settings_target = None
             self.requested_widget = None
 
-    def page_dock_widgets(self):
+    def page_dock_and_menu_widgets(self):
         from plasmoid_settings import apply, instances
-        for kind, title in (("dock", "Dock icons"), ("trash", "Trash")):
+        text_fields = {
+            "trash": (
+                ("emptyIcon", "Empty trash icon", "user-trash"),
+                ("fullIcon", "Full trash icon", "user-trash-full"),
+            ),
+            "system_menu": (
+                ("iconAppStore", "App Store icon", "software-store-symbolic"),
+                ("cmdAppStore", "App Store command", "plasma-discover"),
+                ("cmdLogOut", "Log Out command", ""),
+            ),
+        }
+        for kind, title in (("dock", "Dock icons"), ("trash", "Trash"), ("system_menu", "System menu")):
             panel = self.option_card()
             column = QVBoxLayout(panel)
             column.setContentsMargins(12, 10, 12, 10)
@@ -1719,19 +1731,26 @@ class InstallerWindow(OpaqueSurface):
                 column.addWidget(toggle)
                 controls["macOSDockIcons"] = toggle
             else:
-                for key, label, placeholder in (
-                    ("emptyIcon", "Empty trash icon", "user-trash"),
-                    ("fullIcon", "Full trash icon", "user-trash-full"),
-                ):
-                    row = QHBoxLayout()
+                grid = QGridLayout()
+                grid.setColumnStretch(0, 1)
+                grid.setColumnStretch(2, 2)
+                for row, (key, label, placeholder) in enumerate(text_fields[kind]):
                     title_label = self.label(label)
                     field = QLineEdit()
+                    field.setObjectName("widgetSettingField")
                     field.setAccessibleName(title_label.text())
                     field.setPlaceholderText(placeholder)
-                    row.addWidget(title_label, 1)
-                    row.addWidget(field, 1)
-                    column.addLayout(row)
+                    grid.addWidget(title_label, row, 0)
+                    if key in ("iconAppStore", "emptyIcon", "fullIcon"):
+                        preview = QLabel()
+                        preview.setFixedSize(24, 24)
+                        field.textChanged.connect(
+                            lambda value, icon=preview, fallback=placeholder:
+                            icon.setPixmap(QIcon.fromTheme(value or fallback).pixmap(20, 20)))
+                        grid.addWidget(preview, row, 1)
+                    grid.addWidget(field, row, 2)
                     controls[key] = field
+                column.addLayout(grid)
             buttons = QHBoxLayout()
             result = self.label("")
             result.setObjectName("detail")
@@ -1753,6 +1772,7 @@ class InstallerWindow(OpaqueSurface):
                     value = values[selected.currentData()][key]
                     if isinstance(field, QLineEdit):
                         field.setText(value)
+                        field.setCursorPosition(0)
                     else:
                         field.setChecked(value is True or str(value).lower() == "true")
                 status.clear()

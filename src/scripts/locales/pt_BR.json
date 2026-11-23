@@ -1,4 +1,6 @@
 {
+  "Could not install desktop settings launcher: {error}": "Não foi possível instalar o lançador dos ajustes da área de trabalho: {error}",
+  "Configure Trash": "Configurar lixeira",
   "Downloads": "Downloads",
   "No completed downloads yet": "Ainda não há downloads concluídos",
   "Open Downloads": "Abrir Downloads",

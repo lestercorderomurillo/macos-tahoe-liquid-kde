@@ -1,4 +1,6 @@
 {
+  "Could not install desktop settings launcher: {error}": "Starter für die Desktop-Einstellungen konnte nicht installiert werden: {error}",
+  "Configure Trash": "Papierkorb einrichten",
   "Downloads": "Downloads",
   "No completed downloads yet": "Noch keine abgeschlossenen Downloads",
   "Open Downloads": "Downloads öffnen",

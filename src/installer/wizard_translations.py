@@ -22,6 +22,10 @@ Finishing…|Finalizando…|正在完成…|Finalizando…|Wird abgeschlossen…
 Show installation details|Mostrar detalles de instalación|显示安装详情|Mostrar detalhes da instalação|Installationsdetails anzeigen
 Hide installation details|Ocultar detalles de instalación|隐藏安装详情|Ocultar detalhes da instalação|Installationsdetails ausblenden
 Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Erscheinungsbild
+System menu|Menú del sistema|系统菜单|Menu do sistema|Systemmenü
+App Store icon|Icono de la tienda|应用商店图标|Ícone da loja de aplicativos|App-Store-Symbol
+App Store command|Comando de la tienda|应用商店命令|Comando da loja de aplicativos|App-Store-Befehl
+Log Out command|Comando de cierre de sesión|注销命令|Comando para encerrar a sessão|Abmeldebefehl
 Keep current Dock icons|Conservar los iconos actuales del Dock|保留当前程序坞图标|Manter os ícones atuais do Dock|Aktuelle Dock-Symbole behalten
 macOS-style Dock icons|Iconos del Dock estilo macOS|macOS 风格的程序坞图标|Ícones do Dock no estilo macOS|Dock-Symbole im macOS-Stil
 Application icons|Iconos de las aplicaciones|应用图标|Ícones dos aplicativos|Anwendungssymbole

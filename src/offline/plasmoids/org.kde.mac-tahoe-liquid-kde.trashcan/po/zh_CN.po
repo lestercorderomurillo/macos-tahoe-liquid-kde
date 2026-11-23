@@ -23,3 +23,6 @@ msgid "Enter any icon name from your current icon theme."
 msgstr "输入当前图标主题中的任意图标名称。"
 msgid "Trash Settings…"
 msgstr "回收站设置…"
+
+msgid "Configure Trash"
+msgstr "配置废纸篓"

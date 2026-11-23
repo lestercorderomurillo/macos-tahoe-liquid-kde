@@ -29,6 +29,7 @@ LANGUAGE_CODES = tuple(item["code"] for item in LANGUAGES)
 
 
 _ES = {
+    "Could not install desktop settings launcher: {error}": "No se pudo instalar el lanzador de Ajustes: {error}",
     'Downloads': 'Descargas',
     'No completed downloads yet': 'Todavía no hay descargas completadas',
     'Open Downloads': 'Abrir Descargas',
@@ -180,6 +181,7 @@ _ES = {
 }
 
 _ZH_CN = {
+    "Could not install desktop settings launcher: {error}": "无法安装桌面设置启动器：{error}",
     'Downloads': '下载',
     'No completed downloads yet': '暂无已完成的下载',
     'Open Downloads': '打开下载文件夹',

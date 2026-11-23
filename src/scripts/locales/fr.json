@@ -1,4 +1,6 @@
 {
+  "Could not install desktop settings launcher: {error}": "Impossible d’installer le lanceur des réglages du bureau : {error}",
+  "Configure Trash": "Configurer la corbeille",
   "Downloads": "Téléchargements",
   "No completed downloads yet": "Aucun téléchargement terminé",
   "Open Downloads": "Ouvrir les téléchargements",

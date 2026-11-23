@@ -1,4 +1,6 @@
 {
+  "Could not install desktop settings launcher: {error}": "Impossibile installare l’avviatore delle impostazioni del desktop: {error}",
+  "Configure Trash": "Configura il cestino",
   "No completed downloads yet": "Nessun download completato",
   "Open Downloads": "Apri la cartella Download",
   "Open recent files or drag them into an application": "Apri i file recenti o trascinali in un’applicazione",

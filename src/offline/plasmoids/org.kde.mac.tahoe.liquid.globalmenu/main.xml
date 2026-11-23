@@ -64,6 +64,10 @@
       <default>user-identity</default>
     </entry>
 
+    <entry name="cmdAppStore" type="String">
+      <label>Program and arguments to open from the App Store menu item.</label>
+      <default></default>
+    </entry>
     <entry name="cmdSleep" type="String">
       <default>qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend</default>
     </entry>
