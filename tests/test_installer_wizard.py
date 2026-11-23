@@ -604,10 +604,56 @@ with tempfile.TemporaryDirectory() as directory:
     theme_switch._wallpapers_from_config = lambda: [{'screen': 0, 'image': str(package/'missing.png')}]
     assert not current_wallpaper_preview(100, 50).isNull()
 theme_switch._wallpapers_from_config = snapshot
+import os
+window.page = 'appearance'; window.render(); app.processEvents()
+assert window.step_strip.isVisible() and not window.sidebar.isVisible()
+window.step_buttons['wallpaper'].click()
+assert window.page == 'wallpaper' and window.step_buttons['wallpaper'].isChecked()
+window.page = 'done'
+window.open_installed_settings()
+assert window.sidebar.isVisible() and not window.step_strip.isVisible()
+window.search.setText('idioma')
+assert window.filter_settings() == ['general']
+window.open_search_result()
+assert window.page == 'general'
+window.search.setText('zzzzz')
+assert window.no_results.isVisible()
+window.search.clear()
+window.navigate_settings('appearance')
+
+# Exercise the real process adapter with a session-local switcher.
+state = theme_switch._appearance_state_path()
+state.parent.mkdir(parents=True, exist_ok=True)
+state.write_text('{"preference":"light"}')
+switcher = state.parent / 'mac-tahoe-theme-switch'
+switcher.write_text("""#!/bin/sh
+if [ "$1" = "dark" ]; then
+    printf '%s' '{"preference":"dark"}' > "$XDG_STATE_HOME/mac-tahoe-liquid-kde/appearance.json"
+else
+    exit 1
+fi
+""")
+switcher.chmod(0o700)
+os.environ['PATH'] = str(switcher.parent) + ':' + os.environ['PATH']
+window.refresh_settings_appearance()
+assert window.choices['appearance'] == 'light'
+window.select('appearance', 'dark')
+for _ in range(100):
+    if window.appearance_process is None:
+        break
+    QTest.qWait(10)
+assert window.choices['appearance'] == 'dark' and not window.appearance_error
+window.select('appearance', 'light')
+for _ in range(100):
+    if window.appearance_process is None:
+        break
+    QTest.qWait(10)
+assert window.choices['appearance'] == 'dark' and window.appearance_error
 window.close()
 print('native wizard flow passed')
 '''
     env = os.environ | {"QT_QPA_PLATFORM": "offscreen", "XDG_CONFIG_HOME": str(tmp_path),
+                        "XDG_STATE_HOME": str(tmp_path / "state"),
                         "MAC_TAHOE_NO_UPDATE_CHECK": "true", "PYTHONDONTWRITEBYTECODE": "1"}
     result = subprocess.run([sys.executable, "-c", script, edition], cwd=repo, env=env,
                             capture_output=True, text=True, timeout=45)

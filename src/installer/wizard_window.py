@@ -6,13 +6,16 @@ SPDX-License-Identifier: GPL-3.0-or-later
 from pathlib import Path
 import json
 import math
+import os
+import shutil
+import unicodedata
 import time
 
-from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPointF, QRectF, QSize, QTimer, QUrl
-from PyQt6.QtGui import QColor, QFont, QFontDatabase, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion
+from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
+from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
-    QGridLayout, QHBoxLayout, QLabel, QPlainTextEdit, QProgressBar, QPushButton,
+    QGridLayout, QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
     QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QVBoxLayout, QWidget,
 )
 
@@ -41,6 +44,26 @@ STEPS = (
     ("oled", "Enable OLED protection?"),
     ("summary", "Review your installation"),
 )
+
+
+PAGE_LABELS = {
+    "welcome": "Welcome", "appearance": "Appearance", "general": "General", "icons": "Icons",
+    "wallpaper": "Wallpaper", "desktop_widgets": "Desktop widgets",
+    "launcher": "Launcher", "layout": "Desktop & Dock", "effects": "Effects",
+    "window_controls": "Window controls", "button_position": "Window buttons",
+    "shadows": "Window shadows", "fonts": "Fonts", "firefox": "Firefox",
+    "files": "Files", "glass_style": "Window glass", "boot": "Startup",
+    "oled": "OLED protection", "summary": "Review",
+}
+SETTINGS_PAGES = {
+    "general": ("preferences-system", ("Language",)),
+    "appearance": ("preferences-desktop-theme", ("Light", "Dark", "Auto", "Theme")),
+}
+
+
+def search_text(value):
+    return "".join(char for char in unicodedata.normalize("NFKD", value.casefold())
+                   if not unicodedata.combining(char))
 
 
 def picture(name, width, height, other=None, *, cover=False, crop=None):
@@ -668,7 +691,7 @@ def installer_palette(dark):
 
 
 class InstallerWindow(OpaqueSurface):
-    def __init__(self, bridge, *, uninstall=False):
+    def __init__(self, bridge, *, uninstall=False, mode="install", section="appearance"):
         # Fusion ships with Qt. Use it only in this installer process so native
         # controls cannot acquire Breeze/Kvantum geometry or transparent fills.
         app = QApplication.instance()
@@ -698,7 +721,12 @@ class InstallerWindow(OpaqueSurface):
         self.choices = dict(self.defaults)
         self.edition = "Golden Gate" if bridge.editionName == "MacGoldenGate" else "Tahoe"
         self.asset_edition = "golden-gate" if self.edition == "Golden Gate" else "tahoe"
-        self.page = "uninstall" if uninstall else "welcome"
+        self.settings_mode = mode == "settings"
+        self.page = section if self.settings_mode else "uninstall" if uninstall else "welcome"
+        self.appearance_process = None
+        self.appearance_error = ""
+        if self.settings_mode:
+            self.sync_appearance_choice()
         self.editing = False
         self.action = "install"
         self.close_pending = False
@@ -729,13 +757,85 @@ class InstallerWindow(OpaqueSurface):
         self.minimize_button = WindowLight(self.header, "minimize")
         lights.addWidget(self.minimize_button)
         self.maximize_button = WindowLight(self.header, "maximize")
+        self.minimize_button.clicked.connect(self.showMinimized)
+        self.maximize_button.clicked.connect(self.toggle_maximized)
         lights.addWidget(self.maximize_button)
         lights.addStretch()
+        self.settings_title = self.label("Settings")
+        self.settings_title.setFont(relative_font(self, .86, QFont.Weight.DemiBold))
+        self.settings_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lights.addWidget(self.settings_title)
+        lights.addStretch()
+        lights.addSpacing(72)
         self.layout.addWidget(self.header)
+        self.step_strip = QScrollArea()
+        self.step_strip.setObjectName("stepStrip")
+        self.step_strip.setFrameShape(QFrame.Shape.NoFrame)
+        self.step_strip.setWidgetResizable(True)
+        self.step_strip.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.step_strip.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.step_strip.setFixedHeight(49)
+        step_contents = QWidget()
+        step_contents.setObjectName("stepContents")
+        rail = QHBoxLayout(step_contents)
+        rail.setContentsMargins(4, 3, 4, 7)
+        rail.setSpacing(5)
+        self.step_buttons = {}
+        for page, _ in STEPS:
+            button = QPushButton()
+            button.setProperty("navigation", "step")
+            button.setFont(relative_font(self, .86))
+            button.setCheckable(True)
+            button.clicked.connect(lambda _, target=page: self.navigate_install(target))
+            rail.addWidget(button)
+            self.step_buttons[page] = button
+        rail.addStretch()
+        self.step_strip.setWidget(step_contents)
+        steps_row = QHBoxLayout()
+        steps_row.setContentsMargins(20, 0, 20, 0)
+        steps_row.addWidget(self.step_strip)
+        self.layout.addLayout(steps_row)
+
+        self.main_row = QHBoxLayout()
+        self.main_row.setSpacing(0)
+        self.layout.addLayout(self.main_row, 1)
+        self.sidebar = QFrame()
+        self.sidebar.setObjectName("settingsSidebar")
+        self.sidebar.setFixedWidth(218)
+        sidebar = QVBoxLayout(self.sidebar)
+        sidebar.setContentsMargins(16, 10, 15, 16)
+        sidebar.setSpacing(6)
+        self.search = QLineEdit()
+        self.search.setObjectName("settingsSearch")
+        self.search.setClearButtonEnabled(True)
+        self.search.addAction(QIcon.fromTheme("edit-find"), QLineEdit.ActionPosition.LeadingPosition)
+        self.search.textChanged.connect(self.filter_settings)
+        self.search.returnPressed.connect(self.open_search_result)
+        sidebar.addWidget(self.search)
+        self.sidebar_title = self.label(self.edition)
+        self.sidebar_title.setObjectName("settingsProduct")
+        sidebar.addWidget(self.sidebar_title)
+        self.section_buttons = {}
+        for page, (icon, _) in SETTINGS_PAGES.items():
+            button = QPushButton()
+            button.setObjectName("section-" + page)
+            button.setProperty("navigation", "section")
+            button.setIcon(QIcon.fromTheme(icon))
+            button.setCheckable(True)
+            button.clicked.connect(lambda _, target=page: self.navigate_settings(target))
+            sidebar.addWidget(button)
+            self.section_buttons[page] = button
+        self.no_results = self.label("No matching settings")
+        self.no_results.setObjectName("detail")
+        sidebar.addWidget(self.no_results)
+        sidebar.addStretch()
+        self.main_row.addWidget(self.sidebar)
+        self.find_shortcut = QShortcut(QKeySequence(QKeySequence.StandardKey.Find), self)
+        self.find_shortcut.activated.connect(self.focus_search)
         self.scroll = PageScrollArea()
         self.scroll.setWidgetResizable(True)
         self.scroll.setFrameShape(QFrame.Shape.NoFrame)
-        self.layout.addWidget(self.scroll, 1)
+        self.main_row.addWidget(self.scroll, 1)
         self.footer = OpaqueSurface()
         self.footer.setObjectName("footer")
         self.footer_layout = QGridLayout(self.footer)
@@ -754,14 +854,7 @@ class InstallerWindow(OpaqueSurface):
         self.back.setFixedHeight(32)
         self.back.clicked.connect(self.previous)
         self.footer_layout.addWidget(self.back, 1, 0, Qt.AlignmentFlag.AlignLeft)
-        self.language = LanguageSelector()
-        self.language.setObjectName("languageSelector")
-        self.language.setFont(relative_font(self, .86))
-        for item in bridge.languages:
-            self.language.addItem(item["label"], item["code"])
-        self.language.setCurrentIndex(max(0, self.language.findData(bridge.language)))
-        self.language.currentIndexChanged.connect(self.language.updateGeometry)
-        self.language.currentIndexChanged.connect(self.change_language)
+        self.language = self.language_selector()
         self.welcome_actions = QWidget()
         welcome_layout = QHBoxLayout(self.welcome_actions)
         welcome_layout.setContentsMargins(0, 0, 0, 0)
@@ -792,12 +885,16 @@ class InstallerWindow(OpaqueSurface):
         # switch is observed even after a new inode replaces the original.
         config = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.ConfigLocation)
         self.desktop_config = Path(config) / "kdeglobals"
-        if self.desktop_config.is_file():
+        from theme_switch import _appearance_state_path
+        self.appearance_state = _appearance_state_path()
+        if self.desktop_config.is_file() or self.appearance_state.parent.is_dir():
             self.config_timer = QTimer(self)
             self.config_timer.setSingleShot(True)
             self.config_timer.setInterval(150)
             self.config_timer.timeout.connect(self.refresh_desktop_scheme)
-            self.config_watcher = QFileSystemWatcher([config], self)
+            self.config_timer.timeout.connect(self.refresh_settings_appearance)
+            dirs = [str(path) for path in (Path(config), self.appearance_state.parent) if path.is_dir()]
+            self.config_watcher = QFileSystemWatcher(dirs, self)
             self.config_watcher.directoryChanged.connect(lambda _: self.config_timer.start())
         bridge.runningChanged.connect(self.refresh_window_controls)
         bridge.finished.connect(self.finished)
@@ -808,7 +905,103 @@ class InstallerWindow(OpaqueSurface):
         bridge.updateChecked.connect(self.update_checked)
         bridge.updateReturned.connect(self.update_returned)
         self.render()
-        self.next.setFocus(Qt.FocusReason.OtherFocusReason)
+        if self.settings_mode:
+            self.focus_search()
+        else:
+            self.next.setFocus(Qt.FocusReason.OtherFocusReason)
+
+    def focus_search(self):
+        self.search.setFocus()
+        self.search.selectAll()
+
+    def visible_steps(self):
+        return [page for page, _ in STEPS if page != "glass_style" or self.show_glass_style()]
+
+    def navigate_install(self, page):
+        if (not self.settings_mode and self.page in self.visible_steps()
+                and page in self.visible_steps() and not self.updating):
+            self.editing = False
+            self.page = page
+            self.render()
+
+    def navigate_settings(self, page):
+        if self.settings_mode and page in SETTINGS_PAGES:
+            self.page = page
+            self.render()
+
+    def filter_settings(self):
+        query = search_text(self.search.text()).split()
+        matches = []
+        for page, button in self.section_buttons.items():
+            terms = (PAGE_LABELS[page], *SETTINGS_PAGES[page][1])
+            keywords = search_text(" ".join((*terms, *(self.t(term) for term in terms))))
+            match = all(term in keywords for term in query)
+            button.setVisible(match)
+            if match:
+                matches.append(page)
+        self.no_results.setVisible(not matches)
+        return matches
+
+    def open_search_result(self):
+        matches = self.filter_settings()
+        if matches:
+            self.navigate_settings(matches[0])
+            self.section_buttons[matches[0]].setFocus()
+
+    def sync_appearance_choice(self):
+        from theme_switch import _read_appearance_state
+        state = _read_appearance_state()
+        selection = state.get("preference")
+        if selection == "native-auto":
+            selection = "auto"
+        if selection not in ("light", "dark", "auto"):
+            selection = "dark" if self.palette().window().color().lightnessF() <= .5 else "light"
+        self.choices["appearance"] = selection
+
+    def refresh_settings_appearance(self):
+        if self.settings_mode and self.appearance_process is None:
+            before = self.choices["appearance"]
+            self.sync_appearance_choice()
+            if before != self.choices["appearance"] and self.page == "appearance":
+                self.render()
+
+    def apply_appearance_choice(self, value):
+        if self.appearance_process is not None:
+            return
+        binary = shutil.which("mac-tahoe-theme-switch")
+        if binary is None:
+            local = Path.home() / ".local/bin/mac-tahoe-theme-switch"
+            if os.access(local, os.X_OK):
+                binary = str(local)
+        if binary is None:
+            self.appearance_error = "Install the theme to change the desktop appearance."
+            self.render()
+            return
+        process = QProcess(self)
+        self.appearance_process = process
+        self.appearance_error = ""
+        process.finished.connect(lambda code, _: self.appearance_applied(code))
+        process.errorOccurred.connect(
+            lambda error: self.appearance_applied(1) if error == QProcess.ProcessError.FailedToStart else None)
+        self.render()
+        process.start(binary, [value])
+
+    def appearance_applied(self, code):
+        process = self.appearance_process
+        self.appearance_process = None
+        process.deleteLater()
+        self.appearance_error = "" if code == 0 else "Could not apply the appearance. Try again."
+        self.sync_appearance_choice()
+        self.render()
+
+    def open_installed_settings(self):
+        self.settings_mode = True
+        if hasattr(self, "config_watcher") and self.appearance_state.parent.is_dir():
+            directory = str(self.appearance_state.parent)
+            if directory not in self.config_watcher.directories():
+                self.config_watcher.addPath(directory)
+        self.sync_appearance_choice()
+        self.navigate_settings("appearance")
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -844,8 +1037,16 @@ class InstallerWindow(OpaqueSurface):
         self.render()
         self.next.setFocus(Qt.FocusReason.OtherFocusReason)
 
+    def toggle_maximized(self):
+        if self.isMaximized():
+            self.showNormal()
+        else:
+            self.showMaximized()
+
     def refresh_window_controls(self):
-        self.close_button.setEnabled(not self.bridge.running)
+        self.close_button.setEnabled(not self.bridge.running and self.appearance_process is None)
+        self.minimize_button.setEnabled(self.settings_mode)
+        self.maximize_button.setEnabled(self.settings_mode)
         self.maximize_button.setAccessibleName(self.t("Restore" if self.isMaximized() else "Maximize"))
         self.minimize_button.setAccessibleName(self.t("Minimize"))
         for light in self.header.findChildren(WindowLight):
@@ -875,8 +1076,19 @@ class InstallerWindow(OpaqueSurface):
         from wizard_translations import wizard_translate
         return wizard_translate(text, self.bridge.language)
 
-    def change_language(self):
-        if self.bridge.setLanguage(self.language.currentData()):
+    def language_selector(self):
+        control = LanguageSelector()
+        control.setObjectName("languageSelector")
+        control.setFont(relative_font(self, .86))
+        for item in self.bridge.languages:
+            control.addItem(item["label"], item["code"])
+        control.setCurrentIndex(max(0, control.findData(self.bridge.language)))
+        control.currentIndexChanged.connect(control.updateGeometry)
+        control.currentIndexChanged.connect(lambda: self.change_language(control.currentData()))
+        return control
+
+    def change_language(self, code):
+        if self.bridge.setLanguage(code):
             self.render()
 
     def label(self, text, *, heading=False):
@@ -910,7 +1122,13 @@ class InstallerWindow(OpaqueSurface):
         self.choice_widgets.setdefault(key, []).append((value, button))
 
     def select(self, key, value):
+        if self.settings_mode:
+            if key == "appearance":
+                self.apply_appearance_choice(value)
+            return
         self.choices[key] = value
+        if key in ("files", "acrylic_glass"):
+            self.refresh_step_navigation()
         if key == "wallpaper":
             self.choices["wallpaper_explicit"] = True
         if key == "window_controls":
@@ -1012,6 +1230,16 @@ class InstallerWindow(OpaqueSurface):
         finally:
             self.setUpdatesEnabled(updates_enabled)
 
+    def refresh_step_navigation(self):
+        available = self.visible_steps()
+        self.step_strip.setVisible(bool(not self.settings_mode and self.page in available))
+        for page, button in self.step_buttons.items():
+            button.setText(self.t(PAGE_LABELS[page]))
+            button.setVisible(page in available)
+            button.setChecked(page == self.page)
+        if not self.step_strip.isHidden():
+            self.step_strip.ensureWidgetVisible(self.step_buttons[self.page], 12, 0)
+
     def _render(self):
         # Qt stylesheets can resolve child palettes from the application rather
         # than their parent. Keep that application-local palette consistent too.
@@ -1030,11 +1258,53 @@ class InstallerWindow(OpaqueSurface):
         muted = "#686868" if light else "#bcbcbc"
         foreground = "#292929" if light else "#eeeeee"
         operation = "Uninstall" if self.page in ("uninstall", "removed") or (self.page in ("progress", "error") and self.action == "uninstall") else "Install"
-        self.setWindowTitle(self.t(operation) + " " + self.edition + " · v" + self.bridge.version)
+        title = self.edition + " " + self.t("Settings") if self.settings_mode else self.t(operation) + " " + self.edition
+        self.setWindowTitle(title + " · v" + self.bridge.version)
+        self.sidebar.setVisible(self.settings_mode)
+        self.settings_title.setVisible(self.settings_mode)
+        self.settings_title.setText(self.t("Settings"))
+        self.find_shortcut.setEnabled(self.settings_mode)
+        self.search.setPlaceholderText(self.t("Search settings"))
+        self.search.setAccessibleName(self.t("Search settings"))
+        self.no_results.setText(self.t("No matching settings"))
+        for page, button in self.section_buttons.items():
+            button.setText(self.t(PAGE_LABELS[page]))
+            button.setChecked(page == self.page)
+        self.filter_settings()
+        self.refresh_step_navigation()
+        self.footer.setVisible(not self.settings_mode)
+        sidebar_surface = "#eceef1" if light else "#24262a"
+        field_surface = "#ffffff" if light else "#32353b"
+        hover = "#dfe3e9" if light else "#373941"
+        selected = "#d4e4f8" if light else "#384b65"
         self.close_button.setAccessibleName(self.t("Close"))
         self.close_button.setToolTip(self.t("Close"))
         self.refresh_window_controls()
         stylesheet = f"""
+            QScrollArea#stepStrip, QWidget#stepContents {{ background: {surface}; }}
+            QScrollArea#stepStrip QScrollBar:horizontal {{ height: 5px; background: transparent; }}
+            QScrollArea#stepStrip QScrollBar::handle:horizontal {{
+                background: {self.line}; border-radius: 2px; min-width: 28px;
+            }}
+            QScrollArea#stepStrip QScrollBar::add-line:horizontal,
+            QScrollArea#stepStrip QScrollBar::sub-line:horizontal {{ width: 0; }}
+            QFrame#settingsSidebar {{
+                background: {sidebar_surface}; border-right: 1px solid {self.line};
+            }}
+            QLabel#settingsProduct {{ padding: 14px 8px 3px; font-weight: 600; }}
+            QLineEdit#settingsSearch {{
+                background: {field_surface}; color: {foreground};
+                border: 1px solid {self.line}; border-radius: 7px; padding: 5px 8px;
+            }}
+            QLineEdit#settingsSearch:focus {{ border-color: {self.accent}; }}
+            QPushButton[navigation] {{
+                color: {foreground}; border: 1px solid transparent; border-radius: 7px;
+                padding: 5px 9px;
+            }}
+            QPushButton[navigation="section"] {{ text-align: left; padding: 7px 9px; }}
+            QPushButton[navigation]:hover {{ background: {hover}; }}
+            QPushButton[navigation]:checked {{ background: {selected}; }}
+            QPushButton[navigation]:focus {{ border-color: {self.accent}; }}
             QLabel {{ background: transparent; color: {foreground}; }}
             QLabel#detail, QLabel#versionLabel {{ color: {muted}; }}
             QRadioButton, QCheckBox {{ spacing: 9px; padding: 7px 0; background: transparent; }}
@@ -1058,7 +1328,7 @@ class InstallerWindow(OpaqueSurface):
         self.body = QVBoxLayout(self.content)
         self.body.setContentsMargins(38, 28, 38, 22)
         self.body.setSpacing(12)
-        titles = dict(STEPS)
+        titles = PAGE_LABELS if self.settings_mode else dict(STEPS)
         if self.page in titles and titles[self.page]:
             self.body.addWidget(self.label(titles[self.page], heading=True))
             self.body.addSpacing(10)
@@ -1084,6 +1354,7 @@ class InstallerWindow(OpaqueSurface):
             "Install" if self.page in ("welcome", "summary") else
             "Uninstall" if self.page == "uninstall" else
             "Cancel" if self.page == "progress" else
+            "Open Settings" if self.page == "done" and self.install_activated() else
             "Close" if self.page in ("done", "removed") else
             "Retry" if self.page == "error" else "Next"))
         self.next.setEnabled(not self.updating)
@@ -1112,14 +1383,31 @@ class InstallerWindow(OpaqueSurface):
             update.clicked.connect(self.update_installer)
             self.body.addWidget(update)
 
+    def page_general(self):
+        row = QHBoxLayout()
+        label = self.label("Language")
+        selector = self.language_selector()
+        selector.setAccessibleName(self.t("Language"))
+        row.addWidget(label)
+        row.addStretch()
+        row.addWidget(selector)
+        self.body.addLayout(row)
+
     def page_appearance(self):
-        self.body.addSpacing(28)
+        self.body.addSpacing(10)
         stem = f"desktop-{self.asset_edition}-"
         self.cards("appearance", [
             ("auto", "Auto", "", picture(stem+"light.jpg", 232, 131, stem+"dark.jpg")),
             ("light", "Light", "", picture(stem+"light.jpg", 232, 131)),
             ("dark", "Dark", "", picture(stem+"dark.jpg", 232, 131)),
-        ], columns=3)
+        ], columns=3, compact=True, default_first=False)
+        if self.settings_mode:
+            if self.appearance_process:
+                for _, button in self.choice_widgets["appearance"]:
+                    button.setEnabled(False)
+                self.body.addWidget(self.label("Applying appearance…"))
+            if self.appearance_error:
+                self.body.addWidget(self.label(self.appearance_error))
 
     def icon_sample(self, glass=False, *, style=None):
         style = style or ("glass" if glass else "regular")
@@ -1829,7 +2117,13 @@ class InstallerWindow(OpaqueSurface):
     def show_glass_style(self):
         return self.choices["files"] == "nautilus" and self.choices["acrylic_glass"]
 
+    def install_activated(self):
+        return self.bridge.summary.phases.get("apply", {}).get("state") != "skipped"
+
     def advance(self):
+        if self.page == "done" and self.install_activated():
+            self.open_installed_settings()
+            return
         if self.editing:
             self.editing = False; self.page = "summary"
         elif self.page in ("done", "removed"):
@@ -1862,7 +2156,9 @@ class InstallerWindow(OpaqueSurface):
         self.render()
 
     def closeEvent(self, event):
-        if self.bridge.running:
+        if self.appearance_process is not None:
+            event.ignore()
+        elif self.bridge.running:
             self.close_pending = True; self.bridge.cancel(); event.ignore()
         else:
             event.accept()

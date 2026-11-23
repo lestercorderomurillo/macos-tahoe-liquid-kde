@@ -193,7 +193,20 @@ OLED protection|Protección OLED|OLED 保护|Proteção OLED|OLED-Schutz
 Enabled|Activado|已启用|Ativado|Aktiviert
 Disabled|Desactivado|已禁用|Desativado|Deaktiviert
 Auto|Automática|自动|Automática|Automatisch
-Custom|Archivo elegido|所选文件|Arquivo escolhido|Gewählte Datei'''
+Custom|Archivo elegido|所选文件|Arquivo escolhido|Gewählte Datei
+Settings|Ajustes|设置|Ajustes|Einstellungen
+General|General|通用|Geral|Allgemein
+Language|Idioma|语言|Idioma|Sprache
+Search settings|Buscar ajustes|搜索设置|Buscar ajustes|Einstellungen suchen
+No matching settings|No se encontraron ajustes|未找到匹配的设置|Nenhum ajuste encontrado|Keine passenden Einstellungen
+Open Settings|Abrir Ajustes|打开设置|Abrir Ajustes|Einstellungen öffnen
+Welcome|Bienvenida|欢迎|Boas-vindas|Willkommen
+Desktop & Dock|Escritorio y Dock|桌面与程序坞|Mesa e Dock|Schreibtisch & Dock
+Startup|Arranque|启动|Inicialização|Start
+Review|Revisión|检查|Revisão|Übersicht
+Applying appearance…|Aplicando apariencia…|正在应用外观…|Aplicando aparência…|Erscheinungsbild wird angewendet …
+Install the theme to change the desktop appearance.|Instala el tema para cambiar la apariencia del escritorio.|请先安装主题以更改桌面外观。|Instale o tema para alterar a aparência da área de trabalho.|Installiere das Design, um das Erscheinungsbild zu ändern.
+Could not apply the appearance. Try again.|No se pudo aplicar la apariencia. Inténtalo de nuevo.|无法应用外观。请重试。|Não foi possível aplicar a aparência. Tente novamente.|Erscheinungsbild konnte nicht angewendet werden. Versuche es erneut.'''
 
 CATALOGS = {code: {} for code in ('es', 'zh_CN', 'pt_BR', 'de')}
 for row in _ROWS.splitlines():
