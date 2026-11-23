@@ -206,6 +206,15 @@ Desktop & Dock|Escritorio y Dock|桌面与程序坞|Mesa e Dock|Schreibtisch & D
 Startup|Arranque|启动|Inicialização|Start
 Review|Revisión|检查|Revisão|Übersicht
 Review changes|Revisar cambios|检查更改|Revisar alterações|Änderungen prüfen
+Dock icons|Iconos del Dock|程序坞图标|Ícones do Dock|Dock-Symbole
+Trash|Papelera|废纸篓|Lixeira|Papierkorb
+Empty trash icon|Icono de papelera vacía|空废纸篓图标|Ícone da lixeira vazia|Symbol für leeren Papierkorb
+Full trash icon|Icono de papelera llena|满废纸篓图标|Ícone da lixeira cheia|Symbol für vollen Papierkorb
+Trash Settings…|Ajustes de la papelera…|废纸篓设置…|Ajustes da lixeira…|Papierkorb-Einstellungen …
+No matching widgets in this Plasma session.|No hay widgets de este tipo en esta sesión de Plasma.|此 Plasma 会话中没有匹配的小组件。|Nenhum widget correspondente nesta sessão do Plasma.|Keine passenden Miniprogramme in dieser Plasma-Sitzung.
+Widget {id}|Widget {id}|小组件 {id}|Widget {id}|Miniprogramm {id}
+Widget instance|Instancia del widget|小组件实例|Instância do widget|Miniprogramm-Instanz
+Saved|Guardado|已保存|Salvo|Gespeichert
 Applying these changes may reinstall components and restart Plasma.|Aplicar estos cambios puede reinstalar componentes y reiniciar Plasma.|应用这些更改可能会重新安装组件并重启 Plasma。|Aplicar estas alterações pode reinstalar componentes e reiniciar o Plasma.|Diese Änderungen können Komponenten neu installieren und Plasma neu starten.
 Windows|Ventanas|窗口|Janelas|Fenster
 Icons & Typography|Iconos y tipografía|图标与字体|Ícones e tipografia|Symbole & Typografie

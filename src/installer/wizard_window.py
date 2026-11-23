@@ -9,6 +9,7 @@ import math
 import os
 import shutil
 import unicodedata
+import subprocess
 import time
 
 from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
@@ -763,7 +764,7 @@ def installer_palette(dark):
 
 
 class InstallerWindow(OpaqueSurface):
-    def __init__(self, bridge, *, uninstall=False, mode="install", section="appearance"):
+    def __init__(self, bridge, *, uninstall=False, mode="install", section="appearance", widget=None):
         # Fusion ships with Qt. Use it only in this installer process so native
         # controls cannot acquire Breeze/Kvantum geometry or transparent fills.
         app = QApplication.instance()
@@ -794,6 +795,7 @@ class InstallerWindow(OpaqueSurface):
         self.edition = "Golden Gate" if bridge.editionName == "MacGoldenGate" else "Tahoe"
         self.asset_edition = "golden-gate" if self.edition == "Golden Gate" else "tahoe"
         self.settings_mode = mode == "settings"
+        self.requested_widget = widget
         section = SECTION_ALIASES.get(section, section)
         self.page = section if self.settings_mode else "uninstall" if uninstall else "welcome"
         self.expanded_panels = {}
@@ -1054,6 +1056,8 @@ class InstallerWindow(OpaqueSurface):
                 terms += ("Language",)
             elif page == "theme":
                 terms += ("Light", "Dark", "Auto", "Color")
+            elif page == "dock_bar":
+                terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons")
             keywords = search_text(" ".join((*terms, *(self.t(term) for term in terms))))
             match = all(term in keywords for term in query)
             button.setVisible(match)
@@ -1527,6 +1531,7 @@ class InstallerWindow(OpaqueSurface):
         self.groups = []
         self.choice_widgets = {}
         self.panel_frames = {}
+        self.widget_settings_target = None
         self.content = OpaqueSurface()
         self.content.surface_color = QColor(surface)
         self.content.setObjectName("wizardContent")
@@ -1549,6 +1554,8 @@ class InstallerWindow(OpaqueSurface):
             getattr(self, "page_" + self.page)()
         self.body.addStretch()
         self.scroll.setWidget(self.content)
+        if self.widget_settings_target is not None:
+            QTimer.singleShot(0, self.reveal_requested_widget)
         self.scroll.setVerticalScrollBarPolicy(
             Qt.ScrollBarPolicy.ScrollBarAlwaysOff if self.page in INSTALL_FLOW and not self.settings_mode
             else Qt.ScrollBarPolicy.ScrollBarAsNeeded)
@@ -1668,6 +1675,103 @@ class InstallerWindow(OpaqueSurface):
             original.addWidget(frame)
         if "glass_style" in self.panel_frames:
             self.panel_frames["glass_style"].setVisible(self.show_glass_style())
+
+        if self.settings_mode and self.page == "dock_bar":
+            self.page_dock_widgets()
+
+    def reveal_requested_widget(self):
+        if self.widget_settings_target is not None:
+            self.scroll.ensureWidgetVisible(self.widget_settings_target, 8, 12)
+            self.widget_settings_target = None
+            self.requested_widget = None
+
+    def page_dock_widgets(self):
+        from plasmoid_settings import apply, instances
+        for kind, title in (("dock", "Dock icons"), ("trash", "Trash")):
+            panel = self.option_card()
+            column = QVBoxLayout(panel)
+            column.setContentsMargins(12, 10, 12, 10)
+            heading = self.label(title)
+            heading.setFont(relative_font(self, .85, QFont.Weight.DemiBold))
+            column.addWidget(heading)
+            try:
+                widgets = instances(kind)
+            except RuntimeError:
+                widgets = {}
+            if not widgets:
+                column.addWidget(self.label("No matching widgets in this Plasma session."))
+                self.body.addWidget(panel)
+                continue
+
+            picker = GlassComboBox()
+            for instance in sorted(widgets):
+                picker.addItem(self.t("Widget {id}").format(id=instance), instance)
+            preferred = picker.findData(self.requested_widget)
+            if preferred >= 0:
+                picker.setCurrentIndex(preferred)
+                self.widget_settings_target = panel
+            picker.setAccessibleName(self.t("Widget instance"))
+            picker.setVisible(len(widgets) > 1)
+            column.addWidget(picker)
+            controls = {}
+            if kind == "dock":
+                toggle = CheckOption(self.t("macOS-style Dock icons"))
+                column.addWidget(toggle)
+                controls["macOSDockIcons"] = toggle
+            else:
+                for key, label, placeholder in (
+                    ("emptyIcon", "Empty trash icon", "user-trash"),
+                    ("fullIcon", "Full trash icon", "user-trash-full"),
+                ):
+                    row = QHBoxLayout()
+                    title_label = self.label(label)
+                    field = QLineEdit()
+                    field.setAccessibleName(title_label.text())
+                    field.setPlaceholderText(placeholder)
+                    row.addWidget(title_label, 1)
+                    row.addWidget(field, 1)
+                    column.addLayout(row)
+                    controls[key] = field
+            buttons = QHBoxLayout()
+            result = self.label("")
+            result.setObjectName("detail")
+            buttons.addWidget(result, 1)
+            save = GlassButton(self.t("Save"))
+            buttons.addWidget(save)
+            if kind == "trash":
+                storage = GlassButton(self.t("Trash Settings…"))
+                shell = shutil.which("kcmshell6")
+                storage.setEnabled(shell is not None)
+                if shell is not None:
+                    storage.clicked.connect(lambda: subprocess.Popen(
+                        [shell, "kcm_trash"], start_new_session=True))
+                buttons.addWidget(storage)
+            column.addLayout(buttons)
+
+            def load(*_, selected=picker, fields=controls, values=widgets, status=result):
+                for key, field in fields.items():
+                    value = values[selected.currentData()][key]
+                    if isinstance(field, QLineEdit):
+                        field.setText(value)
+                    else:
+                        field.setChecked(value is True or str(value).lower() == "true")
+                status.clear()
+
+            def save_widget(*_, selected=picker, fields=controls, values=widgets, category=kind, status=result):
+                identifier = selected.currentData()
+                desired = {key: field.text() if isinstance(field, QLineEdit) else field.isChecked()
+                           for key, field in fields.items()}
+                try:
+                    values[identifier] = apply(category, identifier, desired)
+                except (RuntimeError, ValueError) as error:
+                    status.setText(self.t(str(error)))
+                else:
+                    status.setText(self.t("Saved"))
+
+            picker.currentIndexChanged.connect(load)
+            save.clicked.connect(save_widget)
+            load()
+            self.body.addWidget(panel)
 
     def page_general(self):
         panel = QFrame()

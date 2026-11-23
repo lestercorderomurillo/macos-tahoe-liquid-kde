@@ -342,6 +342,11 @@ def install() -> None:
             return
 
     if BIN_DEST.is_file() and BIN_DEST.stat().st_mode & 0o111:
+        from settings_launcher import install as install_settings_launcher
+        try:
+            install_settings_launcher(REPO_ROOT)
+        except (OSError, ValueError) as error:
+            fail(tr("Could not install desktop settings launcher: {error}", error=error))
         AUTOSTART_DIR.mkdir(parents=True, exist_ok=True)
         (AUTOSTART_DIR / GTK_SYNC_DESKTOP).write_text(
             "[Desktop Entry]\nType=Application\nName=MacTahoe appearance sync\n"
@@ -426,6 +431,11 @@ def uninstall() -> None:
     stop_gtk_sync_watcher()
     _teardown_gtk_sync_autostart()
     binaries_neutralized = True
+    from settings_launcher import uninstall as remove_settings_launcher
+    try:
+        remove_settings_launcher()
+    except OSError:
+        binaries_neutralized = False
     for p in (BIN_DEST, _LEGACY_BIN):
         try: p.unlink()
         except FileNotFoundError: pass

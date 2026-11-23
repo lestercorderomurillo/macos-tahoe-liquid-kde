@@ -812,7 +812,7 @@ def _make_installer_bridge():
     return InstallerBridge()
 
 
-def _launch_preview_pyqt(uninstall=False, *, mode="install", section="appearance") -> int:
+def _launch_preview_pyqt(uninstall=False, *, mode="install", section="appearance", widget=None) -> int:
     try:
         from PyQt6.QtCore import QTimer
         from PyQt6.QtWidgets import QApplication
@@ -824,7 +824,7 @@ def _launch_preview_pyqt(uninstall=False, *, mode="install", section="appearance
     app.setApplicationName("mac-tahoe-liquid-kde-installer")
     app.setQuitOnLastWindowClosed(False)
     bridge = _make_installer_bridge()
-    window = InstallerWindow(bridge, uninstall=uninstall, mode=mode, section=section)
+    window = InstallerWindow(bridge, uninstall=uninstall, mode=mode, section=section, widget=widget)
     bridge.setParent(window)
     app._installer_bridge = bridge
     app._installer_window = window
@@ -858,9 +858,9 @@ def _launch_preview_pyqt(uninstall=False, *, mode="install", section="appearance
         signal.signal(signal.SIGINT, prev_sigint)
 
 
-def launch_preview(uninstall=False, *, mode="install", section="appearance") -> int:
+def launch_preview(uninstall=False, *, mode="install", section="appearance", widget=None) -> int:
     if mode == "settings":
-        rc = _launch_preview_pyqt(mode=mode, section=section)
+        rc = _launch_preview_pyqt(mode=mode, section=section, widget=widget)
     else:
         rc = _launch_preview_pyqt(True) if uninstall else _launch_preview_pyqt()
     if rc >= 0:
@@ -919,10 +919,13 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--section", choices=("appearance", "general", "theme", "desktop", "dock_bar", "windows", "applications", "startup"),
                         default="appearance",
                         help="Section to open in settings mode.")
+    parser.add_argument("--widget", type=int, help="Open settings for a Plasma widget instance.")
     parser.add_argument("--wizard-options", help=argparse.SUPPRESS)
     parser.add_argument("--progress-file", help=argparse.SUPPRESS)
     parser.add_argument("--cancel-file", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+    if args.widget is not None and (args.mode != "settings" or args.section != "dock_bar" or args.widget <= 0):
+        parser.error("--widget requires a positive ID in Dock settings")
     if args.mode == "settings" and (args.uninstall or args.supervise or args.check_update):
         parser.error("--mode=settings cannot be combined with an installer operation")
 
@@ -946,7 +949,7 @@ def main(argv: list[str]) -> int:
         return 0
 
     if args.mode == "settings":
-        return launch_preview(mode=args.mode, section=args.section)
+        return launch_preview(mode=args.mode, section=args.section, widget=args.widget)
 
     if not args.uninstall:
         from cli import auto_update_and_reexec

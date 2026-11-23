@@ -70,6 +70,21 @@ PlasmoidItem {
     Plasmoid.status: hasContents ? PlasmaCore.Types.ActiveStatus
                                 : PlasmaCore.Types.PassiveStatus
     Plasmoid.busy: emptying
+    Plasmoid.hasConfigurationInterface: !settingsRoute.available
+
+    P5Support.DataSource {
+        id: settingsRoute
+        engine: "executable"
+        property bool available: false
+        readonly property string program: "sh -c 'exec \"$HOME/.local/bin/mac-tahoe-settings\" \"$@\"' settings "
+        readonly property string check: program + "--available"
+        connectedSources: [check]
+        onNewData: (source, data) => {
+            if (source === check)
+                available = Number(data["exit code"]) === 0;
+            disconnectSource(source);
+        }
+    }
 
     Plasmoid.onActivated: Qt.openUrlExternally("trash:/")
 
@@ -128,6 +143,12 @@ PlasmoidItem {
 
     // context menu
     Plasmoid.contextualActions: [
+        PlasmaCore.Action {
+            text: i18n("Configure Trash")
+            icon.name: "configure"
+            visible: settingsRoute.available
+            onTriggered: executable.exec(settingsRoute.program + "--section=dock_bar --widget=" + Plasmoid.id)
+        },
         PlasmaCore.Action {
             text: i18n("Open")
             icon.name: "document-open-symbolic"
