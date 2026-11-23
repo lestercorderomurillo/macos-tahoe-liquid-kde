@@ -88,7 +88,11 @@ PlasmaCore.Dialog {
 
     mainItem: FocusScope {
         id: menuBody
-        width: Math.max(menu.preferredWidth, menu.fitContents ? contentWidth() : 0) - dialogSvg.margins.left - dialogSvg.margins.right
+        Binding on width {
+            delayed: true
+            value: Math.max(menu.preferredWidth, menu.fitContents ? menuBody.contentWidth() : 0)
+                - dialogSvg.margins.left - dialogSvg.margins.right
+        }
         function contentWidth() {
             let width = 0;
             for (const action of menu.actions) {

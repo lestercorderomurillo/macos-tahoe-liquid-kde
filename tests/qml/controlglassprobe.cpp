@@ -73,6 +73,10 @@ int main(int argc, char **argv)
     const QColor darkOnLight = glass.animatedLabelForeground(&label, {390, 75}, {}, Qt::black, Qt::transparent);
     if (lightOnDark != theme || darkOnLight != QColor(Qt::black)
         || glass.groupForeground(&label, theme, {Qt::white}) != overWhite) return 12;
+    // Two labels using exactly the same theme role can need different ink.
+    QObject secondLabel;
+    if (glass.animatedLabelForeground(&secondLabel, {390, 75}, {}, theme, Qt::transparent) != overWhite
+        || overWhite == lightOnDark) return 29;
     if (glass.animatedLabelForeground(&label, {390, 75}, {}, theme, Qt::black) != theme) return 19;
 
     const auto ink = [&] { return glass.animatedForegroundAt(&label, center, radius, theme, Qt::transparent); };
@@ -111,6 +115,11 @@ int main(int argc, char **argv)
     }
     if (localTone(Qt::black, Qt::black).red() != 49 || localTone(Qt::white, Qt::white).red() != 204
         || overWhite.red() >= theme.red() || overBlack != theme) return 28;
+    const QColor translucent(36, 36, 36, 128);
+    const QColor corrected = localTone(Qt::black, translucent);
+    if (corrected.alpha() != translucent.alpha() || corrected == translucent
+        || GlassInk::lightness(GlassInk::composite(Qt::black, corrected))
+            <= GlassInk::lightness(GlassInk::composite(Qt::black, translucent))) return 30;
     const QRectF clipped(center.x(), 0, radius.width(), window.height());
     const auto visibleSamples = glass.categorySamples(center, radius, clipped, Qt::transparent);
     if (visibleSamples.size() != 2 || visibleSamples.front() != QColor(160, 160, 160)) return 24;

@@ -4,6 +4,7 @@ import org.kde.kirigami as Kirigami
 
 ControlLabel {
     id: label
+    baseForeground: Kirigami.Theme.textColor
     property bool floating: false
     property color backdropColor: "transparent"
     color: {

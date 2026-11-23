@@ -79,6 +79,7 @@ Item {
                 Layout.fillWidth: true
                 spacing: 0
                 ControlLabel {
+                    baseForeground: row.Kirigami.Theme.textColor
                     objectName: "notificationApplicationName"
                     Layout.fillWidth: true
                     text: /^discord$/i.test(row.model.applicationName || "") ? "Discord" : row.model.applicationName || ""
@@ -89,6 +90,7 @@ Item {
                     elide: Text.ElideRight
                 }
                 ControlLabel {
+                    baseForeground: row.Kirigami.Theme.textColor
                     Layout.fillWidth: true
                     objectName: "notificationSummary"
                     text: row.model.summary || ""
@@ -100,6 +102,7 @@ Item {
                     maximumLineCount: 1; elide: Text.ElideRight
                 }
                 ControlLabel {
+                    baseForeground: row.Kirigami.Theme.textColor
                     id: description
                     objectName: "notificationBody"
                     Layout.fillWidth: true
