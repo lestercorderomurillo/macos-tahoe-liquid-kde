@@ -1,29 +1,37 @@
 {
-  "version": "0.82.14",
+  "version": "0.82.15",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "de8284eb59889736f37ece6bd6c9f49f2e2f2e75",
-  "scope": "Replace the numbered emblems with Glass Tux in every Tahoe and Golden Gate README and in the shared installer Welcome page.",
+  "implementation_commit": "ae9d068f5d2f89f5f8b45487dd7c210012014875",
+  "scope": "Give the menu bar an exponential dark fade and rounded display corners, and guide pointer motion along the visible curve on Wayland.",
+  "approval": "The maintainer approved publication to both editions after reviewing the final menu bar and corner clearance preview.",
   "checks": [
     {
-      "command": "Ran four focused native installer navigation and appearance tests for Tahoe and Golden Gate.",
+      "command": "Ran 27 focused checks covering menu geometry, component caching, installation of the Global Menu module, and Acrylic Glass regions.",
       "result": "passed"
     },
     {
-      "command": "Rendered the native Welcome page under isolated Qt offscreen light and dark palettes for both editions. Verified the selected asset and reviewed all four frames.",
+      "command": "Built the native effects with KWin 6.6.4, 6.7.4 and 6.8.1 SDKs. Also built the X11 target with the 6.6 and 6.7.4 SDKs.",
       "result": "passed"
     },
     {
-      "command": "Verified the six README headers in each edition, content hashes, component ledger and git diff --check.",
+      "command": "Ran the existing isolated native X11 Xvfb render probe with the 6.6 build. The approved exempt surface retained pixel identity across the effect toggle.",
+      "result": "passed"
+    },
+    {
+      "command": "Loaded the compiled menu bar and Acrylic Glass into KDE neon Plasma 6.8.1 Wayland at 2x. Exercised pointer motion at both top corners and clicked the system menu and clock. Captured both edition wallpapers with light and dark appearances.",
+      "result": "passed"
+    },
+    {
+      "command": "Verified Golden Gate local-source staging, the component hash ledger, git diff --check, and byte identity of the tested runtime with the release candidate.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "Welcome was rendered offscreen against the real Qt wizard. The installer did not apply system changes. The historical gallery provenance is retained.",
-  "source_sha256": "214a29767e388bc47fbb96dbec3205b856256062ed2ac34b30f3f079df1c0916",
-  "approval": "The maintainer reviewed the Glass Tux previews and requested publication in every README and in the installer.",
+  "coverage_limits": "Wayland pointer and panel rendering were exercised on one display. X11 was checked with an isolated existing compositor render probe and retains its standard pointer behavior. Installer lifecycle code was unchanged.",
   "approved_preview_sha256": {
-    "art-0.png": "d9301a4b323e6640711585b7638d1b452d1b2a7a8d2111c8032090bf4a9b7183",
-    "art-1.png": "1ebd325961a71431c7b096d13b38a5bab771bf571b51ef1731a61b0e5318303a",
-    "art-2.png": "8a2f000e0c836b7dcd4310c38ae4d7b2b0be758ae1302e00d314b2d7194e78d1"
-  }
+    "clearance.png": "4bdac041a9ddc1e717e4baa364f22af61120364c4bfa0b62b212b0675c1df124",
+    "preview.png": "514acea1fb20ac3f02d1ec175d8f52ac5866c62def2bc8fdff3c7ac1e59e0e89",
+    "clicks.png": "b1796e72e91971f65fa251a63d3046c9f0746c28d7dc3ffe876882853ed3b735"
+  },
+  "source_sha256": "668bc402e7746ccbb637af3ffc48df692be868eb8258d9e0910bd8ab3cef100f"
 }
