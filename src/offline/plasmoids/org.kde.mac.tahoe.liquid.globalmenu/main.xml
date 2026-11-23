@@ -28,6 +28,9 @@
       <default>true</default>
     </entry>
 
+    <entry name="menuIconPreset" type="String">
+      <default>custom</default>
+    </entry>
     <entry name="menuIcon" type="String">
       <default>start-here-symbolic</default>
     </entry>

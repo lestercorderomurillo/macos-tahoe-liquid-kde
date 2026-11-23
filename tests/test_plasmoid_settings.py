@@ -16,13 +16,14 @@ def test_system_menu_preferences_use_the_applet_appearance_group(monkeypatch):
     legacy = Path(__file__).resolve().parents[1] / "src/offline/plasmoids" / plugin / "qml/configSystemMenu.qml"
     legacy_fields = set(re.findall(r"\bcfg_(\w+)", legacy.read_text()))
     defaults = system_menu_preferences.DEFAULTS
-    assert defaults.keys() == legacy_fields | {"cmdAppStore"}
+    assert defaults.keys() == legacy_fields | {"cmdAppStore", "menuIconPreset"}
     assert defaults.keys() == {key for form in system_menu_preferences.FORMS.values() for key in form}
     expected = {
         key: (not default if isinstance(default, bool) else f"test-{key}")
         for key, default in defaults.items()
     }
     expected["cmdAppStore"] = '/usr/bin/example "one argument"'
+    expected["menuIconPreset"] = "pear"
     scripts = []
 
     def evaluate(script):
@@ -40,7 +41,19 @@ def test_system_menu_preferences_use_the_applet_appearance_group(monkeypatch):
 
     with pytest.raises(ValueError, match="Invalid widget preferences"):
         plasmoid_settings.apply("system_menu", 19, {"macOSDockIcons": True})
+    with pytest.raises(ValueError, match="Invalid widget preference value"):
+        plasmoid_settings.apply("system_menu", 19, {"menuIconPreset": "../pear"})
     assert len(scripts) == 1
+
+
+@pytest.mark.parametrize(("detected", "icon"), [("neon", "neon"), ("opensuse", "opensuse-tumbleweed"), ("other", "penguin")])
+def test_system_menu_automatic_icon_and_offline_presets(monkeypatch, detected, icon):
+    import distro
+
+    monkeypatch.setattr(distro, "current_distro", lambda: detected)
+    assert system_menu_preferences.detected_distro_icon() == icon
+    presets = set(system_menu_preferences.CHOICES["menuIconPreset"]) - {"distro", "custom"}
+    assert presets == {path.stem for path in system_menu_preferences.ICON_DIR.glob("*.svg")}
 
 
 def test_missing_instance_does_not_report_saved(monkeypatch):

@@ -1,0 +1,78 @@
+{
+  "modifications": "Reused original paths with a single monochrome fill and common viewport padding.",
+  "icons": {
+    "arch.svg": {
+      "source": "src/screenshots/distros/archlinux.svg",
+      "license": "CC0-1.0",
+      "sha256": "eb990f0ca8dbd86e9897e3c344028641ed123057b903378da2cf5230c7e44aa7"
+    },
+    "artix.svg": {
+      "source": "src/screenshots/distros/artixlinux.svg",
+      "license": "CC0-1.0",
+      "sha256": "5e8b8864ea9126eb5a97eeda4497e6815db15f06691b84e6586c9a409c3178b4"
+    },
+    "cachyos.svg": {
+      "source": "src/screenshots/distros/cachyos.svg",
+      "license": "CC0-1.0",
+      "sha256": "9eb8c935fef4cfc9e5d87f30110c0be97f1ce72becf456cc6a90293878347c65"
+    },
+    "debian.svg": {
+      "source": "src/screenshots/distros/debian.svg",
+      "license": {
+        "type": "CC-BY-SA-3.0"
+      },
+      "sha256": "b90ec988da160c1cde2e71d9cabbc412625aee95db10d0606aae14ad586cd611"
+    },
+    "endeavouros.svg": {
+      "source": "src/screenshots/distros/endeavouros.svg",
+      "license": "CC0-1.0",
+      "sha256": "c24815c2de6a541699066803c17c43ea91336fc3778263a11820652b69b4318f"
+    },
+    "fedora.svg": {
+      "source": "src/screenshots/distros/fedora.svg",
+      "license": {
+        "type": "custom",
+        "url": "https://docs.fedoraproject.org/en-US/project/brand/"
+      },
+      "sha256": "e707d66ba8969ae4451336ccd7a0646abe4611937b29fbe2537e3472724271bf"
+    },
+    "garuda.svg": {
+      "source": "src/screenshots/distros/garudalinux.svg",
+      "license": {
+        "type": "GPL-3.0-only"
+      },
+      "sha256": "78ebcfae7b62afc07e594d82a1255524690b1f94d9831dec3c5fc35b999d8be9"
+    },
+    "neon.svg": {
+      "source": "src/screenshots/distros/kdeneon.svg",
+      "license": "CC0-1.0",
+      "sha256": "2458c8b98244e19b75a43c8169b25c7d5a37e5a83ad3cf8e1c703a6493ffe0ab"
+    },
+    "manjaro.svg": {
+      "source": "src/screenshots/distros/manjaro.svg",
+      "license": "CC0-1.0",
+      "sha256": "3660c069f20842997f0e79c9171b6a5abd541a6f2b430da214c8adb9a0593faa"
+    },
+    "nixos.svg": {
+      "source": "src/screenshots/distros/nixos.svg",
+      "license": {
+        "type": "CC-BY-4.0"
+      },
+      "sha256": "44a6bbde9a3eb32d54968846aa9d03de31bb66d8120a106947781abb0801bbf2"
+    },
+    "nobara.svg": {
+      "source": "src/screenshots/distros/nobaralinux.svg",
+      "license": "CC0-1.0",
+      "sha256": "50976522906771fa3b2304a4764a3a1df91fddebef5ebf239f545707414e75f7"
+    },
+    "opensuse-tumbleweed.svg": {
+      "source": "src/screenshots/distros/opensuse.svg",
+      "license": "CC0-1.0",
+      "sha256": "6142eac3d4bf6a164b20bc41b0969faf01df4fcafbb33733a9d89439498db761"
+    },
+    "apple.svg": {
+      "source": "src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst:MacTahoeLiquidKde-Icons/status/symbolic/start-here-symbolic.svg",
+      "sha256": "4f8291bde3e9285f5cba94532396e3b13cc64e9f5420086a8995031729cddf62"
+    }
+  }
+}

@@ -700,17 +700,6 @@
     "sha256": "0acb8dedee3449ea7647953861b11d4ccafbffbb99497f402d139e119b3e612c",
     "file": "corners-0acb8dedee34.jpg"
   },
-  "dock.jpg": {
-    "source": "src/screenshots/previews/readme-tahoe-light-dock-regular-b26e1bcf62f0.webp",
-    "source_sha256": "b26e1bcf62f090c090d4851f3a07a58e2332c51f60bfcc244e05f7404d8a82aa",
-    "crop": null,
-    "sha256": "a2ce396dc5fcd878271c1595a8337bf9b2bb54d5186597bc7e6f4c74ae1f4dfc",
-    "file": "dock-a2ce396dc5fc.jpg",
-    "source_commit": "12315545381b56d69fa76078fe253980bd838c21",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
-    "edition": "tahoe",
-    "kind": "reviewed-vm-photo"
-  },
   "boot-preview.png": {
     "file": "boot-preview-ab721d174e9c.png",
     "sha256": "ab721d174e9cb7c7a61f01747247fa1a26c1f66390ff552cc137e29899a4f8c4",
@@ -883,18 +872,6 @@
     "crop": null,
     "sha256": "1b51597409ca8105fe791e470cd7eaa156b79e205b92141c670b3a3613703650",
     "file": "sonoma-dark-1b51597409ca.jpg"
-  },
-  "panel-detail.jpg": {
-    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/captures/v0.60.0/frames/tahoe-light-menu.png",
-    "crop": [
-      0,
-      0,
-      1450,
-      850
-    ],
-    "source_sha256": "1c3848b7cca2c9ae5ffd66642268cf62a57aac80f064e6e5b429b9dc8d377604",
-    "sha256": "502233e14c104c61c45fcd5f6aa09e05ee7529567454809ed961262869f6aa94",
-    "file": "panel-detail-502233e14c10.jpg"
   },
   "logo-tahoe.png": {
     "source": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/435182bf289a8a15b6a3d29b1ad2f4fdcebcbb4a/src/screenshots/macos-26.png",
@@ -3315,5 +3292,37 @@
     "sha256": "143839cd771bf39a058623d2b37962cd85f7e846bd726f9b1338f596d1dcd29c",
     "source": "src/offline/wallpapers/MacTahoe-Landscape-Evening/contents/images_dark/3840x2160.jpg",
     "source_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
+  },
+  "dock-art.jpg": {
+    "file": "dock-art-cb6af814a8b3.jpg",
+    "sha256": "cb6af814a8b3f6381e85ffef8e90a274149e94f4193f33703ea10aadc11f6aff",
+    "kind": "generated-layout-illustration",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Use case: stylized-concept. Produce a finished 2.26:1 panoramic illustration for a 362 by 160 thumbnail in a desktop theme installer. Original editorial 3D product artwork, with soft studio light, restrained refraction, crisp edges, and a dark slate blue and teal atmosphere with touches of ice blue. Large, simple composition instantly readable at thumbnail size. Keep important geometry in the central 85% horizontally and central 75% vertically. The background extends to the edge. No text, no letters, no numbers, no labels, no logos, no photograph or screenshot of software, no device frame. Use an original illustration from scratch. Subject: a luminous single horizontal frosted-glass application dock with six chunky, vividly distinct sculpted squircle app tokens, arranged neatly side by side on its low capsule tray. Three-quarter view from just above, all six tokens clearly visible with diverse cyan, purple, warm amber, mint and ivory faces. Use neutral pictograms such as folder, aperture, paper, music and compass, and a subtle reflected silhouette below the tray. Make the tray and the row fill most of the horizontal frame. A quiet flowing teal-blue abstract backdrop.",
+    "size": [
+      1086,
+      480
+    ],
+    "generated_size": [
+      1882,
+      836
+    ],
+    "generated_sha256": "976f0cefb511f0da0b842c955f9e288844685cc4be1bfcb0eb4f99c226cb52ca"
+  },
+  "menu-bar-art.jpg": {
+    "file": "menu-bar-art-c38f197c8653.jpg",
+    "sha256": "c38f197c865314e08c53e208baccfbe0f9db995dba85a5dfcfbd2d72c7fcf79e",
+    "kind": "generated-layout-illustration",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Use case: stylized-concept. Produce a finished 2.26:1 panoramic illustration for a 362 by 160 thumbnail in a desktop theme installer. Original editorial 3D product artwork, with soft studio light, restrained refraction, crisp edges, and a dark slate blue and teal atmosphere with touches of ice blue. Large, simple composition instantly readable at thumbnail size. Keep important geometry in the central 85% horizontally and central 75% vertically. The background extends to the edge. No text, no letters, no numbers, no labels, no logos, no photograph or screenshot of software, no device frame. Use an original illustration from scratch. Subject: a single narrow floating horizontal ribbon of frosted glass suggesting the top menu bar of a Linux desktop, seen almost front on with just enough perspective to read its depth. A simple luminous four-point system mark at far left and a compact set of tiny clean status pictograms on the far right (Wi-Fi arcs, battery outline, sliders), with restrained short glass dashes near the left suggesting menus with no text. Behind it at lower center are two broad soft overlapping desktop-colored planes. The strong narrow floating ribbon is centered horizontally and vertically, spanning most of the frame. A quiet flowing teal-blue abstract backdrop in the same visual family as a polished glass dock product illustration.",
+    "size": [
+      1086,
+      480
+    ],
+    "generated_size": [
+      1884,
+      835
+    ],
+    "generated_sha256": "235276a613e63b6088b7a7326a2b1c5a55bc31623b41e0bd546b5998597ce3ec"
   }
 }

@@ -9,6 +9,7 @@
 #include <Plasma/Applet>
 #include <QAbstractItemModel>
 #include <QPointer>
+#include <QUrl>
 #include <memory>
 
 class QQuickItem;
@@ -79,6 +80,7 @@ public:
     void setModel(QAbstractItemModel* model);
     int view() const;
     void setView(int type);
+    Q_INVOKABLE QUrl systemMenuIcon(const QString &preset, const QUrl &directory) const;
 
 Q_SIGNALS:
     // Property-change signals

@@ -394,7 +394,10 @@ class GlassComboBox(QComboBox):
         self.update()
 
     def sizeHint(self):
-        return QSize(max((self.fontMetrics().horizontalAdvance(self.itemText(i)) for i in range(self.count())), default=0) + 42, 32)
+        content_width = max((self.fontMetrics().horizontalAdvance(self.itemText(i))
+                             + (22 if not self.itemIcon(i).isNull() else 0)
+                             for i in range(self.count())), default=0)
+        return QSize(content_width + 42, 32)
 
     def minimumSizeHint(self):
         return self.sizeHint()
@@ -403,8 +406,14 @@ class GlassComboBox(QComboBox):
         painter = QPainter(self)
         paint_glass_control(self, painter)
         painter.setPen(self.palette().text().color())
-        painter.drawText(QRectF(12, 0, self.width()-36, self.height()),
-                         Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.fontMetrics().elidedText(self.currentText(), Qt.TextElideMode.ElideRight, self.width()-36))
+        left = 12
+        artwork = self.itemIcon(self.currentIndex())
+        if not artwork.isNull():
+            artwork.paint(painter, left, (self.height()-16)//2, 16, 16)
+            left += 22
+        text = self.fontMetrics().elidedText(self.currentText(), Qt.TextElideMode.ElideRight, self.width()-24-left)
+        painter.drawText(QRectF(left, 0, self.width()-24-left, self.height()),
+                         Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, text)
         x, y = self.width()-15, self.height()/2
         painter.setPen(QPen(self.palette().text().color(), 1.2, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
         painter.drawLine(QPointF(x-3, y-1.5), QPointF(x, y+1.5))
@@ -1146,17 +1155,17 @@ class InstallerWindow(OpaqueSurface):
         self.settings_forward.setObjectName("settingsForward")
         self.settings_forward.clicked.connect(lambda: self.move_settings_history(1))
         history = HistoryControl(self.settings_back, self.settings_forward)
-        add_surface_shadow(history, radius=15, offset=2.5, opacity=103)
+        add_surface_shadow(history, radius=15, offset=2.25, opacity=93)
         toolbar.addWidget(history)
         toolbar.addSpacing(6)
         self.settings_review = GlassButton()
         self.settings_review.setObjectName("settingsReview")
         self.settings_review.backed = True
-        self.settings_review.setFont(relative_font(self, .78, QFont.Weight.DemiBold))
+        self.settings_review.setFont(relative_font(self, .78, QFont.Weight.Medium))
         self.settings_review.clicked.connect(self.review_settings_changes)
-        add_surface_shadow(self.settings_review, radius=16, offset=2.5, opacity=108)
+        add_surface_shadow(self.settings_review, radius=16, offset=2.25, opacity=98)
         self.settings_title = self.label("")
-        self.settings_title.setFont(relative_font(self, .91, QFont.Weight.DemiBold))
+        self.settings_title.setFont(relative_font(self, .91, QFont.Weight.Medium))
         toolbar.addWidget(self.settings_title, 1)
         toolbar.addWidget(self.settings_review)
         content_column.addWidget(self.settings_toolbar)
@@ -2267,7 +2276,20 @@ class InstallerWindow(OpaqueSurface):
                             elif key in typed.CHOICES:
                                 field = GlassComboBox()
                                 for value, choice in typed.CHOICES[key].items():
-                                    field.addItem(self.t(choice), value)
+                                    if key == "menuIconPreset" and value != "custom":
+                                        preset = typed.detected_distro_icon() if value == "distro" else value
+                                        caption = self.t(choice)
+                                        if value == "distro" and preset in typed.DISTRO_ICONS:
+                                            caption += f" · {typed.DISTRO_ICONS[preset]}"
+                                        file = typed.ICON_DIR / f"{preset}.svg"
+                                        glyph = QIcon(str(file)).pixmap(QSize(16, 16), self.devicePixelRatioF())
+                                        painter = QPainter(glyph)
+                                        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
+                                        painter.fillRect(QRectF(0, 0, 16, 16), self.palette().text().color())
+                                        painter.end()
+                                        field.addItem(QIcon(glyph), caption, value)
+                                    else:
+                                        field.addItem(self.t(choice), value)
                             elif key in typed.RANGES:
                                 field = QSpinBox()
                                 field.setRange(*typed.RANGES[key])
@@ -2347,6 +2369,12 @@ class InstallerWindow(OpaqueSurface):
                         form = target.widget(index).layout()
                         target.setFixedHeight(target.tabBar().sizeHint().height() + form.sizeHint().height() + 4)
 
+                    def update_custom_icon(*_, target=rows["menuIcon"], selector=controls["menuIconPreset"],
+                                           pages=tabs, fit=fit_menu_tab):
+                        target.setVisible(selector.currentData() == "custom")
+                        fit(pages.currentIndex())
+
+                    controls["menuIconPreset"].currentIndexChanged.connect(update_custom_icon)
                     tabs.currentChanged.connect(fit_menu_tab)
                     fit_menu_tab(tabs.currentIndex())
                 column.addWidget(tabs)
@@ -2467,7 +2495,10 @@ class InstallerWindow(OpaqueSurface):
                     elif isinstance(field, QComboBox):
                         if key == "launcherApplication" and field.findData(value) == -1:
                             field.addItem(value, value)
-                        field.setCurrentIndex(field.findData(value))
+                        index = field.findData(value)
+                        if key == "menuIconPreset" and index < 0:
+                            index = field.findData("custom")
+                        field.setCurrentIndex(index)
                     else:
                         field.setChecked(value is True or str(value).lower() == "true")
                 if category == "dock":
@@ -2811,8 +2842,8 @@ class InstallerWindow(OpaqueSurface):
         reset_hint.setVisible(reset.isChecked())
         reset.toggled.connect(reset_hint.setVisible)
         self.cards("", [
-            ("panel", "Top bar", "", picture("panel-detail.jpg", 362, 160)),
-            ("dock", "Dock", "", picture("dock.jpg", 362, 160)),
+            ("panel", "Top bar", "", picture("menu-bar-art.jpg", 362, 160, cover=True)),
+            ("dock", "Dock", "", picture("dock-art.jpg", 362, 160, cover=True)),
         ], independent=True)
         def enable_layout_options():
             for key in ("panel", "dock"):

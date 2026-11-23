@@ -184,6 +184,10 @@ Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Ersc
 System menu|Menú del sistema|系统菜单|Menu do sistema|Systemmenü
 Actions|Acciones|操作|Ações|Aktionen
 Menu icon|Icono del menú|菜单图标|Ícone do menu|Menüsymbol
+Apple|Manzana|苹果|Maçã|Apfel
+Penguin|Pingüino|企鹅|Pinguim|Pinguin
+Pear|Pera|梨|Pera|Birne
+Detect distribution|Detectar distribución|自动检测发行版|Detectar distribuição|Distribution erkennen
 Use system font in About This Computer|Usar la tipografía del sistema en Acerca de este equipo|在“关于这台计算机”中使用系统字体|Usar a fonte do sistema em Sobre Este Computador|In „Über diesen Computer“ die Systemschrift verwenden
 About This Computer icon|Icono de Acerca de este equipo|“关于这台计算机”图标|Ícone de Sobre Este Computador|Symbol für „Über diesen Computer“
 System Settings icon|Icono de Ajustes del sistema|系统设置图标|Ícone dos Ajustes do Sistema|Symbol der Systemeinstellungen

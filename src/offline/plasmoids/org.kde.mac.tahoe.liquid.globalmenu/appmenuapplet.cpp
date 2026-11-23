@@ -16,11 +16,14 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusMessage>
+#include <QFile>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QFileInfo>
 #include <QPersistentModelIndex>
+#include <QRegularExpression>
 #include <QStandardPaths>
+#include <QSysInfo>
 #include <QTimer>
 #include <KDesktopFile>
 #include <QLineEdit>
@@ -37,6 +40,24 @@
 // File-scope state
 
 int AppMenuApplet::s_refs = 0;
+
+QUrl AppMenuApplet::systemMenuIcon(const QString &preset, const QUrl &directory) const
+{
+    const bool automatic = preset == QStringLiteral("distro");
+    QString name = automatic ? QSysInfo::productType() : preset;
+    if (automatic && name == QStringLiteral("opensuse")) {
+        name = QStringLiteral("opensuse-tumbleweed");
+    }
+    static const QRegularExpression validName(QStringLiteral("^[a-z0-9-]+$"));
+    if (validName.match(name).hasMatch()) {
+        const QUrl icon = directory.resolved(QUrl(name + QStringLiteral(".svg")));
+        const QString path = icon.isLocalFile() ? icon.toLocalFile() : QStringLiteral(":") + icon.path();
+        if (QFile::exists(path)) {
+            return icon;
+        }
+    }
+    return automatic ? directory.resolved(QUrl(QStringLiteral("penguin.svg"))) : QUrl();
+}
 
 namespace {
 /// DBus name we register as while at least one AppMenuApplet is alive.

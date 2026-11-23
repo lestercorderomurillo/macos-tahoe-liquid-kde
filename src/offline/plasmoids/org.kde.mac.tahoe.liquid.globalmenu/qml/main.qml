@@ -8,8 +8,10 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Effects
 import QtQuick.Layouts
 import QtQuick.Shapes
+import QtQuick.Window
 import QtQml
 
 import org.kde.plasma.plasmoid
@@ -41,6 +43,8 @@ PlasmoidItem {
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool view: Plasmoid.configuration.compactView
     readonly property string cfgIcon: Plasmoid.configuration.menuIcon || "start-here-symbolic"
+    readonly property url presetIcon: Plasmoid.systemMenuIcon(Plasmoid.configuration.menuIconPreset,
+                                                              Qt.resolvedUrl("menu-icons/"))
 
     readonly property bool goldenGate: material.hasElement("hint-clear-surface")
     readonly property real lightCapsuleOpacityBoost: goldenGate ? 0 : 0.10
@@ -270,8 +274,24 @@ PlasmoidItem {
                     width: parent.implicitWidth
                     height: width
                     roundToIconSize: root.vertical
+                    visible: !root.presetIcon.toString()
                     source: root.cfgIcon
                     color: systemMenuButton.foregroundColor
+                }
+                Image {
+                    anchors.centerIn: parent
+                    width: parent.implicitWidth
+                    height: width
+                    source: root.presetIcon
+                    visible: source.toString() !== ""
+                    fillMode: Image.PreserveAspectFit
+                    sourceSize: Qt.size(width * Screen.devicePixelRatio, height * Screen.devicePixelRatio)
+                    layer.enabled: visible
+                    layer.effect: MultiEffect {
+                        autoPaddingEnabled: false
+                        colorization: 1
+                        colorizationColor: systemMenuButton.foregroundColor
+                    }
                 }
             }
         }
@@ -284,7 +304,7 @@ PlasmoidItem {
             readonly property int buttonIndex: -2
             visible: appMenuModel.activeAppName !== ""
             text: appMenuModel.activeAppName
-            font.weight: Font.ExtraBold
+            font.weight: Font.DemiBold
             Layout.fillHeight: !root.vertical
 
             down: Plasmoid.currentIndex === -2
