@@ -112,14 +112,18 @@ def read_schema(package):
 def installed_schema(plugin):
     if not plugin.startswith(PREFIX) or plugin.removeprefix(PREFIX) not in NAMES:
         return None
-    data = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")
-    package = data / "plasma/plasmoids" / plugin
+    package = installed_package(plugin)
     try:
         if MARKER in (package / "contents/ui/main.qml").read_text(encoding="utf-8"):
             return read_schema(package)
     except (OSError, ValueError, KeyError, ElementTree.ParseError):
         pass
     return None
+
+
+def installed_package(plugin):
+    data = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")
+    return data / "plasma/plasmoids" / plugin
 
 
 def stage_configuration_route(package):

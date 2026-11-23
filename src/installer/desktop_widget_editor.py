@@ -11,7 +11,8 @@ from PyQt6.QtWidgets import (
 )
 
 from desktop_widget_settings import (
-    CALENDAR_SOURCES, CHOICES, NAMES, PAGES, PREFIX, RANGES, STYLE_KEYS, WEATHER_FIELDS, installed_schema,
+    CALENDAR_SOURCES, CHOICES, NAMES, PAGES, PREFIX, RANGES, STYLE_KEYS, WEATHER_FIELDS,
+    installed_package, installed_schema,
 )
 from plasmoid_settings import apply, instances
 from weather_panel_editor import WeatherForm, weather_about
@@ -165,6 +166,7 @@ class DesktopWidgetEditor(QWidget):
         self.rows = {}
         self.glass_pages = []
         self.weather = None
+        self.calendar_providers = {}
         self.status.hide()
         if all(key in self.defaults for key in WEATHER_FIELDS):
             self.weather = WeatherForm(self.t, self.tabs)
@@ -275,6 +277,13 @@ class DesktopWidgetEditor(QWidget):
                 layout.addWidget(reset, alignment=Qt.AlignmentFlag.AlignLeft)
             layout.addStretch()
             self.tabs.addTab(page, self.t(title).replace("&", "&&"))
+        if "enabledCalendarPlugins" in self.fields:
+            from calendar_provider_settings import provider_settings
+
+            self.calendar_providers = provider_settings(self.t, installed_package(self.plugin), self.tabs)
+            for source, page in self.calendar_providers.items():
+                self.tabs.addTab(page, self.t(CALENDAR_SOURCES[source]))
+            self.fields["enabledCalendarPlugins"].itemChanged.connect(self.update_dependencies)
         self.tabs.addTab(weather_about(self.t, self.tabs), self.t("About"))
         self.set_values({key: values[key] for key in self.fields})
         self.baseline = self.values()
@@ -334,6 +343,10 @@ class DesktopWidgetEditor(QWidget):
                 self.rows[key].setEnabled(not values["autoFontSize"])
         if "autoHideTimeout" in self.rows:
             self.rows["autoHideTimeout"].setEnabled(values["autoHideEnabled"])
+        for source, page in self.calendar_providers.items():
+            index = self.tabs.indexOf(page)
+            if index >= 0:
+                self.tabs.setTabVisible(index, source in values["enabledCalendarPlugins"])
 
     def choose_color(self):
         field = self.fields["textColor"]
@@ -391,6 +404,11 @@ class DesktopWidgetEditor(QWidget):
         except (RuntimeError, ValueError) as error:
             self.message(str(error))
             return
+        if self.calendar_providers:
+            from calendar_provider_settings import save_provider_settings
+
+            save_provider_settings({source: page for source, page in self.calendar_providers.items()
+                                    if source in self.fields["enabledCalendarPlugins"].value()})
         self.baseline = self.values()
         self.shortcut_baseline = shortcut
         self.message("Saved")
