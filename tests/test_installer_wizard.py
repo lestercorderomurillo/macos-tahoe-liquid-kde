@@ -328,7 +328,7 @@ for page, key in [('firefox', 'firefox'), ('boot', 'plymouth')]:
     if page == 'boot':
         preview = window.content.findChild(QLabel, 'bootAnimationPreview')
         size = preview.pixmap().deviceIndependentSize()
-        assert (size.width(), size.height()) == (200, 200)
+        assert (size.width(), size.height()) == (108, 108)
         assert preview.pixmap().toImage().pixelColor(0, 0).alpha() == 0
         assert abs(preview.geometry().center().x() - window.content.rect().center().x()) <= 1
         assert preview.geometry().bottom() < options[0].y()
@@ -697,6 +697,7 @@ assert window.choices['oled_interval'] == 17
 window.select('oled_care', False); assert all(not spin.isEnabled() for spin in spins)
 window.select('oled_care', True); assert spins[0].value() == 17
 import os
+window.choices.update(files='nautilus', acrylic_glass=True)
 window.page = 'welcome'; window.render(); app.processEvents()
 assert len(INSTALL_FLOW) == 10
 window.resize(window.minimumSize())
@@ -708,11 +709,18 @@ for section in INSTALL_FLOW[1:]:
     assert window.content.findChild(QPushButton, 'optionPanelTitle') is None
     if window.scroll.verticalScrollBar().maximum() > 0:
         scrollable_steps.add(section)
+    if section == 'windows':
+        assert window.panel_frames['glass_style'].isVisible()
+    if section in {'windows', 'window_details', 'startup', 'summary'}:
+        window.resize(1200, window.minimumHeight()); app.processEvents()
+        assert window.scroll.verticalScrollBar().maximum() == 0, section
+        window.resize(window.minimumSize()); app.processEvents()
     if section == 'desktop':
         assert all(window.panel_frames[key].isVisible() for key in ('wallpaper', 'desktop_widgets', 'launcher'))
     if section == 'dock_bar':
         assert 'launcher' not in window.panel_frames
 assert 'desktop' in scrollable_steps
+assert not scrollable_steps.intersection({'windows', 'window_details', 'startup', 'summary'}), scrollable_steps
 window.previous()
 assert window.page == 'startup'
 window.page = 'done'

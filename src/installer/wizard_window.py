@@ -714,8 +714,8 @@ class PreviewImage(QWidget):
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         if self.dim_when_disabled and not self.isEnabled():
             painter.setOpacity(.38)
-        # The image canvas has the card's exact aspect ratio; the source was
-        # contained by picture(), so no desktop edges are lost here.
+        # Preserve the preview's aspect ratio when an installer card reaches
+        # its height limit.
         window = self.window()
         if window.page in INSTALL_SECTIONS and not window.settings_mode:
             size = self.pixmap.size()
@@ -731,7 +731,7 @@ class PreviewImage(QWidget):
 
 class ChoiceCard(QPushButton):
     def __init__(self, title, detail, pixmap, checked, parent=None, *, independent=False, compact=False,
-                 image_only=False):
+                 image_only=False, preview_height_limit=None):
         super().__init__(parent)
         self.setFont(parent.window().font())
         self.independent = independent
@@ -739,6 +739,7 @@ class ChoiceCard(QPushButton):
         self.photo = None
         self.copy = None
         self.row_cards = [self]
+        self.preview_height_limit = preview_height_limit
         self.setCheckable(True)
         self.setChecked(checked)
         self.setAccessibleName(title)
@@ -750,6 +751,8 @@ class ChoiceCard(QPushButton):
         layout.setSpacing(0)
         if pixmap:
             self.photo = PreviewImage(pixmap)
+            if preview_height_limit is not None:
+                self.photo.setFixedHeight(min(self.photo.height(), preview_height_limit))
             layout.addWidget(self.photo)
         if image_only:
             self.setFixedHeight(layout.sizeHint().height())
@@ -787,6 +790,8 @@ class ChoiceCard(QPushButton):
         height = max((round((card.width()-padding) * card.photo.pixmap.height()
                             / card.photo.pixmap.width()) if card.photo else 0)
                      for card in self.row_cards)
+        if self.preview_height_limit is not None:
+            height = min(height, self.preview_height_limit)
         for card in self.row_cards:
             if card.copy:
                 card.copy.setFixedHeight(copy_height)
@@ -1684,7 +1689,7 @@ class InstallerWindow(OpaqueSurface):
             self.refresh_launcher_warning()
 
     def cards(self, key, items, *, columns=2, independent=False, compact=False, default_first=True,
-              layout=None, fixed_width=None):
+              layout=None, fixed_width=None, preview_height_limit=None):
         grid = QGridLayout()
         grid.setHorizontalSpacing(18 if columns == 2 else 14)
         grid.setVerticalSpacing(14)
@@ -1701,7 +1706,7 @@ class InstallerWindow(OpaqueSurface):
             checked = self.choices[choice_key] if independent else self.choices[key] == value
             card = ChoiceCard(self.t(title), self.t(detail), pixmap, checked, self.content,
                               independent=independent, compact=compact,
-                              image_only=key == "wallpaper")
+                              image_only=key == "wallpaper", preview_height_limit=preview_height_limit)
             if key == "wallpaper" and card.photo is not None:
                 card.photo.cover = True
                 card.photo.dim_when_disabled = True
@@ -1941,16 +1946,17 @@ class InstallerWindow(OpaqueSurface):
         self.body.setContentsMargins(*((18, 16, 18, 18) if self.settings_mode else (38, 28, 38, 22)))
         self.body.setSpacing(9 if self.settings_mode else 12)
         sections = SECTIONS if self.settings_mode else INSTALL_SECTIONS
+        compact = not self.settings_mode and self.page in ("windows", "window_details", "startup")
         if not self.settings_mode and self.page in INSTALL_SECTIONS:
-            self.body.setContentsMargins(28, 20, 28, 22)
+            self.body.setContentsMargins(28, 16 if compact else 20, 28, 16 if compact else 22)
         titles = {} if self.settings_mode else (dict(STEPS) | {key: value[0] for key, value in INSTALL_SECTIONS.items()})
         if self.reinstall_requested and self.page == "summary":
             titles["summary"] = "Review your reinstallation"
         if self.page in titles and titles[self.page]:
             self.body.addWidget(self.label(titles[self.page], heading=True))
-            self.body.addSpacing(10)
+            self.body.addSpacing(4 if compact else 10)
         if self.page in sections:
-            self.page_section()
+            self.page_section(compact=compact)
         else:
             getattr(self, "page_" + self.page)()
         self.body.addStretch()
@@ -2035,10 +2041,10 @@ class InstallerWindow(OpaqueSurface):
             add_surface_shadow(frame, radius=15, offset=2, opacity=30)
         return frame
 
-    def page_section(self):
+    def page_section(self, *, compact=False):
         panels = SECTIONS[self.page][3] if self.settings_mode else INSTALL_SECTIONS[self.page][1]
         original = self.body
-        original.setSpacing(10 if self.settings_mode else 17)
+        original.setSpacing(7 if compact else 10 if self.settings_mode else 17)
         for panel in panels:
             section = QWidget()
             layout = QVBoxLayout(section)
@@ -2055,8 +2061,10 @@ class InstallerWindow(OpaqueSurface):
             layout.addWidget(frame)
             self.panel_frames[panel] = section
             self.body = QVBoxLayout(frame)
-            self.body.setContentsMargins(*((12, 10, 12, 10) if self.settings_mode else (14, 13, 14, 13)))
-            self.body.setSpacing(9)
+            side = 12 if self.settings_mode else 14
+            vertical = 9 if compact else 10 if self.settings_mode else 13
+            self.body.setContentsMargins(side, vertical, side, vertical)
+            self.body.setSpacing(6 if compact else 9)
             if panel == "acrylic_glass_editor":
                 self.mount_acrylic_glass_editor(self.body)
             else:
@@ -2979,18 +2987,25 @@ class InstallerWindow(OpaqueSurface):
             self.bind_choice(key, True, self.checkbox(key, label))
 
     def page_window_controls(self):
+        compact = not self.settings_mode
+        height = 94 if compact else 190
+        crop = (0, 17, 760, 197) if compact else None
         self.cards("window_controls", [
             ("flat", "Flat", "",
-             picture(f"window-controls-flat-{self.mode}.png", 362, 190)),
+             picture(f"window-controls-flat-{self.mode}.png", 362, height, crop=crop)),
             ("glassy", "Glassy", "",
-             picture(f"window-controls-glassy-{self.mode}.png", 362, 190)),
-        ])
+             picture(f"window-controls-glassy-{self.mode}.png", 362, height, crop=crop)),
+        ], compact=compact, preview_height_limit=92 if compact else None)
 
     def button_position_sample(self, position):
         dark = self.mode == "dark"
         mode = "Dark" if dark else "Light"
         style = self.choices["window_controls"]
-        width, height, size = 232, 96, 14
+        compact = not self.settings_mode
+        width = 232
+        height, size = (37, 11) if compact else (96, 14)
+        top, bottom = (4, 4) if compact else (18, 12)
+        button_y = top + (8 if compact else 12)
         canvas = QPixmap(width*2, height*2)
         canvas.fill(Qt.GlobalColor.transparent)
         painter = QPainter(canvas)
@@ -3000,24 +3015,29 @@ class InstallerWindow(OpaqueSurface):
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(QColor("#1f2024" if dark else "#d7dae0"))
         painter.drawRect(0, 0, width, height)
-        window = QRectF(18, 18, width-36, height-30)
+        window = QRectF(18, top, width-36, height-top-bottom)
         painter.setPen(QPen(QColor(255, 255, 255, 34) if dark else QColor(0, 0, 0, 40), .75))
         painter.setBrush(QColor("#2d2e32" if dark else "#fafafa"))
         painter.drawRoundedRect(window, 9, 9)
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(QColor(255, 255, 255, 18) if dark else QColor(0, 0, 0, 22))
-        painter.drawRoundedRect(QRectF(width/2-18, 27, 36, 6), 3, 3)
-        for row in range(3):
-            painter.drawRoundedRect(QRectF(32, 50 + row*11, (width-64) * (.82, .6, .72)[row], 5), 2.5, 2.5)
+        title_height = 3 if compact else 6
+        painter.drawRoundedRect(QRectF(width/2-18, button_y-title_height/2, 36, title_height),
+                                title_height/2, title_height/2)
+        line_height = 3 if compact else 5
+        radius = line_height / 2
+        line_offsets = (10, 15) if compact else (20, 31, 42)
+        for offset, length in zip(line_offsets, (.82, .6, .72)):
+            painter.drawRoundedRect(QRectF(32, button_y+offset, (width-64)*length, line_height), radius, radius)
         order = ("minimize", "maximize", "close") if position == "right" else ("close", "minimize", "maximize")
         for index, action in enumerate(order):
             left = window.left() + 14 + index * 21
             right = window.right() - 14 - size - (2 - index) * 21
-            target = QRectF(right if position == "right" else left, 30 - size/2, size, size)
+            target = QRectF(right if position == "right" else left, button_y - size/2, size, size)
             if position == "keep":
                 painter.setBrush(QColor(255, 255, 255, 46) if dark else QColor(0, 0, 0, 38))
                 for x in (left, right):
-                    painter.drawEllipse(QRectF(x, 30 - size/2, size, size).adjusted(1, 1, -1, -1))
+                    painter.drawEllipse(QRectF(x, button_y - size/2, size, size).adjusted(1, 1, -1, -1))
                 continue
             pixmap = QPixmap()
             if style == "glassy":
@@ -3036,26 +3056,32 @@ class InstallerWindow(OpaqueSurface):
             ("left", "Left", "Close, minimize, maximize.", self.button_position_sample("left")),
             ("right", "Right", "Minimize, maximize, close.", self.button_position_sample("right")),
             ("keep", "Keep my layout", "", self.button_position_sample("keep")),
-        ], columns=3)
+        ], columns=3, compact=not self.settings_mode,
+            preview_height_limit=37 if not self.settings_mode else None)
 
     def page_glass_style(self):
         mode = self.mode
         automatic = self.choices["appearance"] == "auto"
+        compact = not self.settings_mode and self.page == "windows"
+        height = 96 if compact else 116
         items = []
         for preset in GLASS_PRESETS:
             stem = "glass-preset-" + preset["photo"]
-            preview = picture(f"{stem}-{mode}.png", 360, 116,
+            preview = picture(f"{stem}-{mode}.png", 360, height,
                               f"{stem}-dark.png" if automatic else None,
                               cover=True, crop=(1788, 565, 1320, 425))
             items.append((preset["choice"], preset["title"], "", preview))
-        self.cards("glass_style", items, columns=2, compact=True)
+        self.cards("glass_style", items, compact=True, preview_height_limit=99 if compact else None)
 
     def page_shadows(self):
+        compact = not self.settings_mode and self.page == "window_details"
+        height = 92 if compact else 116
+        crop = (0, 0, 1140, 290) if compact else None
         self.cards("shadows", [
-            (level, label, "", picture(f"window-shadows-{level}-{self.mode}.png", 362, 116))
+            (level, label, "", picture(f"window-shadows-{level}-{self.mode}.png", 362, height, crop=crop))
             for level, label in (("none", "None"), ("soft", "Soft"),
                                  ("medium", "Medium"), ("hard", "Hard"))
-        ], columns=4 if self.page == "window_details" else 2, compact=True)
+        ], columns=4 if compact else 2, compact=True, preview_height_limit=46 if compact else None)
 
     def page_fonts(self):
         row = QHBoxLayout()
@@ -3083,10 +3109,12 @@ class InstallerWindow(OpaqueSurface):
         self.bookmarks.setVisible(self.choices["files"] == "nautilus")
 
     def page_boot(self):
-        preview = self.image("boot-preview.png", width=200, height=200)
+        size = 200 if self.settings_mode else 108
+        preview = self.image("boot-preview.png", width=size, height=size)
         preview.setObjectName("bootAnimationPreview")
         self.body.addWidget(preview, alignment=Qt.AlignmentFlag.AlignHCenter)
-        self.body.addSpacing(8)
+        if self.settings_mode:
+            self.body.addSpacing(8)
         self.radio("plymouth", [(True, "Use the theme animation"), (False, "Keep my boot animation")])
 
     def page_oled(self):
@@ -3185,7 +3213,6 @@ class InstallerWindow(OpaqueSurface):
         for key, title, text, step in rows:
             entry = QWidget()
             entry.setObjectName("summaryEntry")
-            entry.setStyleSheet(f"QWidget#summaryEntry {{ border-bottom: 1px solid {self.line}; }}")
             row = QHBoxLayout(entry); row.setContentsMargins(0, 1, 0, 1); row.setSpacing(9)
             label = self.label(title); label.setObjectName("detail"); label.setFixedWidth(94)
             label.setFont(relative_font(self, .81)); row.addWidget(label)
@@ -3208,8 +3235,28 @@ class InstallerWindow(OpaqueSurface):
             warning.setText("\n".join(self.t(message) for message in notices))
             dark = self.palette().window().color().lightnessF() <= .5
             red = "#ff9994" if dark else "#a32322"
-            warning.setStyleSheet(f"border-left: 3px solid {red}; padding-left: 8px; color: {red};")
-            self.body.addWidget(warning)
+            warning.setStyleSheet(f"color: {red};")
+            marker = QPixmap(32, 32)
+            marker.fill(Qt.GlobalColor.transparent)
+            marker.setDevicePixelRatio(2)
+            painter = QPainter(marker)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            painter.setPen(QPen(QColor("#d3343c" if not dark else "#ff6769"), 2,
+                                join=Qt.PenJoinStyle.RoundJoin))
+            painter.setBrush(painter.pen().color())
+            painter.drawPolygon(QPolygonF([QPointF(8, 2.2), QPointF(14.4, 13.4), QPointF(1.6, 13.4)]))
+            painter.setPen(QPen(QColor("#ffffff" if not dark else "#2c1315"), 1.6,
+                                cap=Qt.PenCapStyle.RoundCap))
+            painter.drawLine(QPointF(8, 6), QPointF(8, 9.2))
+            painter.drawPoint(QPointF(8, 11.8))
+            painter.end()
+            icon = QLabel()
+            icon.setPixmap(marker)
+            notice_row = QHBoxLayout()
+            notice_row.setSpacing(7)
+            notice_row.addWidget(icon, 0, Qt.AlignmentFlag.AlignTop)
+            notice_row.addWidget(warning, 1)
+            self.body.addLayout(notice_row)
 
 
 
