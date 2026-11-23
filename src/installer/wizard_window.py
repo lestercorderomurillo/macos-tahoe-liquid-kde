@@ -28,6 +28,7 @@ from progress_model import ProgressModel, elapsed_text
 
 ASSETS = Path(__file__).with_name("assets")
 ASSET_FILES = json.loads((ASSETS / "sources.json").read_text())
+SETTING_ART_SIZE = 112
 CONTROL_SYMBOLS = (ASSETS.parents[1] / "offline/plasmoids"
                    / "org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols")
 STEPS = (
@@ -1454,6 +1455,11 @@ class InstallerWindow(OpaqueSurface):
         self.update_settings_review()
         if key in ("files", "acrylic_glass") and "glass_style" in self.panel_frames:
             self.panel_frames["glass_style"].setVisible(self.show_glass_style())
+        if key in ("launcher", "reset_layout") and "launcher" in self.choice_widgets:
+            if key == "launcher":
+                self.launcher_art.setPixmap(picture(f"launcher-{value}-art.png",
+                                                    SETTING_ART_SIZE, SETTING_ART_SIZE))
+            self.refresh_launcher_warning()
 
     def cards(self, key, items, *, columns=2, independent=False, compact=False, default_first=True):
         grid = QGridLayout()
@@ -2479,11 +2485,22 @@ class InstallerWindow(OpaqueSurface):
         return ""
 
     def page_launcher(self):
-        self.cards("launcher", [
-            ("tahoe", "Tahoe", "Categories and apps in one window.", picture("launcher-tahoe.jpg", 362, 204)),
-            ("golden", "Golden Gate", "Separate search and application grid.", picture("launcher-golden.jpg", 362, 204)),
-            ("keep", "Use my launcher", self.launcher_notice(), None),
-        ])
+        choice = self.choices["launcher"]
+        self.launcher_art = self.image(f"launcher-{choice}-art.png", SETTING_ART_SIZE, SETTING_ART_SIZE)
+        self.launcher_art.setObjectName("launcherArtwork")
+        self.body.addWidget(self.launcher_art, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.body.addSpacing(8)
+        self.radio("launcher", [("tahoe", "Tahoe"), ("golden", "Golden Gate"), ("keep", "Use my launcher")])
+        self.launcher_warning = self.label("")
+        self.launcher_warning.setObjectName("detail")
+        self.launcher_warning.setFont(relative_font(self, .85))
+        self.body.addWidget(self.launcher_warning)
+        self.refresh_launcher_warning()
+
+    def refresh_launcher_warning(self):
+        warning = self.launcher_notice() if self.choices["launcher"] == "keep" else ""
+        self.launcher_warning.setText(self.t(warning))
+        self.launcher_warning.setVisible(bool(warning))
 
     def page_layout(self):
         self.body.addSpacing(4)
@@ -2714,8 +2731,11 @@ class InstallerWindow(OpaqueSurface):
         self.body.addLayout(row)
 
     def page_firefox(self):
-        self.body.addWidget(self.image("firefox-"+self.mode+".jpg", width=744, height=298, background="#e5e8ec"))
-        self.radio("firefox", [(True, "Apply the theme"), (False, "Keep Firefox as it is")], inline=True)
+        artwork = self.image("firefox-art.png", width=SETTING_ART_SIZE, height=SETTING_ART_SIZE)
+        artwork.setObjectName("firefoxArtwork")
+        self.body.addWidget(artwork, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.body.addSpacing(8)
+        self.radio("firefox", [(True, "Apply the theme"), (False, "Keep Firefox as it is")])
 
     def page_files(self):
         self.radio("files", [("nautilus", "Install Nautilus"), ("dolphin", "Use Dolphin"),

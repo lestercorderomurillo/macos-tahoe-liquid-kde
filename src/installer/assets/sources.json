@@ -21,19 +21,6 @@
     "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
-  "firefox-light.jpg": {
-    "source": "build/installer-wizard-mocks-v5/firefox-frame-light.png",
-    "source_sha256": "2358ef60a4e3db409a54e8276cd638e60a0ee723cad381d3cf221b82708f0bf4",
-    "sha256": "9c02f1cfb2f7ba295d73feb62cc70738d797903375d4d8c84a58b799b787ceaa",
-    "crop": [
-      720,
-      280,
-      3120,
-      1820
-    ],
-    "capture": "Temporary overlay of project reference VM; actual Firefox with bundled userChrome.css and Google home; full window with margins",
-    "file": "firefox-light-9c02f1cfb2f7.jpg"
-  },
   "dolphin-light.jpg": {
     "source": "dolphin-light.png",
     "source_sha256": "92e32e5d4f7ca350561617be59eb4302af4be72d23399e8429c5e3a1b71ac00f",
@@ -341,19 +328,6 @@
     "kind": "installer-desktop",
     "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
-  },
-  "firefox-dark.jpg": {
-    "source": "build/installer-wizard-mocks-v5/firefox-frame-dark.png",
-    "source_sha256": "61f555186a49b5515e80c56886ad10bdea6528643a52b3b1dccc9229a978c21f",
-    "sha256": "2691a4efbbee47a0a06ffcfbbe5e922b440455e895863aeec489fdd7cefbf134",
-    "crop": [
-      720,
-      280,
-      3120,
-      1820
-    ],
-    "capture": "Temporary overlay of project reference VM; actual Firefox with bundled userChrome.css and Google home; full window with margins",
-    "file": "firefox-dark-2691a4efbbee.jpg"
   },
   "dolphin-dark.jpg": {
     "source": "dolphin-dark.png",
@@ -690,28 +664,6 @@
     "sha256": "a7522c9a93df2ef2ea4235031233a29d23e78a79ae916ecf7685a021bce005ec",
     "file": "iridescence-a7522c9a93df.jpg"
   },
-  "launcher-tahoe.jpg": {
-    "source": "launcher-tahoe.png",
-    "source_sha256": "0f0fb8130c109d54fea7c52c271d247b2dbb98a66c75dba644757fb81e6ce82d",
-    "crop": null,
-    "sha256": "3d74bdb90cd4d48896ad99d2b3df2117853f91783b4d563cec91443a9c61a8b2",
-    "file": "launcher-tahoe-3d74bdb90cd4.jpg",
-    "edition": "tahoe",
-    "kind": "installer-launcher-preview",
-    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
-  },
-  "launcher-golden.jpg": {
-    "source": "launcher-golden.png",
-    "source_sha256": "6153f0deb90bec3a79232d3e78a18b9b34cc64451fb9ddcb028729a49b003dfe",
-    "crop": null,
-    "sha256": "e22ab5841c203acb0ce5f046d13778872d141f85b86e40f2cad5ec548c1f9d46",
-    "file": "launcher-golden-e22ab5841c20.jpg",
-    "source_commit": "8e2300888c2be41bae3dc113eb4e003f4d132fd4",
-    "edition": "golden-gate",
-    "kind": "installer-launcher-preview",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
-  },
   "glass.jpg": {
     "source": "context.png",
     "source_sha256": "1e3bd9997541aa3ba180c32216228c9ea598c6ce38658d5e53159dd6a0c915a8",
@@ -756,6 +708,58 @@
     "size": [
       400,
       400
+    ]
+  },
+  "firefox-art.png": {
+    "file": "firefox-art-bbc0544ccba4.png",
+    "sha256": "bbc0544ccba4c88825651c83e4bec1dfe71339e4c67edbf5cec362bfd1e5eed2",
+    "kind": "generated-setting-artwork",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one square representative Firefox-theme illustration for a desktop settings panel. The reference boot illustration is for its compact 200 px shape, front-facing framing and understated treatment only. Fill the canvas with one near-black aubergine squircle, with continuous round corners and genuine transparency just outside. Center one original, softly modeled orange fox-tail flame curling around a small indigo globe, the recognizable visual idea of Firefox, composed as a single emblem about half the tile width. Use subtle glass-like color depth, a satin finish and a sharply legible silhouette. No browser screenshot, UI chrome, letters, progress indicator, unrelated marks, border or outside drop shadow.",
+    "reference": "boot-preview-ab721d174e9c.png",
+    "source_sha256": "d0f092202bf25446452f4b6eb99802b56c4e472d70237c58d35e5ac80a54db34",
+    "size": [
+      320,
+      320
+    ]
+  },
+  "launcher-tahoe-art.png": {
+    "file": "launcher-tahoe-art-8e6c1cb3695a.png",
+    "sha256": "8e6c1cb3695af3176faae278d31b33ba65fbf553180e09273c0d828ee1cef0d0",
+    "kind": "generated-setting-artwork",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Generate a single original desktop-settings illustration, a front-facing square app-style tile with continuous rounded corners, genuinely transparent exterior and about 3% transparent padding. Use the reference cloud tile for visual treatment only: a softly modeled satin-glass emblem, subtle top-left light, rounded shapes, a distinctly colored squircle, clean silhouette. Make it legible at 112 pixels with one simple composition and an edge that works on light and dark UI. Keep it straight-on and carefully centered. No words, no brand marks, no white backdrop, no external shadows, no sparkle decorations. Use a rich lake-blue tile. The emblem is one small frosted panel with a narrow category rail clearly integrated on its left and a 2-by-2 field of colorful tiny app-like rounded squares on the right. Link both areas with one continuous rounded window silhouette. Represent the category-and-apps launcher with abstract shapes and minimal details, like a single visual symbol, with the combined panel at roughly 58% of the tile width.",
+    "reference": "weather-regular-light-neutral-b484226f4290.png",
+    "source_sha256": "51fc1b6029595752193de6840a9bcd3a4a65a45ac8e980292a406a259029b0d5",
+    "size": [
+      224,
+      224
+    ]
+  },
+  "launcher-golden-art.png": {
+    "file": "launcher-golden-art-a0242e921541.png",
+    "sha256": "a0242e9215419044b9b4e955865dcccd1c852c1b77d49a98be32996ceba37e50",
+    "kind": "generated-setting-artwork",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Generate a single original desktop-settings illustration, a front-facing square app-style tile with continuous rounded corners, genuinely transparent exterior and about 3% transparent padding. Use the reference cloud tile for visual treatment only: a softly modeled satin-glass emblem, subtle top-left light, rounded shapes, a distinctly colored squircle, clean silhouette. Make it legible at 112 pixels with one simple composition and an edge that works on light and dark UI. Keep it straight-on and carefully centered. No words, no brand marks, no white backdrop, no external shadows, no sparkle decorations. Use a deep warm amber tile with subdued honey highlights. Center a short floating frosted search capsule with one tiny magnifying-glass mark, above and clearly separated from a small 3-by-2 grid of softly rounded colorful app-like squares. Show no enclosing window around the two shapes. Express a launcher with separate search and app grid. Together, both shapes occupy about 58% of the tile width and height.",
+    "reference": "weather-regular-light-neutral-b484226f4290.png",
+    "source_sha256": "2d84f527dc4e49c8ca14bb992434202d14acd8c7382993f2ee13f93dd2e20781",
+    "size": [
+      224,
+      224
+    ]
+  },
+  "launcher-keep-art.png": {
+    "file": "launcher-keep-art-c4407ed5eb03.png",
+    "sha256": "c4407ed5eb034bd5e697fa2b5007b23042b5a87ba8f2576e125c0cbfd4697117",
+    "kind": "generated-setting-artwork",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Generate a single original desktop-settings illustration, a front-facing square app-style tile with continuous rounded corners, genuinely transparent exterior and about 3% transparent padding. Use the reference cloud tile for visual treatment only: a softly modeled satin-glass emblem, subtle top-left light, rounded shapes, a distinctly colored squircle, clean silhouette. Make it legible at 112 pixels with one simple composition and an edge that works on light and dark UI. Keep it straight-on and carefully centered. No words, no brand marks, no white backdrop, no external shadows, no sparkle decorations. Use a cool muted teal tile. Center one soft frosted translucent folder with a familiar tab, containing two simple pastel app tiles peeked just above the top, and put a tiny subdued circular check mark tucked into the folder’s lower right. The unmistakable compact emblem represents keeping a familiar existing app launcher. Use about 56% of the tile width for the entire emblem, with a quiet shape and crisp edges.",
+    "reference": "weather-regular-light-neutral-b484226f4290.png",
+    "source_sha256": "14ad81da749700d3e69c704f77df93a5882bc496bda0059f3fd1e1efc4dfd6d5",
+    "size": [
+      224,
+      224
     ]
   },
   "panel.jpg": {

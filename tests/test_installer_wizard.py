@@ -267,7 +267,7 @@ for page, _ in STEPS:
             expected = 'SF Pro Display' if widget.objectName() == 'pageTitle' else 'SF Pro Text'
             assert QFontInfo(widget.font()).family() == expected, (page, widget.objectName())
     cards = window.content.findChildren(ChoiceCard)
-    if page in ('appearance', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows'):
+    if page in ('appearance', 'wallpaper', 'window_controls', 'button_position', 'shadows'):
         assert cards and cards[0].isChecked(), page
         assert cards[0].height() > 80, page
     if page == 'files':
@@ -319,32 +319,36 @@ bookmarks = window.content.findChild(CheckOption, 'choice-nautilus_bookmarks')
 assert bookmarks.isChecked()
 bookmarks.setFocus(); QTest.keyClick(bookmarks, Qt.Key.Key_Space)
 assert not window.choices['nautilus_bookmarks']
-for page, key in [('firefox', 'firefox'), ('boot', 'plymouth')]:
+for page, key, art_name, side in [('firefox', 'firefox', 'firefoxArtwork', 112),
+                                  ('boot', 'plymouth', 'bootAnimationPreview', 200)]:
     window.page = page; window.render(); app.processEvents(); app.processEvents()
     options = window.content.findChildren(RadioOption)
     assert len(options) == 2 and abs(options[0].width() - options[1].width()) <= 1
-    if page == 'boot':
-        preview = window.content.findChild(QLabel, 'bootAnimationPreview')
-        size = preview.pixmap().deviceIndependentSize()
-        assert (size.width(), size.height()) == (200, 200)
-        assert preview.pixmap().toImage().pixelColor(0, 0).alpha() == 0
-        assert options[0].x() == options[1].x() == window.body.contentsMargins().left()
-        assert abs(preview.geometry().center().x() - window.content.rect().center().x()) <= 1
-        assert preview.geometry().bottom() < options[0].y() < options[1].y()
-    else:
-        assert options[0].y() == options[1].y()
+    preview = window.content.findChild(QLabel, art_name)
+    size = preview.pixmap().deviceIndependentSize()
+    assert (size.width(), size.height()) == (side, side)
+    assert preview.pixmap().toImage().pixelColor(0, 0).alpha() == 0
+    assert options[0].x() == options[1].x() == window.body.contentsMargins().left()
+    assert abs(preview.geometry().center().x() - window.content.rect().center().x()) <= 1
+    assert preview.geometry().bottom() < options[0].y() < options[1].y()
     options[1].click(); app.processEvents()
     assert window.choices[key] is False
-window.page = 'launcher'; window.render()
-cards = window.content.findChildren(ChoiceCard)
-first = cards[0].accessibleName()
-cards[1].click(); app.processEvents(); app.processEvents()
-assert window.content.findChildren(ChoiceCard)[0].accessibleName() == first
+window.page = 'launcher'; window.render(); app.processEvents()
+options = window.content.findChildren(RadioOption)
+preview = window.content.findChild(QLabel, 'launcherArtwork')
+assert len(options) == 3 and options[0].isChecked()
+assert len({option.x() for option in options}) == 1
+assert preview.geometry().bottom() < options[0].y() < options[1].y() < options[2].y()
+original_art = preview.pixmap().toImage()
+options[0].setFocus(); QTest.keyClick(options[0], Qt.Key.Key_Down); app.processEvents()
+assert options[1].isChecked() and preview.pixmap().toImage() != original_art
 selected = window.choices['launcher']
-# Selection does not shift card edges, and dots stay centered despite unequal button labels.
-cards = window.content.findChildren(ChoiceCard)
-assert cards[0].y() == cards[1].y()
-assert cards[0].height() == cards[1].height()
+edition_art = preview.pixmap().toImage()
+options[2].click(); app.processEvents()
+assert window.choices['launcher'] == 'keep' and preview.pixmap().toImage() != edition_art
+options[1].click(); app.processEvents()
+assert preview.pixmap().toImage() == edition_art
+# Selection leaves the dot rail centered despite unequal button labels.
 assert abs(window.dots.mapTo(window, window.dots.rect().center()).x() - window.width()/2) <= 2
 window.page = 'wallpaper'; window.render(); window.advance(); app.processEvents()
 assert window.page == 'desktop_widgets' and window.choices['desktop_widgets'] is True
