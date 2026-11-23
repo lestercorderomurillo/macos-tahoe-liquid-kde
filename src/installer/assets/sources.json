@@ -3294,35 +3294,36 @@
     "source_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
   },
   "dock-art.jpg": {
-    "file": "dock-art-cb6af814a8b3.jpg",
-    "sha256": "cb6af814a8b3f6381e85ffef8e90a274149e94f4193f33703ea10aadc11f6aff",
+    "file": "dock-art-c202da30a1e7.jpg",
+    "sha256": "c202da30a1e775bd9cece1c006e692c391c22d61c70d8096dd0a57ba658e5978",
     "kind": "generated-layout-illustration",
     "generator": "OpenAI ImageGen",
-    "prompt": "Use case: stylized-concept. Produce a finished 2.26:1 panoramic illustration for a 362 by 160 thumbnail in a desktop theme installer. Original editorial 3D product artwork, with soft studio light, restrained refraction, crisp edges, and a dark slate blue and teal atmosphere with touches of ice blue. Large, simple composition instantly readable at thumbnail size. Keep important geometry in the central 85% horizontally and central 75% vertically. The background extends to the edge. No text, no letters, no numbers, no labels, no logos, no photograph or screenshot of software, no device frame. Use an original illustration from scratch. Subject: a luminous single horizontal frosted-glass application dock with six chunky, vividly distinct sculpted squircle app tokens, arranged neatly side by side on its low capsule tray. Three-quarter view from just above, all six tokens clearly visible with diverse cyan, purple, warm amber, mint and ivory faces. Use neutral pictograms such as folder, aperture, paper, music and compass, and a subtle reflected silhouette below the tray. Make the tray and the row fill most of the horizontal frame. A quiet flowing teal-blue abstract backdrop.",
+    "prompt": "Use case: stylized-concept. Produce one original panoramic illustration at approximately 2.26:1 for the Dock choice tile in a Linux desktop theme installer. Think of a contemporary macOS-inspired desktop as proportions and material only, interpreted as an original visual, not a screenshot. Orthographic, straight on, no perspective tilt. In the bottom third, a single unobtrusive thin horizontal tray of lightly frosted translucent glass sits above the desktop edge. It spans around 62% of the width, has a fine pale lip, a quiet contact shadow, and no neon rim, bevel, reflections on a tabletop or extrusion. On it, a neat row of seven small, equally spaced matte squircle app tokens. The bases of the tokens sit comfortably inside the tray. Use ORIGINAL icons: a cyan folded folder, a deep violet abstract orbit, a warm cream notepad, a coral waveform, a blue rain cloud, a green landscape, and a pale gray recycling basket separated by one subtle vertical rule. Flat-on icon faces, mostly soft surfaces, colors distinct but harmonious. The full-bleed background is a beautiful original, soft painterly alpine lake with a calm pale lilac sky, distant periwinkle mountains, muted teal water, sage green hills, and a warm peach corner of reflected evening light. Visible fine gouache and paper texture, clean organized silhouette and generous breathing room. Keep the whole tray and every token within the central 80% width, with a 9% bottom safety margin for crops. The simple dock must be clear at 362×160. No menu bar, window, frame, typography, letters, numbers, branded logos, photographic effects or other UI.",
     "size": [
       1086,
       480
     ],
     "generated_size": [
-      1882,
+      1880,
       836
     ],
-    "generated_sha256": "976f0cefb511f0da0b842c955f9e288844685cc4be1bfcb0eb4f99c226cb52ca"
+    "generated_sha256": "3eed23a53ecbc26ba63592bce42c5222f54d4fa5c8153175a88199d071e19d8b"
   },
   "menu-bar-art.jpg": {
-    "file": "menu-bar-art-c38f197c8653.jpg",
-    "sha256": "c38f197c865314e08c53e208baccfbe0f9db995dba85a5dfcfbd2d72c7fcf79e",
+    "file": "menu-bar-art-a331fab6bf8c.jpg",
+    "sha256": "a331fab6bf8c8dbfed65179bfcc76fa4abb0d52eb6107b0c3e4566653c872065",
     "kind": "generated-layout-illustration",
     "generator": "OpenAI ImageGen",
-    "prompt": "Use case: stylized-concept. Produce a finished 2.26:1 panoramic illustration for a 362 by 160 thumbnail in a desktop theme installer. Original editorial 3D product artwork, with soft studio light, restrained refraction, crisp edges, and a dark slate blue and teal atmosphere with touches of ice blue. Large, simple composition instantly readable at thumbnail size. Keep important geometry in the central 85% horizontally and central 75% vertically. The background extends to the edge. No text, no letters, no numbers, no labels, no logos, no photograph or screenshot of software, no device frame. Use an original illustration from scratch. Subject: a single narrow floating horizontal ribbon of frosted glass suggesting the top menu bar of a Linux desktop, seen almost front on with just enough perspective to read its depth. A simple luminous four-point system mark at far left and a compact set of tiny clean status pictograms on the far right (Wi-Fi arcs, battery outline, sliders), with restrained short glass dashes near the left suggesting menus with no text. Behind it at lower center are two broad soft overlapping desktop-colored planes. The strong narrow floating ribbon is centered horizontally and vertically, spanning most of the frame. A quiet flowing teal-blue abstract backdrop in the same visual family as a polished glass dock product illustration.",
+    "prompt": "Use case: precise-object-edit. Make the companion Menu Bar illustration for the same Linux desktop theme installer, at the same approximately 2.26:1 aspect ratio. Use the supplied original Dock illustration as the edit target. Preserve its painterly alpine lake, paper and gouache texture, exact perspective, framing, pale lilac sky, periwinkle mountains, teal water, sage hills, peach evening clouds and existing light. Remove the entire Dock and all its app icons, restoring the lake and foreground naturally. Add one shallow menubar across the very top of the painted desktop, straight-on and almost full width, just 3–4% in from the edges. The panel is slim, about one twelfth the height of the illustration, with a quiet milk-glass tint, subtle transparency so the lavender sky softly shows through, a straight lower hairline and understated corners. It should read as an attached desktop menu bar inspired by macOS proportions, not a thick floating capsule or a hardware object. Inside it place a simple original mountain-diamond emblem at the far left, then three short dark muted blue strokes suggesting menu labels, with generous empty space in the middle. At the far right place subtle, clearly recognizable charcoal Wi-Fi arcs, a battery outline, and two small slider marks. Give the thin bar enough contrast against the sky to read at 362×160. Preserve the rich painting as the primary background. No Dock, text, numbers, actual brand logos, window frames, perspective tilt, neon glow or 3D extrusion.",
     "size": [
       1086,
       480
     ],
     "generated_size": [
-      1884,
-      835
+      1881,
+      836
     ],
-    "generated_sha256": "235276a613e63b6088b7a7326a2b1c5a55bc31623b41e0bd546b5998597ce3ec"
+    "generated_sha256": "b2b53f178831b5ba3870ed4206e21666f27c0987651c4dc3b7a212c09ae7cb2a",
+    "reference_sha256": "3eed23a53ecbc26ba63592bce42c5222f54d4fa5c8153175a88199d071e19d8b"
   }
 }
