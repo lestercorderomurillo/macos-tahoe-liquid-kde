@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.1**. Verified per-label contrast in the light and dark appearances with Adaptive Contrast on and off. On the dark half of the split launcher backdrop, the measured Firefox label improved from 20.2 to 33.4 lightness points. [Evidence and coverage](release-evidence.json).
+**v0.84.2**. Verified tinted Dock artwork and Downloads in both icon appearances across the eight installer colors. Empty and full Trash retain their neutral artwork. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
