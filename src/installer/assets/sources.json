@@ -746,16 +746,17 @@
     "edition": "tahoe",
     "kind": "reviewed-vm-photo"
   },
-  "boot.jpg": {
-    "source": "src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp",
-    "source_sha256": "6d6f3b7d649ee6ceca440db0b39d25dedd0fde76d86274c45c39398086bcd920",
-    "crop": null,
-    "sha256": "0ca2e673847287f50c6721d0e60b90217770a2be3a9c4629dc098451548e3a67",
-    "file": "boot-0ca2e6738472.jpg",
-    "source_commit": "2368236ece9096533e702685722f518aa379bc07",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
-    "edition": "tahoe",
-    "kind": "reviewed-vm-photo"
+  "boot-preview.png": {
+    "file": "boot-preview-ab721d174e9c.png",
+    "sha256": "ab721d174e9cb7c7a61f01747247fa1a26c1f66390ff552cc137e29899a4f8c4",
+    "kind": "generated-boot-preview",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create a single original boot-animation preview tile for a desktop installer, designed to read clearly at 200 × 200 pixels. Exactly one front-facing nearly black square squircle with generous continuous superellipse corners. The squircle fills almost the entire square canvas, with only a 2% transparent margin and genuine transparency in all four outside corners. Quiet near-black graphite surface, extremely subtle tonal depth, crisp edge, no gloss, no raised extrusion or drop shadow. Center a small simple ivory bitten-apple silhouette with one detached leaf, roughly 20% of the tile width, positioned slightly above the vertical center. Directly below it put a single thin horizontal dark-gray progress track about 34% of the tile width, with a short ivory fill from the left about one third complete. Precisely centered, understated, sparse, restrained. No lettering, no extra marks, no surrounding device, stand, window, border, or background.",
+    "source_sha256": "464a6b1ea9bcca3f9465ca8f58a5f187f9f862b390758b298dc4ebfdeb736276",
+    "size": [
+      400,
+      400
+    ]
   },
   "panel.jpg": {
     "source": "build/captures/v0.60.0/frames/tahoe-light-showcase.png",

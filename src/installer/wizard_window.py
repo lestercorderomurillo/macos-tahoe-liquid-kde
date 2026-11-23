@@ -1439,11 +1439,11 @@ class InstallerWindow(OpaqueSurface):
         self.body.addLayout(grid)
         return group
 
-    def radio(self, key, values, *, inline=False, font_scale=.93, inline_row=None):
+    def radio(self, key, values, *, inline=False, font_scale=.93, option_layout=None):
         group = QButtonGroup(self.content)
         self.groups.append(group)
-        row = inline_row if inline_row is not None else QHBoxLayout() if inline else self.body
-        if inline and inline_row is None:
+        row = option_layout if option_layout is not None else QHBoxLayout() if inline else self.body
+        if inline and option_layout is None:
             row.setSpacing(22)
         for value, label in sorted(values, key=lambda item: item[0] != self.defaults[key]):
             button = RadioOption(self.t(label))
@@ -1454,7 +1454,7 @@ class InstallerWindow(OpaqueSurface):
             group.addButton(button)
             button.clicked.connect(lambda _, k=key, v=value: self.select(k, v))
             row.addWidget(button, 1 if inline else 0)
-        if inline and inline_row is None:
+        if inline and option_layout is None:
             self.body.addLayout(row)
 
     def checkbox(self, key, text):
@@ -2357,7 +2357,7 @@ class InstallerWindow(OpaqueSurface):
         appearance.setContentsMargins(4, 0, 0, 0)
         appearance.setSpacing(8)
         self.radio("icon_appearance", [("auto", "Automatic"), ("light", "Light"), ("dark", "Dark")],
-                   inline=True, font_scale=.76, inline_row=appearance)
+                   inline=True, font_scale=.76, option_layout=appearance)
         rows.addLayout(appearance, 2, 1)
 
         colors = QHBoxLayout()
@@ -2694,8 +2694,17 @@ class InstallerWindow(OpaqueSurface):
         self.bookmarks.setVisible(self.choices["files"] == "nautilus")
 
     def page_boot(self):
-        self.body.addWidget(self.image("boot.jpg", width=744, height=255, background="#000000"))
-        self.radio("plymouth", [(True, "Use the theme animation"), (False, "Keep my boot animation")], inline=True)
+        content = QWidget()
+        stack = QVBoxLayout(content)
+        stack.setContentsMargins(0, 0, 0, 0)
+        stack.setSpacing(4)
+        preview = self.image("boot-preview.png", width=200, height=200)
+        preview.setObjectName("bootAnimationPreview")
+        stack.addWidget(preview, alignment=Qt.AlignmentFlag.AlignHCenter)
+        stack.addSpacing(8)
+        self.radio("plymouth", [(True, "Use the theme animation"), (False, "Keep my boot animation")],
+                   option_layout=stack)
+        self.body.addWidget(content, alignment=Qt.AlignmentFlag.AlignHCenter)
 
     def page_oled(self):
         self.radio("oled_care", [(False, "Do not enable"), (True, "Enable pixel shifting")])

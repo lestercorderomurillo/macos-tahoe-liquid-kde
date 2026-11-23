@@ -319,8 +319,16 @@ assert not window.choices['nautilus_bookmarks']
 for page, key in [('firefox', 'firefox'), ('boot', 'plymouth')]:
     window.page = page; window.render(); app.processEvents(); app.processEvents()
     options = window.content.findChildren(RadioOption)
-    assert len(options) == 2 and options[0].y() == options[1].y()
-    assert abs(options[0].width() - options[1].width()) <= 1
+    assert len(options) == 2 and abs(options[0].width() - options[1].width()) <= 1
+    if page == 'boot':
+        preview = window.content.findChild(QLabel, 'bootAnimationPreview')
+        size = preview.pixmap().deviceIndependentSize()
+        assert (size.width(), size.height()) == (200, 200)
+        assert preview.pixmap().toImage().pixelColor(0, 0).alpha() == 0
+        assert options[0].x() == options[1].x()
+        assert preview.geometry().bottom() < options[0].y() < options[1].y()
+    else:
+        assert options[0].y() == options[1].y()
     options[1].click(); app.processEvents()
     assert window.choices[key] is False
 window.page = 'launcher'; window.render()
