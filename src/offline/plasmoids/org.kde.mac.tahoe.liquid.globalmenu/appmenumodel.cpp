@@ -98,6 +98,7 @@ AppMenuModel::AppMenuModel(QObject* parent)
             removeSearchActionsFromMenu();
             m_menu.clear();
             m_importer.reset();
+            setLoadingTitles({});
             setMenuAvailable(false);
             updateGenericMenu();
             Q_EMIT modelNeedsUpdate();
@@ -282,6 +283,7 @@ void AppMenuModel::update()
 {
     beginResetModel();
     endResetModel();
+    if (m_menuAvailable) setLoadingTitles({});
     m_updatePending = false;
 }
 
@@ -448,6 +450,13 @@ QVariant AppMenuModel::data(const QModelIndex& index, int role) const
     return {};
 }
 
+void AppMenuModel::setLoadingTitles(const QVariantList &titles)
+{
+    if (titles == m_loadingTitles) return;
+    m_loadingTitles = titles;
+    Q_EMIT loadingTitlesChanged();
+}
+
 // DBus importer attachment
 
 /// Swap the watched dbus service / object. The old importer is
@@ -461,6 +470,22 @@ void AppMenuModel::updateApplicationMenu(const QString& serviceName, const QStri
         QMetaObject::invokeMethod(m_importer.get(), "updateMenu", Qt::QueuedConnection);
         return;
     }
+
+    if (m_importer && m_menuAvailable && m_menu && m_menu == m_importer->menu()) {
+        QVariantList titles;
+        for (auto *action : m_menu->actions()) {
+            if (action->isVisible() && !action->text().isEmpty())
+                titles << QVariantMap{{QStringLiteral("text"), action->text()}, {QStringLiteral("enabled"), action->isEnabled()}};
+        }
+        m_recentTitles.insert({m_serviceName, m_menuObjectPath}, new QVariantList(titles));
+    }
+    QVariantList titles;
+    if (const auto *cached = m_recentTitles.object({serviceName, menuObjectPath})) {
+        titles = *cached;
+        if (!titles.isEmpty() && m_enableMenuSearch && m_searchAction)
+            titles << QVariantMap{{QStringLiteral("text"), m_searchAction->text()}, {QStringLiteral("enabled"), m_searchAction->isEnabled()}};
+    }
+    setLoadingTitles(titles);
 
     Q_EMIT menuSourceAboutToChange();
 
@@ -496,6 +521,8 @@ void AppMenuModel::updateApplicationMenu(const QString& serviceName, const QStri
             }
 
             if (m_menu->isEmpty()) {
+                setLoadingTitles({});
+                m_recentTitles.remove({m_serviceName, m_menuObjectPath});
                 setMenuAvailable(false);
                 updateGenericMenu();
                 return;

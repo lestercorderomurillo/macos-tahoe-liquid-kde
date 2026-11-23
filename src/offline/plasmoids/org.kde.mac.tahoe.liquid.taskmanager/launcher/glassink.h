@@ -98,6 +98,15 @@ public:
         return QColor::fromRgbF(gray, gray, gray, base.alphaF());
     }
 
+    // Primary strokes in the Tahoe and Golden Gate menu references are white
+    // or near black. Deepen dark ink when the sampled material needs it.
+    QColor primaryText(Family family) const
+    {
+        if (family == Family::Light) return Qt::white;
+        const int gray = std::min(36, tone(Qt::black, family).red());
+        return QColor(gray, gray, gray);
+    }
+
 private:
     double m_requested = 0.;
     double m_weight = 0.;

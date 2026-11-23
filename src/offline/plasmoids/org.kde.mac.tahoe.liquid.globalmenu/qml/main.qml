@@ -287,6 +287,28 @@ PlasmoidItem {
             onActivated: Plasmoid.triggerWindowMenu(this)
         }
 
+        // During D-Bus handoff paint the known titles of the incoming window.
+        // These labels own no actions and cannot receive input.
+        Repeater {
+            model: buttonRepeater.count === 0 && appMenuModel.visible ? appMenuModel.loadingTitles : []
+            TopBarDelegate {
+                id: loadingTitle
+                required property var modelData
+                text: modelData.text
+                horizontalBar: !root.vertical
+                goldenGate: root.goldenGate
+                Layout.fillWidth: root.vertical
+                Layout.fillHeight: !root.vertical
+                enabled: false
+                Accessible.ignored: true
+                Binding {
+                    target: loadingTitle.contentItem
+                    property: "opacity"
+                    value: loadingTitle.modelData.enabled ? 1 : 0.75
+                }
+            }
+        }
+
         Repeater {
             id: buttonRepeater
             model: appMenuModel.visible ? appMenuModel : null

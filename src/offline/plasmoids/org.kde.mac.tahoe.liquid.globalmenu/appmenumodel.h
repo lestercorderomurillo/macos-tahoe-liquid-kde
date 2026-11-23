@@ -9,6 +9,7 @@
 #include <Plasma/Containment>
 #include <QAbstractListModel>
 #include <QAction>
+#include <QCache>
 #include <QPointer>
 #include <QPersistentModelIndex>
 #include <QKeySequence>
@@ -58,6 +59,7 @@ class AppMenuModel : public QAbstractListModel
     /// True when the menubar is actually painted (combination of
     /// containment status + active-window-on-our-screen).
     Q_PROPERTY(bool visible READ visible NOTIFY visibleChanged)
+    Q_PROPERTY(QVariantList loadingTitles MEMBER m_loadingTitles NOTIFY loadingTitlesChanged)
 
     /// When false, only show menus for windows on this output. When
     /// true, mirror the global active window's menu regardless of screen.
@@ -136,6 +138,7 @@ Q_SIGNALS:
     void containmentStatusChanged();
     void screenGeometryChanged();
     void visibleChanged();
+    void loadingTitlesChanged();
 
 private Q_SLOTS:
     /// Re-attach to the new active window's AppMenu service.
@@ -189,5 +192,9 @@ private:
     QDBusServiceWatcher* m_serviceWatcher;
     QString m_serviceName;
     QString m_menuObjectPath;
+    // Presentation only. Actions must always come from the active importer.
+    QCache<QPair<QString, QString>, QVariantList> m_recentTitles{16};
+    QVariantList m_loadingTitles;
+    void setLoadingTitles(const QVariantList &titles);
     std::unique_ptr<KDBusMenuImporter> m_importer;
 };

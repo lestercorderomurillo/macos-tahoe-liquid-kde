@@ -106,37 +106,30 @@ void ShellMenu::paintEvent(QPaintEvent *event)
         const QColor preferred = palette().color(QPalette::WindowText);
         if (panel != m_lastMaterial) {
             m_lastMaterial = panel;
-            m_family = GlassInk::sample(GlassInk::component, QRectF(m_bounds).center(),
-                QSizeF(m_bounds.size()) * .45, surfaceAt).family(preferred);
+            const auto samples = GlassInk::sample(GlassInk::component, QRectF(m_bounds).center(),
+                QSizeF(m_bounds.size()) * .45, surfaceAt);
+            m_materialInk = samples.primaryText(samples.family(preferred));
         }
-        for (QAction *action : actions()) {
-            if (!action->isVisible() || action->isSeparator()) continue;
-            const QRect row = actionGeometry(action);
-            const QPoint point(row.left() + row.width() / 3, row.center().y());
-            const auto local = GlassInk::sample(GlassInk::menu, point,
-                QSizeF(row.width() / 4., row.height() / 4.), surfaceAt);
-            m_rowInks.insert(action, local.tone(preferred, m_family));
-        }
+        m_paintingSampledMenu = true;
     }
     QMenu::paintEvent(event);
-    m_rowInks.clear();
+    m_paintingSampledMenu = false;
 }
 
 void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const
 {
     QMenu::initStyleOption(option, action);
-    if (!m_dynamicTinting) return;
-    const auto sampledInk = m_rowInks.value(action);
-    if (!sampledInk.isValid()) return;
+    if (!m_dynamicTinting || !m_paintingSampledMenu) return;
     for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
-        QColor color = sampledInk;
+        QColor color = m_materialInk;
         if (option->state.testFlag(QStyle::State_Selected)) {
-            const auto family = GlassInk::familyOf(sampledInk);
+            // Selection has its own solid accent surface and text role.
+            const auto family = GlassInk::familyOf(option->palette.color(group, QPalette::HighlightedText));
             const auto accent = option->palette.color(group, QPalette::Highlight);
             const auto fill = selectionFill(accent, family);
             GlassInk::Samples selection;
             selection.add(fill);
-            color = selection.tone(color, family);
+            color = selection.primaryText(family);
             option->palette.setColor(group, QPalette::Highlight, fill);
         }
         if (group == QPalette::Disabled) color.setAlphaF(.48);

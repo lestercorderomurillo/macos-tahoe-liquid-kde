@@ -254,8 +254,14 @@ private Q_SLOTS:
         model.updateApplicationMenu(service, QStringLiteral("/Missing"));
         QCOMPARE(model.rowCount(), 0);
         QVERIFY(!model.menuAvailable());
+        QVERIFY(model.property("loadingTitles").toList().isEmpty());
         model.updateApplicationMenu(service, path);
+        QCOMPARE(model.rowCount(), 0);
+        const auto titles = model.property("loadingTitles").toList();
+        QVERIFY(!titles.isEmpty());
+        QCOMPARE(titles.first().toMap().value(QStringLiteral("text")).toString(), QStringLiteral("File"));
         QTRY_COMPARE(model.rowCount(), 2);
+        QTRY_VERIFY(model.property("loadingTitles").toList().isEmpty());
         model.updateApplicationMenu({}, {});
         QCOMPARE(model.rowCount(), 0);
         QVERIFY(!model.menuAvailable());

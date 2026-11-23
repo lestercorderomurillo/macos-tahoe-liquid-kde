@@ -135,7 +135,7 @@ QColor panelInk(const WallpaperSpec &spec)
         scrim.setAlphaF(std::lerp(PanelWallpaper::scrimOpacityAt(left / 8), PanelWallpaper::scrimOpacityAt(right / 8), segment - left));
         return GlassInk::composite(pixel, scrim);
     });
-    return samples.tone(Qt::white, samples.family(Qt::white));
+    return samples.primaryText(samples.family(Qt::white));
 }
 
 // One observer and one result for all applets sharing this panel window.

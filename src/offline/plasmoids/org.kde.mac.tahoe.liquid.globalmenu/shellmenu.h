@@ -2,7 +2,6 @@
 #pragma once
 
 #include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/glassink.h"
-#include <QHash>
 #include <QImage>
 #include <QMenu>
 #include <QPointer>
@@ -25,7 +24,7 @@ private Q_SLOTS:
 
 private:
     QImage m_lastMaterial;
-    GlassInk::Family m_family = GlassInk::Family::Dark;
+    QColor m_materialInk;
     bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;
@@ -33,5 +32,5 @@ private:
     QPointer<QScreen> m_sampledScreen;
     qint64 m_sampledPalette = 0;
     qreal m_sampledScale = 0;
-    QHash<const QAction *, QColor> m_rowInks;
+    bool m_paintingSampledMenu = false;
 };
