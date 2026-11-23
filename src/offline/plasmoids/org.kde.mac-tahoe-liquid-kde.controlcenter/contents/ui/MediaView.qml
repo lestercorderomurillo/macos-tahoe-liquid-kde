@@ -16,7 +16,7 @@ ColumnLayout {
         Layout.preferredWidth: 39; Layout.preferredHeight: 39; Layout.minimumHeight: 39
         // macOS Tahoe: a light translucent artwork placeholder.
         Rectangle { anchors.fill: parent; radius: 9; color: Qt.rgba(1, 1, 1, 0.14) }
-        Kirigami.Icon { anchors.centerIn: parent; width: 24; height: 24; source: Style.symbol("audio-x-generic"); isMask: true; color: Style.foreground(this, Window.window, "white"); visible: view.hasTrack && cover.status !== Image.Ready }
+        Kirigami.Icon { anchors.centerIn: parent; width: 24; height: 24; source: Style.symbol("audio-x-generic"); isMask: true; color: Style.foreground(this, Window.window, Kirigami.Theme.textColor); visible: view.hasTrack && cover.status !== Image.Ready }
         Image {
             id: cover
             anchors.fill: parent
