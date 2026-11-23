@@ -5,7 +5,7 @@ import org.kde.kirigami as Kirigami
 QQC2.Button {
     property bool isDarkTheme: false
     readonly property alias faceColor: face.color
-    property color labelColor: Qt.tint(Kirigami.Theme.textColor, isDarkTheme ? "#66ffffff" : "#66000000")
+    property color labelColor: Kirigami.Theme.textColor
         id: control
         hoverEnabled: true
         implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,

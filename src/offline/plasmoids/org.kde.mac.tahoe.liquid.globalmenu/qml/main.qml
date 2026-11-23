@@ -197,7 +197,14 @@ PlasmoidItem {
     }
 
     component TopBarDelegate: MenuDelegate {
-        foregroundColor: root.wallpaperTint ? menuInk.foreground : baseForeground
+        id: menuLabel
+        Native.WallpaperInk {
+            id: labelInk
+            item: menuLabel.contentItem
+            base: menuLabel.baseForeground
+            active: root.wallpaperTint
+        }
+        foregroundColor: root.wallpaperTint ? labelInk.foreground : baseForeground
     }
 
     fullRepresentation: GridLayout {

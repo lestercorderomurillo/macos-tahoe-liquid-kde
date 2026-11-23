@@ -23,8 +23,7 @@ private Q_SLOTS:
     void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &grid, const QString &role);
 
 private:
-    QImage m_lastMaterial;
-    GlassInk::Samples m_materialSamples;
+    QHash<const QAction *, GlassInk::Samples> m_actionSamples;
     bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;

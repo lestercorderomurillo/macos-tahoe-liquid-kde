@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import "NotificationContrast.js" as Contrast
 import QtQuick.Window
 import QtQuick.Controls as Controls
 import QtQuick.Shapes
@@ -15,7 +14,7 @@ PlasmaCore.Dialog {
     property var availableGeometry: () => Qt.rect(Screen.virtualX, Screen.virtualY, Screen.width, Screen.height)
     property string textFont: Kirigami.Theme.defaultFont.family
     property real textSize: Kirigami.Theme.defaultFont.pointSize
-    property color textColor: Contrast.preferredText(Kirigami.Theme.textColor)
+    property color textColor: Kirigami.Theme.textColor
     property bool isDarkTheme: textColor.r * 0.2126 + textColor.g * 0.7152 + textColor.b * 0.0722 > 0.5
     property int preferredWidth: 154
     property bool fitContents: false

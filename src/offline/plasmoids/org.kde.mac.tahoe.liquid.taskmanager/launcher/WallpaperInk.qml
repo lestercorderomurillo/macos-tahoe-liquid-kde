@@ -10,6 +10,11 @@ PanelWallpaper {
     readonly property GlassSettings settings: GlassSettings {}
     readonly property var panelSource: active && item?.Window.window
         ? sampler.sourceFor(item.Window.window, Plasmoid.containment) : null
-    readonly property color foreground: !panelSource ? base
-        : settings.dynamicTinting ? panelSource.foreground : panelSource.baseForeground
+    readonly property color foreground: {
+        if (!panelSource) return base;
+        const themeColor = panelSource.baseForeground;
+        if (!settings.dynamicTinting) return themeColor;
+        panelSource.revision;
+        return panelSource.foregroundFor(AdaptiveContrast.bounds(item), themeColor);
+    }
 }

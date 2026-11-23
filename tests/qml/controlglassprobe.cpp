@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     const auto overBlack = localTone(Qt::black, theme);
     const auto overWhite = localTone(Qt::white, theme);
 
-    // Different labels keep their own base family on both sides of the same popup.
+    // Different labels keep readable base colors on both sides of the same popup.
     QByteArray split(8 * 8 * 3, 0);
     for (int y = 0; y < 8; ++y) std::fill_n(split.data() + (y * 8 + 6) * 3, 6, char(255));
     const QRect frame(window.position(), window.size());
@@ -101,14 +101,15 @@ int main(int argc, char **argv)
         for (int gray = 0; gray <= 255; ++gray) {
             const QColor backdrop(gray, gray, gray);
             const QColor tone = localTone(backdrop, base);
-            const double surface = GlassInk::luminance(backdrop);
-            if (GlassInk::familyOf(tone) != GlassInk::familyOf(base)
-                || std::abs(tone.red() - base.red()) > 51 || tone.alpha() != base.alpha()
-                || GlassInk::contrastRatio(GlassInk::luminance(tone), surface)
-                    < GlassInk::contrastRatio(GlassInk::luminance(base), surface)) return 27;
+            const double surface = GlassInk::lightness(backdrop);
+            const double before = std::abs(GlassInk::lightness(base) - surface);
+            const double after = std::abs(GlassInk::lightness(tone) - surface);
+            if ((before >= .20 && tone != base) || after < before
+                || GlassInk::familyOf(tone) != GlassInk::familyOf(base)
+                || tone.alpha() != base.alpha() || std::abs(tone.red() - base.red()) > 51) return 27;
         }
     }
-    if (localTone(Qt::black, Qt::black).red() != 51 || localTone(Qt::white, Qt::white).red() != 204
+    if (localTone(Qt::black, Qt::black).red() != 49 || localTone(Qt::white, Qt::white).red() != 204
         || overWhite.red() >= theme.red() || overBlack != theme) return 28;
     const QRectF clipped(center.x(), 0, radius.width(), window.height());
     const auto visibleSamples = glass.categorySamples(center, radius, clipped, Qt::transparent);

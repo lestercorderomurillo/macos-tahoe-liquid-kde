@@ -2096,8 +2096,8 @@ void BlurEffect::blur(
         && caption.startsWith(m_aboutAppPrefix) && caption.endsWith(m_aboutAppSuffix)
         && caption.size() > m_aboutAppPrefix.size() + m_aboutAppSuffix.size();
     const bool about = plasma && (aboutApp || caption == m_aboutTitle || caption == QStringLiteral("About This Computer"));
-    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about;
-    if (BlurConfig::dynamicTinting() && (spatialBackdrop || notification)) {
+    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about || notification;
+    if (BlurConfig::dynamicTinting() && spatialBackdrop) {
         const int sampleInterval = about ? 40 : 200;
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
             blurInfo.contrastTimer.start();
@@ -2208,8 +2208,9 @@ void BlurEffect::blur(
                                 << (shellMenu ? QStringLiteral("mttkde-shell-menu") : w->caption());
                         QDBusConnection::sessionBus().send(message);
                     }
-                } else {
-                    const auto average = total / 64;
+                }
+                if (notification) {
+                    const auto average = total / (side * side);
                     const QColor color = QColor::fromRgbF(average.x(), average.y(), average.z());
                     const QRect bounds = w->frameGeometry().toAlignedRect();
                     if (color != blurInfo.contrastColor || bounds != blurInfo.contrastBounds) {

@@ -11,9 +11,3 @@ function luminance(color) {
 function ratio(a, b) {
     return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
 }
-
-function preferredText(base) {
-    // Move the preferred text 40% toward its nearest luminance extreme.
-    const rgb = Qt.tint(base, luminance(base) > 0.5 ? "#66ffffff" : "#66000000");
-    return Qt.rgba(rgb.r, rgb.g, rgb.b, base.a);
-}

@@ -13,15 +13,7 @@ QtObject {
     required property color preferred
     required property color fill
     required property bool tintEnabled
-    readonly property bool sampled: tintEnabled && window !== null
-    readonly property point center: sampled ? Qt.point(window.width / 2, window.height / 2) : Qt.point(0, 0)
-    readonly property size radius: sampled ? Qt.size(window.width / 4, window.height / 9) : Qt.size(0, 0)
-    readonly property color foreground: sampled && sampler.backdropRevision > 0
-        ? sampler.animatedForegroundAt(window.contentItem, center, radius, preferred, fill)
-        : preferred
-
-    function withOpacity(fallback: color): color {
-        return sampled && sampler.backdropRevision > 0
-            ? sampler.foregroundAt(center, radius, fallback, fill) : fallback;
+    function foregroundFor(item, base = preferred) {
+        return tintEnabled ? NativeGlass.AdaptiveContrast.foreground(sampler, item, base, fill) : base;
     }
 }

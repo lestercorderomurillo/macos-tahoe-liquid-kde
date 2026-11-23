@@ -38,6 +38,10 @@ void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bou
         // Wayland repositions the anchored Plasma dialog relative to its panel.
         || !m_window->screen() || !m_window->screen()->geometry().intersects(frame)
         || bounds.isEmpty() || (colors.size() != 8 * 8 * 3 && colors.size() != 64 * 64 * 3)) return;
+    if (title == QStringLiteral("mttkde-notifications")) {
+        const int tolerance = BackdropGeometry::edgeTolerance(*m_window);
+        if (qAbs(frame.x() - m_window->x()) > tolerance || qAbs(frame.y() - m_window->y()) > tolerance) return;
+    }
     if (dragging && !m_lastFrame.isEmpty() && frame.topLeft() != m_lastFrame.topLeft()) m_ink.moved();
     if (!dragging) m_ink.stationary();
     m_lastFrame = frame;

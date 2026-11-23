@@ -19,13 +19,9 @@ PlasmaCore.Dialog {
     property bool inputOnGlassOnly: true
     function foregroundFor(item: Item, base: color): color {
         if (!adaptiveForeground) return base;
-        glass.backdropRevision; // Re-evaluate when the compositor samples a new frame.
-        const point = item.mapToItem(popup.contentItem, item.width / 2, item.height / 2);
         let tile = item;
         while (tile && tile.fillColor === undefined) tile = tile.parent;
-        const fill = tile ? tile.fillColor : Qt.rgba(0, 0, 0, 0);
-        const radius = Qt.size(Math.min(36, (tile || item).width / 3), Math.min(64, (tile || item).height / 2));
-        return glass.animatedForegroundAt(item, point, radius, base, fill);
+        return Native.AdaptiveContrast.foreground(glass, item, base, tile ? tile.fillColor : "transparent");
     }
     property Native.ControlGlass glass: Native.ControlGlass {
         window: popup

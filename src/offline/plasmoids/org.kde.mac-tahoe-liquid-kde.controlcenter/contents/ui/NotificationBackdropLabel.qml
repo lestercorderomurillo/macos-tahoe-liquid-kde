@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import org.kde.mac.tahoe.launcher as Native
-import "NotificationContrast.js" as Contrast
 import org.kde.kirigami as Kirigami
 
 ControlLabel {
@@ -10,7 +9,7 @@ ControlLabel {
     property color backdropColor: "transparent"
     Native.GlassSettings { id: inkSettings; component: "notifications" }
     color: {
-        const base = Contrast.preferredText(Kirigami.Theme.textColor);
+        const base = Kirigami.Theme.textColor;
         if (!floating || !inkSettings.dynamicTinting) return base;
         inkSettings.inkRevision;
         return inkSettings.animatedNotificationForeground(label, label.Window.window, base, backdropColor, Qt.rgba(0,0,0,0));
