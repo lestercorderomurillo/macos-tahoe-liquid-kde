@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Controls as QQC
+import org.kde.kirigami as Kirigami
 import "ControlStyle.js" as Style
 QQC.Label {
     id: label
-    property color baseForeground: label.palette.windowText
+    property color baseForeground: Kirigami.Theme.textColor
     // Draw the small letterforms from their outlines on translucent controls.
     Binding on renderType {
         when: label.Window.window && typeof label.Window.window.foregroundFor === "function"

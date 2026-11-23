@@ -340,8 +340,6 @@ private:
     // A tiny readback target for notification foreground contrast only.
     std::unique_ptr<GLTexture> m_contrastTexture;
     std::unique_ptr<GLFramebuffer> m_contrastFramebuffer;
-    std::unique_ptr<GLTexture> m_launcherContrastTexture;
-    std::unique_ptr<GLFramebuffer> m_launcherContrastFramebuffer;
 
     /// Dual Kawase downsample (halves resolution per iteration).
     struct

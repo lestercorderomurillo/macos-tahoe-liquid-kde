@@ -2101,11 +2101,10 @@ void BlurEffect::blur(
         const int sampleInterval = about ? 40 : 200;
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
             blurInfo.contrastTimer.start();
-            // A Launchpad label can be shorter than a single cell in the menu grid.
-            const bool launcher = caption == QStringLiteral("mttkde-apps") || caption == QStringLiteral("mttkde-search");
-            const int side = launcher ? 64 : 8;
-            auto &texture = launcher ? m_launcherContrastTexture : m_contrastTexture;
-            auto &framebuffer = launcher ? m_launcherContrastFramebuffer : m_contrastFramebuffer;
+            // Resolve individual labels within each compositor frame.
+            constexpr int side = 64;
+            auto &texture = m_contrastTexture;
+            auto &framebuffer = m_contrastFramebuffer;
             if (!texture) {
                 texture = GLTexture::allocate(GL_RGBA8, QSize(side, side));
                 if (texture) {

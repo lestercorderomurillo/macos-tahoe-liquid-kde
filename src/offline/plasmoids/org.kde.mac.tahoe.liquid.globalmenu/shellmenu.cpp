@@ -33,7 +33,7 @@ void ShellMenu::reloadTinting()
 void ShellMenu::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &grid, const QString &role)
 {
     if (!m_dynamicTinting || !isVisible() || role != QLatin1String("mttkde-shell-menu") || pid != qApp->applicationPid()
-        || !windowHandle() || grid.size() != 8 * 8 * 3 || bounds.isEmpty()
+        || !windowHandle() || (grid.size() != 8 * 8 * 3 && grid.size() != 64 * 64 * 3) || bounds.isEmpty()
         || !BackdropGeometry::sizeMatches(frame, *windowHandle())) return;
     const QPoint origin = mapToGlobal(QPoint());
     const int tolerance = BackdropGeometry::edgeTolerance(*windowHandle());
@@ -54,29 +54,30 @@ void ShellMenu::paintEvent(QPaintEvent *event)
         && m_sampledPalette == palette().cacheKey()) {
         // Composite the style's actual menu panel over KWin's backdrop. It
         // includes the installed theme's fill and any saved opacity changes.
-        QImage panel(8, 8, QImage::Format_ARGB32_Premultiplied);
+        const int side = m_grid.size() == 64 * 64 * 3 ? 64 : 8;
+        QImage panel(side, side, QImage::Format_ARGB32_Premultiplied);
         panel.fill(Qt::transparent);
         QStyleOption option;
         option.initFrom(this);
         {
             QPainter painter(&panel);
-            painter.scale(8. / width(), 8. / height());
+            painter.scale(double(side) / width(), double(side) / height());
             style()->drawPrimitive(QStyle::PE_PanelMenu, &option, &painter, this);
         }
         const auto surfaceAt = [&](QPointF point) {
             // KWin samples cell centers. Interpolate between them so a label
             // straddling a coarse grid edge sees the same continuous backdrop.
-            const double x = std::clamp((point.x() - m_bounds.x()) * 8 / m_bounds.width() - .5, 0., 7.);
-            const double y = std::clamp((point.y() - m_bounds.y()) * 8 / m_bounds.height() - .5, 0., 7.);
+            const double x = std::clamp((point.x() - m_bounds.x()) * side / m_bounds.width() - .5, 0., double(side - 1));
+            const double y = std::clamp((point.y() - m_bounds.y()) * side / m_bounds.height() - .5, 0., double(side - 1));
             const int col = int(x), row = int(y);
             const auto *rgb = reinterpret_cast<const uchar *>(m_grid.constData());
             const auto channel = [&](int c) {
-                const auto at = [&](int i, int j) { return rgb[(std::min(j, 7) * 8 + std::min(i, 7)) * 3 + c]; };
+                const auto at = [&](int i, int j) { return rgb[(std::min(j, side - 1) * side + std::min(i, side - 1)) * 3 + c]; };
                 return qRound(std::lerp(std::lerp(at(col, row), at(col + 1, row), x - col),
                                         std::lerp(at(col, row + 1), at(col + 1, row + 1), x - col), y - row));
             };
-            const auto fill = panel.pixelColor(qBound(0, int(point.x() * 8 / width()), 7),
-                                               qBound(0, int(point.y() * 8 / height()), 7));
+            const auto fill = panel.pixelColor(qBound(0, int(point.x() * side / width()), side - 1),
+                                               qBound(0, int(point.y() * side / height()), side - 1));
             return GlassInk::composite(QColor(channel(0), channel(1), channel(2)), fill);
         };
         m_actionSamples.clear();
