@@ -2694,17 +2694,11 @@ class InstallerWindow(OpaqueSurface):
         self.bookmarks.setVisible(self.choices["files"] == "nautilus")
 
     def page_boot(self):
-        content = QWidget()
-        stack = QVBoxLayout(content)
-        stack.setContentsMargins(0, 0, 0, 0)
-        stack.setSpacing(4)
         preview = self.image("boot-preview.png", width=200, height=200)
         preview.setObjectName("bootAnimationPreview")
-        stack.addWidget(preview, alignment=Qt.AlignmentFlag.AlignHCenter)
-        stack.addSpacing(8)
-        self.radio("plymouth", [(True, "Use the theme animation"), (False, "Keep my boot animation")],
-                   option_layout=stack)
-        self.body.addWidget(content, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.body.addWidget(preview, alignment=Qt.AlignmentFlag.AlignHCenter)
+        self.body.addSpacing(8)
+        self.radio("plymouth", [(True, "Use the theme animation"), (False, "Keep my boot animation")])
 
     def page_oled(self):
         self.radio("oled_care", [(False, "Do not enable"), (True, "Enable pixel shifting")])

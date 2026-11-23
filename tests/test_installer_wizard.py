@@ -325,7 +325,8 @@ for page, key in [('firefox', 'firefox'), ('boot', 'plymouth')]:
         size = preview.pixmap().deviceIndependentSize()
         assert (size.width(), size.height()) == (200, 200)
         assert preview.pixmap().toImage().pixelColor(0, 0).alpha() == 0
-        assert options[0].x() == options[1].x()
+        assert options[0].x() == options[1].x() == window.body.contentsMargins().left()
+        assert abs(preview.geometry().center().x() - window.content.rect().center().x()) <= 1
         assert preview.geometry().bottom() < options[0].y() < options[1].y()
     else:
         assert options[0].y() == options[1].y()
