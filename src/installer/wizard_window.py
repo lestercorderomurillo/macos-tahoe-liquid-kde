@@ -2573,7 +2573,7 @@ class InstallerWindow(OpaqueSurface):
 
     def page_effects(self):
         self.cards("", [
-            ("acrylic_glass", "Transparency and blur", "Panels, menus and windows.", picture("glass.jpg", 362, 165, cover=True)),
+            ("acrylic_glass", "Transparency and blur", "", picture("glass.jpg", 362, 165, cover=True)),
             ("rounded_corners", "Rounded corners", "", self.corner_sample()),
         ], independent=True)
 
