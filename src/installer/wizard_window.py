@@ -240,6 +240,14 @@ def paint_glass_control(widget, painter, *, pressed=False):
         painter.drawRoundedRect(rect, radius, radius)
 
 
+def add_surface_shadow(widget, *, radius, offset, opacity):
+    shadow = QGraphicsDropShadowEffect(widget)
+    shadow.setBlurRadius(radius)
+    shadow.setOffset(0, offset)
+    shadow.setColor(QColor(0, 0, 0, opacity))
+    widget.setGraphicsEffect(shadow)
+
+
 class ColorSwatch(QPushButton):
     """Native color choice with the separated selection ring used by Appearance."""
 
@@ -779,13 +787,8 @@ class WizardFrame(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
-    def paintEvent(self, event):
-        if self.window().isMaximized() or self.window().isFullScreen():
-            return
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        bounds = QRectF(self.rect())
-        inset = 0.375
+    def outline(self):
+        bounds, inset = QRectF(self.rect()), 0.375
         left, top = inset, inset
         right, bottom = bounds.width() - inset, bounds.height() - inset
         radius = 28 - inset
@@ -801,15 +804,23 @@ class WizardFrame(QWidget):
         path.lineTo(left, top + radius)
         path.cubicTo(left, top + radius - handle, left + radius - handle, top, left + radius, top)
         path.closeSubpath()
+        return path
+
+    def paintEvent(self, event):
+        if self.window().isMaximized() or self.window().isFullScreen():
+            return
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        path = self.outline()
         outside = QPainterPath()
-        outside.addRect(bounds)
+        outside.addRect(QRectF(self.rect()))
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Clear)
         painter.fillPath(outside.subtracted(path), Qt.GlobalColor.transparent)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
-        highlight = QLinearGradient(0, top, 0, bottom)
+        highlight = QLinearGradient(0, .375, 0, self.height() - .375)
         highlight.setColorAt(0, QColor(142, 142, 142, 148))
         highlight.setColorAt(1, QColor(98, 98, 98, 187))
-        painter.strokePath(path, QPen(highlight, 2 * inset))
+        painter.strokePath(path, QPen(highlight, .75))
 
 
 
@@ -1045,9 +1056,9 @@ class InstallerWindow(OpaqueSurface):
         self.main_row.addLayout(content_column, 1)
         self.settings_toolbar = WindowHeader(self)
         self.settings_toolbar.setObjectName("settingsToolbar")
-        self.settings_toolbar.setFixedHeight(41)
+        self.settings_toolbar.setFixedHeight(46)
         toolbar = QHBoxLayout(self.settings_toolbar)
-        toolbar.setContentsMargins(12, 5, 14, 5)
+        toolbar.setContentsMargins(12, 6, 14, 8)
         toolbar.setSpacing(3)
         self.settings_back = HistoryButton(-1)
         self.settings_back.setObjectName("settingsBack")
@@ -1055,12 +1066,15 @@ class InstallerWindow(OpaqueSurface):
         self.settings_forward = HistoryButton(1)
         self.settings_forward.setObjectName("settingsForward")
         self.settings_forward.clicked.connect(lambda: self.move_settings_history(1))
-        toolbar.addWidget(HistoryControl(self.settings_back, self.settings_forward))
+        history = HistoryControl(self.settings_back, self.settings_forward)
+        add_surface_shadow(history, radius=11, offset=2, opacity=103)
+        toolbar.addWidget(history)
         toolbar.addSpacing(6)
         self.settings_review = GlassButton()
         self.settings_review.setObjectName("settingsReview")
         self.settings_review.setFont(relative_font(self, .78, QFont.Weight.DemiBold))
         self.settings_review.clicked.connect(self.review_settings_changes)
+        add_surface_shadow(self.settings_review, radius=12, offset=2, opacity=108)
         self.settings_title = self.label("")
         self.settings_title.setFont(relative_font(self, .91, QFont.Weight.DemiBold))
         toolbar.addWidget(self.settings_title, 1)
@@ -1115,6 +1129,11 @@ class InstallerWindow(OpaqueSurface):
         self.layout.addWidget(self.footer)
         self.frame_edge = WizardFrame(self)
         self.frame_edge.setGeometry(self.rect())
+        self.backdrop_blurred = False
+        self.blur_region = QRegion()
+        self.blur_timer = QTimer(self)
+        self.blur_timer.setSingleShot(True)
+        self.blur_timer.timeout.connect(self.refresh_backdrop_blur)
         app.styleHints().colorSchemeChanged.connect(self.system_scheme_changed)
         # KDE replaces kdeglobals atomically. Watch its directory so the next
         # switch is observed even after a new inode replaces the original.
@@ -1178,6 +1197,7 @@ class InstallerWindow(OpaqueSurface):
             self.header.show()
             self.setMinimumSize(820, 640)
             self.resize(900, 680)
+        self.blur_timer.start(0)
 
     def navigate_settings(self, page):
         if not self.settings_mode or page not in SETTINGS_PAGES:
@@ -1345,6 +1365,46 @@ class InstallerWindow(OpaqueSurface):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.frame_edge.setGeometry(self.rect())
+        self.blur_timer.start(0)
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.blur_timer.start(0)
+
+    def refresh_backdrop_blur(self):
+        window = self.windowHandle()
+        if window is None or not self.isVisible():
+            return
+        region = QRegion()
+        if self.settings_mode:
+            region = QRegion(self.sidebar.geometry())
+            if not (self.isMaximized() or self.isFullScreen()):
+                region &= QRegion(self.frame_edge.outline().toFillPolygon().toPolygon())
+        changed = region != self.blur_region
+        if not changed and (region.isEmpty() or self.backdrop_blurred):
+            return
+        from settings_backdrop import set_window_blur
+
+        self.blur_region = region
+        blurred = set_window_blur(window, region)
+        if blurred != self.backdrop_blurred:
+            self.backdrop_blurred = blurred
+            self.refresh_sidebar_material()
+        if changed and not blurred and not region.isEmpty():
+            self.blur_timer.start(120)
+
+    def refresh_sidebar_material(self):
+        light = self.palette().window().color().lightnessF() > .5
+        colors = ("244, 250, 253", "223, 233, 241") if light else ("49, 58, 72", "32, 38, 51")
+        opacity = (203, 195) if self.backdrop_blurred else (238, 232) if light else (242, 238)
+        separator = "#e2e7ec" if light else "#3b4049"
+        top, bottom = (f"rgba({color}, {alpha})" for color, alpha in zip(colors, opacity))
+        self.sidebar.setStyleSheet(f"""
+            QFrame#settingsSidebar {{
+                background: qlineargradient(x1: 0, y1: 0, x2: .75, y2: 1, stop: 0 {top}, stop: 1 {bottom});
+                border-right: 1px solid {separator};
+            }}
+        """)
 
     def refresh_desktop_scheme(self):
         settings = QSettings(str(self.desktop_config), QSettings.Format.IniFormat)
@@ -1638,8 +1698,7 @@ class InstallerWindow(OpaqueSurface):
             button.setText(self.t(SETTINGS_PAGES[page][0]).replace("&", "&&"))
             button.setChecked(page == self.page)
         self.filter_settings()
-        sidebar_top, sidebar_bottom = (("rgba(244, 250, 253, 238)", "rgba(223, 233, 241, 232)") if light
-                                       else ("rgba(49, 58, 72, 242)", "rgba(32, 38, 51, 238)"))
+        self.refresh_sidebar_material()
         field_surface = "rgba(255, 255, 255, 163)" if light else "rgba(255, 255, 255, 22)"
         hover = "rgba(94, 134, 175, 28)" if light else "rgba(153, 182, 226, 32)"
         selected_top, selected_bottom = ("#267bbc", "#175794") if light else ("#3b78b7", "#2a527f")
@@ -1649,11 +1708,6 @@ class InstallerWindow(OpaqueSurface):
         self.close_button.setToolTip(self.t("Close"))
         self.refresh_window_controls()
         stylesheet = f"""
-            QFrame#settingsSidebar {{
-                background: qlineargradient(x1: 0, y1: 0, x2: .75, y2: 1,
-                    stop: 0 {sidebar_top}, stop: 1 {sidebar_bottom});
-                border-right: 1px solid {separator};
-            }}
             QFrame#settingsPanel {{ background: {panel_surface}; border-radius: 10px; }}
             QScrollArea#pageScroll > QScrollBar:vertical,
             QScrollArea#pageScroll QScrollBar:vertical {{ background: transparent; width: 8px; margin: 5px 1px; }}
@@ -1865,22 +1919,18 @@ class InstallerWindow(OpaqueSurface):
     def option_card(self):
         frame = QFrame(self.content)
         frame.setObjectName("settingsOptionPanel" if self.settings_mode else "optionPanel")
-        if not self.settings_mode:
-            shadow = QGraphicsDropShadowEffect(frame)
-            shadow.setBlurRadius(15)
-            shadow.setOffset(0, 2)
-            shadow.setColor(QColor(0, 0, 0, 30))
-            frame.setGraphicsEffect(shadow)
+        add_surface_shadow(frame, radius=14 if self.settings_mode else 15, offset=2,
+                           opacity=42 if self.settings_mode else 30)
         return frame
 
     def page_section(self):
         panels = SECTIONS[self.page][3] if self.settings_mode else INSTALL_SECTIONS[self.page][1]
         original = self.body
-        original.setSpacing(14 if self.settings_mode else 17)
+        original.setSpacing(10 if self.settings_mode else 17)
         for panel in panels:
             section = QWidget()
             layout = QVBoxLayout(section)
-            layout.setContentsMargins(0, 0, 0, 0)
+            layout.setContentsMargins(0, 0, 0, 4 if self.settings_mode else 0)
             layout.setSpacing(6)
             if panel not in ("icons", "fonts") and (self.settings_mode or len(panels) > 1):
                 title = self.label(PANEL_LABELS[panel])
@@ -2411,6 +2461,7 @@ class InstallerWindow(OpaqueSurface):
     def page_general(self):
         panel = QFrame()
         panel.setObjectName("settingsPanel")
+        add_surface_shadow(panel, radius=14, offset=2, opacity=42)
         row = QHBoxLayout(panel)
         row.setContentsMargins(12, 9, 12, 9)
         label = self.label("Language")
