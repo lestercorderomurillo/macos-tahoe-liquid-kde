@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import org.kde.mac.tahoe.launcher as NativeGlass
 import QtQuick.Window
 import QtQuick.Controls as Controls
 import QtQuick.Shapes
@@ -10,6 +11,9 @@ import org.kde.ksvg as KSvg
 
 PlasmaCore.Dialog {
     id: menu
+    title: "mttkde-options"
+    property NativeGlass.PopupBackdrop backdrop: NativeGlass.PopupBackdrop { window: menu }
+    property NativeGlass.GlassSettings contrastSettings: NativeGlass.GlassSettings {}
     objectName: "macOptionsMenu"
     property var availableGeometry: () => Qt.rect(Screen.virtualX, Screen.virtualY, Screen.width, Screen.height)
     property string textFont: Kirigami.Theme.defaultFont.family
@@ -189,9 +193,12 @@ PlasmaCore.Dialog {
                             font.family: menu.textFont
                             font.pointSize: menu.textSize * (row.modelData.section ? 0.85 : 1.05)
                             font.weight: row.modelData.section ? Font.DemiBold : Font.Normal
-                            color: row.enabled && menu.selectedIndex === row.index ? "white"
+                            readonly property color baseInk: row.enabled && menu.selectedIndex === row.index ? "white"
                                 : row.modelData.section ? Qt.rgba(menu.textColor.r, menu.textColor.g, menu.textColor.b, 0.55)
                                 : menu.textColor
+                            color: menu.contrastSettings.dynamicTinting
+                                ? NativeGlass.AdaptiveContrast.foreground(menu.backdrop, label, baseInk, row.background.color)
+                                : baseInk
                         }
                     }
                     padding: 0

@@ -24,7 +24,7 @@ qt_add_qml_module(mactahoelauncher
     VERSION 1.0
     PLUGIN_TARGET mactahoelauncher
     OUTPUT_DIRECTORY "${launcher_module_dir}"
-    QML_FILES AdaptiveContrast.qml DockIcon.qml DockCell.qml DockMetrics.qml WallpaperInk.qml
+    QML_FILES AdaptiveWidgetText.qml AdaptiveContrast.qml DockIcon.qml DockCell.qml DockMetrics.qml WallpaperInk.qml
     SOURCES appearancecontrol.h launcherapplications.h notificationbanner.cpp notificationbanner.h launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h clipboardmodel.h controlglass.cpp controlglass.h glasssettings.cpp glasssettings.h panelwallpaper.cpp panelwallpaper.h
 )
 target_compile_definitions(mactahoelauncher PRIVATE QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII)

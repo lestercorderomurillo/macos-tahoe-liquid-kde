@@ -98,7 +98,7 @@ FocusScope {
                         maximumLineCount: 1
                         font.family: main.textFont
                         font.pointSize: main.textSize * 1.2
-                        color: main.textColor
+                        color: main.labelColor(this, Math.min(width, contentWidth) / 2, row.background.color)
                     }
                     Text {
                         Layout.fillWidth: true
@@ -109,7 +109,7 @@ FocusScope {
                         elide: Text.ElideRight
                         font.family: main.textFont
                         font.pointSize: main.textSize
-                        color: main.dimmedTextColor
+                        color: main.labelColor(this, Math.min(width, contentWidth) / 2, row.background.color, false, main.dimmedTextColor)
                         opacity: 0.75
                     }
                 }
@@ -138,7 +138,7 @@ FocusScope {
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
         textFormat: Text.PlainText
-        color: main.textColor
+        color: main.labelColor(this)
         font.family: main.textFont
         font.pointSize: main.textSize
         visible: view.entries.length === 0 || main.clipboard.error !== ""

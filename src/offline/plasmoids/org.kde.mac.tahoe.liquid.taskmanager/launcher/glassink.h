@@ -14,11 +14,6 @@ inline double luminance(const QColor &color)
     return .2126 * linear(color.redF()) + .7152 * linear(color.greenF()) + .0722 * linear(color.blueF());
 }
 
-inline double contrastRatio(double ink, double surface)
-{
-    return (std::max(ink, surface) + .05) / (std::min(ink, surface) + .05);
-}
-
 inline QColor composite(const QColor &backdrop, const QColor &fill)
 {
     const double a = fill.alphaF();

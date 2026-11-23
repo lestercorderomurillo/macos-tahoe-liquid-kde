@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 import os
+import re
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -146,11 +147,39 @@ def stage_appearance(package, variant):
     palette.write_text(text, encoding="utf-8")
 
 
+def stage_glass_text(package):
+    """Adapt painted Text elements in the bundled widget, preserving each color binding."""
+    ui = package / "contents/ui"
+    material = ui / "components/LiquidGlass.qml"
+    if material.is_file() and '"mttkde-widget-material"' not in (source := material.read_text()):
+        material.write_text(source.replace("Item {", 'Item {\n    objectName: "mttkde-widget-material"', 1))
+    # Upstream puts each Text declaration and its closing brace at the same
+    # indentation. Match its own color, leaving nested effects and icons alone.
+    element = re.compile(r"^(?P<indent> *)(?P<prefix>(?:contentItem: |delegate: )?)Text \{\n"
+                         r"(?P<body>.*?)^(?P=indent)\}", re.M | re.S)
+
+    def adapt(match):
+        indent = match["indent"]
+        body, count = re.subn(r"^" + indent + r"    color:", indent + "    baseColor:",
+                              match["body"], count=1, flags=re.M)
+        return (indent + match["prefix"] + "NativeInk.AdaptiveWidgetText {\n" + body + indent + "}"
+                if count else match[0])
+
+    for file in (ui / "main.qml", *(ui / "widget").glob("*.qml")):
+        if not file.is_file():
+            continue
+        source = file.read_text()
+        adapted = element.sub(adapt, source)
+        if adapted != source:
+            file.write_text("import org.kde.mac.tahoe.launcher as NativeInk\n" + adapted)
+
+
 def stage_configuration_route(package):
     variant = package.name.removeprefix(PREFIX)
     if not package.name.startswith(PREFIX) or variant not in NAMES:
         return
     stage_appearance(package, variant)
+    stage_glass_text(package)
     main = package / "contents/ui/main.qml"
     if not main.is_file():
         return

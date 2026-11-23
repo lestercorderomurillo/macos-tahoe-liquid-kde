@@ -216,7 +216,7 @@ for light in (True, False):
                           height=pane.height(), rgb=[channel] * 3)
             QMetaObject.invokeMethod(pane, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
         QTest.qWait(30)
-        inks = [child(pane.property('mainItem'), 'notificationCard').property('foregroundColor')
+        inks = [child(pane.property('mainItem'), 'notificationSummary').property('color')
                 for pane in expanded_notices]
         assert all((ink.lightnessF() > .5) == light for ink in inks), ([ink.name() for ink in inks], errors)
 noticeHost.setProperty('notificationTextColor', QColor('black'))
