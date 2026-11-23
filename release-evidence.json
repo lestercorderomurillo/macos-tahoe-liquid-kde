@@ -1,35 +1,32 @@
 {
-  "version": "0.82.17",
+  "version": "0.82.18",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "aa848c2a0bb6610bf11d8fc2b5b21d66754d0b2d",
-  "scope": "Choose a common ink family per glass component, apply stationary text updates immediately, and preserve the configured light menu glass opacity. Correct the Qt style regression test to compare the light shell menu directly to its configured Kvantum fill.",
-  "approval": "The maintainer requested publication after reviewing the light system menu over the Sequoia Sunrise wallpaper.",
+  "implementation_commit": "ad752c53335e04ee7a0246a99c41c96ca22546b3",
+  "scope": "Share wallpaper-driven ink across the whole top panel, calibrate each native menu as one glass surface, and retain known incoming menu titles during focus changes.",
+  "approval": "The maintainer approved the local Tahoe and Golden Gate menu comparison and requested publication.",
   "checks": [
     {
-      "command": "Verified the native control glass probe at 1x and 1.45x, including component ink caps and window drag timing.",
+      "command": "Ran the native global-menu model, popup and QML composition cases plus the top-bar geometry test.",
       "result": "passed"
     },
     {
-      "command": "Exercised search typing, keyboard selection, menu reopening and the component ink family in the KDE neon Wayland guest.",
+      "command": "Built the applet and sampled panel ink in KDE neon Wayland. Switched between Finder, Dolphin and Kate, opened File, changed the wallpaper and the automatic day/night variant, and checked both ends of the bar.",
       "result": "passed"
     },
     {
-      "command": "Built and installed the final Qt style and menu plugin in KDE neon, captured the approved light menu over a photographic wallpaper, and passed the native menu text contrast test.",
+      "command": "Compared Tahoe and Golden Gate captures against their native macOS menu references and verified the shared material ink and selected-row text.",
       "result": "passed"
     },
     {
-      "command": "Verified the component installation fingerprint ledger.",
-      "result": "passed"
-    },
-    {
-      "command": "Ran all four Qt style contour cases at 1x and 2x, checking exact light-mode RGBA equality and the existing dark overlay opacity.",
+      "command": "Checked the component installation fingerprint ledger.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "The final transparency preview used a single KDE neon Wayland display. The broader local desktop-controls probe reported the pre-existing MacOptionsMenu width binding warning, also reproduced on dev.",
+  "coverage_limits": "Visual and frame checks used one KDE neon Wayland output. The first activation of an unknown menu waits for its exporter.",
   "approved_preview_sha256": {
-    "menu-sobre-secuoyas.png": "8d94ea416588d03f9dca0259d418883c43c68b89dc641b6adff0bbdd1a0edac4"
+    "macos-kde-menu.png": "cb3c9bff0a44c20c830a7f5cb648513e316601741ab7daba3dcdacce95618d26",
+    "barra-final.png": "12a06580b853be1a386b0d4f6bdfaa70fbb696120ae23da893045238e12eeaf5"
   },
-  "source_sha256": "6ec16852855cc3e2ea50dee18bddfa9f2ea4f8ddd230d13e32c1ff9e4384438f"
+  "source_sha256": "89ece7f68ee35245bbad3a6a659c8e7c32f65cf97fb635237661bcbb23fe4e9b"
 }
