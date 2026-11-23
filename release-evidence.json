@@ -1,26 +1,69 @@
 {
-  "version": "0.84.0",
+  "version": "0.84.1",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Per-label Adaptive Contrast using the active theme foreground, a 20-point lightness target and a 20% maximum shift.",
-  "approval": "Maintainer reviewed the local interactive gallery and explicitly requested publication of the approved version as 0.84.",
+  "scope": "Increase the per-label minimum to 33 CIE lightness points and the same-family neutral shift limit to 102/255.",
+  "approval": "Maintainer reviewed the split Apps comparison, then explicitly selected publication with the 40-percent limit on 2026-11-23.",
   "checks": [
     {
-      "command": "121 focused launcher, widget, control, cache, global menu and Acrylic Glass tests plus the native controlglassprobe",
+      "command": "Full Arch SDK pytest suite: 2754 passed, 6 skipped. Focused launcher, widget, About, control and cache regressions passed.",
       "result": "passed"
     },
     {
-      "command": "Real KDE neon Wayland captures for Tahoe and Golden Gate, both appearances, Adaptive Contrast off and on. Inspected actual glyphs, controls and split-backdrop launcher delegates.",
+      "command": "Native controlglassprobe checks the target, family, per-label split, alpha, grayscale sweep and adjustment bound.",
+      "result": "passed"
+    },
+    {
+      "command": "Installed on KDE neon Wayland in both editions and verified split Apps labels with 33- and 40-percent caps against the approved v0.84.0. Renewed off/on surface and widget captures.",
+      "result": "passed"
+    },
+    {
+      "command": "Built X11 effect against KWin 6.6 and 6.7.4, loaded the build in an isolated X11 compositor.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "150 pairs from the final candidate plus 16 earlier pairs. VM measurements use KDE neon Wayland and include detail crops.",
+  "coverage_limits": "Desktop matrix captured in two isolated KDE neon Wayland guests. OCR measurements are estimates; the launcher also recorded actual QML ink per label. The perceptual target can remain out of reach across a mixed background or at the adjustment limit.",
   "approved_preview_sha256": {
-    "tahoe/dark/apps-split/off.png": "c6ac35b5aea89e6228cdf44c02290d54ef1828c49bc58dbbaca47fde9e8d91e3",
-    "tahoe/dark/apps-split/on.png": "3aa37fc6311db93d540a7a8b980b16ab7993768c73fe2ce88c24b7f515aaf0ff",
-    "tahoe/light/apps-split/off.png": "1e4e6db4835fb99d942363bcec8181b0412b780bf26f8b3cf493097f01a884ae",
-    "tahoe/light/apps-split/on.png": "d86894eda1383b33971ef697bae31a186229a16f03e87738ec891e178ed37477"
+    "tahoe/dark/apps-split/off.png": "f495fe60473d9021908d0bd70635a1cd0755bbd62a85927adeb107bea87ae335",
+    "tahoe/dark/apps-split/on.png": "1e81eb4175855ac843e8daa307106aaf048a5b7d3b4cf9e65437e60c1ae3d52b",
+    "tahoe/light/apps-split/off.png": "62586ac045055b74963e0718cc846d0a193a8e8b5e1c0c7b2c96467890b70667",
+    "tahoe/light/apps-split/on.png": "ab4b696ab9f98d862e91364edc9c22274daf2349ca2740e13e50d10eb634f011"
   },
-  "implementation_commit": "92a3fa7f83f8e633f2f94564978e78dc2ed822e4",
-  "source_sha256": "6e36420e296931b9cec68e02bb9d26d315772485e718a02921465a89c12c1551"
+  "tahoe_light_firefox_split": {
+    "v0.84.0": {
+      "ink": "#353535",
+      "backdrop": "#070707",
+      "box": [
+        814,
+        601,
+        85,
+        20
+      ],
+      "separation": 20.2
+    },
+    "cap33": {
+      "ink": "#535353",
+      "backdrop": "#070707",
+      "box": [
+        814,
+        601,
+        85,
+        20
+      ],
+      "separation": 33.4
+    },
+    "cap40": {
+      "ink": "#535353",
+      "backdrop": "#070707",
+      "box": [
+        814,
+        601,
+        85,
+        20
+      ],
+      "separation": 33.4
+    }
+  },
+  "implementation_commit": "2824d7d3e357c726adaeef4f33d9534b193cc72a",
+  "source_sha256": "462939e52a01b190c4bff56497d1c5e1a3e5d09c2565f88b23b26d2cae8fa5f5"
 }

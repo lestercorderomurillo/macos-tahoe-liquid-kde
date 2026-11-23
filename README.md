@@ -159,9 +159,11 @@ File, Edit and the other application menus follow the active window. Open the sy
 
 ### Acrylic Glass 2.0 with Adaptive Contrast
 
-The theme sets the base text color. Adaptive Contrast can make that color slightly
-lighter or darker when it blends into the background. Turn it off to use the
-theme color throughout the menu bar.
+Adaptive Contrast samples the background behind each label. It keeps the theme
+color when the difference is at least 33 perceptual lightness points. Below
+that target, it applies the smallest correction it can, up to 40% of the RGB
+scale, while keeping light text light and dark text dark. Turning it off uses
+the theme color.
 
 <br>
 
