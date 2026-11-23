@@ -206,7 +206,7 @@ from PyQt6.QtWidgets import QApplication, QComboBox, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtTest import QTest
 from installer_ui import _make_installer_bridge
-from wizard_window import InstallerWindow, ChoiceCard, STEPS, INSTALL_FLOW, ASSETS
+from wizard_window import CheckOption, ChoiceCard, InstallerWindow, RadioOption, STEPS, INSTALL_FLOW, ASSETS
 import installer_choices
 import cli
 cli._theme_is_already_installed = lambda: False
@@ -267,9 +267,13 @@ for page, _ in STEPS:
             expected = 'SF Pro Display' if widget.objectName() == 'pageTitle' else 'SF Pro Text'
             assert QFontInfo(widget.font()).family() == expected, (page, widget.objectName())
     cards = window.content.findChildren(ChoiceCard)
-    if page in ('appearance', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows', 'files'):
+    if page in ('appearance', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows'):
         assert cards and cards[0].isChecked(), page
         assert cards[0].height() > 80, page
+    if page == 'files':
+        assert not cards
+        selected = window.content.findChild(RadioOption, 'choice-files-' + window.defaults['files'])
+        assert selected.isChecked()
     if page == 'fonts':
         selector = window.content.findChild(QComboBox, 'choice-fonts')
         assert selector.count() == 2 and selector.currentData() == window.choices['fonts']
@@ -311,7 +315,6 @@ calls.clear()
 window.page = 'welcome'; window.render(); window.advance()
 assert window.page == 'theme' and not calls
 window.page = 'files'; window.render(); app.processEvents()
-from wizard_window import CheckOption, RadioOption
 bookmarks = window.content.findChild(CheckOption, 'choice-nautilus_bookmarks')
 assert bookmarks.isChecked()
 bookmarks.setFocus(); QTest.keyClick(bookmarks, Qt.Key.Key_Space)
@@ -488,6 +491,8 @@ for page in ('appearance', 'icons', 'wallpaper', 'launcher', 'layout', 'effects'
     content = window.content
     observer = PageEvents(); content.installEventFilter(observer)
     controls = content.findChildren(ChoiceCard) + content.findChildren(RadioOption)
+    if page == 'effects':
+        controls += content.findChildren(CheckOption)
     if page == 'icons':
         controls += content.findChildren(QToolButton)
         controls += [content.findChild(QPushButton, 'color-green'), content.findChild(QPushButton, 'color-red')]
@@ -537,11 +542,13 @@ with tempfile.TemporaryDirectory() as directory:
 window.page = 'files'; window.render(); app.processEvents()
 bookmarks = window.bookmarks
 bookmarks.setChecked(False)
-window.select('files', 'dolphin'); assert not bookmarks.isVisible()
-window.select('files', 'nautilus'); assert bookmarks.isVisible() and not bookmarks.isChecked()
+window.content.findChild(RadioOption, 'choice-files-dolphin').click()
+assert window.choices['files'] == 'dolphin' and not bookmarks.isVisible()
+window.content.findChild(RadioOption, 'choice-files-nautilus').click()
+assert window.choices['files'] == 'nautilus' and bookmarks.isVisible() and not bookmarks.isChecked()
 window.content.findChild(RadioOption, 'choice-files-keep').click(); app.processEvents()
 assert window.choices['files'] == 'keep' and not bookmarks.isVisible()
-assert not any(card.isChecked() for card in window.content.findChildren(ChoiceCard))
+assert sum(option.isChecked() for option in window.content.findChildren(RadioOption)) == 1
 window.advance(); app.processEvents()
 assert window.page == 'boot'
 window.previous(); app.processEvents()
@@ -588,8 +595,9 @@ assert window.choices['dock_visibility'] == 'dodgewindows'
 visibility.setCurrentIndex(visibility.findData(original_visibility))
 assert window.scroll.verticalScrollBar().maximum() == 0
 window.page = 'effects'; window.render(); app.processEvents()
-assert not window.content.findChildren(RadioOption)
-assert not any(c.objectName().startswith('choice-shadows-') for c in window.content.findChildren(ChoiceCard))
+assert not window.content.findChildren(ChoiceCard)
+assert [option.objectName() for option in window.content.findChildren(CheckOption)] == [
+    'choice-acrylic_glass', 'choice-rounded_corners']
 window.page = 'shadows'; window.render(); app.processEvents()
 assert window.choices['shadows'] == 'medium'
 options = window.content.findChildren(ChoiceCard)

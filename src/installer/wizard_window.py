@@ -1413,8 +1413,7 @@ class InstallerWindow(OpaqueSurface):
         if self.settings_mode and key == "appearance":
             self.apply_appearance_choice(value)
             return
-        self.choices[key] = value
-        self.update_settings_review()
+        self.update_choice(key, value)
         if key == "wallpaper":
             self.choices["wallpaper_explicit"] = True
         if key == "window_controls":
@@ -1447,14 +1446,14 @@ class InstallerWindow(OpaqueSurface):
         elif key == "oled_care":
             for spin in self.content.findChildren(QSpinBox):
                 spin.setEnabled(value)
-        if key in ("files", "acrylic_glass") and "glass_style" in self.panel_frames:
-            self.panel_frames["glass_style"].setVisible(self.show_glass_style())
         if key == "wallpaper":
             self.update_settings_review()
 
     def update_choice(self, key, value):
         self.choices[key] = value
         self.update_settings_review()
+        if key in ("files", "acrylic_glass") and "glass_style" in self.panel_frames:
+            self.panel_frames["glass_style"].setVisible(self.show_glass_style())
 
     def cards(self, key, items, *, columns=2, independent=False, compact=False, default_first=True):
         grid = QGridLayout()
@@ -2614,19 +2613,10 @@ class InstallerWindow(OpaqueSurface):
                 self.choices[key] = choices[key]
             self.render()
 
-    def corner_sample(self):
-        source = QPixmap(str(ASSETS / ASSET_FILES["corners.jpg"]["file"]))
-        canvas = QPixmap(724, 330); canvas.fill(QColor("#dbe3e8"))
-        painter = QPainter(canvas)
-        fitted = source.scaledToWidth(round(724*2.2), Qt.TransformationMode.SmoothTransformation)
-        painter.drawPixmap(0, 0, fitted); painter.end(); canvas.setDevicePixelRatio(2)
-        return canvas
-
     def page_effects(self):
-        self.cards("", [
-            ("acrylic_glass", "Transparency and blur", "", picture("glass.jpg", 362, 165, cover=True)),
-            ("rounded_corners", "Rounded corners", "", self.corner_sample()),
-        ], independent=True)
+        for key, label in (("acrylic_glass", "Transparency and blur"),
+                           ("rounded_corners", "Rounded corners")):
+            self.bind_choice(key, True, self.checkbox(key, label))
 
     def page_window_controls(self):
         self.cards("window_controls", [
@@ -2728,19 +2718,8 @@ class InstallerWindow(OpaqueSurface):
         self.radio("firefox", [(True, "Apply the theme"), (False, "Keep Firefox as it is")], inline=True)
 
     def page_files(self):
-        self.body.addSpacing(5)
-        group = self.cards("files", [
-            ("nautilus", "Install Nautilus", "Install and use as the default file manager.", picture("nautilus-"+self.mode+".jpg", 362, 180)),
-            ("dolphin", "Use Dolphin", "", picture("dolphin-"+self.mode+".jpg", 362, 180)),
-        ])
-        keep = RadioOption(self.t("Keep my file manager"))
-        keep.setObjectName("choice-files-keep")
-        keep.setFont(relative_font(self, .93))
-        keep.setChecked(self.choices["files"] == "keep")
-        group.addButton(keep)
-        self.bind_choice("files", "keep", keep)
-        keep.clicked.connect(lambda: self.select("files", "keep"))
-        self.body.addWidget(keep)
+        self.radio("files", [("nautilus", "Install Nautilus"), ("dolphin", "Use Dolphin"),
+                             ("keep", "Keep my file manager")])
         self.bookmarks = self.checkbox("nautilus_bookmarks", "Add folder shortcuts to the sidebar")
         self.bookmarks.setVisible(self.choices["files"] == "nautilus")
 
