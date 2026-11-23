@@ -551,21 +551,30 @@ assert not any(button.isChecked() for _, button in window.choice_widgets['icons'
 window.page = 'wallpaper'; window.render(); app.processEvents()
 content = window.content
 from wizard_window import WallpaperStrip
-strips = content.findChildren(WallpaperStrip)
-cards = content.findChildren(ChoiceCard)
-assert [len(strip.findChildren(ChoiceCard)) for strip in strips] == [15, 5]
+strip, = content.findChildren(WallpaperStrip)
+cards = strip.findChildren(ChoiceCard)
 assert len(cards) == 20 and all(card.accessibleName() and not card.findChildren(QLabel) for card in cards)
+row_positions = sorted({card.y() for card in cards})
+assert len(row_positions) == 2
+assert [sum(card.y() == y for card in cards) for y in row_positions] == [10, 10]
+assert not any(label.text() == 'Anime' for label in content.findChildren(QLabel))
 file_position = window.wallpaper_file_button.mapTo(content, window.wallpaper_file_button.rect().topLeft())
-for strip in strips:
-    scroll = strip.horizontalScrollBar()
-    assert scroll.maximum() > 0
-    scroll.setValue(scroll.maximum())
-    assert window.wallpaper_file_button.mapTo(content, window.wallpaper_file_button.rect().topLeft()) == file_position
+scroll = strip.horizontalScrollBar()
+assert scroll.maximum() > 0
+scroll.setValue(scroll.maximum())
+assert window.wallpaper_file_button.mapTo(content, window.wallpaper_file_button.rect().topLeft()) == file_position
 keep = content.findChild(RadioOption, 'choice-wallpaper-keep')
 theme = content.findChild(RadioOption, 'choice-wallpaper-theme')
 theme.click()
 assert theme.isChecked()
 original_wallpaper = window.choices['wallpaper']
+bottom = content.findChild(ChoiceCard, 'choice-wallpaper-anime-coast')
+top = next(card for card in cards if card.x() == bottom.x() and card.y() == row_positions[0])
+top.setFocus(); QTest.keyClick(top, Qt.Key.Key_Down)
+assert bottom.hasFocus() and bottom.isChecked()
+QTest.keyClick(bottom, Qt.Key.Key_Up)
+assert top.hasFocus() and top.isChecked()
+window.select('wallpaper', original_wallpaper)
 import tempfile
 with tempfile.TemporaryDirectory() as directory:
     path = Path(directory) / 'wallpaper.png'

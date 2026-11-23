@@ -29,22 +29,17 @@ from progress_model import ProgressModel, elapsed_text
 ASSETS = Path(__file__).with_name("assets")
 ASSET_FILES = json.loads((ASSETS / "sources.json").read_text())
 SETTING_ART_SIZE = 112
-WALLPAPER_GROUPS = (
-    ("Wallpapers", (
-        ("tahoe", "Tahoe"), ("golden", "Golden Gate"), ("landscape", "Landscape"),
-        ("sonoma", "Sonoma"), ("prism", "Prism"), ("macos", "Monterey"), ("exuma", "Exuma"),
-        ("big-sur", "Big Sur"), ("ventura", "Ventura"), ("sequoia", "Sequoia"),
-        ("iridescence", "Iridescence"), ("beach-dawn", "Tahoe Beach — Dawn"),
-        ("beach-day", "Tahoe Beach — Day"), ("beach-night", "Tahoe Beach — Night"),
-        ("landscape-evening", "Tahoe Landscape — Evening"),
-    )),
-    ("Anime", (
-        ("anime-coast", "Coastal Railway"), ("anime-village", "Snow Lanterns"),
-        ("anime-city", "Rainy Crossing"), ("anime-meadow", "Alpine Meadow"),
-        ("anime-moon", "Moonlit Shrine"),
-    )),
-)
-WALLPAPER_TITLES = {key: title for _, group in WALLPAPER_GROUPS for key, title in group}
+WALLPAPER_TITLES = {
+    "tahoe": "Tahoe", "golden": "Golden Gate", "landscape": "Landscape",
+    "sonoma": "Sonoma", "prism": "Prism", "macos": "Monterey", "exuma": "Exuma",
+    "big-sur": "Big Sur", "ventura": "Ventura", "sequoia": "Sequoia",
+    "anime-coast": "Coastal Railway", "anime-village": "Snow Lanterns",
+    "anime-city": "Rainy Crossing", "anime-meadow": "Alpine Meadow",
+    "anime-moon": "Moonlit Shrine",
+    "iridescence": "Iridescence", "beach-dawn": "Tahoe Beach — Dawn",
+    "beach-day": "Tahoe Beach — Day", "beach-night": "Tahoe Beach — Night",
+    "landscape-evening": "Tahoe Landscape — Evening",
+}
 CONTROL_SYMBOLS = (ASSETS.parents[1] / "offline/plasmoids"
                    / "org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols")
 STEPS = (
@@ -839,8 +834,9 @@ class PageScrollArea(QScrollArea):
 
 
 class WallpaperStrip(QScrollArea):
-    def __init__(self):
+    def __init__(self, columns):
         super().__init__()
+        self.columns = columns
         self.setObjectName("wallpaperStrip")
         self.setFrameShape(QFrame.Shape.NoFrame)
         self.setWidgetResizable(True)
@@ -866,8 +862,17 @@ class WallpaperStrip(QScrollArea):
         event.accept()
 
     def eventFilter(self, watched, event):
-        if event.type() == QEvent.Type.FocusIn and isinstance(watched, ChoiceCard):
-            self.ensureWidgetVisible(watched, 6, 0)
+        if isinstance(watched, ChoiceCard):
+            if event.type() == QEvent.Type.FocusIn:
+                self.ensureWidgetVisible(watched, 6, 0)
+            elif event.type() == QEvent.Type.KeyPress and event.key() in (Qt.Key.Key_Up, Qt.Key.Key_Down):
+                choices = watched.group().buttons()
+                offset = -self.columns if event.key() == Qt.Key.Key_Up else self.columns
+                index = choices.index(watched) + offset
+                if 0 <= index < len(choices):
+                    choices[index].setFocus()
+                    choices[index].click()
+                return True
         return super().eventFilter(watched, event)
 
 
@@ -2614,12 +2619,7 @@ class InstallerWindow(OpaqueSurface):
         self.keep_wallpaper.clicked.connect(lambda _: self.select("wallpaper", "keep"))
         self.use_theme_wallpaper.clicked.connect(lambda _: self.select("wallpaper", self.theme_wallpaper))
 
-        for title, wallpapers in WALLPAPER_GROUPS:
-            if title == "Anime":
-                label = self.label(title)
-                label.setFont(relative_font(self, .78, QFont.Weight.Medium))
-                self.body.addWidget(label)
-            self.wallpaper_strip(title, wallpapers)
+        self.wallpaper_strip()
         row = QHBoxLayout()
         self.custom_wallpaper = self.label("Custom file")
         self.custom_wallpaper.setFont(relative_font(self, .72))
@@ -2633,19 +2633,20 @@ class InstallerWindow(OpaqueSurface):
         self.body.addLayout(row)
         self.refresh_wallpaper_controls()
 
-    def wallpaper_strip(self, title, wallpapers):
-        strip = WallpaperStrip()
-        strip.setAccessibleName(self.t(title))
+    def wallpaper_strip(self):
+        columns = (len(WALLPAPER_TITLES) + 1) // 2
+        strip = WallpaperStrip(columns)
+        strip.setAccessibleName(self.t("Wallpaper"))
         content = QWidget()
         content.setObjectName("wallpaperStripContent")
         layout = QVBoxLayout(content)
         layout.setContentsMargins(0, 0, 0, 0)
         items = []
-        for key, label in wallpapers:
+        for key, label in WALLPAPER_TITLES.items():
             companion = f"{key}-dark.jpg"
             preview = picture(f"{key}.jpg", 170, 96, companion if companion in ASSET_FILES else None, cover=True)
             items.append((key, label, "", preview))
-        group = self.cards("wallpaper", items, columns=len(items), compact=True, layout=layout, fixed_width=166)
+        group = self.cards("wallpaper", items, columns=columns, compact=True, layout=layout, fixed_width=166)
         strip.setWidget(content)
         content.setAutoFillBackground(False)
         strip.setFixedHeight(layout.sizeHint().height() + strip.horizontalScrollBar().sizeHint().height())
