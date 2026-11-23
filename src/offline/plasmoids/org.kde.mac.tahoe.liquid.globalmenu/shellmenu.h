@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
-#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/inktransition.h"
+#include <QHash>
 #include <QMenu>
 #include <QStyleOptionMenuItem>
 
@@ -23,7 +23,6 @@ private Q_SLOTS:
 private:
     bool m_dynamicTinting = true;
     QByteArray m_grid;
-    QRect m_bounds, m_lastFrame;
-    mutable GlassInk::Transition m_ink{[this] { update(); }};
+    QRect m_bounds;
     QHash<const QAction *, QColor> m_rowInks;
 };

@@ -31,8 +31,8 @@ int main(int argc, char **argv)
     window.setTitle(QStringLiteral("mttkde-apps"));
     window.setGeometry(10, 10, 420, 250);
     window.show();
-    const auto sample = [&](QSize size, char channel) {
-        const QRect frame(window.position(), size);
+    const auto sample = [&](QSize size, char channel, QPoint offset = {}) {
+        const QRect frame(window.position() + offset, size);
         const QByteArray colors(8 * 8 * 3, channel);
         return QMetaObject::invokeMethod(&glass, "updateBackdrop", Qt::DirectConnection,
             Q_ARG(int, int(app.applicationPid())), Q_ARG(QRect, frame), Q_ARG(QRect, frame),
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     const QColor theme("#f4f4f4");
     const QPointF center(210, 125);
     const QSizeF radius(84, 20);
-    const auto settledInk = [&](int brightColumns) {
+    const auto labelInk = [&](int brightColumns) {
         QByteArray colors(64 * 64 * 3, 0);
         for (int col = 0; col < brightColumns; ++col) {
             const int x = int((center.x() + (col - 2) * radius.width() / 2) * 64 / window.width());
@@ -63,12 +63,23 @@ int main(int argc, char **argv)
         QMetaObject::invokeMethod(&glass, "updateBackdrop", Qt::DirectConnection,
             Q_ARG(int, int(app.applicationPid())), Q_ARG(QRect, frame), Q_ARG(QRect, frame),
             Q_ARG(QByteArray, colors), Q_ARG(QString, window.title()));
-        glass.animatedLabelForeground(&label, center, radius, theme, Qt::transparent);
-        QThread::msleep(310);
         return glass.animatedLabelForeground(&label, center, radius, theme, Qt::transparent);
     };
-    if (settledInk(3) != theme || settledInk(4) != QColor(Qt::black)
-        || settledInk(3) != QColor(Qt::black) || settledInk(2) != theme) return 12;
+    if (labelInk(3) != theme || labelInk(4) != QColor(Qt::black)
+        || labelInk(3) != QColor(Qt::black) || labelInk(2) != theme) return 12;
+
+    const auto ink = [&] { return glass.animatedForegroundAt(&label, center, radius, theme, Qt::transparent); };
+    // Anchored menus can move when search results change size. The next
+    // sample still applies on the first paint, even if it reverses quickly.
+    if (!sample(window.size(), 0) || ink() != QColor(Qt::white)
+        || !sample(window.size(), char(255), QPoint(1, 0)) || ink() != QColor(Qt::black)
+        || !sample(window.size(), 0, QPoint(2, 0)) || ink() != QColor(Qt::white)) return 13;
+
+    glass.windowMoveStarted();
+    if (!sample(window.size(), char(255), QPoint(3, 0)) || ink() != QColor(Qt::white)) return 14;
+    QThread::msleep(320);
+    if (ink() != QColor(Qt::black)) return 15;
+    if (!sample(window.size(), 0, QPoint(3, 0)) || ink() != QColor(Qt::white)) return 16;
     glass.setWindow(nullptr);
     std::cout << "CONTROL_GLASS_REGIONS_OK\n";
 }

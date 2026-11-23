@@ -6,7 +6,6 @@
 #include <QPointer>
 #include <QTimer>
 #include <QWindow>
-#include <algorithm>
 #include <functional>
 #include <utility>
 
@@ -40,8 +39,6 @@ public:
         reset();
         m_window = window;
         if (!window) return;
-        connect(window, &QWindow::xChanged, this, [this] { moved(); });
-        connect(window, &QWindow::yChanged, this, [this] { moved(); });
         connect(window, &QWindow::visibleChanged, this, [this](bool visible) { if (!visible) reset(); });
     }
 
@@ -73,22 +70,22 @@ public:
     {
         if (!item) return initial;
         const auto now = m_clock.elapsed();
+        const bool settling = now < m_settledAt;
         auto it = m_tracks.find(item);
         if (it == m_tracks.end()) {
             Track track;
-            track.from = track.to = initial;
+            track.from = track.to = settling ? initial : target;
             track.destroyed = connect(item, &QObject::destroyed, this, [this, item] { m_tracks.remove(item); });
             it = m_tracks.insert(item, track);
         }
         if (it->to != target) {
-            it->from = it->value(now);
+            // Rebinding a label or receiving a new stationary sample should
+            // show its final contrast on this paint. Only a window move
+            // arms the settle period and the transition.
+            it->from = settling ? it->value(now) : target;
             it->to = target;
-            // A moving background behind a stationary popup can also reverse
-            // the target several times between compositor samples.
-            const bool chattering = now - it->lastTargetChange < QuietPeriod;
-            it->start = std::max(m_settledAt, chattering ? now + QuietPeriod : now);
-            it->lastTargetChange = now;
-            if (!m_timer.isActive()) m_timer.start();
+            it->start = m_settledAt;
+            if (it->from != it->to && !m_timer.isActive()) m_timer.start();
         }
         return it->value(now);
     }
@@ -98,7 +95,7 @@ private:
     static constexpr int QuietPeriod = 50;
     struct Track {
         QColor from, to;
-        qint64 start = 0, lastTargetChange = -QuietPeriod;
+        qint64 start = 0;
         QMetaObject::Connection destroyed;
         QColor value(qint64 now) const
         {

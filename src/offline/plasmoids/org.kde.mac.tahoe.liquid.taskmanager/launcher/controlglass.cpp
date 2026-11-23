@@ -20,6 +20,12 @@ PopupBackdrop::PopupBackdrop(QObject *parent) : QObject(parent)
         QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray,QString)));
 }
 
+void PopupBackdrop::windowMoveStarted()
+{
+    m_followMovement = true;
+    m_ink.moved();
+}
+
 void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title)
 {
     if (!m_window || !m_window->isVisible() || m_window->title() != title
@@ -27,7 +33,9 @@ void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bou
         // Wayland repositions the anchored Plasma dialog relative to its panel.
         || !m_window->screen() || !m_window->screen()->geometry().intersects(frame)
         || bounds.isEmpty() || (colors.size() != 8 * 8 * 3 && colors.size() != 64 * 64 * 3)) return;
-    if (!m_lastFrame.isEmpty() && frame.topLeft() != m_lastFrame.topLeft()) m_ink.moved();
+    if (m_followMovement && !m_lastFrame.isEmpty() && frame.topLeft() != m_lastFrame.topLeft()) {
+        m_ink.moved();
+    }
     m_lastFrame = frame;
     m_sampleBounds = bounds.translated(-frame.topLeft());
     m_gridSide = colors.size() == 64 * 64 * 3 ? 64 : 8;
@@ -115,6 +123,7 @@ void PopupBackdrop::setWindow(QWindow *window)
     m_ink.observe(window);
     const auto clear = [this] {
         m_lastFrame = {};
+        m_followMovement = false;
         m_ink.reset();
         m_backdropGrid.clear();
         ++m_revision;
