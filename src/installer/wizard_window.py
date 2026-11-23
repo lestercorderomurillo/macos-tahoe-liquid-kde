@@ -157,35 +157,6 @@ def picture(name, width, height, other=None, *, cover=False, crop=None):
     return canvas
 
 
-def current_wallpaper_preview(width, height):
-    """Read the user's saved desktops without changing or capturing the desktop."""
-    from theme_switch import _wallpapers_from_config
-    images = []
-    for desktop in _wallpapers_from_config():
-        value = str(desktop["image"])
-        url = QUrl(value)
-        path = Path(url.toLocalFile() if url.isLocalFile() else value)
-        if path.is_dir():
-            candidates = [sorted((path / "contents" / folder).glob("*"))
-                          for folder in ("images", "images_dark")]
-            paths = [next((p for p in files if p.is_file() and not QPixmap(str(p)).isNull()), None)
-                     for files in candidates]
-        else:
-            paths = [path]
-            if path.parent.name in ("images", "images_dark"):
-                alternate = path.parent.parent / ("images_dark" if path.parent.name == "images" else "images") / path.name
-                paths = [path, alternate] if path.parent.name == "images" else [alternate, path]
-        for candidate in paths:
-            if candidate and candidate not in images and not QPixmap(str(candidate)).isNull():
-                images.append(candidate)
-    if images:
-        return picture(images[0], width, height, images[1] if len(images) > 1 else None, cover=True)
-    canvas = QPixmap(width * 2, height * 2)
-    canvas.fill(QApplication.palette().window().color())
-    canvas.setDevicePixelRatio(2)
-    return canvas
-
-
 def installer_fonts(app):
     """Load bundled SF faces into this process, without installing desktop fonts."""
     cached = app.property("installerFontFamilies")
@@ -630,6 +601,7 @@ class PreviewImage(QWidget):
         super().__init__(parent)
         self.pixmap = pixmap
         self.cover = False
+        self.dim_when_disabled = False
         self.setFixedHeight(round(pixmap.deviceIndependentSize().height()))
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
@@ -637,6 +609,8 @@ class PreviewImage(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+        if self.dim_when_disabled and not self.isEnabled():
+            painter.setOpacity(.38)
         # The image canvas has the card's exact aspect ratio; the source was
         # contained by picture(), so no desktop edges are lost here.
         window = self.window()
@@ -654,12 +628,13 @@ class PreviewImage(QWidget):
 
 class ChoiceCard(QPushButton):
     def __init__(self, title, detail, pixmap, checked, parent=None, *, independent=False, compact=False,
-                 small_caption=False):
+                 image_only=False):
         super().__init__(parent)
         self.setFont(parent.window().font())
         self.independent = independent
-        self.caption_minimum = 34 if small_caption else 42 if compact or not detail else 58
+        self.caption_minimum = 42 if compact or not detail else 58
         self.photo = None
+        self.copy = None
         self.row_cards = [self]
         self.setCheckable(True)
         self.setChecked(checked)
@@ -667,23 +642,23 @@ class ChoiceCard(QPushButton):
         self.setAccessibleDescription(detail)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(1, 1, 1, 1)
+        margin = 3 if image_only else 1
+        layout.setContentsMargins(margin, margin, margin, margin)
         layout.setSpacing(0)
         if pixmap:
             self.photo = PreviewImage(pixmap)
             layout.addWidget(self.photo)
+        if image_only:
+            self.setFixedHeight(layout.sizeHint().height())
+            return
         copy = QWidget()
         copy.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         text = QVBoxLayout(copy)
-        if small_caption:
-            text.setContentsMargins(10, 8, 34, 8)
-        else:
-            text.setContentsMargins(15, 11 if compact else 13, 40, 11 if compact else 14)
+        text.setContentsMargins(15, 11 if compact else 13, 40, 11 if compact else 14)
         text.setSpacing(4)
         label = QLabel(title)
         label.setWordWrap(True)
-        label.setFont(relative_font(self, .64 if small_caption else .86,
-                                    QFont.Weight.Medium if small_caption else QFont.Weight.DemiBold))
+        label.setFont(relative_font(self, .86, QFont.Weight.DemiBold))
         text.addWidget(label)
         if detail:
             description = QLabel(detail)
@@ -702,20 +677,25 @@ class ChoiceCard(QPushButton):
             return
         # Translated descriptions can wrap to different line counts. Reserve
         # the tallest caption and preview for every card in the same row.
-        copy_height = max(max(card.caption_minimum,
-                              card.copy.layout().heightForWidth(card.width()-2))
+        padding = 6 if self.copy is None else 2
+        copy_height = max((max(card.caption_minimum,
+                               card.copy.layout().heightForWidth(card.width()-padding)) if card.copy else 0)
                           for card in self.row_cards)
-        height = max((round((card.width()-2) * card.photo.pixmap.height()
+        height = max((round((card.width()-padding) * card.photo.pixmap.height()
                             / card.photo.pixmap.width()) if card.photo else 0)
                      for card in self.row_cards)
         for card in self.row_cards:
-            card.copy.setFixedHeight(copy_height)
+            if card.copy:
+                card.copy.setFixedHeight(copy_height)
             if card.photo:
                 card.photo.setFixedHeight(height)
                 path = QPainterPath()
-                path.addRoundedRect(QRectF(0, 0, card.width()-2, height+8), 7, 7)
+                if card.copy:
+                    path.addRoundedRect(QRectF(0, 0, card.width()-padding, height+8), 7, 7)
+                else:
+                    path.addRoundedRect(QRectF(0, 0, card.width()-padding, height), 5, 5)
                 card.photo.setMask(QRegion(path.toFillPolygon().toPolygon()))
-            card.setFixedHeight(height + copy_height + 2)
+            card.setFixedHeight(height + copy_height + padding)
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -729,6 +709,8 @@ class ChoiceCard(QPushButton):
         painter.setPen(QPen(border, 2 if not dashed and (checked or focused) else 1, pen_style))
         painter.setBrush(self.palette().base())
         painter.drawRoundedRect(QRectF(1, 1, self.width()-2, self.height()-2), 8, 8)
+        if self.copy is None:
+            return
         caption_center = self.copy.geometry().center().y()
         indicator = QRectF(self.width()-31, caption_center-9, 18, 18)
         painter.setPen(QPen(accent if self.isChecked() else QColor(self.window().line), 1))
@@ -888,6 +870,7 @@ class InstallerWindow(OpaqueSurface):
         self.defaults["wallpaper_explicit"] = False
         self.choices = dict(self.defaults)
         self.theme_icon_style = self.defaults["icons"]
+        self.theme_wallpaper = self.defaults["wallpaper"]
         self.edition = "Golden Gate" if bridge.editionName == "MacGoldenGate" else "Tahoe"
         self.asset_edition = "golden-gate" if self.edition == "Golden Gate" else "tahoe"
         self.settings_mode = mode == "settings"
@@ -1452,9 +1435,10 @@ class InstallerWindow(OpaqueSurface):
             self.refresh_icon_controls()
         elif key == "color" and "icons" in self.choice_widgets:
             self.glass_preview.setIcon(self.icon_sample("glass"))
-        elif key == "wallpaper":
-            self.wallpaper_filename.setText(Path(self.choices["wallpaper_path"]).name)
-            self.wallpaper_filename.setVisible(value == "custom")
+        elif key == "wallpaper" and controls:
+            if value != "keep":
+                self.theme_wallpaper = value
+            self.refresh_wallpaper_controls()
         elif key == "dock":
             button = self.content.findChild(QPushButton, "edit-dock-apps")
             if button:
@@ -1494,9 +1478,10 @@ class InstallerWindow(OpaqueSurface):
             checked = self.choices[choice_key] if independent else self.choices[key] == value
             card = ChoiceCard(self.t(title), self.t(detail), pixmap, checked, self.content,
                               independent=independent, compact=compact,
-                              small_caption=key == "wallpaper")
+                              image_only=key == "wallpaper")
             if key == "wallpaper" and card.photo is not None:
                 card.photo.cover = True
+                card.photo.dim_when_disabled = True
             card.setObjectName(f"choice-{choice_key}-{value}")
             self.bind_choice(choice_key, True if independent else value, card)
             if group:
@@ -1700,6 +1685,7 @@ class InstallerWindow(OpaqueSurface):
             QRadioButton::indicator:checked {{ border: 3px solid {self.accent}; width: 11px; height: 11px; }}
             QComboBox#languageSelector {{ border: 0; background: transparent; }}
             QPushButton#textLink {{ border: 0; background: transparent; color: {self.accent}; padding: 4px 0; }}
+            QPushButton#textLink:disabled {{ color: {muted}; }}
             QProgressBar {{ border: 0; border-radius: 4px; background: {self.line}; min-height: 8px; max-height: 8px; }}
             QProgressBar::chunk {{ border-radius: 4px; background: {self.accent}; }}
         """
@@ -2474,26 +2460,51 @@ class InstallerWindow(OpaqueSurface):
         return "dark" if self.choices["appearance"] == "dark" else "light"
 
     def page_wallpaper(self):
+        if self.choices["wallpaper"] != "keep":
+            self.theme_wallpaper = self.choices["wallpaper"]
+        sources = QButtonGroup(self.content)
+        self.groups.append(sources)
+        self.keep_wallpaper = RadioOption(self.t("Keep my wallpaper"))
+        self.use_theme_wallpaper = RadioOption(self.t("Use the theme wallpaper"))
+        for button, value in ((self.keep_wallpaper, "keep"), (self.use_theme_wallpaper, "theme")):
+            button.setObjectName(f"choice-wallpaper-{value}")
+            button.setFont(relative_font(self, .76))
+            sources.addButton(button)
+            self.body.addWidget(button)
+        self.keep_wallpaper.clicked.connect(lambda _: self.select("wallpaper", "keep"))
+        self.use_theme_wallpaper.clicked.connect(lambda _: self.select("wallpaper", self.theme_wallpaper))
+
         items = [(key, label, "", picture(key+".jpg", 170, 112, key+"-dark.jpg", cover=True))
                  for key, label in (("tahoe", "Tahoe"), ("golden", "Golden Gate"),
                                     ("landscape", "Landscape"), ("sonoma", "Sonoma"),
                                     ("prism", "Prism"), ("macos", "Monterey"), ("exuma", "Exuma"))]
-        items.append(("keep", "Keep my wallpaper", "", current_wallpaper_preview(170, 112)))
         self.cards("wallpaper", items, columns=4, compact=True)
         row = QHBoxLayout()
+        self.custom_wallpaper = self.label("Custom file")
+        self.custom_wallpaper.setFont(relative_font(self, .72))
+        row.addWidget(self.custom_wallpaper)
         row.addStretch()
-        button = QPushButton(self.t("Choose a file…"))
-        button.setFont(relative_font(self, .72, QFont.Weight.Medium))
-        button.clicked.connect(self.choose_file)
-        button.setObjectName("textLink")
-        row.addWidget(button)
+        self.wallpaper_file_button = QPushButton(self.t("Choose a file…"))
+        self.wallpaper_file_button.setFont(relative_font(self, .72, QFont.Weight.Medium))
+        self.wallpaper_file_button.clicked.connect(self.choose_file)
+        self.wallpaper_file_button.setObjectName("textLink")
+        row.addWidget(self.wallpaper_file_button)
         self.body.addLayout(row)
-        self.wallpaper_filename = self.label(Path(self.choices["wallpaper_path"]).name)
-        self.wallpaper_filename.setFont(relative_font(self, .72))
-        self.wallpaper_filename.setVisible(self.choices["wallpaper"] == "custom")
-        self.body.addWidget(self.wallpaper_filename)
+        self.refresh_wallpaper_controls()
+
+    def refresh_wallpaper_controls(self):
+        selected = self.choices["wallpaper"]
+        using_theme = selected != "keep"
+        mode = self.use_theme_wallpaper if using_theme else self.keep_wallpaper
+        mode.setChecked(True)
+        for _, card in self.choice_widgets["wallpaper"]:
+            card.setEnabled(using_theme)
+        self.wallpaper_file_button.setEnabled(using_theme)
+        self.custom_wallpaper.setVisible(selected == "custom")
 
     def choose_file(self):
+        if self.choices["wallpaper"] == "keep":
+            return
         path, _ = QFileDialog.getOpenFileName(self, self.t("Choose a wallpaper"), "", self.t("Images (*.png *.jpg *.jpeg *.webp)"))
         if path and not QPixmap(path).isNull():
             self.choices["wallpaper_path"] = path

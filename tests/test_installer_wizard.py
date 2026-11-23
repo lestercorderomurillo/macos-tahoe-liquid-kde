@@ -521,6 +521,8 @@ for page in ('appearance', 'icons', 'wallpaper', 'launcher', 'layout', 'effects'
         controls += content.findChildren(QToolButton)
         controls += [content.findChild(QPushButton, 'color-green'), content.findChild(QPushButton, 'color-red')]
     for control in controls + controls[::-1]:
+        if not control.isEnabled():
+            continue
         control.setFocus(); QTest.mouseClick(control, Qt.MouseButton.LeftButton)
         app.processEvents(); app.processEvents()
         assert window.content is content and window.scroll.widget() is content, page
@@ -548,22 +550,40 @@ assert window.content.findChild(RadioOption, 'choice-icons-keep').isChecked()
 assert not any(button.isChecked() for _, button in window.choice_widgets['icons'])
 window.page = 'wallpaper'; window.render(); app.processEvents()
 content = window.content
+cards = content.findChildren(ChoiceCard)
+assert len(cards) == 7 and all(card.accessibleName() and not card.findChildren(QLabel) for card in cards)
+keep = content.findChild(RadioOption, 'choice-wallpaper-keep')
+theme = content.findChild(RadioOption, 'choice-wallpaper-theme')
+theme.click()
+assert theme.isChecked()
+original_wallpaper = window.choices['wallpaper']
 import tempfile
 with tempfile.TemporaryDirectory() as directory:
     path = Path(directory) / 'wallpaper.png'
     pixmap = QPixmap(10, 10); pixmap.fill(QColor('red')); pixmap.save(str(path))
     original_dialog = QFileDialog.getOpenFileName
     QFileDialog.getOpenFileName = lambda *args: (str(path), '')
+    keep.click()
+    assert window.choices['wallpaper'] == 'keep'
+    assert all(not card.isEnabled() and not card.isChecked() for card in cards)
+    assert not window.wallpaper_file_button.isEnabled()
+    window.choose_file()
+    assert window.choices['wallpaper'] == 'keep'
+    theme.click()
+    assert all(card.isEnabled() for card in cards) and window.wallpaper_file_button.isEnabled()
+    assert window.choices['wallpaper'] == original_wallpaper
     window.choose_file()
     QFileDialog.getOpenFileName = original_dialog
     app.processEvents()
     assert window.content is content and window.choices['wallpaper'] == 'custom'
-    assert window.wallpaper_filename.isVisible() and window.wallpaper_filename.text() == path.name
+    assert window.custom_wallpaper.isVisible() and window.custom_wallpaper.text() == window.t('Custom file')
     assert not any(card.isChecked() for card in content.findChildren(ChoiceCard))
     window.select('wallpaper', 'keep')
-    assert not window.wallpaper_filename.isVisible()
+    assert keep.isChecked() and not window.custom_wallpaper.isVisible()
+    theme.click()
+    assert window.choices['wallpaper'] == 'custom' and window.choices['wallpaper_path'] == str(path)
     window.select('wallpaper', 'tahoe')
-    assert not content.findChild(ChoiceCard, 'choice-wallpaper-keep').isChecked()
+    assert theme.isChecked() and not window.custom_wallpaper.isVisible()
 window.page = 'files'; window.render(); app.processEvents()
 bookmarks = window.bookmarks
 bookmarks.setChecked(False)
@@ -653,25 +673,6 @@ QTest.mouseClick(spins[0], Qt.MouseButton.LeftButton, pos=up.center())
 assert window.choices['oled_interval'] == 17
 window.select('oled_care', False); assert all(not spin.isEnabled() for spin in spins)
 window.select('oled_care', True); assert spins[0].value() == 17
-# Current wallpaper cards render actual files and package light/dark partners.
-from wizard_window import current_wallpaper_preview
-from PyQt6.QtCore import Qt, QUrl
-import theme_switch
-snapshot = theme_switch._wallpapers_from_config
-with tempfile.TemporaryDirectory() as directory:
-    package = Path(directory) / 'My wallpaper'
-    for folder, color in [('images', 'red'), ('images_dark', 'blue')]:
-        destination = package / 'contents' / folder / 'image.png'
-        destination.parent.mkdir(parents=True)
-        tile = QPixmap(80, 40); tile.fill(QColor(color)); tile.save(str(destination))
-    for path in [package, package/'contents/images/image.png', package/'contents/images_dark/image.png']:
-        theme_switch._wallpapers_from_config = lambda: [{'screen': 0, 'image': QUrl.fromLocalFile(str(path)).toString()}]
-        preview = current_wallpaper_preview(100, 50).toImage()
-        assert preview.pixelColor(10, 50) == QColor('red')
-        assert preview.pixelColor(190, 50) == QColor('blue')
-    theme_switch._wallpapers_from_config = lambda: [{'screen': 0, 'image': str(package/'missing.png')}]
-    assert not current_wallpaper_preview(100, 50).isNull()
-theme_switch._wallpapers_from_config = snapshot
 import os
 window.page = 'welcome'; window.render(); app.processEvents()
 assert len(INSTALL_FLOW) == 10
@@ -736,6 +737,7 @@ window.search.clear()
 window.navigate_settings('theme')
 
 # Exercise the real process adapter with a session-local switcher.
+import theme_switch
 state = theme_switch._appearance_state_path()
 state.parent.mkdir(parents=True, exist_ok=True)
 state.write_text('{"preference":"light"}')

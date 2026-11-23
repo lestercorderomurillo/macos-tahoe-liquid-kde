@@ -310,6 +310,7 @@ Green|Verde|绿色|Verde|Grün
 Gray|Grafito|石墨色|Grafite|Graphit
 Landscape|Paisaje|风景|Paisagem|Landschaft
 Keep my wallpaper|Conservar mi fondo|保留我的壁纸|Manter meu papel de parede|Meinen Hintergrund beibehalten
+Use the theme wallpaper|Usar fondo del tema|使用主题壁纸|Usar o papel de parede do tema|Hintergrund des Designs verwenden
 Choose a file…|Elegir archivo…|选择文件…|Escolher arquivo…|Datei auswählen…
 Choose a wallpaper|Elegir un fondo de pantalla|选择壁纸|Escolher um papel de parede|Hintergrund auswählen
 Categories and apps in one window.|Categorías y aplicaciones en una ventana.|分类和应用位于同一窗口。|Categorias e aplicativos em uma janela.|Kategorien und Apps in einem Fenster.
