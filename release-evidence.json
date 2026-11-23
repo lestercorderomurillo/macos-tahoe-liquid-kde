@@ -1,8 +1,8 @@
 {
-  "version": "0.82.16",
+  "version": "0.82.17",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "implementation_commit": "aa848c2a0bb6610bf11d8fc2b5b21d66754d0b2d",
-  "scope": "Choose a common ink family per glass component, apply stationary text updates immediately, and preserve the configured light menu glass opacity.",
+  "scope": "Choose a common ink family per glass component, apply stationary text updates immediately, and preserve the configured light menu glass opacity. Correct the Qt style regression test to compare the light shell menu directly to its configured Kvantum fill.",
   "approval": "The maintainer requested publication after reviewing the light system menu over the Sequoia Sunrise wallpaper.",
   "checks": [
     {
@@ -20,6 +20,10 @@
     {
       "command": "Verified the component installation fingerprint ledger.",
       "result": "passed"
+    },
+    {
+      "command": "Ran all four Qt style contour cases at 1x and 2x, checking exact light-mode RGBA equality and the existing dark overlay opacity.",
+      "result": "passed"
     }
   ],
   "captures": [],
@@ -27,5 +31,5 @@
   "approved_preview_sha256": {
     "menu-sobre-secuoyas.png": "8d94ea416588d03f9dca0259d418883c43c68b89dc641b6adff0bbdd1a0edac4"
   },
-  "source_sha256": "ada3d9d42b95d7e3cc0af4310d5755e75b70cd19e3e4f7aa1cf1f381bd9daeb4"
+  "source_sha256": "6ec16852855cc3e2ea50dee18bddfa9f2ea4f8ddd230d13e32c1ff9e4384438f"
 }

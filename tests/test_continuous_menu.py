@@ -39,9 +39,9 @@ def test_contour_and_content_inset(menu_plugin, tmp_path, repo, mode, scale):
     # A 9px circular corner reaches this row around x=11 instead.
     assert abs(report["reference_edge"] - 17) <= 2
     assert report["center"] == report["base_center"]
-    for overlay, alpha in zip((102, 25), report["shell_alphas"], strict=True):
-        expected = overlay + (255 - overlay) * report["base_alpha"] / 255
-        assert alpha == pytest.approx(expected, abs=1)
+    assert report["light_shell"] == report["light_base"], "Light menus must retain the configured glass fill"
+    expected_dark_alpha = 25 + (255 - 25) * report["dark_base_alpha"] / 255
+    assert report["dark_shell_alpha"] == pytest.approx(expected_dark_alpha, abs=1)
     assert report["fallback_same"], "Other Kvantum themes must retain their own geometry"
 
 
@@ -65,16 +65,19 @@ def probe():
     inset = [menu.actionGeometry(menu.actions()[0]).x(), menu.actionGeometry(menu.actions()[0]).y()]
     center, base_center = image.pixelColor(240, 140).rgba(), previous.pixelColor(240, 140).rgba()
     menu.setProperty("_mttkde_shell_menu", True)
-    shell_alphas = []
-    for color in (Qt.GlobalColor.white, Qt.GlobalColor.black):
+    def shell_and_base(window_color):
         palette = option.palette
-        palette.setColor(QPalette.ColorRole.Window, color)
+        palette.setColor(QPalette.ColorRole.Window, window_color)
         option.palette = palette
-        shell_alphas.append(render(style).pixelColor(240, 140).alpha())
+        return render(style).pixelColor(240, 140), render(base).pixelColor(240, 140)
+    light_shell, light_base = shell_and_base(Qt.GlobalColor.white)
+    dark_shell, dark_base = shell_and_base(Qt.GlobalColor.black)
     menu.setProperty("_mttkde_shell_menu", False)
     (Path(os.environ["XDG_CONFIG_HOME"]) / "Kvantum/kvantum.kvconfig").write_text("[General]\ntheme=unrelated\n")
     same = render(style) == render(base)
-    print(json.dumps(dict(inset=inset, reference_edge=edge, center=center, base_center=base_center, base_alpha=previous.pixelColor(240, 140).alpha(), shell_alphas=shell_alphas, fallback_same=same)))
+    print(json.dumps(dict(inset=inset, reference_edge=edge, center=center, base_center=base_center, light_shell=light_shell.rgba(),
+                          light_base=light_base.rgba(), dark_shell_alpha=dark_shell.alpha(),
+                          dark_base_alpha=dark_base.alpha(), fallback_same=same)))
 
 
 if __name__ == "__main__":
