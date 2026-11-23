@@ -112,7 +112,7 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
         if (auto *number = qobject_cast<QDoubleSpinBox *>(control)) connect(number, &QDoubleSpinBox::valueChanged, this, changed);
         else if (auto *integer = qobject_cast<QSpinBox *>(control)) connect(integer, &QSpinBox::valueChanged, this, changed);
         else if (auto *toggle = qobject_cast<QCheckBox *>(control)) connect(toggle, &QCheckBox::toggled, this, changed);
-        else if (auto *color = qobject_cast<KColorButton *>(control)) connect(color, &KColorButton::changed, this, changed);
+        else if (auto *color = qobject_cast<GradientColorButton *>(control)) connect(color, &GradientColorButton::colorChanged, this, changed);
     }
     connect(m_componentSelector, &QComboBox::currentIndexChanged, this, &LiquidGlassEffectConfig::selectComponent);
 
@@ -190,7 +190,7 @@ QJsonObject LiquidGlassEffectConfig::controls() const
         if (auto *number = qobject_cast<QDoubleSpinBox *>(it.value())) values[it.key()] = number->value();
         else if (auto *integer = qobject_cast<QSpinBox *>(it.value())) values[it.key()] = integer->value();
         else if (auto *toggle = qobject_cast<QCheckBox *>(it.value())) values[it.key()] = toggle->isChecked();
-        else if (auto *color = qobject_cast<KColorButton *>(it.value())) values[it.key()] = color->color().name(QColor::HexRgb);
+        else if (auto *color = qobject_cast<GradientColorButton *>(it.value())) values[it.key()] = color->color().name(QColor::HexRgb);
     }
     return values;
 }
@@ -210,7 +210,7 @@ void LiquidGlassEffectConfig::showComponent()
         if (auto *number = qobject_cast<QDoubleSpinBox *>(it.value())) number->setValue(value.toDouble());
         else if (auto *integer = qobject_cast<QSpinBox *>(it.value())) integer->setValue(value.toInt());
         else if (auto *toggle = qobject_cast<QCheckBox *>(it.value())) toggle->setChecked(value.toBool());
-        else if (auto *color = qobject_cast<KColorButton *>(it.value())) color->setColor(QColor(value.toString()));
+        else if (auto *color = qobject_cast<GradientColorButton *>(it.value())) color->setColor(QColor(value.toString()));
     }
     m_loading = false;
 }

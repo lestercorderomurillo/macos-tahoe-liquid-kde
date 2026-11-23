@@ -9,14 +9,16 @@ PlasmaCore.Action {
     required property int widgetId
     property string section: "dock_bar"
     readonly property bool available: launcher.available
+    signal launchFailed()
 
     text: i18nd("plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter", "Configure in Settings…")
     icon.name: "configure"
     visible: available
-    onTriggered: launcher.connectSource(launcher.program + "--section=" + section + " --widget=" + widgetId)
+    onTriggered: open()
 
-    function openAcrylicGlass() {
-        launcher.connectSource(launcher.program + "--section=acrylic_glass");
+    function open() {
+        const instance = widgetId > 0 ? " --widget=" + widgetId : "";
+        launcher.connectSource(launcher.program + "--section=" + section + instance);
     }
 
     readonly property P5Support.DataSource launcher: P5Support.DataSource {
@@ -26,9 +28,13 @@ PlasmaCore.Action {
         readonly property string check: program + "--available"
         connectedSources: [check]
         onNewData: (source, data) => {
-            if (source === check)
-                available = Number(data["exit code"]) === 0;
+            if (data["exit code"] === undefined) return;
+            const succeeded = Number(data["exit code"]) === 0;
             disconnectSource(source);
+            if (source === check)
+                available = succeeded;
+            else if (!succeeded)
+                entry.launchFailed();
         }
     }
 }

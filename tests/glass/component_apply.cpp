@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <KCModule>
-#include <KColorButton>
+#include <QColor>
 #include <KPluginFactory>
 #include <KPluginMetaData>
 #include <QApplication>
@@ -12,11 +12,10 @@
 #include <QJsonObject>
 #include <QFile>
 #include <QLabel>
-#include <QClipboard>
 #include <QPushButton>
 #include <cstdio>
 int main(int argc,char **argv){
- QApplication app(argc,argv);app.clipboard()->setText(QString());
+ QApplication app(argc,argv);
  if(argc<3)return 2;
  auto result=KPluginFactory::instantiatePlugin<KCModule>(KPluginMetaData(QString::fromLocal8Bit(argv[1])));
  if(!result){fprintf(stderr,"%s\n",qPrintable(result.errorString));return 3;}
@@ -42,10 +41,9 @@ int main(int argc,char **argv){
   if(auto *n=qobject_cast<QDoubleSpinBox*>(w))n->setValue(i.value().toDouble());
   else if(auto *n=qobject_cast<QSpinBox*>(w))n->setValue(i.value().toInt());
   else if(auto *b=qobject_cast<QCheckBox*>(w))b->setChecked(i.value().toBool());
-  else if(auto *button=qobject_cast<KColorButton*>(w)){
+  else if(w && w->property("color").isValid()){
    const QColor color(i.value().toString());
-   if(!color.isValid()) return 6;
-   button->setColor(color);
+   if(!color.isValid() || !w->setProperty("color", color)) return 6;
   } else return 6;
  }
  if(!request.contains("save") || request.value("save").toBool())m->save();

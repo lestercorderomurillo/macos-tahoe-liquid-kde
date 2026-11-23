@@ -1,6 +1,8 @@
 set(kwin_liquidglass_config_SRCS
     config.cpp
     config.h
+    gradientcolorbutton.cpp
+    gradientcolorbutton.h
     presetcombobox.h
 )
 

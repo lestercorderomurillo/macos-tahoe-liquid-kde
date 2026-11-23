@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include <KCModule>
-#include <KColorButton>
+#include <QColor>
 #include <KConfigGroup>
 #include <KPluginFactory>
 #include <KSharedConfig>
@@ -41,8 +41,7 @@ template <class T> static T *control(KCModule *module, const QString &name)
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    // Offscreen has no clipboard owner; KColorButton expects MIME data.
-    app.clipboard()->setText(QString());
+    const auto *clipboardBefore = app.clipboard()->mimeData();
     require(argc == 5, QStringLiteral("plugin, preset JSON, saved selection and tint required"));
     QFile input(QString::fromLocal8Bit(argv[2]));
     require(input.open(QIODevice::ReadOnly), QStringLiteral("presets unreadable"));
@@ -72,6 +71,7 @@ int main(int argc, char **argv)
         return module;
     };
     auto module = open();
+    require(app.clipboard()->mimeData() == clipboardBefore, QStringLiteral("opening the editor changed the clipboard"));
     const auto capture = qEnvironmentVariable("GLASS_KCM_CAPTURE");
     if (!capture.isEmpty()) {
         if (qEnvironmentVariableIsSet("GLASS_KCM_CAPTURE_PRESET")) {
@@ -108,8 +108,8 @@ int main(int argc, char **argv)
                 require(integer->value() == it.value().toInt(), name);
             else if (auto *toggle = qobject_cast<QCheckBox *>(widget))
                 require(toggle->isChecked() == it.value().toBool(), name);
-            else if (auto *color = qobject_cast<KColorButton *>(widget))
-                require(color->color() == QColor(it.value().toString()), name);
+            else if (widget->property("color").isValid())
+                require(widget->property("color").value<QColor>() == QColor(it.value().toString()), name);
             else require(false, name + QStringLiteral(" unknown control type"));
         }
     };
@@ -242,13 +242,13 @@ int main(int argc, char **argv)
     module->load();
     auto *blur = control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"));
     blur->setValue(8.25);
-    auto *color = control<KColorButton>(module.get(), QStringLiteral("kcfg_GradientTopColor"));
-    color->setColor(QColor("#265a81"));
+    auto *color = control<QPushButton>(module.get(), QStringLiteral("kcfg_GradientTopColor"));
+    color->setProperty("color", QColor("#265a81"));
     module->save();
     module.reset();
     module = open();
     require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == 8.25, QStringLiteral("reopening resets overrides"));
-    require(control<KColorButton>(module.get(), QStringLiteral("kcfg_GradientTopColor"))->color() == QColor("#265a81"), QStringLiteral("custom color lost"));
+    require(control<QPushButton>(module.get(), QStringLiteral("kcfg_GradientTopColor"))->property("color").value<QColor>() == QColor("#265a81"), QStringLiteral("custom color lost"));
     selector = control<QComboBox>(module.get(), QStringLiteral("kcfg_MaterialPreset"));
     selector->setCurrentIndex(1);
     selector->activated(1);
@@ -262,19 +262,19 @@ int main(int argc, char **argv)
     config->reparseConfiguration();
     require(group.readEntry("WindowClasses", QString()) == QStringLiteral("preserved-app"), QStringLiteral("preset reset rules"));
     for (const QString stop : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
-        auto *light = control<KColorButton>(module.get(), "kcfg_Gradient" + stop + "Color");
-        auto *dark = control<KColorButton>(module.get(), "kcfg_Gradient" + stop + "DarkColor");
-        light->setColor(QColor("#ffeecc"));
-        dark->setColor(QColor("#123456"));
+        auto *light = control<QPushButton>(module.get(), "kcfg_Gradient" + stop + "Color");
+        auto *dark = control<QPushButton>(module.get(), "kcfg_Gradient" + stop + "DarkColor");
+        light->setProperty("color", QColor("#ffeecc"));
+        dark->setProperty("color", QColor("#123456"));
     }
     control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->setChecked(false);
     module->save();
     module.reset();
     module = open();
     for (const QString stop : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
-        auto *light = control<KColorButton>(module.get(), "kcfg_Gradient" + stop + "Color");
-        auto *dark = control<KColorButton>(module.get(), "kcfg_Gradient" + stop + "DarkColor");
-        require(light->color() == QColor("#ffeecc") && dark->color() == QColor("#123456"),
+        auto *light = control<QPushButton>(module.get(), "kcfg_Gradient" + stop + "Color");
+        auto *dark = control<QPushButton>(module.get(), "kcfg_Gradient" + stop + "DarkColor");
+        require(light->property("color").value<QColor>() == QColor("#ffeecc") && dark->property("color").value<QColor>() == QColor("#123456"),
                 QStringLiteral("mode colors must persist independently"));
         require(!light->isEnabled() && !dark->isEnabled(), QStringLiteral("disabled gradient has active colors"));
     }
@@ -289,15 +289,15 @@ int main(int argc, char **argv)
     group.sync();
     module = open();
     for (const QString stop : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
-        auto *dark = control<KColorButton>(module.get(), "kcfg_Gradient" + stop + "DarkColor");
-        require(dark->color() == QColor("#ffeecc"), QStringLiteral("legacy color must survive in both modes"));
-        dark->setColor(QColor(Qt::black));
+        auto *dark = control<QPushButton>(module.get(), "kcfg_Gradient" + stop + "DarkColor");
+        require(dark->property("color").value<QColor>() == QColor("#ffeecc"), QStringLiteral("legacy color must survive in both modes"));
+        dark->setProperty("color", QColor(Qt::black));
     }
     module->save();
     module.reset();
     module = open();
     for (const QString stop : {QStringLiteral("Top"), QStringLiteral("Center"), QStringLiteral("Bottom")}) {
-        require(control<KColorButton>(module.get(), "kcfg_Gradient" + stop + "DarkColor")->color() == QColor(Qt::black),
+        require(control<QPushButton>(module.get(), "kcfg_Gradient" + stop + "DarkColor")->property("color").value<QColor>() == QColor(Qt::black),
                 QStringLiteral("explicit default black must not fall back to legacy light color"));
     }
     fprintf(stderr, "Material presets, custom color, save/reopen, cancel and restore verified\n");

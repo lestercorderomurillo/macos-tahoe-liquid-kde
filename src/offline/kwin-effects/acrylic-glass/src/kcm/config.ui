@@ -165,13 +165,13 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="KColorButton" name="kcfg_GradientTopColor">
+           <widget class="GradientColorButton" name="kcfg_GradientTopColor">
             <property name="toolTip"><string>Top color in light mode.</string></property>
             <property name="accessibleName"><string>Top color in light mode.</string></property>
            </widget>
           </item>
           <item row="2" column="2">
-           <widget class="KColorButton" name="kcfg_GradientTopDarkColor">
+           <widget class="GradientColorButton" name="kcfg_GradientTopDarkColor">
             <property name="toolTip"><string>Top color in dark mode.</string></property>
             <property name="accessibleName"><string>Top color in dark mode.</string></property>
            </widget>
@@ -192,13 +192,13 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="KColorButton" name="kcfg_GradientCenterColor">
+           <widget class="GradientColorButton" name="kcfg_GradientCenterColor">
             <property name="toolTip"><string>Center color in light mode.</string></property>
             <property name="accessibleName"><string>Center color in light mode.</string></property>
            </widget>
           </item>
           <item row="3" column="2">
-           <widget class="KColorButton" name="kcfg_GradientCenterDarkColor">
+           <widget class="GradientColorButton" name="kcfg_GradientCenterDarkColor">
             <property name="toolTip"><string>Center color in dark mode.</string></property>
             <property name="accessibleName"><string>Center color in dark mode.</string></property>
            </widget>
@@ -219,13 +219,13 @@
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="KColorButton" name="kcfg_GradientBottomColor">
+           <widget class="GradientColorButton" name="kcfg_GradientBottomColor">
             <property name="toolTip"><string>Bottom color in light mode.</string></property>
             <property name="accessibleName"><string>Bottom color in light mode.</string></property>
            </widget>
           </item>
           <item row="4" column="2">
-           <widget class="KColorButton" name="kcfg_GradientBottomDarkColor">
+           <widget class="GradientColorButton" name="kcfg_GradientBottomDarkColor">
             <property name="toolTip"><string>Bottom color in dark mode.</string></property>
             <property name="accessibleName"><string>Bottom color in dark mode.</string></property>
            </widget>
@@ -704,9 +704,9 @@ firefox</string>
    <header>presetcombobox.h</header>
   </customwidget>
   <customwidget>
-   <class>KColorButton</class>
+   <class>GradientColorButton</class>
    <extends>QPushButton</extends>
-   <header>KColorButton</header>
+   <header>gradientcolorbutton.h</header>
   </customwidget>
  </customwidgets>
 </ui>

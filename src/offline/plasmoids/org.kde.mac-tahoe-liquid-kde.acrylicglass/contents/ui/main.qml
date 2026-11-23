@@ -8,11 +8,16 @@ PlasmoidItem {
     id: root
     function openGlassSettings() {
         if (settingsEntry.available)
-            settingsEntry.openAcrylicGlass();
+            settingsEntry.open();
         else
             commands.run("acrylic");
     }
-    Controls.SettingsEntry { id: settingsEntry; widgetId: Plasmoid.id }
+    Controls.SettingsEntry {
+        id: settingsEntry
+        section: "acrylic_glass"
+        widgetId: 0
+        onLaunchFailed: commands.run("acrylic")
+    }
     Plasmoid.hasConfigurationInterface: !settingsEntry.available
     Plasmoid.contextualActions: [settingsEntry]
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
