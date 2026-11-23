@@ -84,7 +84,7 @@ SETTINGS_PAGES = {
     "general": ("General", "settings", ("#99a9bc", "#3e506a"), ()),
     **SECTIONS,
 }
-SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows"}
+SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows", "weather_panel": "desktop"}
 PANEL_SECTIONS = {panel: section for section, (_, _, _, panels) in SECTIONS.items() for panel in panels}
 PANEL_STEPS = {panel: step for step, (_, panels) in INSTALL_SECTIONS.items() for panel in panels}
 
@@ -798,11 +798,14 @@ class InstallerWindow(OpaqueSurface):
         self.asset_edition = "golden-gate" if self.edition == "Golden Gate" else "tahoe"
         self.settings_mode = mode == "settings"
         self.requested_widget = widget
+        self.requested_weather_panel = self.settings_mode and section == "weather_panel"
         self.acrylic_glass_editor = None
         self.requested_glass_editor = self.settings_mode and section == "acrylic_glass"
         section = SECTION_ALIASES.get(section, section)
         self.page = section if self.settings_mode else "uninstall" if uninstall else "welcome"
         self.expanded_panels = {"windows": {"acrylic_glass_editor"}} if self.requested_glass_editor else {}
+        if self.requested_weather_panel:
+            self.expanded_panels["desktop"] = set()
         self.panel_frames = {}
         self.settings_baseline = None
         self.reconfiguring = False
@@ -1060,6 +1063,8 @@ class InstallerWindow(OpaqueSurface):
                 terms += ("Language",)
             elif page == "theme":
                 terms += ("Light", "Dark", "Auto", "Icon appearance", "Icon color palette", "Tinted")
+            elif page == "desktop":
+                terms += ("Weather (Panel)", "Temperature unit")
             elif page == "dock_bar":
                 terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons",
                           "System menu", "App Store icon", "App Store command", "Log Out command",
@@ -1727,6 +1732,94 @@ class InstallerWindow(OpaqueSurface):
 
         if self.settings_mode and self.page == "dock_bar":
             self.page_dock_and_menu_widgets()
+        if self.settings_mode and self.page == "desktop":
+            self.page_weather_panel()
+
+    def page_weather_panel(self):
+        from plasmoid_settings import apply, instances
+        from weather_panel_settings import installed_package
+
+        package = installed_package()
+        if package is None:
+            return
+        try:
+            widgets = instances("weather_panel")
+        except RuntimeError:
+            widgets = {}
+        if not widgets:
+            return
+        from weather_panel_editor import WeatherForm, weather_about
+
+        self.requested_weather_panel, reveal = False, self.requested_weather_panel
+        panel = self.option_card()
+        column = QVBoxLayout(panel)
+        column.setContentsMargins(12, 10, 12, 10)
+        header = QHBoxLayout()
+        heading = self.label("Weather (Panel)")
+        heading.setFont(relative_font(self, .85, QFont.Weight.DemiBold))
+        header.addWidget(heading, 1)
+        save = GlassButton(self.t("Save"))
+        header.addWidget(save)
+        column.addLayout(header)
+        picker = GlassComboBox()
+        for instance in sorted(widgets):
+            picker.addItem(self.t("Widget {id}").format(id=instance), instance)
+        selected = picker.findData(self.requested_widget)
+        picker.setCurrentIndex(max(0, selected))
+        picker.setVisible(len(widgets) > 1)
+        picker.setAccessibleName(self.t("Widget instance"))
+        column.addWidget(picker)
+        shortcut_row = QHBoxLayout()
+        shortcut_row.addWidget(self.label("Activation shortcut"), 1)
+        shortcut = QKeySequenceEdit()
+        shortcut.setAccessibleName(self.t("Activation shortcut"))
+        shortcut.setClearButtonEnabled(True)
+        shortcut_row.addWidget(shortcut)
+        column.addLayout(shortcut_row)
+        tabs = QTabWidget()
+        tabs.setObjectName("widgetPreferenceTabs")
+        general = WeatherForm(self.t, tabs)
+        tabs.addTab(general, self.t("Weather"))
+        tabs.addTab(weather_about(self.t, tabs), self.t("About"))
+        column.addWidget(tabs)
+        result = self.label("")
+        result.setObjectName("detail")
+        result.hide()
+        column.addWidget(result)
+        baseline = {}
+
+        def load():
+            values = widgets[picker.currentData()]
+            general.load(values)
+            baseline.clear()
+            baseline.update(general.values())
+            shortcut.setKeySequence(QKeySequence.fromString(values["activationShortcut"]))
+            save.setEnabled(bool(baseline))
+            result.hide()
+
+        def save_weather():
+            instance = picker.currentData()
+            changed = {key: value for key, value in general.values().items()
+                       if value is not None and value != baseline[key]}
+            sequence = shortcut.keySequence().toString()
+            if sequence != widgets[instance]["activationShortcut"]:
+                changed["activationShortcut"] = sequence
+            try:
+                if changed:
+                    widgets[instance] = apply("weather_panel", instance, changed)
+            except (RuntimeError, ValueError) as error:
+                result.setText(self.t(str(error)))
+            else:
+                baseline.update(general.values())
+                result.setText(self.t("Saved"))
+            result.show()
+
+        picker.currentIndexChanged.connect(load)
+        save.clicked.connect(save_weather)
+        load()
+        self.body.addWidget(panel)
+        if reveal:
+            self.widget_settings_target = panel
 
     def mount_acrylic_glass_editor(self, layout):
         if layout.count():

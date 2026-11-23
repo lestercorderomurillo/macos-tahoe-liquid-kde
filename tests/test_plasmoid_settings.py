@@ -124,3 +124,18 @@ def test_bar_widgets_use_plasma_activation_shortcut_and_keep_plugin_identity(mon
     assert plasmoid_settings.apply("bar_shortcuts", 25, {"activationShortcut": "Meta+Shift+F11"}) == {
         "activationShortcut": "Meta+Shift+F11", "_plugin": plugin,
     }
+
+
+def test_panel_weather_coordinates_and_temperature_unit(monkeypatch):
+    desired = {"location": "Quito", "latitude": -0.18065, "longitude": -78.46783, "temperatureUnit": 1}
+
+    def evaluate(script):
+        request = json.loads(script.split("const request = ", 1)[1].split(";\n", 1)[0])
+        assert request["plugins"] == ["com.jaxparrow07.macoswidgets.weatherpanel"]
+        assert request["changes"] == desired
+        return json.dumps({77: desired | {"latitude": "-0.18065", "temperatureUnit": "1", "activationShortcut": ""}})
+
+    monkeypatch.setattr(plasmoid_settings, "_evaluate_plasma_script", evaluate)
+    assert plasmoid_settings.apply("weather_panel", 77, desired) == desired | {"activationShortcut": ""}
+    with pytest.raises(ValueError, match="Invalid weather preference value"):
+        plasmoid_settings.apply("weather_panel", 77, {"latitude": 95.0})

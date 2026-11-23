@@ -7,12 +7,13 @@ PlasmaCore.Action {
     id: entry
 
     required property int widgetId
+    property string section: "dock_bar"
     readonly property bool available: launcher.available
 
     text: i18nd("plasma_applet_org.kde.mac-tahoe-liquid-kde.controlcenter", "Configure in Settings…")
     icon.name: "configure"
     visible: available
-    onTriggered: launcher.connectSource(launcher.program + "--section=dock_bar --widget=" + widgetId)
+    onTriggered: launcher.connectSource(launcher.program + "--section=" + section + " --widget=" + widgetId)
 
     function openAcrylicGlass() {
         launcher.connectSource(launcher.program + "--section=acrylic_glass");

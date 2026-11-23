@@ -19,6 +19,23 @@ def test_bundle_holds_the_widget_set_and_photos():
     assert (archive.parent / "LICENSE").read_text().startswith("                    GNU GENERAL PUBLIC LICENSE")
 
 
+def test_panel_weather_route_preserves_existing_context_actions(tmp_path):
+    from weather_panel_settings import MARKER, PLUGIN, stage_configuration_route
+
+    archive = ROOT / "src/offline/desktop-widgets/liquidglass-kde-widgets.tar.zst"
+    main = tmp_path / PLUGIN / "contents/ui/main.qml"
+    subprocess.run(["tar", "--zstd", "-xf", str(archive), "-C", str(tmp_path),
+                    f"./{PLUGIN}/contents/ui/main.qml"], check=True)
+    stage_configuration_route(tmp_path / PLUGIN)
+    updated = main.read_text()
+    assert MARKER in updated
+    assert "section: \"weather_panel\"" in updated
+    assert "[refreshAction, settingsEntry].concat(commonActions.list)" in updated
+    assert "settingsEntry.available ? Qt.NoButton : Qt.RightButton" in updated
+    stage_configuration_route(tmp_path / PLUGIN)
+    assert main.read_text() == updated
+
+
 @pytest.fixture
 def widgets(tmp_path, monkeypatch):
     from steps import plasmoids

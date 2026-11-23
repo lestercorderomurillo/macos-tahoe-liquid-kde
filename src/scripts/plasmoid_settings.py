@@ -6,11 +6,12 @@ import json
 
 import dock_preferences
 import launcher_preferences
+import weather_panel_settings
 from launcher_defaults import LAUNCHER_ID
 from theme_switch import _evaluate_plasma_script
 
-TYPED_PREFERENCES = {"dock": dock_preferences, "launcher": launcher_preferences}
-SHORTCUT_WIDGETS = {"dock", "launcher", "trash", "bar_shortcuts", "control_center"}
+TYPED_PREFERENCES = {"dock": dock_preferences, "launcher": launcher_preferences, "weather_panel": weather_panel_settings}
+SHORTCUT_WIDGETS = {"dock", "launcher", "trash", "bar_shortcuts", "control_center", "weather_panel"}
 WIDGET_PREFIX = "org.kde.mac-tahoe-liquid-kde."
 BAR_WIDGET_LABELS = {
     WIDGET_PREFIX + "acrylicglass": "Acrylic Glass",
@@ -54,6 +55,7 @@ SETTINGS = {
         {WIDGET_PREFIX + "controlcenter"}, "General",
         dict.fromkeys(CONTROL_CENTER_FIELDS, True) | {"showNotifications": False, "showSettings": False},
     ),
+    "weather_panel": ({weather_panel_settings.PLUGIN}, "General", weather_panel_settings.DEFAULTS),
     "system_menu": (
         {"org.kde.mac.tahoe.liquid.globalmenu"}, "Appearance",
         {"iconAppStore": "software-store-symbolic", "cmdAppStore": "",
@@ -80,7 +82,8 @@ def _request(kind, instance=None, changes=None):
         or (key in typed.RANGES and not typed.RANGES[key][0] <= value <= typed.RANGES[key][1])
         for key, value in changes.items()
     ):
-        raise ValueError("Invalid Dock preference value" if kind == "dock" else "Invalid launcher preference value")
+        raise ValueError({"dock": "Invalid Dock preference value", "launcher": "Invalid launcher preference value",
+                          "weather_panel": "Invalid weather preference value"}[kind])
     payload = json.dumps({"plugins": sorted(plugins), "group": group, "defaults": defaults,
                           "instance": instance, "changes": changes, "dock": kind == "dock",
                           "hasShortcut": has_shortcut, "identifyPlugin": kind in {"dock", "bar_shortcuts"}})
@@ -151,6 +154,11 @@ print(JSON.stringify(result));
                             values[key] = default
                     elif isinstance(default, str):
                         values[key] = str(value) if value is not None else default
+                    elif isinstance(default, float):
+                        try:
+                            values[key] = float(value)
+                        except (ValueError, TypeError):
+                            values[key] = default
         return {int(key): value for key, value in decoded.items()}
     except (TypeError, ValueError):
         raise RuntimeError("Could not read widget preferences from Plasma.") from None

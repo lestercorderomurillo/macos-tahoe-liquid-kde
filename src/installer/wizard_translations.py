@@ -21,6 +21,18 @@ Less than a minute remaining|Falta menos de un minuto|剩余不到一分钟|Falt
 Finishing…|Finalizando…|正在完成…|Finalizando…|Wird abgeschlossen…
 Show installation details|Mostrar detalles de instalación|显示安装详情|Mostrar detalhes da instalação|Installationsdetails anzeigen
 Hide installation details|Ocultar detalles de instalación|隐藏安装详情|Ocultar detalhes da instalação|Installationsdetails ausblenden
+Location|Ubicación|位置|Localização|Ort
+City name (e.g. London)|Nombre de la ciudad (p. ej., Londres)|城市名称（例如伦敦）|Nome da cidade (ex.: Londres)|Stadtname (z. B. London)
+Matching locations|Ubicaciones coincidentes|匹配的位置|Locais correspondentes|Passende Orte
+Celsius (°C)|Celsius (°C)|摄氏度 (°C)|Celsius (°C)|Celsius (°C)
+Fahrenheit (°F)|Fahrenheit (°F)|华氏度 (°F)|Fahrenheit (°F)|Fahrenheit (°F)
+Location search and forecasts use Open-Meteo.|La búsqueda de ubicaciones y los pronósticos usan Open-Meteo.|位置搜索和天气预报使用 Open-Meteo。|A busca de locais e as previsões usam Open-Meteo.|Die Ortssuche und Wettervorhersage verwenden Open-Meteo.
+Location search is unavailable.|La búsqueda de ubicaciones no está disponible.|位置搜索不可用。|A busca de locais está indisponível.|Die Ortssuche ist nicht verfügbar.
+No matching locations.|No se encontraron ubicaciones.|没有匹配的位置。|Nenhum local encontrado.|Keine passenden Orte gefunden.
+Weather (Panel)|Tiempo en la barra|面板天气|Clima no painel|Wetter in der Leiste
+Weather|Tiempo|天气|Clima|Wetter
+Temperature unit|Unidad de temperatura|温度单位|Unidade de temperatura|Temperatureinheit
+About|Acerca de|关于|Sobre|Über
 Widget shortcuts|Atajos de widgets|小组件快捷键|Atalhos de widgets|Miniprogramm-Kürzel
 Control Center|Centro de control|控制中心|Central de Controle|Kontrollzentrum
 Install Acrylic Glass to edit its materials.|Instala Cristal acrílico para editar sus materiales.|安装亚克力玻璃后即可编辑材质。|Instale o Vidro acrílico para editar seus materiais.|Installiere Acrylglas, um seine Materialien zu bearbeiten.
