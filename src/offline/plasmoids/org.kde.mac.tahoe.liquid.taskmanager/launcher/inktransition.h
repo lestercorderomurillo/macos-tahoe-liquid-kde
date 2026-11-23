@@ -68,8 +68,14 @@ public:
         const auto now = m_clock.elapsed();
         const bool settling = now < m_settledAt;
         auto it = m_tracks.find(item);
+        if (it != m_tracks.end() && it->base != initial) {
+            it->base = initial;
+            it->from = it->to = target;
+            return target;
+        }
         if (it == m_tracks.end()) {
             Track track;
+            track.base = initial;
             track.from = track.to = settling ? initial : target;
             track.destroyed = connect(item, &QObject::destroyed, this, [this, item] { m_tracks.remove(item); });
             it = m_tracks.insert(item, track);
@@ -90,7 +96,7 @@ private:
     static constexpr int Duration = 250;
     static constexpr int QuietPeriod = 50;
     struct Track {
-        QColor from, to;
+        QColor base, from, to;
         qint64 start = 0;
         QMetaObject::Connection destroyed;
         QColor value(qint64 now) const

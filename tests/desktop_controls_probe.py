@@ -204,19 +204,21 @@ sounded = noticeService.property('soundedIds').toVariant()
 QMetaObject.invokeMethod(card, 'open'); QTest.qWait(100)
 expanded_notices = visible_notices()
 assert len(expanded_notices) == 4
-# A group spans separate native banner windows. Feed opposite samples to its
-# members and verify the labels track one family through both global polarities.
-noticeHost.setProperty('notificationTextColor', QColor('white'))
-noticeHost.setProperty('notificationBackgroundColor', QColor('black'))
-for majority, minority, light in ((0, 1, True), (1, .7, False)):
-    for i, pane in enumerate(expanded_notices):
-        channel = minority if i == 0 else majority
-        sample = dict(pid=os.getpid(), x=pane.x(), y=pane.y(), width=pane.width(),
-                      height=pane.height(), rgb=[channel] * 3)
-        QMetaObject.invokeMethod(pane, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
-    QTest.qWait(30)
-    inks = [child(pane.property('mainItem'), 'notificationCard').property('foregroundColor') for pane in expanded_notices]
-    assert all((ink.lightnessF() > .5) == light for ink in inks), ([ink.name() for ink in inks], errors)
+# A group spans separate native banner windows. Neither the most common
+# background nor a local exception may invert any member's theme foreground.
+for light in (True, False):
+    noticeHost.setProperty('notificationTextColor', QColor('white' if light else 'black'))
+    noticeHost.setProperty('notificationBackgroundColor', QColor('black' if light else 'white'))
+    for majority, minority in ((0, 1), (1, 0)):
+        for i, pane in enumerate(expanded_notices):
+            channel = minority if i == 0 else majority
+            sample = dict(pid=os.getpid(), x=pane.x(), y=pane.y(), width=pane.width(),
+                          height=pane.height(), rgb=[channel] * 3)
+            QMetaObject.invokeMethod(pane, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
+        QTest.qWait(30)
+        inks = [child(pane.property('mainItem'), 'notificationCard').property('foregroundColor')
+                for pane in expanded_notices]
+        assert all((ink.lightnessF() > .5) == light for ink in inks), ([ink.name() for ink in inks], errors)
 noticeHost.setProperty('notificationTextColor', QColor('black'))
 noticeHost.setProperty('notificationBackgroundColor', QColor('white'))
 QMetaObject.invokeMethod(card, 'open'); QTest.qWait(100)
@@ -282,13 +284,21 @@ Item {
     property color backdrop: "white"
     property color surface: "transparent"
     property color foreground: ink.notificationForeground(base, backdrop, surface)
+    property bool enabledContrast: ink.dynamicTinting
     property real contrastRatio: Contrast.ratio(Contrast.luminance(foreground), Contrast.luminance(backdrop))
+    property real baseRatio: Contrast.ratio(Contrast.luminance(base), Contrast.luminance(backdrop))
 }''')
 for base in ('#eeeeee', '#333333'):
     contrast.setProperty('base', QColor(base))
     for backdrop in ('white', 'black', '#808080'):
         contrast.setProperty('backdrop', QColor(backdrop)); QTest.qWait(10)
-        assert contrast.property('contrastRatio') >= 4.5, (base, backdrop)
+        adjusted = contrast.property('foreground')
+        original = QColor(base)
+        assert (adjusted.red() > 118) == (original.red() > 118), (base, backdrop)
+        assert abs(adjusted.red() - original.red()) <= 51, (base, backdrop)
+        assert contrast.property('contrastRatio') >= contrast.property('baseRatio'), (base, backdrop)
+        if not contrast.property('enabledContrast'):
+            assert adjusted == original, (base, backdrop)
 
 sink = fake('QtObject { property bool muted: false; property int volume: 20000; property string description: "Test output" }')
 audio = component('AudioView.qml', {'sink':sink})

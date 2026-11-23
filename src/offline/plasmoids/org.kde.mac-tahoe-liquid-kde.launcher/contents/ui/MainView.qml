@@ -138,8 +138,8 @@ Item {
 		Kirigami.Theme.inherit: false
 		Kirigami.Theme.colorSet: Kirigami.Theme.Window
 	}
-    Tahoe.PopupBackdrop { id: appBackdrop; window: root; preferredInk: main.textColor; componentFill: main.materialFill(root.glassSettings) }
-    Tahoe.PopupBackdrop { id: searchBackdrop; window: searchPopup; preferredInk: main.textColor; componentFill: main.materialFill(searchMaterial) }
+    Tahoe.PopupBackdrop { id: appBackdrop; window: root }
+    Tahoe.PopupBackdrop { id: searchBackdrop; window: searchPopup }
     Tahoe.GlassSettings { id: searchMaterial; component: "search" }
     function materialFill(settings) {
         const saved = isDarkTheme ? settings.darkOpacity : settings.lightOpacity;

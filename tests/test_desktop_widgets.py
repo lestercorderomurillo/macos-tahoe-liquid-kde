@@ -57,6 +57,12 @@ def test_migrated_desktop_widget_settings_cover_the_bundled_schema_and_clipboard
         assert MARKER in updated
         assert 'section: "desktop_widget"' in updated
         assert "commonActions.support] : commonActions.list" in updated
+        assert read_schema(package).DEFAULTS["appearance"] == 2
+        palette = (package / "contents/ui/components/MacOSColors.qml").read_text()
+        assert "color labelPrimary:    effectiveLight ?" in palette
+        if variant == "weather":
+            assert "weatherForeground: isGlass ? foreground" in palette
+            assert "color: colors.weatherForeground" in updated.split("MacSpinner {", 1)[1]
         stage_configuration_route(package)
         assert main.read_text() == updated
         codec = (package / "contents/ui/components/styleCodec.js").read_text()

@@ -8,7 +8,8 @@ PanelWallpaper {
     required property color base
     property bool active: true
     readonly property GlassSettings settings: GlassSettings {}
-    readonly property var panelSource: active && settings.dynamicTinting && item?.Window.window
+    readonly property var panelSource: active && item?.Window.window
         ? sampler.sourceFor(item.Window.window, Plasmoid.containment) : null
-    readonly property color foreground: panelSource?.foreground ?? base
+    readonly property color foreground: !panelSource ? base
+        : settings.dynamicTinting ? panelSource.foreground : panelSource.baseForeground
 }

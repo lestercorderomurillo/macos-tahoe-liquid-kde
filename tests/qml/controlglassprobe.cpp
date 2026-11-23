@@ -49,77 +49,67 @@ int main(int argc, char **argv)
     if (!sample(window.size() + QSize(8,0), char(90)) || glass.backdropRevision() != revision) return 10;
     QObject label;
     const QColor theme("#f4f4f4");
-    glass.setProperty("preferredInk", theme);
     auto material = rect(0, 0, window.width(), window.height(), 0);
     material.insert("fill", QColor(Qt::transparent));
     glass.setSurfaces({material});
     const QPointF center(210, 125);
     const QSizeF radius(84, 20);
-    const auto localTone = [&](QColor surface, GlassInk::Family family) {
+    const auto localTone = [](QColor surface, QColor base) {
         GlassInk::Samples local;
         local.add(surface);
-        return local.tone(theme, family);
+        return local.tone(base);
     };
-    const auto gradedDark = localTone(Qt::white, GlassInk::Family::Dark);
-    const auto gradedLight = localTone(Qt::black, GlassInk::Family::Light);
+    const auto overBlack = localTone(Qt::black, theme);
+    const auto overWhite = localTone(Qt::white, theme);
 
-    // A bright minority stripe inside a mostly dark component must keep the
-    // light family, even for a label or a pill sampled wholly inside the stripe.
+    // Different labels keep their own base family on both sides of the same popup.
     QByteArray split(8 * 8 * 3, 0);
-    for (int y = 0; y < 8; ++y) std::fill_n(split.data() + (y * 8 + 6) * 3, 6, char(180));
+    for (int y = 0; y < 8; ++y) std::fill_n(split.data() + (y * 8 + 6) * 3, 6, char(255));
     const QRect frame(window.position(), window.size());
     QMetaObject::invokeMethod(&glass, "updateBackdrop", Qt::DirectConnection,
         Q_ARG(int, int(app.applicationPid())), Q_ARG(QRect, frame), Q_ARG(QRect, frame),
         Q_ARG(QByteArray, split), Q_ARG(QString, window.title()));
-    const QColor overDark = glass.animatedLabelForeground(&label, {30, 75}, {}, theme, Qt::transparent);
-    const QColor overLight = glass.animatedLabelForeground(&label, {390, 75}, {}, Qt::black, Qt::transparent);
-    if (GlassInk::familyOf(overDark) != GlassInk::Family::Light || GlassInk::familyOf(overLight) != GlassInk::Family::Light
-        || overDark.red() >= overLight.red() || glass.groupForeground(&label, theme, {QColor(180,180,180)}) != overLight) return 12;
-    // The material shared by the whole component can flip it. A local overlay cannot.
-    material.insert("fill", QColor(Qt::white));
-    glass.setSurfaces({material});
-    const auto onOverlay = glass.animatedLabelForeground(&label, {390, 75}, {}, theme, Qt::black);
-    if (GlassInk::familyOf(onOverlay) != GlassInk::Family::Dark) return 19;
-    material.insert("fill", QColor(Qt::transparent));
-    glass.setSurfaces({material});
+    const QColor lightOnDark = glass.animatedLabelForeground(&label, {30, 75}, {}, theme, Qt::transparent);
+    const QColor darkOnLight = glass.animatedLabelForeground(&label, {390, 75}, {}, Qt::black, Qt::transparent);
+    if (lightOnDark != theme || darkOnLight != QColor(Qt::black)
+        || glass.groupForeground(&label, theme, {Qt::white}) != overWhite) return 12;
+    if (glass.animatedLabelForeground(&label, {390, 75}, {}, theme, Qt::black) != theme) return 19;
 
     const auto ink = [&] { return glass.animatedForegroundAt(&label, center, radius, theme, Qt::transparent); };
     // Anchored menus can move when search results change size. The next
     // sample still applies on the first paint, even if it reverses quickly.
-    if (!sample(window.size(), 0) || ink() != gradedLight
-        || !sample(window.size(), char(255), QPoint(1, 0)) || ink() != gradedDark
-        || !sample(window.size(), 0, QPoint(2, 0)) || ink() != gradedLight) return 13;
+    if (!sample(window.size(), 0) || ink() != overBlack
+        || !sample(window.size(), char(255), QPoint(1, 0)) || ink() != overWhite
+        || !sample(window.size(), 0, QPoint(2, 0)) || ink() != overBlack) return 13;
 
     const auto markMoving = [&](QPoint offset) {
         return QMetaObject::invokeMethod(&glass, "movingControlSample", Qt::DirectConnection,
             Q_ARG(int, int(app.applicationPid())), Q_ARG(QRect, QRect(window.position() + offset, window.size())),
             Q_ARG(QString, window.title()));
     };
-    if (!markMoving(QPoint(2, 0)) || !sample(window.size(), char(255), QPoint(2, 0)) || ink() != gradedDark) return 20;
-    if (!sample(window.size(), 0, QPoint(2, 0)) || ink() != gradedLight || !markMoving(QPoint(3, 0))) return 21;
-    if (!sample(window.size(), char(255), QPoint(3, 0)) || ink() != gradedLight) return 14;
+    if (!markMoving(QPoint(2, 0)) || !sample(window.size(), char(255), QPoint(2, 0)) || ink() != overWhite) return 20;
+    if (!sample(window.size(), 0, QPoint(2, 0)) || ink() != overBlack || !markMoving(QPoint(3, 0))) return 21;
+    if (!sample(window.size(), char(255), QPoint(3, 0)) || ink() != overBlack) return 14;
     QThread::msleep(320);
-    if (ink() != gradedDark) return 15;
-    if (!sample(window.size(), 0, QPoint(3, 0)) || ink() != gradedLight) return 16;
-    if (!markMoving(QPoint(4, 0)) || !sample(window.size(), char(255), QPoint(4, 0)) || ink() != gradedLight) return 22;
+    if (ink() != overWhite) return 15;
+    if (!sample(window.size(), 0, QPoint(3, 0)) || ink() != overBlack) return 16;
+    if (!markMoving(QPoint(4, 0)) || !sample(window.size(), char(255), QPoint(4, 0)) || ink() != overBlack) return 22;
     // A stationary update immediately following the last drag frame must snap.
     if (!sample(window.size(), char(160), QPoint(5, 0)) || ink() != glass.foregroundAt(center, radius, theme, Qt::transparent)) return 23;
-    const QColor medium = localTone(QColor("#c4c4c4"), GlassInk::Family::Dark);
-    if (!(medium.red() > 0 && medium.red() < gradedDark.red() && gradedDark.red() < gradedLight.red()
-          && gradedLight.red() < 255 && GlassInk::contrastRatio(GlassInk::luminance(medium), .55) > 4.5)) return 17;
-    for (auto family : {GlassInk::Family::Dark, GlassInk::Family::Light}) {
-        int previous = localTone(Qt::black, family).red();
-        for (int gray = 1; gray <= 255; ++gray) {
-            const auto next = localTone(QColor(gray, gray, gray), family);
-            if (GlassInk::familyOf(next) != family || std::abs(next.red() - previous) > 4) return 27;
-            previous = next.red();
+    for (const QColor base : {QColor(Qt::black), QColor(Qt::white), QColor("#232323"), QColor("#f1f1f1")}) {
+        if (localTone(QColor(), base) != base) return 18;
+        for (int gray = 0; gray <= 255; ++gray) {
+            const QColor backdrop(gray, gray, gray);
+            const QColor tone = localTone(backdrop, base);
+            const double surface = GlassInk::luminance(backdrop);
+            if (GlassInk::familyOf(tone) != GlassInk::familyOf(base)
+                || std::abs(tone.red() - base.red()) > 51 || tone.alpha() != base.alpha()
+                || GlassInk::contrastRatio(GlassInk::luminance(tone), surface)
+                    < GlassInk::contrastRatio(GlassInk::luminance(base), surface)) return 27;
         }
     }
-    if (localTone(Qt::black, GlassInk::Family::Dark).red() < 105
-        || localTone(Qt::white, GlassInk::Family::Light).red() > 200) return 28;
-    GlassInk::Samples balanced;
-    balanced.add(Qt::white); balanced.add(Qt::black);
-    if (balanced.family(Qt::white) != GlassInk::Family::Light || balanced.family(Qt::black) != GlassInk::Family::Dark) return 18;
+    if (localTone(Qt::black, Qt::black).red() != 51 || localTone(Qt::white, Qt::white).red() != 204
+        || overWhite.red() >= theme.red() || overBlack != theme) return 28;
     const QRectF clipped(center.x(), 0, radius.width(), window.height());
     const auto visibleSamples = glass.categorySamples(center, radius, clipped, Qt::transparent);
     if (visibleSamples.size() != 2 || visibleSamples.front() != QColor(160, 160, 160)) return 24;
@@ -127,10 +117,10 @@ int main(int argc, char **argv)
         [](QPointF point) { return point.isNull() ? QColor(Qt::white) : QColor(Qt::black); });
     GlassInk::Samples weighted;
     weighted.add(Qt::white, .65); weighted.add(Qt::black, .35);
-    if (centered.tone(theme, GlassInk::Family::Dark) != weighted.tone(theme, GlassInk::Family::Dark)) return 25;
+    if (centered.tone(theme) != weighted.tone(theme)) return 25;
     const auto margin = GlassInk::sample(GlassInk::label, {}, QSizeF(10, 10),
         [](QPointF point) { return point.isNull() ? QColor(Qt::white) : QColor(); });
-    if (margin.family(theme) != GlassInk::Family::Light) return 26;
+    if (margin.tone(theme) != overWhite) return 26;
     glass.setWindow(nullptr);
     std::cout << "CONTROL_GLASS_REGIONS_OK\n";
 }

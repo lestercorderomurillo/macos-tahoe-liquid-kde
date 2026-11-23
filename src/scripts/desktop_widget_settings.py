@@ -126,14 +126,62 @@ def installed_package(plugin):
     return data / "plasma/plasmoids" / plugin
 
 
+def stage_appearance(package, variant):
+    """Align the bundled widget's default and glass foreground with Plasma."""
+    contents = package / "contents"
+    config = contents / "config/main.xml"
+    text = config.read_text(encoding="utf-8")
+    dark_default = '<entry name="appearance" type="Int">\n            <default>0</default>'
+    config.write_text(text.replace(dark_default, dark_default.replace(">0<", ">2<")), encoding="utf-8")
+
+    palette = contents / "ui/components/MacOSColors.qml"
+    text = palette.read_text(encoding="utf-8")
+    for token in ("labelPrimary", "labelSecondary", "labelTertiary", "labelQuaternary", "separator"):
+        lines = text.splitlines(keepends=True)
+        text = "".join(line.replace("isLight ?", "effectiveLight ?")
+                       if f"color {token}:" in line else line for line in lines)
+    if variant == "weather":
+        text = text.replace('color weatherForeground: "#ffffff"',
+                            'color weatherForeground: isGlass ? foreground : "#ffffff"')
+    palette.write_text(text, encoding="utf-8")
+
+
 def stage_configuration_route(package):
     variant = package.name.removeprefix(PREFIX)
     if not package.name.startswith(PREFIX) or variant not in NAMES:
         return
+    stage_appearance(package, variant)
     main = package / "contents/ui/main.qml"
     if not main.is_file():
         return
     text = main.read_text(encoding="utf-8")
+    if variant == "weather":
+        text = text.replace("MacSpinner {\n            anchors.centerIn",
+                            "MacSpinner {\n            color: colors.weatherForeground\n            anchors.centerIn")
+        if "import QtQuick.Effects" not in text:
+            text = text.replace("import QtQuick.Layouts", "import QtQuick.Layouts\nimport QtQuick.Effects")
+        location = 'source: Qt.resolvedUrl("icons/location.png")'
+        if "colorizationColor: colors.weatherForeground" not in text:
+            text = text.replace(location, location + """
+                    layer.enabled: true
+                    layer.effect: MultiEffect {
+                        autoPaddingEnabled: false
+                        colorization: 1
+                        colorizationColor: colors.weatherForeground
+                    }""")
+    if variant == "music":
+        text = text.replace('    readonly property string _noAlbumUrl: Qt.resolvedUrl("icons/no_album.png")\n', '')
+        text = text.replace('property string albumArt: _noAlbumUrl', 'property string albumArt: ""')
+        text = text.replace('albumArt = _noAlbumUrl', 'albumArt = ""')
+        text = text.replace('        if (_rawAlbumArt === "") return', """        if (_rawAlbumArt === "") {
+            _artDebounceTimer.stop()
+            albumArt = ""
+            return
+        }""")
+    if variant == "clock-analog":
+        text = text.replace('color _dialColor: _realLight ? "#000000" : "#ffffff"',
+                            'color _dialColor: colors.foreground')
+    main.write_text(text, encoding="utf-8")
     actions = CONTEXT_ACTIONS.get(variant, "timeAction")
     anchor = f"    Plasmoid.contextualActions: [{actions}].concat(commonActions.list)"
     component_import = 'import "components"\n'

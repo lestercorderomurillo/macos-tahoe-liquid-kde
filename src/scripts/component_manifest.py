@@ -50,6 +50,10 @@ def snapshot(root=REPO_ROOT):
                 step = 'acrylic_glass'
             recipe = dependencies(scripts / 'steps' / (step + '.py'), scripts)
             inputs = [(name, payload)] + [(str(p.relative_to(root)), p) for p in recipe]
+            if path.name == 'desktop-widgets':
+                for filename in ('desktop_widget_settings.py', 'weather_panel_settings.py'):
+                    source = scripts / filename
+                    inputs.append((str(source.relative_to(root)), source))
             # Launcher and notification options share the Control Center menu.
             if path.name == 'plasmoids' and payload.name == 'org.kde.mac-tahoe-liquid-kde.launcher':
                 controls = path / 'org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui'

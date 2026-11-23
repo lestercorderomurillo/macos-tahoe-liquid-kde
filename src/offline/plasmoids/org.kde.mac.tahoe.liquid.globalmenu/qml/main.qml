@@ -178,7 +178,7 @@ PlasmoidItem {
         Binding {
             target: compactButton
             property: "icon.color"
-            when: menuInk.panelSource !== null
+            when: root.wallpaperTint
             value: menuInk.foreground
         }
 
@@ -197,7 +197,7 @@ PlasmoidItem {
     }
 
     component TopBarDelegate: MenuDelegate {
-        foregroundColor: menuInk.panelSource ? menuInk.foreground : baseForeground
+        foregroundColor: root.wallpaperTint ? menuInk.foreground : baseForeground
     }
 
     fullRepresentation: GridLayout {

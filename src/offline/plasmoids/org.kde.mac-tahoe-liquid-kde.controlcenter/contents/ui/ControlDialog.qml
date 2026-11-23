@@ -12,8 +12,7 @@ PlasmaCore.Dialog {
     backgroundHints: PlasmaCore.Dialog.NoBackground
     hideOnWindowDeactivate: true
 
-    // When false, text and symbols keep the theme colour instead of switching
-    // to dark over a bright backdrop.
+    // The theme supplies the base colour in both modes.
     property Native.GlassSettings inkSettings: Native.GlassSettings { window: popup }
     readonly property bool adaptiveForeground: inkSettings.dynamicTinting
     // When false, the whole window takes pointer input (not only the glass islands).
@@ -29,7 +28,6 @@ PlasmaCore.Dialog {
         return glass.animatedForegroundAt(item, point, radius, base, fill);
     }
     property Native.ControlGlass glass: Native.ControlGlass {
-        preferredInk: popup.Kirigami.Theme.textColor
         window: popup
         surfaces: popup.surfaces
         maskWindow: popup.inputOnGlassOnly

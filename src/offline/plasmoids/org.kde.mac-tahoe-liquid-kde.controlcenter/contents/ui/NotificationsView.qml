@@ -5,7 +5,6 @@ import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 import org.kde.notificationmanager as Notifications
 import org.kde.mac.tahoe.launcher as Native
-import "NotificationContrast.js" as Contrast
 Page {
     id: view
     title: ""
@@ -35,19 +34,6 @@ Page {
         }
         areas.push({x:clear.mapToItem(view,0,0).x, y:clear.mapToItem(view,0,0).y, width:20, height:20, radius:10});
         return areas;
-    }
-    Native.GlassSettings { id: inkSettings; component: "notifications" }
-    readonly property color componentInk: {
-        const observations = [];
-        let uncovered = view.width * view.height;
-        for (const area of view.surfaces) {
-            if (area.fill === undefined) continue;
-            const size = area.width * area.height;
-            observations.push({backdrop: view.backdropColor, fill: area.fill, area: size});
-            uncovered -= size;
-        }
-        observations.push({backdrop: view.backdropColor, fill: Qt.rgba(0,0,0,0), area: Math.max(0, uncovered)});
-        return inkSettings.notificationFamily(Contrast.preferredText(view.Kirigami.Theme.textColor), observations);
     }
     property var history: nativeHistory
     Notifications.Settings { id: settings }
@@ -79,7 +65,6 @@ Page {
             text: view.standalone ? i18n("Notification Center") : i18n("Notifications")
             font.family: "SF Pro Display"; font.pixelSize: 18; font.weight: Font.DemiBold
             backdropColor: view.backdropColor
-            componentInk: view.componentInk
             floating: view.standalone
             Layout.fillWidth: true
         }
@@ -101,7 +86,6 @@ Page {
     NotificationBackdropLabel {
         text: i18n("No notifications")
         backdropColor: view.backdropColor
-        componentInk: view.componentInk
         floating: view.standalone
         visible: view.history.count === 0
     }
@@ -141,7 +125,6 @@ Page {
                         history: view.history
                         previewHistory: details
                         backdropColor: view.backdropColor
-                        componentInk: view.componentInk
                         surfaceColor: card.fillColor
                     }
                 }

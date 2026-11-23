@@ -114,7 +114,7 @@ struct WallpaperSpec {
     bool operator==(const WallpaperSpec &) const = default;
 };
 
-QColor panelInk(const WallpaperSpec &spec)
+GlassInk::Samples panelSamples(const WallpaperSpec &spec)
 {
     QImage image;
     if (spec.plugin != u"org.kde.color") {
@@ -124,7 +124,7 @@ QColor panelInk(const WallpaperSpec &spec)
     }
     const Wallpaper wallpaper{spec.screen, std::move(image), spec.color, spec.mode, spec.blur};
     const QRectF panel(spec.panel);
-    const auto samples = GlassInk::sample(GlassInk::component, panel.center(), panel.size() * .49, [&](QPointF point) {
+    return GlassInk::sample(GlassInk::component, panel.center(), panel.size() * .49, [&](QPointF point) {
         const QColor pixel = wallpaper.pixel(point);
         if (!pixel.isValid()) return QColor();
         // Interpolate the same stops painted by the top bar's scrim.
@@ -135,13 +135,13 @@ QColor panelInk(const WallpaperSpec &spec)
         scrim.setAlphaF(std::lerp(PanelWallpaper::scrimOpacityAt(left / 8), PanelWallpaper::scrimOpacityAt(right / 8), segment - left));
         return GlassInk::composite(pixel, scrim);
     });
-    return samples.primaryText(samples.family(Qt::white));
 }
 
 // One observer and one result for all applets sharing this panel window.
 class PanelInk : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QColor baseForeground READ baseForeground NOTIFY changed)
     Q_PROPERTY(QColor foreground READ foreground NOTIFY changed)
 public:
     PanelInk(QQuickWindow *window, Plasma::Containment *panel)
@@ -149,7 +149,10 @@ public:
     {
         m_refresh.setSingleShot(true);
         connect(&m_refresh, &QTimer::timeout, this, &PanelInk::refresh);
-        connect(&m_settings, &GlassSettings::changed, this, &PanelInk::schedule);
+        connect(&m_settings, &GlassSettings::changed, this, [this] {
+            if (!m_settings.dynamicTinting()) clearSamples();
+            schedule();
+        });
         connect(panel, &Plasma::Containment::screenChanged, this, &PanelInk::schedule);
         connect(panel->corona(), &Plasma::Corona::screenOwnerChanged, this, &PanelInk::schedule);
         connect(panel->corona(), &Plasma::Corona::containmentAdded, this, &PanelInk::schedule);
@@ -163,7 +166,8 @@ public:
         window->installEventFilter(this);
         schedule();
     }
-    QColor foreground() const { return m_ink.isValid() ? m_ink : qGuiApp->palette().color(QPalette::WindowText); }
+    QColor baseForeground() const { return qGuiApp->palette().color(QPalette::Active, QPalette::WindowText); }
+    QColor foreground() const { return m_samples.tone(baseForeground()); }
     bool observes(Plasma::Containment *panel) const { return m_panel == panel; }
 
 Q_SIGNALS:
@@ -177,9 +181,17 @@ private:
     {
         if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
             schedule();
-            if (!m_ink.isValid()) Q_EMIT changed();
+            Q_EMIT changed();
         }
         return QObject::eventFilter(object, event);
+    }
+
+    void clearSamples()
+    {
+        ++m_generation;
+        m_requested.reset();
+        m_samples = {};
+        Q_EMIT changed();
     }
 
     void refresh()
@@ -217,8 +229,7 @@ private:
             }
         }
         if (!desktop || !wallpaper) {
-            ++m_generation;
-            m_requested.reset();
+            clearSamples();
             return;
         }
         const QRect screen = m_window->screen()->geometry();
@@ -239,14 +250,14 @@ private:
         m_requested = spec;
         // Keep the displayed ink while decoding. A superseded job cannot publish.
         const auto generation = ++m_generation;
-        auto *job = new QFutureWatcher<QColor>(this);
-        connect(job, &QFutureWatcher<QColor>::finished, this, [this, job, generation] {
+        auto *job = new QFutureWatcher<GlassInk::Samples>(this);
+        connect(job, &QFutureWatcher<GlassInk::Samples>::finished, this, [this, job, generation] {
             job->deleteLater();
             if (generation != m_generation) return;
-            m_ink = job->result();
+            m_samples = job->result();
             Q_EMIT changed();
         });
-        job->setFuture(QtConcurrent::run(panelInk, spec));
+        job->setFuture(QtConcurrent::run(panelSamples, spec));
     }
     QQuickWindow *m_window;
     QPointer<Plasma::Containment> m_panel, m_desktop;
@@ -255,7 +266,7 @@ private:
     QTimer m_refresh;
     std::optional<WallpaperSpec> m_requested;
     quint64 m_generation = 0;
-    QColor m_ink;
+    GlassInk::Samples m_samples;
 };
 }
 

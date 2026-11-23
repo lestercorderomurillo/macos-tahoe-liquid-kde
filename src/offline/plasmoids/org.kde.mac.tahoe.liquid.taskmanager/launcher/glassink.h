@@ -47,72 +47,39 @@ struct Profile {
 };
 inline constexpr Profile component{9, 5};
 inline constexpr Profile control{3, 3, .65};
-inline constexpr Profile menu{5, 3};
 inline constexpr Profile label{5, 3};
 inline constexpr Profile categoryRow{5, 1};
-inline constexpr double targetContrast = 5.2;
 
 class Samples {
 public:
     void add(const QColor &surface, double weight = 1.)
     {
         if (!(weight > 0.) || !std::isfinite(weight)) return;
-        m_requested += weight;
         if (!surface.isValid() || !surface.alpha()) return;
-        const double lightness = luminance(surface);
-        m_luminance += weight * lightness;
+        m_luminance += weight * luminance(surface);
         m_weight += weight;
-        // Once text is readable, extra contrast in an already favourable
-        // region should not outweigh unreadable text elsewhere in the surface.
-        m_darkScore += weight * std::min(targetContrast, contrastRatio(0., lightness));
-        m_lightScore += weight * std::min(targetContrast, contrastRatio(1., lightness));
     }
 
-    Family family(QColor preferred, double tolerance = 1.10) const
+    QColor tone(QColor base) const
     {
-        // Wallpaper plugins can expose unsampled margins around a centered image.
-        if (m_weight < .5 * m_requested) return familyOf(preferred);
-        if (m_darkScore > tolerance * m_lightScore) return Family::Dark;
-        if (m_lightScore > tolerance * m_darkScore) return Family::Light;
-        return familyOf(preferred);
-    }
-
-    QColor tone(QColor base, Family family, double contrast = targetContrast) const
-    {
-        if (!m_weight) return familyOf(base) == family ? base
-            : QColor::fromRgbF(family == Family::Light, family == Family::Light, family == Family::Light, base.alphaF());
+        if (!m_weight || !base.isValid() || !base.alpha()) return base;
         const double surface = m_luminance / m_weight;
-        const bool light = family == Family::Light;
-        const double extreme = light ? 1. : 0.;
-        const double grayLimit = light ? .55 : .155;
-        const double ideal = light ? (surface + .05) * contrast - .05 : (surface + .05) / contrast - .05;
-        double ink = std::clamp(ideal, std::min(extreme, grayLimit), std::max(extreme, grayLimit));
-
-        // On a patch as bright as white ink (or as dark as black ink), the gray
-        // end of the same family is more legible. Ease through that end of the
-        // range in proportion to its contrast gain, without a polarity switch.
-        const double gain = contrastRatio(grayLimit, surface) / contrastRatio(ink, surface);
-        const double t = std::clamp((gain - 1.) / (contrastRatio(extreme, grayLimit) - 1.), 0., 1.);
-        ink = std::lerp(ink, grayLimit, t * t * (3. - 2. * t));
-        const double gray = ink <= .0031308 ? 12.92 * ink : 1.055 * std::pow(ink, 1. / 2.4) - .055;
-        return QColor::fromRgbF(gray, gray, gray, base.alphaF());
-    }
-
-    // Primary strokes in the Tahoe and Golden Gate menu references are white
-    // or near black. Deepen dark ink when the sampled material needs it.
-    QColor primaryText(Family family) const
-    {
-        if (family == Family::Light) return Qt::white;
-        const int gray = std::min(36, tone(Qt::black, family).red());
-        return QColor(gray, gray, gray);
+        const double original = contrastRatio(luminance(base), surface);
+        const auto family = familyOf(base);
+        const double endpoint = family == Family::Light ? 0. : 1.;
+        const double need = std::clamp((3. - original) / 2., 0., 1.);
+        const double amount = .20 * need * need * (3. - 2. * need);
+        const QColor tone = QColor::fromRgbF(std::lerp(base.redF(), endpoint, amount),
+                                             std::lerp(base.greenF(), endpoint, amount),
+                                             std::lerp(base.blueF(), endpoint, amount),
+                                             base.alphaF());
+        return familyOf(tone) == family && contrastRatio(luminance(tone), surface) > original
+            ? tone : base;
     }
 
 private:
-    double m_requested = 0.;
     double m_weight = 0.;
     double m_luminance = 0.;
-    double m_darkScore = 0.;
-    double m_lightScore = 0.;
 };
 
 template <typename Visit>

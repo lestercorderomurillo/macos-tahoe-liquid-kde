@@ -14,8 +14,6 @@ class PopupBackdrop : public QObject
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QWindow *window READ window WRITE setWindow NOTIFY windowChanged)
-    Q_PROPERTY(QColor preferredInk MEMBER m_preferredInk NOTIFY appearanceChanged)
-    Q_PROPERTY(QColor componentFill MEMBER m_componentFill NOTIFY appearanceChanged)
     Q_PROPERTY(quint64 backdropRevision READ backdropRevision NOTIFY backdropChanged)
 public:
     explicit PopupBackdrop(QObject *parent = nullptr);
@@ -30,20 +28,14 @@ public:
     Q_INVOKABLE QColor backdropAt(QPointF point) const;
 Q_SIGNALS:
     void backdropChanged();
-    void appearanceChanged();
     void windowChanged();
 protected:
     QPointer<QWindow> m_window;
-    virtual GlassInk::Samples componentSamples() const;
-    void addMaterial(GlassInk::Samples &samples, const QRectF &bounds, QColor fill) const;
-    void refreshFamily();
+    void notifyBackdropChanged();
 private:
     Q_SLOT void movingControlSample(int pid, const QRect &frame, const QString &title);
     Q_SLOT void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title);
     quint64 m_revision = 0;
-    QColor m_preferredInk = Qt::black;
-    QColor m_componentFill = Qt::transparent;
-    GlassInk::Family m_family = GlassInk::Family::Dark;
     QByteArray m_backdropGrid;
     int m_gridSide = 8;
     QRect m_sampleBounds;
@@ -73,7 +65,6 @@ Q_SIGNALS:
     void maskWindowChanged();
 protected:
     bool eventFilter(QObject *object, QEvent *event) override;
-    GlassInk::Samples componentSamples() const override;
 private:
     void apply();
     QVariantList m_surfaces;

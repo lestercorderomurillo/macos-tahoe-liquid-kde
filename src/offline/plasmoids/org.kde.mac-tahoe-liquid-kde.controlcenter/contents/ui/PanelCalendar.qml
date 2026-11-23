@@ -30,7 +30,7 @@ Item {
         return labels;
     }
     Instantiator {
-        model: stockInk.active && stockInk.settings.dynamicTinting ? calendar.clockLabels(calendar.face) : []
+        model: stockInk.active ? calendar.clockLabels(calendar.face) : []
         delegate: Binding {
             required property Item modelData
             target: modelData

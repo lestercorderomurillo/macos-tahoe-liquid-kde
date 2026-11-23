@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-import "ControlStyle.js" as Style
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
 QQC.Slider {
     id: slider
-    readonly property color ink: Style.foreground(slider, Window.window, Kirigami.Theme.textColor)
+    readonly property color ink: Kirigami.Theme.textColor
     implicitHeight: 22
     hoverEnabled: true
     readonly property bool handleShown: enabled && (hovered || pressed || visualFocus)

@@ -10,28 +10,6 @@
 #include <algorithm>
 #include <cmath>
 
-namespace {
-// Preserve the highlight hue while giving selected text enough contrast.
-QColor selectionFill(QColor surface, GlassInk::Family family)
-{
-    const bool lightInk = family == GlassInk::Family::Light;
-    const auto readable = [&](QColor fill) {
-        return GlassInk::contrastRatio(lightInk ? 1. : 0., GlassInk::luminance(fill)) >= 4.5;
-    };
-    if (readable(surface)) return surface;
-    QColor overlay = lightInk ? Qt::black : Qt::white;
-    double lo = 0., hi = 1.;
-    for (int i = 0; i < 8; ++i) {
-        const double blend = (lo + hi) / 2;
-        overlay.setAlphaF(blend);
-        if (readable(GlassInk::composite(surface, overlay))) hi = blend;
-        else lo = blend;
-    }
-    overlay.setAlphaF(hi);
-    return GlassInk::composite(surface, overlay);
-}
-}
-
 ShellMenu::ShellMenu(QWidget *parent) : QMenu(parent)
 {
     setProperty("_mttkde_shell_menu", true);
@@ -103,12 +81,10 @@ void ShellMenu::paintEvent(QPaintEvent *event)
                                                qBound(0, int(point.y() * 8 / height()), 7));
             return GlassInk::composite(QColor(channel(0), channel(1), channel(2)), fill);
         };
-        const QColor preferred = palette().color(QPalette::WindowText);
         if (panel != m_lastMaterial) {
             m_lastMaterial = panel;
-            const auto samples = GlassInk::sample(GlassInk::component, QRectF(m_bounds).center(),
+            m_materialSamples = GlassInk::sample(GlassInk::component, QRectF(m_bounds).center(),
                 QSizeF(m_bounds.size()) * .45, surfaceAt);
-            m_materialInk = samples.primaryText(samples.family(preferred));
         }
         m_paintingSampledMenu = true;
     }
@@ -119,21 +95,9 @@ void ShellMenu::paintEvent(QPaintEvent *event)
 void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const
 {
     QMenu::initStyleOption(option, action);
-    if (!m_dynamicTinting || !m_paintingSampledMenu) return;
+    if (!m_dynamicTinting || !m_paintingSampledMenu || option->state.testFlag(QStyle::State_Selected)) return;
     for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
-        QColor color = m_materialInk;
-        if (option->state.testFlag(QStyle::State_Selected)) {
-            // Selection has its own solid accent surface and text role.
-            const auto family = GlassInk::familyOf(option->palette.color(group, QPalette::HighlightedText));
-            const auto accent = option->palette.color(group, QPalette::Highlight);
-            const auto fill = selectionFill(accent, family);
-            GlassInk::Samples selection;
-            selection.add(fill);
-            color = selection.primaryText(family);
-            option->palette.setColor(group, QPalette::Highlight, fill);
-        }
-        if (group == QPalette::Disabled) color.setAlphaF(.48);
-        for (auto role : {QPalette::WindowText, QPalette::Text, QPalette::ButtonText, QPalette::HighlightedText})
-            option->palette.setColor(group, role, color);
+        const QColor base = option->palette.color(group, QPalette::Text);
+        option->palette.setColor(group, QPalette::Text, m_materialSamples.tone(base));
     }
 }

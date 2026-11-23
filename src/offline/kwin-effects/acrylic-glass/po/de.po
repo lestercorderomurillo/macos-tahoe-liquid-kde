@@ -5,6 +5,9 @@ msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00
 msgid "About This Computer"
 msgstr "Über diesen Computer"
 
+msgid "Adaptive Contrast"
+msgstr "Adaptiver Kontrast"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Fügt der Glastextur eine feine Körnung hinzu. 0 deaktiviert die Körnung."
 
@@ -119,9 +122,6 @@ msgstr "Dock"
 msgid "Dock/Launcher"
 msgstr "Dock/Anwendungsstarter"
 
-msgid "Dynamic text tinting"
-msgstr "Dynamische Textfarbe"
-
 msgid "Enable gradient"
 msgstr "Farbverlauf aktivieren"
 
@@ -211,6 +211,9 @@ msgstr "Suchkapsel"
 
 msgid "Separate red, green and blue near the glass edge. 0 disables color fringes."
 msgstr "Trennt Rot, Grün und Blau am Glasrand. 0 deaktiviert Farbsäume."
+
+msgid "Slightly adjust text when it blends into the background."
+msgstr "Passt die Textfarbe leicht an, wenn sie sich zu wenig vom Hintergrund abhebt."
 
 msgid "Soften the background behind glass. 0 leaves the background sharp."
 msgstr "Zeichnet den Hintergrund hinter dem Glas weich. Bei 0 bleibt der Hintergrund scharf."

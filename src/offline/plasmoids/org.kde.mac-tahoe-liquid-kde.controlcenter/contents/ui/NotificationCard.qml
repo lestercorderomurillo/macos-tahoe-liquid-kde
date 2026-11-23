@@ -30,7 +30,6 @@ Item {
     property bool replying: false
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
     property color backdropColor: "transparent"
-    property color componentInk: "transparent"
     property color surfaceColor: "transparent"
     Native.GlassSettings { id: inkSettings; component: "notifications" }
     readonly property color foregroundColor: {
@@ -39,7 +38,7 @@ Item {
         const window = row.Window.window;
         if (window && typeof window.foregroundFor === "function") return window.foregroundFor(row, base);
         inkSettings.inkRevision;
-        return inkSettings.animatedNotificationForeground(row, row.Window.window, base, backdropColor, surfaceColor, componentInk);
+        return inkSettings.animatedNotificationForeground(row, row.Window.window, base, backdropColor, surfaceColor);
     }
     readonly property bool hovered: hover.hovered
     readonly property bool interacting: hovered || dismiss.hovered || reply.activeFocus || options.visible

@@ -24,7 +24,7 @@ private Q_SLOTS:
 
 private:
     QImage m_lastMaterial;
-    QColor m_materialInk;
+    GlassInk::Samples m_materialSamples;
     bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;
