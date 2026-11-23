@@ -1,5 +1,6 @@
 """Opt-in Liquid Glass desktop widgets (#143)."""
 import subprocess
+import os
 import sys
 from pathlib import Path
 
@@ -38,7 +39,9 @@ def test_panel_weather_route_preserves_existing_context_actions(tmp_path):
 
 def test_migrated_desktop_widget_settings_cover_the_bundled_schema_and_clipboard(tmp_path):
     from xml.etree import ElementTree
-    from desktop_widget_settings import MARKER, NAMES, PREFIX, STYLE_KEYS, read_schema, stage_configuration_route
+    from desktop_widget_settings import (
+        INACTIVE_FIELDS, MARKER, NAMES, PREFIX, STYLE_KEYS, read_schema, stage_configuration_route,
+    )
 
     archive = ROOT / "src/offline/desktop-widgets/liquidglass-kde-widgets.tar.zst"
     subprocess.run(["tar", "--zstd", "-xf", str(archive), "-C", str(tmp_path),
@@ -46,8 +49,8 @@ def test_migrated_desktop_widget_settings_cover_the_bundled_schema_and_clipboard
     for variant in NAMES:
         package = tmp_path / (PREFIX + variant)
         xml = ElementTree.parse(package / "contents/config/main.xml")
-        assert read_schema(package).DEFAULTS.keys() == {
-            node.attrib["name"] for node in xml.findall(".//{*}entry")}
+        keys = {node.attrib["name"] for node in xml.findall(".//{*}entry")}
+        assert read_schema(package).DEFAULTS.keys() == keys - INACTIVE_FIELDS.get(variant, set())
         stage_configuration_route(package)
         main = package / "contents/ui/main.qml"
         updated = main.read_text()
@@ -58,6 +61,55 @@ def test_migrated_desktop_widget_settings_cover_the_bundled_schema_and_clipboard
         assert main.read_text() == updated
         codec = (package / "contents/ui/components/styleCodec.js").read_text()
         assert all(f'{key}: "{value}"' in codec for key, value in STYLE_KEYS.items())
+
+
+def test_shared_widget_editors_preserve_values_and_save_only_the_selected_instance(tmp_path):
+    from desktop_widget_settings import NAMES, PREFIX
+
+    archive = ROOT / "src/offline/desktop-widgets/liquidglass-kde-widgets.tar.zst"
+    subprocess.run(["tar", "--zstd", "-xf", str(archive), "-C", str(tmp_path),
+                    *("./" + PREFIX + name for name in NAMES)], check=True)
+    script = r'''
+import sys
+from pathlib import Path
+sys.path[:0] = ['src/installer', 'src/scripts']
+from PyQt6.QtWidgets import QApplication, QWidget
+from desktop_widget_settings import NAMES, PREFIX, read_schema
+import desktop_widget_editor as editor
+
+app = QApplication([])
+parent = QWidget()
+parent.t = lambda label: label
+editor.media_players = lambda: {'Firefox': 'Firefox'}
+root = Path(sys.argv[1])
+records = {}
+for identifier, name in enumerate(NAMES, 1):
+    plugin = PREFIX + name
+    defaults = read_schema(root / plugin).DEFAULTS
+    records[identifier] = (plugin, defaults, defaults.copy())
+widget = editor.DesktopWidgetEditor(records, None, parent)
+for index in range(widget.picker.count()):
+    widget.picker.setCurrentIndex(index)
+    expected = records[widget.picker.currentData()][1]
+    assert widget.values() == expected, widget.plugin
+
+def save(plugin, identifier, changes):
+    saved.append((plugin, identifier, changes))
+    return records[identifier][2] | changes
+
+saved = []
+editor.apply = save
+identifier = next(key for key, record in records.items() if record[0] == PREFIX + 'calendar')
+widget.picker.setCurrentIndex(widget.picker.findData(identifier))
+widget.set_values({'enabledCalendarPlugins': ['astronomicalevents'], 'firstDayOfWeek': 1})
+widget.save_settings()
+assert saved == [(PREFIX + 'calendar', identifier,
+                  {'enabledCalendarPlugins': ['astronomicalevents'], 'firstDayOfWeek': 1})]
+'''
+    result = subprocess.run([sys.executable, "-c", script, str(tmp_path)], cwd=ROOT,
+                            env=os.environ | {"QT_QPA_PLATFORM": "offscreen"},
+                            text=True, capture_output=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
 
 
 @pytest.fixture

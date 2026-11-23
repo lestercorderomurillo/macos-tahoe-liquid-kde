@@ -30,6 +30,7 @@ PlasmoidItem {
         id: settingsLink
     }
 
+    Plasmoid.hasConfigurationInterface: !settingsLink.available
     Plasmoid.contextualActions: [
         PlasmaCore.Action {
             text: i18n("Configure System Menu…")

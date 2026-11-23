@@ -2,18 +2,97 @@
 
 import json
 
-from PyQt6.QtCore import QStandardPaths, Qt
+from PyQt6.QtCore import QStandardPaths, QTimeZone, Qt
+from PyQt6.QtDBus import QDBusConnection, QDBusInterface, QDBusVariant
 from PyQt6.QtGui import QColor, QFont, QKeySequence
 from PyQt6.QtWidgets import (
     QApplication, QCheckBox, QColorDialog, QComboBox, QDoubleSpinBox, QFileDialog, QHBoxLayout,
-    QKeySequenceEdit, QLabel, QLineEdit, QSpinBox, QTabWidget, QVBoxLayout, QWidget,
+    QKeySequenceEdit, QLabel, QLineEdit, QListWidget, QListWidgetItem, QSpinBox, QTabWidget, QVBoxLayout, QWidget,
 )
 
-from desktop_widget_settings import CHOICES, NAMES, PAGES, PREFIX, RANGES, STYLE_KEYS, installed_schema
+from desktop_widget_settings import (
+    CALENDAR_SOURCES, CHOICES, NAMES, PAGES, PREFIX, RANGES, STYLE_KEYS, WEATHER_FIELDS, installed_schema,
+)
 from plasmoid_settings import apply, instances
-from weather_panel_editor import weather_about
+from weather_panel_editor import WeatherForm, weather_about
 
 DISPLAY_SCALE = {"roundnessX10": 10, "refractIORx100": 100}
+
+
+def media_players():
+    bus = QDBusConnection.sessionBus()
+    interface = bus.interface()
+    if interface is None:
+        return {}
+    players = {}
+    for service in interface.registeredServiceNames().value() or ():
+        if not service.startswith("org.mpris.MediaPlayer2."):
+            continue
+        properties = QDBusInterface(service, "/org/mpris/MediaPlayer2", "org.freedesktop.DBus.Properties", bus)
+        properties.setTimeout(300)
+        args = properties.call("Get", "org.mpris.MediaPlayer2", "Identity").arguments()
+        if args and isinstance(args[0], QDBusVariant) and (name := args[0].variant()):
+            players[name] = name
+    return players
+
+
+class CheckedChoices(QListWidget):
+    def __init__(self, labels, *, csv=False):
+        super().__init__()
+        self.labels = labels
+        self.csv = csv
+        self.setMaximumHeight(118)
+
+    def set_value(self, value):
+        checked = value.split(",") if self.csv else value
+        self.clear()
+        for key, label in (self.labels | {k: k for k in checked if k and k not in self.labels}).items():
+            item = QListWidgetItem(label, self)
+            item.setData(Qt.ItemDataRole.UserRole, key)
+            item.setCheckState(Qt.CheckState.Checked if key in checked else Qt.CheckState.Unchecked)
+
+    def value(self):
+        checked = [item.data(Qt.ItemDataRole.UserRole) for index in range(self.count())
+                   if (item := self.item(index)).checkState() == Qt.CheckState.Checked]
+        return ",".join(checked) if self.csv else checked
+
+
+class WorldClocks(QWidget):
+    def __init__(self, translate, count):
+        super().__init__()
+        from wizard_window import GlassComboBox
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        zones = sorted(bytes(zone).decode() for zone in QTimeZone.availableTimeZoneIds())
+        self.fields = []
+        for number in range(1, count + 1):
+            row = QHBoxLayout()
+            time_zone = GlassComboBox()
+            time_zone.setEditable(True)
+            time_zone.setInsertPolicy(QComboBox.InsertPolicy.NoInsert)
+            time_zone.addItems(["", *zones])
+            time_zone.setAccessibleName(f'{translate("Time zone")} {number}')
+            time_zone.lineEdit().setPlaceholderText(translate("Time zone"))
+            label = QLineEdit()
+            label.setObjectName("widgetSettingField")
+            label.setAccessibleName(f'{translate("Label")} {number}')
+            label.setPlaceholderText(translate("Label"))
+            row.addWidget(time_zone, 2)
+            row.addWidget(label, 1)
+            layout.addLayout(row)
+            self.fields.append((time_zone, label))
+
+    def set_value(self, value):
+        clocks = value.split(",")
+        for index, (zone, label) in enumerate(self.fields):
+            name, _, nickname = (clocks[index] if index < len(clocks) else "").partition("|")
+            zone.setEditText(name)
+            label.setText(nickname)
+
+    def value(self):
+        return ",".join(f'{name}|{label.text().strip().replace(",", " ")}' for zone, label in self.fields
+                        if (name := zone.currentText().strip()))
 
 
 def installed_instances():
@@ -85,7 +164,12 @@ class DesktopWidgetEditor(QWidget):
         self.fields = {}
         self.rows = {}
         self.glass_pages = []
+        self.weather = None
         self.status.hide()
+        if all(key in self.defaults for key in WEATHER_FIELDS):
+            self.weather = WeatherForm(self.t, self.tabs)
+            self.weather.load(values)
+            self.tabs.addTab(self.weather, self.t("Weather"))
         for title, fields in PAGES.items():
             present = {key: label for key, label in fields.items() if key in self.defaults}
             if not present:
@@ -102,6 +186,26 @@ class DesktopWidgetEditor(QWidget):
                     field = CheckOption(label)
                     line.addWidget(field, 1)
                     field.toggled.connect(self.update_dependencies)
+                elif key in ("clocks", "enabledCalendarPlugins", "playerFilter"):
+                    if key == "clocks":
+                        field = WorldClocks(self.t, 4 if self.plugin.endswith(("city-1", "city-2")) else 1)
+                    elif key == "enabledCalendarPlugins":
+                        field = CheckedChoices({name: self.t(message) for name, message in CALENDAR_SOURCES.items()})
+                    else:
+                        field = CheckedChoices(media_players(), csv=True)
+                    field.setAccessibleName(label)
+                    line.addWidget(QLabel(label), 1)
+                    line.addWidget(field, 3)
+                    if key == "playerFilter":
+                        refresh = GlassButton(self.t("Refresh"))
+
+                        def refresh_players(*_, players=field):
+                            selected = players.value()
+                            players.labels = media_players()
+                            players.set_value(selected)
+
+                        refresh.clicked.connect(refresh_players)
+                        line.addWidget(refresh)
                 else:
                     line.addWidget(QLabel(label), 1)
                     if key in CHOICES:
@@ -128,10 +232,12 @@ class DesktopWidgetEditor(QWidget):
                         field.setRange(*RANGES[key])
                         if key in {"tintAlphaPct", "textTintPct", "refractScale", "chromaStrengthPct", "specStrengthPct"}:
                             field.setSuffix("%")
-                        elif key in {"cornerRadius", "blurRadiusPx", "refractThickness"}:
+                        elif key in {"cornerRadius", "blurRadiusPx", "refractThickness", "gridFontSize", "eventFontSize"}:
                             field.setSuffix(" px")
                         elif key == "intervalMinutes":
                             field.setSuffix(self.t(" min"))
+                        elif key == "autoHideTimeout":
+                            field.setSuffix(self.t(" s"))
                         if key in {"refractScale", "specStrengthPct"}:
                             field.setSingleStep(5)
                         field.valueChanged.connect(self.update_dependencies)
@@ -175,13 +281,13 @@ class DesktopWidgetEditor(QWidget):
         self.shortcut_baseline = self.shortcut.keySequence().toString()
 
     def values(self):
-        values = {}
+        values = self.weather.values() if self.weather else {}
         for key, field in self.fields.items():
             if isinstance(field, QCheckBox):
                 values[key] = field.isChecked()
             elif isinstance(field, QComboBox):
                 values[key] = field.currentData()
-            elif isinstance(field, QSpinBox):
+            elif isinstance(field, (QSpinBox, CheckedChoices, WorldClocks)):
                 values[key] = field.value()
             elif isinstance(field, QDoubleSpinBox):
                 values[key] = round(field.value() * DISPLAY_SCALE[key])
@@ -201,6 +307,8 @@ class DesktopWidgetEditor(QWidget):
                 field.setValue(value)
             elif isinstance(field, QDoubleSpinBox):
                 field.setValue(value / DISPLAY_SCALE[key])
+            elif isinstance(field, (CheckedChoices, WorldClocks)):
+                field.set_value(value)
             else:
                 field.setText(value)
             field.blockSignals(previous)
@@ -211,7 +319,8 @@ class DesktopWidgetEditor(QWidget):
         automatic = values.get("autoStyle", False)
         solid = values.get("styleMode") == 1
         glass = automatic or not solid or values.get("opaqueBackground") is False
-        self.fields["styleMode"].setEnabled(not automatic)
+        if "styleMode" in self.fields:
+            self.fields["styleMode"].setEnabled(not automatic)
         if "opaqueBackground" in self.rows:
             self.rows["opaqueBackground"].setVisible(automatic or solid)
         if "tintAlphaPct" in self.rows:
@@ -220,6 +329,11 @@ class DesktopWidgetEditor(QWidget):
             self.fields["textColor"].setEnabled(values["textTintPct"] > 0)
         for page in self.glass_pages:
             page.setEnabled(glass)
+        for key in ("gridFontSize", "eventFontSize"):
+            if key in self.rows:
+                self.rows[key].setEnabled(not values["autoFontSize"])
+        if "autoHideTimeout" in self.rows:
+            self.rows["autoHideTimeout"].setEnabled(values["autoHideEnabled"])
 
     def choose_color(self):
         field = self.fields["textColor"]

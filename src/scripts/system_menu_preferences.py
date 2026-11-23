@@ -26,6 +26,13 @@ FORMS = {
         "menuIcon": "Custom icon",
         "useSystemFont": "Use system font in About This Computer",
     },
+    "Application menus": {
+        "enableGenericMenu": "Show common menus for applications without a menu bar",
+        "enableMenuSearch": "Search application menu actions",
+        "hoverOpensMenu": "Switch open menus on hover",
+        "compactView": "Use a single button for the application menu",
+        "allScreens": "Show menus for apps on different screens",
+    },
     "Icons": {
         "iconAbout": "About This Computer icon",
         "iconSystemSettings": "System Settings icon",

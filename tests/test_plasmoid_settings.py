@@ -11,10 +11,28 @@ import plasmoid_settings
 import system_menu_preferences
 
 
+def test_installed_settings_records_its_golden_gate_source(tmp_path, monkeypatch):
+    import settings_launcher
+
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "data"))
+    source = tmp_path / "snapshot"
+    source.mkdir()
+    (source / "installer").write_text("")
+    (source / ".golden-gate-ready").write_text("local-development\n")
+    settings_launcher.install(source)
+    record = tmp_path / "state/mac-tahoe-liquid-kde/settings-source"
+    assert record.read_text().strip() == str(source)
+    settings_launcher.uninstall()
+    assert not record.exists()
+
+
 def test_system_menu_preferences_use_the_applet_appearance_group(monkeypatch):
     plugin = system_menu_preferences.PLUGIN
-    legacy = Path(__file__).resolve().parents[1] / "src/offline/plasmoids" / plugin / "qml/configSystemMenu.qml"
-    legacy_fields = set(re.findall(r"\bcfg_(\w+)", legacy.read_text()))
+    qml = Path(__file__).resolve().parents[1] / "src/offline/plasmoids" / plugin / "qml"
+    legacy_fields = {field for name in ("configSystemMenu.qml", "configGeneral.qml")
+                     for field in re.findall(r"\bcfg_(\w+)", (qml / name).read_text())}
     defaults = system_menu_preferences.DEFAULTS
     assert defaults.keys() == legacy_fields | {"cmdAppStore", "menuIconPreset"}
     assert defaults.keys() == {key for form in system_menu_preferences.FORMS.values() for key in form}
@@ -24,6 +42,7 @@ def test_system_menu_preferences_use_the_applet_appearance_group(monkeypatch):
     }
     expected["cmdAppStore"] = '/usr/bin/example "one argument"'
     expected["menuIconPreset"] = "pear"
+    expected["activationShortcut"] = "Ctrl+Alt+M"
     scripts = []
 
     def evaluate(script):
@@ -32,6 +51,7 @@ def test_system_menu_preferences_use_the_applet_appearance_group(monkeypatch):
         assert request["plugins"] == [plugin]
         assert request["group"] == "Appearance"
         assert request["instance"] == 19
+        assert request["hasShortcut"] is True
         assert request["changes"] == expected
         assert request["defaults"] == defaults
         return json.dumps({19: expected | {"useSystemFont": "true"}})

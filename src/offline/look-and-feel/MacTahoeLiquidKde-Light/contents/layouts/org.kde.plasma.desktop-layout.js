@@ -41,6 +41,7 @@ bar.height = 30;
 var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
 if (colorizer) {
     colorizer.currentConfigGroup = ["General"];
+    colorizer.writeConfig("configureFromAllWidgets", false);
     colorizer.writeConfig("globalSettings", JSON.stringify({
         "nativePanel": {
             "background": { "enabled": false, "opacity": 0, "shadow": false },

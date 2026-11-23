@@ -74,6 +74,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     var colorizer = bar.addWidget("luisbocanegra.panel.colorizer");
     if (colorizer) {
         colorizer.currentConfigGroup = ["General"];
+        colorizer.writeConfig("configureFromAllWidgets", false);
         colorizer.writeConfig("globalSettings", JSON.stringify({
             "nativePanel": {
                 "background": { "enabled": false, "opacity": 0, "shadow": false },

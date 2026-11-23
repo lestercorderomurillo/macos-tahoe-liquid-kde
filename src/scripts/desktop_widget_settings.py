@@ -13,10 +13,31 @@ NAMES = {
     "clock-analog-3": "Analog Clock III",
     "clock-glass-text": "Glass Text Clock",
     "clock-square": "Digital Clock",
+    "city-1": "World Clock I",
+    "city-2": "World Clock II",
+    "city-3": "World Clock III",
+    "city-digital": "Digital World Clock",
+    "calendar": "Calendar",
+    "music": "Music",
+    "weather": "Weather",
     "timer": "Timer",
     "photos": "Photos",
 }
-CONTEXT_ACTIONS = {"timer": "toggleAction, resetAction", "photos": "openAction, nextAction"}
+CONTEXT_ACTIONS = {
+    "calendar": "openCalendarAction, newEventAction, manageCalendarsAction",
+    "music": "playPauseAction, nextAction, previousAction",
+    "weather": "refreshAction",
+    "timer": "toggleAction, resetAction",
+    "photos": "openAction, nextAction",
+}
+WEATHER_FIELDS = ("location", "latitude", "longitude", "temperatureUnit")
+# Present in the upstream schema without a widget binding or a config control.
+INACTIVE_FIELDS = {"music": {"spectrumBars", "lyricsFont"}}
+CALENDAR_SOURCES = {
+    "pimevents": "PIM Events (Akonadi)",
+    "holidaysevents": "Holidays",
+    "astronomicalevents": "Astronomical Events",
+}
 STYLE_KEYS = {
     "s": "styleMode", "as": "autoStyle", "a": "appearance", "cr": "cornerRadius",
     "rn": "roundnessX10", "ta": "tintAlphaPct", "rt": "refractThickness",
@@ -27,6 +48,17 @@ STYLE_KEYS = {
 }
 PAGES = {
     "Clock": {"use24Hour": "Use 24-hour time", "smoothSeconds": "Animate the second hand continuously"},
+    "World clocks": {"clocks": "Time zones"},
+    "Calendar": {"firstDayOfWeek": "First day of the week", "eventLookaheadDays": "Show events for",
+                 "enabledCalendarPlugins": "Calendar sources", "autoFontSize": "Scale text with widget size",
+                 "gridFontSize": "Calendar grid text size", "eventFontSize": "Event list text size"},
+    "Players": {"filterMode": "Player filter", "playerFilter": "Media players",
+                "autoHideEnabled": "Hide the widget when nothing is playing", "autoHideTimeout": "Hide after",
+                "artRefreshEnabled": "Refresh album art on track changes"},
+    "Lyrics": {"showTrackTitleInLyrics": "Show the track title above the lyrics",
+               "lyricsBlur": "Blur upcoming lines",
+               "lyricsActiveOpacity": "Current line opacity", "lyricsInactiveOpacity": "Other line opacity",
+               "lyricsFontSizeWide": "Wide layout text size", "lyricsFontSizeTall": "Tall layout text size"},
     "Photos": {"folder": "Folder", "intervalMinutes": "Change photo every", "shuffle": "Shuffle"},
     "Style": {"styleMode": "Style", "autoStyle": "Switch automatically", "appearance": "Appearance",
               "tintAlphaPct": "Glass tint", "cornerRadius": "Corner radius", "roundnessX10": "Corner smoothness",
@@ -43,6 +75,10 @@ CHOICES = {
     "appearance": ("Dark", "Light", "Follow system"),
     "glyphFont": ("SF Pro Soft", "SF Pro Rounded", "SF Pro Rails", "New York", "SF Pro Stencil"),
     "blurAlgorithm": ("Performance (Dual Kawase)", "Quality (Gaussian)"),
+    "firstDayOfWeek": ("Sunday", "Monday"),
+    "eventLookaheadDays": ("7 days", "14 days", "30 days", "60 days"),
+    "filterMode": ("Show selected players", "Hide selected players"),
+    "temperatureUnit": ("Celsius (°C)", "Fahrenheit (°F)"),
 }
 RANGES = {
     "cornerRadius": (0, 200), "roundnessX10": (20, 100), "tintAlphaPct": (0, 100),
@@ -50,6 +86,10 @@ RANGES = {
     "chromaStrengthPct": (0, 100), "specStrengthPct": (0, 100), "blurRadiusPx": (0, 100),
     "textTintPct": (0, 100),
     "intervalMinutes": (1, 1440),
+    "gridFontSize": (8, 48), "eventFontSize": (8, 48),
+    "autoHideTimeout": (5, 600), "lyricsActiveOpacity": (50, 100), "lyricsInactiveOpacity": (5, 80),
+    "lyricsFontSizeWide": (40, 150), "lyricsFontSizeTall": (30, 120),
+    "latitude": (-90, 90), "longitude": (-180, 180),
 }
 
 
@@ -61,9 +101,10 @@ class WidgetSchema:
 
 
 def read_schema(package):
-    editable = {key for fields in PAGES.values() for key in fields}
+    editable = {key for fields in PAGES.values() for key in fields}.union(WEATHER_FIELDS)
     entries = ElementTree.parse(package / "contents/config/main.xml").findall(".//{*}entry")
-    convert = {"Bool": lambda value: value == "true", "Int": int, "String": str}
+    convert = {"Bool": lambda value: value == "true", "Int": int, "String": str, "Double": float,
+               "StringList": lambda value: [item for item in value.split(",") if item]}
     return WidgetSchema({entry.attrib["name"]: convert[entry.attrib["type"]](entry.findtext("{*}default", ""))
                          for entry in entries if entry.attrib["name"] in editable})
 
@@ -97,7 +138,7 @@ def stage_configuration_route(package):
     schema = read_schema(package)
     all_keys = {entry.attrib["name"] for entry in ElementTree.parse(
         package / "contents/config/main.xml").findall(".//{*}entry")}
-    if schema.DEFAULTS.keys() != all_keys:
+    if schema.DEFAULTS.keys() != all_keys - INACTIVE_FIELDS.get(variant, set()):
         return
     text = text.replace(component_import, component_import +
                         'import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Settings\n')

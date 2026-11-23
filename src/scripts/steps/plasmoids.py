@@ -311,6 +311,14 @@ def uninstall() -> None:
                 fail(d.name)
     info(tr('{n} plasmoids removed', n=n))
 
+
+def migrate_settings_context() -> None:
+    script = offline("layouts/migrate-settings-context.js").read_text(encoding="utf-8")
+    if not qdbus_call("org.kde.plasmashell", "/PlasmaShell",
+                      "org.kde.PlasmaShell.evaluateScript", script):
+        warn(tr("Could not update widget configuration shortcuts."))
+
+
 def _installed_widgets() -> set[str]:
     try:
         entries = WIDGETS_STATE.read_text(encoding="utf-8").splitlines()

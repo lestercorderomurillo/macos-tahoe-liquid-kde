@@ -13,6 +13,11 @@ BINARY_MARKER = "# Installed by MacTahoe Liquid KDE"
 DESKTOP_MARKER = "X-Mactahoe-Owned=true"
 
 
+def _installed_source_record():
+    state = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state")
+    return state / "mac-tahoe-liquid-kde/settings-source"
+
+
 def _paths():
     home = Path.home()
     data = Path(os.environ.get("XDG_DATA_HOME") or home / ".local/share")
@@ -20,7 +25,8 @@ def _paths():
 
 
 def install(source):
-    launcher = Path(source) / "installer"
+    source = Path(source).resolve()
+    launcher = source / "installer"
     binary, desktop = _paths()
     if not launcher.is_file():
         raise FileNotFoundError(launcher)
@@ -41,9 +47,17 @@ def install(source):
                "Name[es]=Ajustes de Liquid KDE\nIcon=preferences-system\n"
                f'Exec="{quoted}"\nTryExec={binary}\nCategories=Settings;DesktopSettings;\n{DESKTOP_MARKER}\n')
     atomic_write(desktop, content.encode())
+    # Golden Gate normally prunes superseded snapshots. Keep the one still
+    # referenced by the installed launcher until it is updated or removed.
+    record = _installed_source_record()
+    if (source / ".golden-gate-ready").is_file():
+        atomic_write(record, os.fsencode(source) + b"\n")
+    else:
+        record.unlink(missing_ok=True)
 
 
 def uninstall():
     for path, marker in zip(_paths(), (BINARY_MARKER, DESKTOP_MARKER)):
         if path.is_file() and not path.is_symlink() and marker in path.read_text(encoding="utf-8"):
             path.unlink(missing_ok=True)
+    _installed_source_record().unlink(missing_ok=True)

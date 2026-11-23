@@ -18,7 +18,7 @@ TYPED_PREFERENCES = {
     "system_menu": system_menu_preferences,
     "weather_panel": weather_panel_settings,
 }
-SHORTCUT_WIDGETS = {"dock", "launcher", "trash", "bar_shortcuts", "control_center", "weather_panel"}
+SHORTCUT_WIDGETS = {"dock", "launcher", "trash", "bar_shortcuts", "control_center", "weather_panel", "system_menu"}
 WIDGET_PREFIX = "org.kde.mac-tahoe-liquid-kde."
 BAR_WIDGET_LABELS = {
     WIDGET_PREFIX + "acrylicglass": "Acrylic Glass",
@@ -83,6 +83,9 @@ def _request(kind, instance=None, changes=None):
     if changes is not None and (instance is None or any(
         key not in valid_keys or type(value) is not type(valid_keys[key])
         or isinstance(value, str) and (len(value) > 4096 or any(c in value for c in "\0\r\n"))
+        or isinstance(value, list) and any(not isinstance(item, str) or not item
+                                          or len(item) > 128 or any(c in item for c in ",\0\r\n")
+                                          for item in value)
         for key, value in changes.items()
     )):
         raise ValueError("Invalid widget preferences")
@@ -163,6 +166,9 @@ print(JSON.stringify(result));
                             values[key] = default
                     elif isinstance(default, str):
                         values[key] = str(value) if value is not None else default
+                    elif isinstance(default, list):
+                        values[key] = value if isinstance(value, list) else [
+                            item.strip() for item in str(value or "").split(",") if item.strip()]
                     elif isinstance(default, float):
                         try:
                             values[key] = float(value)
