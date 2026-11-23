@@ -1,4 +1,4 @@
-# Project Guidelines — Gemini
+# Project Guidelines: Gemini
 
 > Canonical guidance lives in [`AGENTS.md`](AGENTS.md). Google Gemini
 > CLI reads `GEMINI.md`; the content is the same across `AGENTS.md`,

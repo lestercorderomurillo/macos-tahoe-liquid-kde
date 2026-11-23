@@ -1,4 +1,4 @@
-# Project Guidelines — Claude
+# Project Guidelines: Claude
 
 > Canonical guidance lives in [`AGENTS.md`](AGENTS.md). Claude Code
 > reads `CLAUDE.md` by convention; this file is a thin pointer so the

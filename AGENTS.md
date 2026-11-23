@@ -233,7 +233,7 @@ Finish with the result, a useful link and any material limitation. For a visual
 candidate, show the preview and ask for approval; do not claim release delivery.
 Ask only for missing input that changes the outcome.
 
-## #1 — Self-explanatory code
+## #1: Self-explanatory code
 
 Do not explain what a terminal command does when it is already obvious
 (for example, `npm install`). Add explanations only when needed or requested.
@@ -504,7 +504,7 @@ Output convention inside `install()`:
 2. Then any "Foo set to / applied" status lines.
 3. The `info()` summary count is always the LAST line of the step.
 
-## Architecture — Sudo Policy
+## Architecture: Sudo Policy
 
 The internal install and uninstall backend requires sudo. The graphical UI runs as the desktop user and requests elevation only after confirmation. The compiled C++
 plasmoids and the Acrylic Glass KWin effect land under the system Qt6
@@ -538,7 +538,7 @@ custom Plasma sessions and sudo's empty/stale environment without requiring
 manual DBus variable forwarding (issue #85). Keep OLED retirement fail-closed
 when the recovered session still cannot reach the user service manager.
 
-## Architecture — Icon generation
+## Architecture: Icon generation
 
 `./icon-toolset` is an offline maintainer tool shared by both editions. Keep its
 implementation in `src/scripts/icon_{toolset,materials,sources}.py` and use the
@@ -549,7 +549,7 @@ write only to explicit fresh output paths. Synthetic artwork contact sheets
 are not desktop documentation screenshots. Generated appearances are opt-in
 build artifacts; the tool must not change live themes or installer defaults.
 
-## Architecture — Auto-Update on Install
+## Architecture: Auto-Update on Install
 
 **Reset Dock and panel customization** starts checked on every new wizard launch.
 Unchecking it preserves existing Dock/panel geometry, hiding behavior, widgets
@@ -584,7 +584,7 @@ Golden Gate stages its own defaults in an isolated copy, never in Tahoe itself.
 Without local sources it selects the latest published Tahoe release.
 It sets `MAC_TAHOE_NO_UPDATE_CHECK=true` for the prepared source.
 
-## Architecture — Optional Online Rounded Corners
+## Architecture: Optional Online Rounded Corners
 
 Acrylic Glass's supported radius controls (`WindowCornerRadius`,
 `DockCornerRadius`, `PopupCornerRadius`) are seeded only when absent. Never
@@ -659,7 +659,7 @@ server-side shadows, outlines and corners for client-side-decorated windows
 only when the decoration declares the `shadow` style. Aurorae declares neither,
 so Rounded Corners remains the only rounding and outline on 6.6 through 6.8.
 
-## Architecture — Distro Detection Layer
+## Architecture: Distro Detection Layer
 
 `src/scripts/distro.py` is the ONLY file allowed to know per-distro
 paths, package manager commands, or the host init system. Steps and
@@ -691,7 +691,7 @@ Static guards in `tests/test_static.py`:
 
 Don't fight these — add a row to `distro.py` instead.
 
-## Architecture — Preflight
+## Architecture: Preflight
 
 `src/scripts/preflight.py` runs before any step touches disk. Nine
 checks, fail-fast:
@@ -719,7 +719,7 @@ appears to be running setuid`. Never reach for `subprocess.run`
 directly from preflight — `test_plasma_version_drops_privs_in_child`
 is the guard against that regression returning.
 
-## Architecture — Plasma 6.8 Compatibility
+## Architecture: Plasma 6.8 Compatibility
 
 Preserve support for 6.6 and 6.7 when changing the 6.8 path. Acrylic Glass
 selects KWin ABI flags independently for Wayland and X11 from each backend's
@@ -747,7 +747,7 @@ only the theme's desktop exclusion and shared corner shape, also in Nix. The pix
 outline against the client bottom and `--renderer hardware` for 6.8's
 render-device requirement. Run a pre-fix control as well as the fixed build.
 
-## Architecture — Live Theme Switching
+## Architecture: Live Theme Switching
 
 `mac-tahoe-theme-switch {light|dark|auto}` is the single entry point.
 The same binary runs:
@@ -826,7 +826,7 @@ Worst case: 2 + 6 + 6 = 14s of sleeps. Don't shorten the 2s lead-in
 — `plasma-apply-lookandfeel` exits 0 against a not-yet-ready bus
 without actually re-rendering.
 
-## Architecture — GTK Global Menu Lifetime
+## Architecture: GTK Global Menu Lifetime
 
 Older distro `appmenu-gtk-module` builds register process-lifetime D-Bus
 callbacks and GtkMenuBar vfuncs without marking the module resident. GTK can
@@ -867,7 +867,7 @@ without network access or the user's home. It requires a visible main window,
 the loaded appmenu module, and survival for the observation period. A control
 that does not reproduce the SIGSEGV is inconclusive, never a passing fix test.
 
-## Architecture — OLED Care (opt-in)
+## Architecture: OLED Care (opt-in)
 
 `mac-tahoe-oled-care {shift|restore|status}` guards OLED panels against
 burn-in. Off by default; `./install --oled-care` enables it. A systemd
@@ -889,7 +889,7 @@ so the base is re-captured instead of fought. `restore` undoes only the
 currently-applied delta; the step's install() with the flag off tears
 the units down, so a plain re-install is self-healing.
 
-## Architecture — Transparent Glass
+## Architecture: Transparent Glass
 
 Both editions use transparent Plasma and Kvantum surfaces in light and dark
 mode. Material presets own blur, refraction and gradient tint. Do not generate
@@ -920,7 +920,7 @@ Legacy appearance files must not influence theme selection; preserve unrelated
 settings and declarative files. Uninstall still cleans up old generated variants.
 Preserve surface masks, shadows, highlights and solid fallbacks.
 
-## Architecture — NixOS and Home Manager
+## Architecture: NixOS and Home Manager
 
 The `flake.nix` / `nix/` path is a separate, experimental installation route;
 never run the sudo installer or write into the Nix store at activation time.
@@ -941,7 +941,7 @@ The optional panel module also needs evaluation with upstream plasma-manager
 when its options change. `tests/test_nix.py` checks lock integrity and asset
 assembly without requiring Nix on the imperative installer's host.
 
-## Architecture — Wallpapers
+## Architecture: Wallpapers
 
 Tahoe and Golden Gate share this implementation and bundled wallpaper set.
 `src/scripts/defaults.json` selects the edition's default package (`MacTahoe`
@@ -1159,7 +1159,7 @@ wallpaper or asset-fetch fallback. The static test
 `_FIXED_NAMES` ships a `3840x2160` (or larger) image with a metadata
 file. Don't add a network-fetch fallback.
 
-## Architecture — Dependency Guards
+## Architecture: Dependency Guards
 
 Every step that uses an external tool checks the tool exists before
 invoking it and surfaces a `warn()` when it doesn't:
@@ -1176,7 +1176,7 @@ invoking it and surfaces a `warn()` when it doesn't:
 the fc-cache missing path; `tests/test_plymouth_step.py` covers the
 bootloader probe.
 
-## Architecture — Container CI Matrix
+## Architecture: Container CI Matrix
 
 | File                         | Role |
 | ---------------------------- | ---- |
@@ -1197,7 +1197,7 @@ markers (`"Failed to retrieve"`, `"Could not resolve host"`, repo
 metadata errors) and emits `SKIP` instead of `FAIL`. Anything else is
 a genuine missing package and fails CI.
 
-## File Map — Steps
+## File Map: Steps
 
 | Module                        | Responsibility |
 | ----------------------------- | -------------- |
@@ -1322,6 +1322,9 @@ green   yellow   orange   red   purple   blue
 Show Dock photographs as one visible vertical list, with a short label for each appearance or tint. Do not use tables or collapsed galleries for the Dock.
 
 Use concise, factual English descriptions without marketing slogans or em dashes.
+Use a colon for label and title separators in project documentation.
+Follow the punctuation conventions of each translation. Preserve the punctuation of
+compound words, Markdown list markers, version ranges and technical syntax.
 Use the repository's edition name in feature headings: Finder, Launchpad, Dock,
 Shell, Control Center, Clipboard History, System Information, Plasma Theme and
 Boot Splash. Mark Shell, Control Center and Clipboard History as Alpha; do not

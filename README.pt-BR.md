@@ -370,20 +370,20 @@ Uma aparência coordenada da inicialização ao desligamento, com desbloqueio in
 
 ![Recursos](https://img.shields.io/badge/features-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
 
-- **Idiomas:** instalador em inglês, espanhol, chinês simplificado, português brasileiro, alemão e francês; widgets Plasma traduzidos.
-- **Instalador:** seleção gráfica de componentes, recursos do tema incluídos e suporte a atualizações.
-- **Distribuições:** instalação de dependências para sistemas baseados em Arch, baseados em Fedora, openSUSE, Debian e KDE neon.
-- **Agendamento:** troca automática de tema e proteção OLED por temporizadores de usuário systemd ou cron no OpenRC.
-- **Efeitos de vidro:** desfoque, refração e gradientes de três cores ajustáveis para os modos claro e escuro.
-- **Compatibilidade:** Plasma 6.6–6.8, com efeitos nativos compilados com as versões instaladas do Qt e KWin.
-- **Launchpad:** dois layouts, pesquisa integrada ou separada, favoritos e categorias de aplicativos roláveis.
-- **Dock** O Dock segue a borda inferior que você tocar e mantém seus apps fixados. No instalador, escolha ocultar automaticamente (padrão), mostrar fora da tela cheia ou ocultar quando uma janela cobrir o Dock. Com várias telas, o Dock só muda de tela depois que o ponteiro fica 2 segundos na borda inferior, para que um clique perto da base de uma janela não o traga por cima. Quando o Dock fica sempre visível, ele continua flutuando com os cantos arredondados: uma janela maximizada na tela dele para logo acima, e o Dock encosta na borda da tela, como no macOS.
-- **Barra de menus** Com várias telas, todas as barras de menus ficam iguais: mostrar ou ocultar um ícone da bandeja, ou mudar os ajustes de um widget (relógio, menu Apple, Central de Controle), vale para a barra de cada tela. Adicionar, remover ou mover widgets ainda vale para uma barra só.
-- **Aparência:** estilos claro/escuro sincronizados para o ambiente, aplicativos, ícones e decorações de janelas; papéis de parede por monitor.
-- **Integração de aplicativos:** menus globais, correções de menus GTK, Nautilus no estilo Finder e tema do Firefox com backups de perfis.
-- **Recuperação:** verificações de requisitos, backups de configurações e restauração na desinstalação.
-- **Recursos opcionais:** deslocamentos de painéis OLED, histórico da área de transferência com itens fixados e prévias de imagens, e módulos experimentais NixOS e Home Manager.
-- **Testes:** testes de regressão, contêineres de distribuições e VMs Plasma.
+- **Aparência:** Temas claros e escuros coordenados para a área de trabalho, aplicativos, ícones e decorações de janelas, com alternância automática e papéis de parede por monitor.
+- **Efeitos de vidro:** Desfoque, refração e tonalidade ajustáveis, com texto que se adapta ao fundo nos menus compatíveis.
+- **Dock:** Aplicativos fixados, ampliação ao passar o ponteiro, indicadores de notificação e ocultação configurável. O Dock acompanha você de uma tela para outra.
+- **Barra de menus e Central de Controle:** Menus globais de aplicativos e controles rápidos do sistema, com configurações da barra de menus compartilhadas entre telas.
+- **Launchpad:** Busque aplicativos, navegue por categorias e salve favoritos em um dos dois layouts.
+- **Widgets da área de trabalho:** Adicione widgets Liquid Glass diretamente à área de trabalho.
+- **Notificações:** Banners de vidro e histórico agrupado, com ações rápidas e respostas nos aplicativos compatíveis.
+- **Histórico da área de transferência:** Encontre e reutilize textos e imagens copiados e fixe os itens que deseja guardar.
+- **Integração de aplicativos:** Navegação ao estilo Finder no Nautilus, integração de menus GTK e tema do Firefox com backup de perfis.
+- **Informações do sistema e inicialização:** Janela de informações do sistema e tela de inicialização opcional que combina com o tema.
+- **Instalação e recuperação:** Instalador gráfico com recursos do tema incluídos, atualizações e backups das configurações que podem ser restaurados durante a desinstalação.
+- **Idiomas:** Instalador disponível em inglês, espanhol, chinês simplificado, português brasileiro, alemão e francês. Os widgets do Plasma também são traduzidos.
+- **Compatibilidade:** Plasma 6.6–6.8 em sistemas baseados em Arch ou Fedora, openSUSE, Debian e KDE neon.
+- **Recursos opcionais:** Proteção para telas OLED e suporte experimental ao NixOS e ao Home Manager.
 
 <br>
 
@@ -688,6 +688,7 @@ Referências do projeto e componentes de terceiros:
 - **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: ícones e cursores base; referência de design GTK. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) é mantido aqui como um fork sob licença MIT com suporte a backup e restauração de perfis.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** e **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur e seu fork de vidro: código upstream usado pelo Acrylic Glass (os autores do desfoque do KWin continuam creditados nos cabeçalhos do código).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0, incluído offline e instalado pela etapa de layout para colorir os painéis (GPL-3.0, licença incluída).
+- Os widgets de área de trabalho Liquid Glass incluídos são de **jaxparrow07**. **RoxasYTB** criou o widget Fotos e a alternância automática entre Solid e Glass (GPL-3.0, licença incluída). [liquidglass-kde-widgets](https://github.com/jaxparrow07/liquidglass-kde-widgets) · [#41](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/41) · [#40](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/40)
 - **[Matin Lotfaliei / KDE-Rounded-Corners](https://github.com/matinlotfali/KDE-Rounded-Corners)**: o efeito de janelas arredondadas do KWin sob GPL-3.0, obtido da versão fixada v0.9.0 e compilado online com o SDK KWin do host (licença instalada junto).
 - **[ful1e5](https://github.com/ful1e5)**: `apple_cursor`: referência alternativa de design de cursores.
 - **[sahibjotsaggu](https://github.com/sahibjotsaggu)**: `San-Francisco-Pro-Fonts`: fonte do pacote SF Pro / SF Mono.
