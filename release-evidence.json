@@ -1,41 +1,26 @@
 {
-  "version": "0.83.1",
+  "version": "0.84.0",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "implementation_commit": "d24e68d190652de62df7a4803aa93794302766df",
-  "scope": "Restore a unified theme palette, add bounded Adaptive Contrast, align desktop widget foregrounds and repair the Acrylic Glass panel shortcut.",
-  "approval": "After reviewing the Tahoe and Golden Gate contrast previews and the brush-click preview, the maintainer requested publication of the paired release on 2026-11-23.",
+  "scope": "Per-label Adaptive Contrast using the active theme foreground, a 20-point lightness target and a 20% maximum shift.",
+  "approval": "Maintainer reviewed the local interactive gallery and explicitly requested publication of the approved version as 0.84.",
   "checks": [
     {
-      "command": "Appearance, theme switch, desktop widgets, update, component cache, and Glass surface tests passed on the focused candidate.",
+      "command": "121 focused launcher, widget, control, cache, global menu and Acrylic Glass tests plus the native controlglassprobe",
       "result": "passed"
     },
     {
-      "command": "Installed and reinstalled the focused payloads in KDE neon Plasma 6.8.1 Wayland. Verified the active native QML module and Adaptive Contrast in Tahoe and Golden Gate.",
-      "result": "passed"
-    },
-    {
-      "command": "Captured Dark, Light and Auto in Tahoe with the effect disabled. Captured equal left and right menu bar tones for both editions with Adaptive Contrast on and off over light, dark and split wallpapers.",
-      "result": "passed"
-    },
-    {
-      "command": "Verified the brush click opens Acrylic Glass in Settings, a failed launch opens the KDE configuration module, and an uninitialized clipboard stays untouched when the embedded editor opens.",
-      "result": "passed"
-    },
-    {
-      "command": "Built the final X11 effect and KCM against KWin 6.6.5. Built and loaded the final module on 6.7.4 and verified pixel changes in an isolated X11 compositor.",
-      "result": "passed"
-    },
-    {
-      "command": "Passed native material preset controls with an uninitialized clipboard, translation catalog checks, release evidence checks and focused updater regressions.",
+      "command": "Real KDE neon Wayland captures for Tahoe and Golden Gate, both appearances, Adaptive Contrast off and on. Inspected actual glyphs, controls and split-backdrop launcher delegates.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "coverage_limits": "Wayland rendering used KDE neon 6.8.1. X11 rendering used KWin 6.7.4 with a separate KWin 6.6.5 SDK build. The exact end-to-end migration from Golden Gate 0.82.15 was not replayed. The standalone host desktop-controls probe reports the same pre-existing MacOptionsMenu width-binding warning on the baseline and candidate.",
-  "source_sha256": "287ea384bdcf359860dd81f6a3a1ca90f6fcf1f37849e422dd0993e4d66baf10",
+  "coverage_limits": "150 pairs from the final candidate plus 16 earlier pairs. VM measurements use KDE neon Wayland and include detail crops.",
   "approved_preview_sha256": {
-    "tahoe-adaptive-contrast.png": "1a6d99e915a7f5cdb3dd7cc307474333bd06f67ff51d392b16d79884f1cef0f1",
-    "golden-gate-adaptive-contrast.png": "017e1d291e7f12b39a64bebeb79059dd6e7d98cf959328abbb289eaef9812ea5",
-    "brush-fixed-visible-preview.png": "9517558d8b98f819c75fe3c8fca4a36e2b5897beedbf9d77d3c5c3d8a750e8de"
-  }
+    "tahoe/dark/apps-split/off.png": "c6ac35b5aea89e6228cdf44c02290d54ef1828c49bc58dbbaca47fde9e8d91e3",
+    "tahoe/dark/apps-split/on.png": "3aa37fc6311db93d540a7a8b980b16ab7993768c73fe2ce88c24b7f515aaf0ff",
+    "tahoe/light/apps-split/off.png": "1e4e6db4835fb99d942363bcec8181b0412b780bf26f8b3cf493097f01a884ae",
+    "tahoe/light/apps-split/on.png": "d86894eda1383b33971ef697bae31a186229a16f03e87738ec891e178ed37477"
+  },
+  "implementation_commit": "92a3fa7f83f8e633f2f94564978e78dc2ed822e4",
+  "source_sha256": "6e36420e296931b9cec68e02bb9d26d315772485e718a02921465a89c12c1551"
 }
