@@ -229,3 +229,6 @@ msgstr "无线网络已被硬件开关禁用"
 
 msgid "Wi-Fi is off"
 msgstr "无线网络已关闭"
+
+msgid "Configure in Settings…"
+msgstr "在设置中配置…"

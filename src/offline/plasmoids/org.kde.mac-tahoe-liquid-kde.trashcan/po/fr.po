@@ -22,3 +22,6 @@ msgstr "Corbeille"
 
 msgid "Trash Settings…"
 msgstr "Réglages de la corbeille…"
+
+msgid "Configure Trash"
+msgstr "Configurer la corbeille"

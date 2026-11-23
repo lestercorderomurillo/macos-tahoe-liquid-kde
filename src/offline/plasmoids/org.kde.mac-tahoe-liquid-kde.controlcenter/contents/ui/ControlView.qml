@@ -13,6 +13,7 @@ Item {
     id: view
     property string section: ""
     property var preferences: null
+    property var openControlSettings: null
     function showControl(name) { return !preferences || preferences[name] !== false; }
     signal closeRequested()
     focus: true
@@ -203,7 +204,14 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
-            onClicked: view.section = "EditControls.qml"
+            onClicked: {
+                if (view.openControlSettings) {
+                    view.closeRequested();
+                    view.openControlSettings();
+                } else {
+                    view.section = "EditControls.qml";
+                }
+            }
         }
     }
     ControlTile {

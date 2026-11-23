@@ -12,6 +12,7 @@ import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.plasma.components as PlasmaComponents3
 import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasma5support as P5Support
 import org.kde.ksvg as KSvg
 import org.kde.plasma.private.mpris as Mpris
 import org.kde.kirigami as Kirigami
@@ -29,6 +30,29 @@ import "DockRoles.js" as DockRoles
 PlasmoidItem {
     id: tasks
     NativeLauncher.GlassSettings { component: "dock"; window: tasks.Window.window }
+
+    readonly property PlasmaCore.Action dockSettingsAction: PlasmaCore.Action {
+        text: i18nd("plasma_applet_org.kde.mac.tahoe.liquid.taskmanager", "Configure Dock…")
+        icon.name: "configure"
+        visible: settingsRoute.available
+        onTriggered: settingsRoute.connectSource(settingsRoute.program + "--section=dock_bar --widget=" + Plasmoid.id)
+    }
+    Plasmoid.hasConfigurationInterface: !settingsRoute.available
+    Plasmoid.contextualActions: [tasks.dockSettingsAction]
+
+    P5Support.DataSource {
+        id: settingsRoute
+        engine: "executable"
+        property bool available: false
+        readonly property string program: "sh -c 'exec \"$HOME/.local/bin/mac-tahoe-settings\" \"$@\"' settings "
+        readonly property string check: program + "--available"
+        connectedSources: [check]
+        onNewData: (source, data) => {
+            if (source === check)
+                available = Number(data["exit code"]) === 0;
+            disconnectSource(source);
+        }
+    }
 
     // For making a bottom to top layout since qml flow can't do that.
     // We just hang the task manager upside down to achieve that.

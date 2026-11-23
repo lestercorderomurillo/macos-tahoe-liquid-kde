@@ -229,3 +229,6 @@ msgstr "Le Wi-Fi est bloqué par l’interrupteur matériel"
 
 msgid "Wi-Fi is off"
 msgstr "Le Wi-Fi est désactivé"
+
+msgid "Configure in Settings…"
+msgstr "Configurer dans Réglages…"

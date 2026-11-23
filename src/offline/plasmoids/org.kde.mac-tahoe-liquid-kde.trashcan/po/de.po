@@ -22,3 +22,6 @@ msgstr "Papierkorb"
 
 msgid "Trash Settings…"
 msgstr "Papierkorb-Einstellungen…"
+
+msgid "Configure Trash"
+msgstr "Papierkorb einrichten"

@@ -148,3 +148,6 @@ msgstr "Launchpad"
 
 msgid "Clipboard history is unavailable."
 msgstr "El historial del portapapeles no está disponible."
+
+msgid "Configure Apps…"
+msgstr "Configurar Apps…"

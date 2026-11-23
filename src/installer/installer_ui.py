@@ -812,24 +812,27 @@ def _make_installer_bridge():
     return InstallerBridge()
 
 
-def _launch_preview_pyqt(uninstall=False) -> int:
+def _launch_preview_pyqt(uninstall=False, *, mode="install", section="appearance", widget=None) -> int:
     try:
         from PyQt6.QtCore import QTimer
         from PyQt6.QtWidgets import QApplication
+        from settings_launcher import DESKTOP_ENTRY
         from wizard_window import InstallerWindow
     except ImportError:
         return -1
     os.environ.setdefault("QT_NO_XDG_DESKTOP_PORTAL", "1")
     app = QApplication.instance() or QApplication(sys.argv[:1])
     app.setApplicationName("mac-tahoe-liquid-kde-installer")
+    app.setDesktopFileName(DESKTOP_ENTRY.removesuffix(".desktop"))
     app.setQuitOnLastWindowClosed(False)
     bridge = _make_installer_bridge()
-    window = InstallerWindow(bridge, uninstall=uninstall)
+    window = InstallerWindow(bridge, uninstall=uninstall, mode=mode, section=section, widget=widget)
     bridge.setParent(window)
     app._installer_bridge = bridge
     app._installer_window = window
     window.show()
-    bridge.checkForUpdates()
+    if mode == "install":
+        bridge.checkForUpdates()
     app.aboutToQuit.connect(bridge.waitForUpdateWorkers)
 
     # Qt's C++ event loop blocks Python signal delivery; the idle timer
@@ -857,8 +860,11 @@ def _launch_preview_pyqt(uninstall=False) -> int:
         signal.signal(signal.SIGINT, prev_sigint)
 
 
-def launch_preview(uninstall=False) -> int:
-    rc = _launch_preview_pyqt(True) if uninstall else _launch_preview_pyqt()
+def launch_preview(uninstall=False, *, mode="install", section="appearance", widget=None) -> int:
+    if mode == "settings":
+        rc = _launch_preview_pyqt(mode=mode, section=section, widget=widget)
+    else:
+        rc = _launch_preview_pyqt(True) if uninstall else _launch_preview_pyqt()
     if rc >= 0:
         return rc
 
@@ -910,10 +916,23 @@ def main(argv: list[str]) -> int:
         help=argparse.SUPPRESS,
     )
     parser.add_argument("--uninstall", action="store_true", help="Open the graphical uninstaller.")
+    parser.add_argument("--mode", choices=("install", "settings"), default="install",
+                        help="Open guided installation or installed settings.")
+    parser.add_argument("--section", choices=("appearance", "general", "theme", "desktop", "dock_bar", "windows",
+                                             "acrylic_glass", "weather_panel", "desktop_widget", "applications", "startup",
+                                             "display"),
+                        default="appearance",
+                        help="Section to open in settings mode.")
+    parser.add_argument("--widget", type=int, help="Open settings for a Plasma widget instance.")
     parser.add_argument("--wizard-options", help=argparse.SUPPRESS)
     parser.add_argument("--progress-file", help=argparse.SUPPRESS)
     parser.add_argument("--cancel-file", help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
+    if args.widget is not None and (args.mode != "settings" or args.section not in {"dock_bar", "weather_panel", "desktop_widget"}
+                                    or args.widget <= 0):
+        parser.error("--widget requires a positive ID in widget settings")
+    if args.mode == "settings" and (args.uninstall or args.supervise or args.check_update):
+        parser.error("--mode=settings cannot be combined with an installer operation")
 
     rc = drop_root_to_invoking_user()
     if rc != 0:
@@ -933,6 +952,9 @@ def main(argv: list[str]) -> int:
     if args.check_update:
         print(json.dumps(update_status(), ensure_ascii=False))
         return 0
+
+    if args.mode == "settings":
+        return launch_preview(mode=args.mode, section=args.section, widget=args.widget)
 
     if not args.uninstall:
         from cli import auto_update_and_reexec

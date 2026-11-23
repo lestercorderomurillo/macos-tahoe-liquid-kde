@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
+import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Controls
 import org.kde.kirigami as Kirigami
 import org.kde.kitemmodels as KItemModels
 import org.kde.plasma.private.kicker as Kicker
@@ -12,6 +13,9 @@ import QtQuick.Window
 
 PlasmoidItem {
     id: root
+    Controls.SettingsEntry { id: settingsEntry; widgetId: Plasmoid.id }
+    Plasmoid.hasConfigurationInterface: !settingsEntry.available
+    Plasmoid.contextualActions: [settingsEntry]
     readonly property bool vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property int gap: Math.round((vertical ? width : height) * 0.3)
     readonly property var manager: NativeLauncher.DockMetrics.cells.find(cell =>

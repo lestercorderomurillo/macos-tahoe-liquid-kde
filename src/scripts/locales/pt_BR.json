@@ -1,4 +1,10 @@
 {
+  "Configure System Menu…": "Configurar o menu do sistema…",
+  "Configure in Settings…": "Configurar em Ajustes…",
+  "Configure Apps…": "Configurar Apps…",
+  "Configure Dock…": "Configurar Dock…",
+  "Could not install desktop settings launcher: {error}": "Não foi possível instalar o lançador dos ajustes da área de trabalho: {error}",
+  "Configure Trash": "Configurar lixeira",
   "Downloads": "Downloads",
   "No completed downloads yet": "Ainda não há downloads concluídos",
   "Open Downloads": "Abrir Downloads",

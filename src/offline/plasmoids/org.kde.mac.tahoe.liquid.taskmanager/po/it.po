@@ -37,3 +37,6 @@ msgstr "Usa icone del Dock in stile macOS"
 
 msgid "Video"
 msgstr "Video"
+
+msgid "Configure Dock…"
+msgstr "Configura il Dock…"

@@ -21,19 +21,6 @@
     "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   },
-  "firefox-light.jpg": {
-    "source": "build/installer-wizard-mocks-v5/firefox-frame-light.png",
-    "source_sha256": "2358ef60a4e3db409a54e8276cd638e60a0ee723cad381d3cf221b82708f0bf4",
-    "sha256": "9c02f1cfb2f7ba295d73feb62cc70738d797903375d4d8c84a58b799b787ceaa",
-    "crop": [
-      720,
-      280,
-      3120,
-      1820
-    ],
-    "capture": "Temporary overlay of project reference VM; actual Firefox with bundled userChrome.css and Google home; full window with margins",
-    "file": "firefox-light-9c02f1cfb2f7.jpg"
-  },
   "dolphin-light.jpg": {
     "source": "dolphin-light.png",
     "source_sha256": "92e32e5d4f7ca350561617be59eb4302af4be72d23399e8429c5e3a1b71ac00f",
@@ -341,19 +328,6 @@
     "kind": "installer-desktop",
     "source_commit": "378e3be864cea68c501b12002bfce2a93db76bd8",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
-  },
-  "firefox-dark.jpg": {
-    "source": "build/installer-wizard-mocks-v5/firefox-frame-dark.png",
-    "source_sha256": "61f555186a49b5515e80c56886ad10bdea6528643a52b3b1dccc9229a978c21f",
-    "sha256": "2691a4efbbee47a0a06ffcfbbe5e922b440455e895863aeec489fdd7cefbf134",
-    "crop": [
-      720,
-      280,
-      3120,
-      1820
-    ],
-    "capture": "Temporary overlay of project reference VM; actual Firefox with bundled userChrome.css and Google home; full window with margins",
-    "file": "firefox-dark-2691a4efbbee.jpg"
   },
   "dolphin-dark.jpg": {
     "source": "dolphin-dark.png",
@@ -684,33 +658,24 @@
     "file": "landscape-dark-10709187f9bb.jpg"
   },
   "iridescence.jpg": {
+    "file": "iridescence-6c7b941351da.jpg",
+    "sha256": "6c7b941351dad7b633308ebb10f8f981996aa3008d3ca62c03f556434d26a5cb",
     "source": "src/offline/wallpapers/MacTahoe-Iridescence/contents/images/3840x2160.jpg",
-    "source_sha256": "070e0daac18004b3fa3c1875b7d75e7f9d00e31c62e32aa21f136bbc2c175b62",
-    "crop": null,
-    "sha256": "a7522c9a93df2ef2ea4235031233a29d23e78a79ae916ecf7685a021bce005ec",
-    "file": "iridescence-a7522c9a93df.jpg"
-  },
-  "launcher-tahoe.jpg": {
-    "source": "launcher-tahoe.png",
-    "source_sha256": "0f0fb8130c109d54fea7c52c271d247b2dbb98a66c75dba644757fb81e6ce82d",
-    "crop": null,
-    "sha256": "3d74bdb90cd4d48896ad99d2b3df2117853f91783b4d563cec91443a9c61a8b2",
-    "file": "launcher-tahoe-3d74bdb90cd4.jpg",
-    "edition": "tahoe",
-    "kind": "installer-launcher-preview",
-    "source_commit": "b356b8ea18bceb3455bac520c123a90bc60d1564",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
-  },
-  "launcher-golden.jpg": {
-    "source": "launcher-golden.png",
-    "source_sha256": "6153f0deb90bec3a79232d3e78a18b9b34cc64451fb9ddcb028729a49b003dfe",
-    "crop": null,
-    "sha256": "e22ab5841c203acb0ce5f046d13778872d141f85b86e40f2cad5ec548c1f9d46",
-    "file": "launcher-golden-e22ab5841c20.jpg",
-    "source_commit": "8e2300888c2be41bae3dc113eb4e003f4d132fd4",
-    "edition": "golden-gate",
-    "kind": "installer-launcher-preview",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
+    "source_sha256": "498591b02d28ae899241ce3496e360f36ccfb1640aebc9630d6592451d1e7a67",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Convert the near-black studio backdrop and surface to a luminous pearl-white and pale neutral-blue daylight material. Retain the exact ribbon curves and perspective of the iridescent folds, with fine champagne, lavender, cyan and rose highlights. Preserve the clean photographic treatment, depth and horizontal flow. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "f974890cea279685743a68f54a11fafc514bbf4eaad322b0b11b3a5afed3d66c",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "070e0daac18004b3fa3c1875b7d75e7f9d00e31c62e32aa21f136bbc2c175b62"
   },
   "glass.jpg": {
     "source": "context.png",
@@ -735,27 +700,56 @@
     "sha256": "0acb8dedee3449ea7647953861b11d4ccafbffbb99497f402d139e119b3e612c",
     "file": "corners-0acb8dedee34.jpg"
   },
-  "dock.jpg": {
-    "source": "src/screenshots/previews/readme-tahoe-light-dock-regular-b26e1bcf62f0.webp",
-    "source_sha256": "b26e1bcf62f090c090d4851f3a07a58e2332c51f60bfcc244e05f7404d8a82aa",
-    "crop": null,
-    "sha256": "a2ce396dc5fcd878271c1595a8337bf9b2bb54d5186597bc7e6f4c74ae1f4dfc",
-    "file": "dock-a2ce396dc5fc.jpg",
-    "source_commit": "12315545381b56d69fa76078fe253980bd838c21",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
-    "edition": "tahoe",
-    "kind": "reviewed-vm-photo"
+  "boot-preview.png": {
+    "file": "boot-preview-ab721d174e9c.png",
+    "sha256": "ab721d174e9cb7c7a61f01747247fa1a26c1f66390ff552cc137e29899a4f8c4",
+    "kind": "generated-boot-preview",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create a single original boot-animation preview tile for a desktop installer, designed to read clearly at 200 × 200 pixels. Exactly one front-facing nearly black square squircle with generous continuous superellipse corners. The squircle fills almost the entire square canvas, with only a 2% transparent margin and genuine transparency in all four outside corners. Quiet near-black graphite surface, extremely subtle tonal depth, crisp edge, no gloss, no raised extrusion or drop shadow. Center a small simple ivory bitten-apple silhouette with one detached leaf, roughly 20% of the tile width, positioned slightly above the vertical center. Directly below it put a single thin horizontal dark-gray progress track about 34% of the tile width, with a short ivory fill from the left about one third complete. Precisely centered, understated, sparse, restrained. No lettering, no extra marks, no surrounding device, stand, window, border, or background.",
+    "source_sha256": "464a6b1ea9bcca3f9465ca8f58a5f187f9f862b390758b298dc4ebfdeb736276",
+    "size": [
+      400,
+      400
+    ]
   },
-  "boot.jpg": {
-    "source": "src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp",
-    "source_sha256": "6d6f3b7d649ee6ceca440db0b39d25dedd0fde76d86274c45c39398086bcd920",
-    "crop": null,
-    "sha256": "0ca2e673847287f50c6721d0e60b90217770a2be3a9c4629dc098451548e3a67",
-    "file": "boot-0ca2e6738472.jpg",
-    "source_commit": "2368236ece9096533e702685722f518aa379bc07",
-    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
-    "edition": "tahoe",
-    "kind": "reviewed-vm-photo"
+  "launcher-tahoe-art.png": {
+    "file": "launcher-tahoe-art-8e6c1cb3695a.png",
+    "sha256": "8e6c1cb3695af3176faae278d31b33ba65fbf553180e09273c0d828ee1cef0d0",
+    "kind": "generated-setting-artwork",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Generate a single original desktop-settings illustration, a front-facing square app-style tile with continuous rounded corners, genuinely transparent exterior and about 3% transparent padding. Use the reference cloud tile for visual treatment only: a softly modeled satin-glass emblem, subtle top-left light, rounded shapes, a distinctly colored squircle, clean silhouette. Make it legible at 112 pixels with one simple composition and an edge that works on light and dark UI. Keep it straight-on and carefully centered. No words, no brand marks, no white backdrop, no external shadows, no sparkle decorations. Use a rich lake-blue tile. The emblem is one small frosted panel with a narrow category rail clearly integrated on its left and a 2-by-2 field of colorful tiny app-like rounded squares on the right. Link both areas with one continuous rounded window silhouette. Represent the category-and-apps launcher with abstract shapes and minimal details, like a single visual symbol, with the combined panel at roughly 58% of the tile width.",
+    "reference": "weather-regular-light-neutral-b484226f4290.png",
+    "source_sha256": "51fc1b6029595752193de6840a9bcd3a4a65a45ac8e980292a406a259029b0d5",
+    "size": [
+      224,
+      224
+    ]
+  },
+  "launcher-golden-art.png": {
+    "file": "launcher-golden-art-a0242e921541.png",
+    "sha256": "a0242e9215419044b9b4e955865dcccd1c852c1b77d49a98be32996ceba37e50",
+    "kind": "generated-setting-artwork",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Generate a single original desktop-settings illustration, a front-facing square app-style tile with continuous rounded corners, genuinely transparent exterior and about 3% transparent padding. Use the reference cloud tile for visual treatment only: a softly modeled satin-glass emblem, subtle top-left light, rounded shapes, a distinctly colored squircle, clean silhouette. Make it legible at 112 pixels with one simple composition and an edge that works on light and dark UI. Keep it straight-on and carefully centered. No words, no brand marks, no white backdrop, no external shadows, no sparkle decorations. Use a deep warm amber tile with subdued honey highlights. Center a short floating frosted search capsule with one tiny magnifying-glass mark, above and clearly separated from a small 3-by-2 grid of softly rounded colorful app-like squares. Show no enclosing window around the two shapes. Express a launcher with separate search and app grid. Together, both shapes occupy about 58% of the tile width and height.",
+    "reference": "weather-regular-light-neutral-b484226f4290.png",
+    "source_sha256": "2d84f527dc4e49c8ca14bb992434202d14acd8c7382993f2ee13f93dd2e20781",
+    "size": [
+      224,
+      224
+    ]
+  },
+  "launcher-keep-art.png": {
+    "file": "launcher-keep-art-c4407ed5eb03.png",
+    "sha256": "c4407ed5eb034bd5e697fa2b5007b23042b5a87ba8f2576e125c0cbfd4697117",
+    "kind": "generated-setting-artwork",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Generate a single original desktop-settings illustration, a front-facing square app-style tile with continuous rounded corners, genuinely transparent exterior and about 3% transparent padding. Use the reference cloud tile for visual treatment only: a softly modeled satin-glass emblem, subtle top-left light, rounded shapes, a distinctly colored squircle, clean silhouette. Make it legible at 112 pixels with one simple composition and an edge that works on light and dark UI. Keep it straight-on and carefully centered. No words, no brand marks, no white backdrop, no external shadows, no sparkle decorations. Use a cool muted teal tile. Center one soft frosted translucent folder with a familiar tab, containing two simple pastel app tiles peeked just above the top, and put a tiny subdued circular check mark tucked into the folder’s lower right. The unmistakable compact emblem represents keeping a familiar existing app launcher. Use about 56% of the tile width for the entire emblem, with a quiet shape and crisp edges.",
+    "reference": "weather-regular-light-neutral-b484226f4290.png",
+    "source_sha256": "14ad81da749700d3e69c704f77df93a5882bc496bda0059f3fd1e1efc4dfd6d5",
+    "size": [
+      224,
+      224
+    ]
   },
   "panel.jpg": {
     "source": "build/captures/v0.60.0/frames/tahoe-light-showcase.png",
@@ -878,18 +872,6 @@
     "crop": null,
     "sha256": "1b51597409ca8105fe791e470cd7eaa156b79e205b92141c670b3a3613703650",
     "file": "sonoma-dark-1b51597409ca.jpg"
-  },
-  "panel-detail.jpg": {
-    "source": "/mnt/M2_1/Projects/Repositories/macos-tahoe-liquid-kde/build/captures/v0.60.0/frames/tahoe-light-menu.png",
-    "crop": [
-      0,
-      0,
-      1450,
-      850
-    ],
-    "source_sha256": "1c3848b7cca2c9ae5ffd66642268cf62a57aac80f064e6e5b429b9dc8d377604",
-    "sha256": "502233e14c104c61c45fcd5f6aa09e05ee7529567454809ed961262869f6aa94",
-    "file": "panel-detail-502233e14c10.jpg"
   },
   "logo-tahoe.png": {
     "source": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/435182bf289a8a15b6a3d29b1ad2f4fdcebcbb4a/src/screenshots/macos-26.png",
@@ -2488,87 +2470,87 @@
   },
   "glass-preset-tahoe-clear-light.png": {
     "source": "glass-tahoe-clear-light.png",
-    "source_sha256": "cf0ba4c60d1e1427006daa082ef799a35dcc7a1ccbfd5f5907bf9005cb4c8a1b",
+    "source_sha256": "0a4a79c0a0df3f076c61749363cab76c2181abcdb199425a00856d72057749cd",
     "crop": null,
-    "sha256": "cf0ba4c60d1e1427006daa082ef799a35dcc7a1ccbfd5f5907bf9005cb4c8a1b",
-    "file": "glass-preset-tahoe-clear-light-cf0ba4c60d1e.png",
-    "source_commit": "4ba447dca0f3af4b6da68697ae93c18ffa37a993",
-    "effect_build": "dd2016a1cd08111df0e805d22bd2089316639a2d5fc1d389152fb079c2c21967",
+    "sha256": "0a4a79c0a0df3f076c61749363cab76c2181abcdb199425a00856d72057749cd",
+    "file": "glass-preset-tahoe-clear-light-0a4a79c0a0df.png",
+    "source_commit": "5272a50cad4e2f80c11179cba932efa691582de9",
+    "effect_build": "1c9ba73d29397b0440282e35fd95b555561df51cbe75d389784f7af1351be07c",
     "edition": "golden-gate",
     "kind": "installer-material",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-tahoe-clear",
-    "wallpaper": "MacExuma"
+    "wallpaper": "MacAnime-CoastalRailway"
   },
   "glass-preset-tahoe-clear-dark.png": {
     "source": "glass-tahoe-clear-dark.png",
-    "source_sha256": "f0fbefd06cbcc92cbd1a5729189be379dfbf7e0c46eba2183cf96bc84d35d4fe",
+    "source_sha256": "937a0c37becff393e739c9bdaacaad4486e79ab7f5081c1e1758eb93aa7b31ac",
     "crop": null,
-    "sha256": "f0fbefd06cbcc92cbd1a5729189be379dfbf7e0c46eba2183cf96bc84d35d4fe",
-    "file": "glass-preset-tahoe-clear-dark-f0fbefd06cbc.png",
-    "source_commit": "4ba447dca0f3af4b6da68697ae93c18ffa37a993",
-    "effect_build": "dd2016a1cd08111df0e805d22bd2089316639a2d5fc1d389152fb079c2c21967",
+    "sha256": "937a0c37becff393e739c9bdaacaad4486e79ab7f5081c1e1758eb93aa7b31ac",
+    "file": "glass-preset-tahoe-clear-dark-937a0c37becf.png",
+    "source_commit": "5272a50cad4e2f80c11179cba932efa691582de9",
+    "effect_build": "1c9ba73d29397b0440282e35fd95b555561df51cbe75d389784f7af1351be07c",
     "edition": "golden-gate",
     "kind": "installer-material",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-tahoe-clear",
-    "wallpaper": "MacExuma"
+    "wallpaper": "MacAnime-CoastalRailway"
   },
   "glass-preset-tahoe-frosted-light.png": {
     "source": "glass-tahoe-frosted-light.png",
-    "source_sha256": "502f9a2232393248acd446518387cf63f8a8b7a00ccb3232f98887117ce243eb",
+    "source_sha256": "2ad96d7a894301e1c21938501d57779185e939665b1829cfb5b23492586b4a51",
     "crop": null,
-    "sha256": "502f9a2232393248acd446518387cf63f8a8b7a00ccb3232f98887117ce243eb",
-    "file": "glass-preset-tahoe-frosted-light-502f9a223239.png",
-    "source_commit": "4ba447dca0f3af4b6da68697ae93c18ffa37a993",
-    "effect_build": "dd2016a1cd08111df0e805d22bd2089316639a2d5fc1d389152fb079c2c21967",
+    "sha256": "2ad96d7a894301e1c21938501d57779185e939665b1829cfb5b23492586b4a51",
+    "file": "glass-preset-tahoe-frosted-light-2ad96d7a8943.png",
+    "source_commit": "5272a50cad4e2f80c11179cba932efa691582de9",
+    "effect_build": "1c9ba73d29397b0440282e35fd95b555561df51cbe75d389784f7af1351be07c",
     "edition": "golden-gate",
     "kind": "installer-material",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-tahoe-frosted",
-    "wallpaper": "MacExuma"
+    "wallpaper": "MacAnime-CoastalRailway"
   },
   "glass-preset-tahoe-frosted-dark.png": {
     "source": "glass-tahoe-frosted-dark.png",
-    "source_sha256": "e9dafa2dff8d9b8f5e0da16fa92d474ea19d26d80fc71e6055849833bd82bd8f",
+    "source_sha256": "c09ea643f35ed45b7e318b47f2345630b2a0c6811056a397b1c1c997c61e6abc",
     "crop": null,
-    "sha256": "e9dafa2dff8d9b8f5e0da16fa92d474ea19d26d80fc71e6055849833bd82bd8f",
-    "file": "glass-preset-tahoe-frosted-dark-e9dafa2dff8d.png",
-    "source_commit": "4ba447dca0f3af4b6da68697ae93c18ffa37a993",
-    "effect_build": "dd2016a1cd08111df0e805d22bd2089316639a2d5fc1d389152fb079c2c21967",
+    "sha256": "c09ea643f35ed45b7e318b47f2345630b2a0c6811056a397b1c1c997c61e6abc",
+    "file": "glass-preset-tahoe-frosted-dark-c09ea643f35e.png",
+    "source_commit": "5272a50cad4e2f80c11179cba932efa691582de9",
+    "effect_build": "1c9ba73d29397b0440282e35fd95b555561df51cbe75d389784f7af1351be07c",
     "edition": "golden-gate",
     "kind": "installer-material",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-tahoe-frosted",
-    "wallpaper": "MacExuma"
+    "wallpaper": "MacAnime-CoastalRailway"
   },
   "glass-preset-golden-gate-official-light.png": {
     "source": "glass-golden-gate-official-light.png",
-    "source_sha256": "fd98e53d7324cebebe6f219fa1ba1784e77d8f7ce3cf2690dcbe98fe7edb1d04",
+    "source_sha256": "69158c2b786339da10335f1c0fed37d825505c19a031105798c4fd406891fcab",
     "crop": null,
-    "sha256": "fd98e53d7324cebebe6f219fa1ba1784e77d8f7ce3cf2690dcbe98fe7edb1d04",
-    "file": "glass-preset-golden-gate-official-light-fd98e53d7324.png",
-    "source_commit": "4ba447dca0f3af4b6da68697ae93c18ffa37a993",
-    "effect_build": "dd2016a1cd08111df0e805d22bd2089316639a2d5fc1d389152fb079c2c21967",
+    "sha256": "69158c2b786339da10335f1c0fed37d825505c19a031105798c4fd406891fcab",
+    "file": "glass-preset-golden-gate-official-light-69158c2b7863.png",
+    "source_commit": "5272a50cad4e2f80c11179cba932efa691582de9",
+    "effect_build": "1c9ba73d29397b0440282e35fd95b555561df51cbe75d389784f7af1351be07c",
     "edition": "golden-gate",
     "kind": "installer-material",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-golden-gate-official",
-    "wallpaper": "MacExuma"
+    "wallpaper": "MacAnime-CoastalRailway"
   },
   "glass-preset-golden-gate-official-dark.png": {
     "source": "glass-golden-gate-official-dark.png",
-    "source_sha256": "ba5208acc17a13de014c3c25993807314c2d2730fe4e911b15fb4453d92684b0",
+    "source_sha256": "80a24eb269de521b7c05c6b8126a197a0da530e46c491b9874959a881722aa25",
     "crop": null,
-    "sha256": "ba5208acc17a13de014c3c25993807314c2d2730fe4e911b15fb4453d92684b0",
-    "file": "glass-preset-golden-gate-official-dark-ba5208acc17a.png",
-    "source_commit": "4ba447dca0f3af4b6da68697ae93c18ffa37a993",
-    "effect_build": "dd2016a1cd08111df0e805d22bd2089316639a2d5fc1d389152fb079c2c21967",
+    "sha256": "80a24eb269de521b7c05c6b8126a197a0da530e46c491b9874959a881722aa25",
+    "file": "glass-preset-golden-gate-official-dark-80a24eb269de.png",
+    "source_commit": "5272a50cad4e2f80c11179cba932efa691582de9",
+    "effect_build": "1c9ba73d29397b0440282e35fd95b555561df51cbe75d389784f7af1351be07c",
     "edition": "golden-gate",
     "kind": "installer-material",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-golden-gate-official",
-    "wallpaper": "MacExuma"
+    "wallpaper": "MacAnime-CoastalRailway"
   },
   "prism.jpg": {
     "source": "src/offline/wallpapers/MacPrism/contents/images/3840x2160.jpg",
@@ -2886,31 +2868,31 @@
   },
   "glass-preset-water-light.png": {
     "source": "glass-water-light.png",
-    "source_sha256": "d1e917a6c74f0e7b5eca742c58bc80a47e17bfbf5e06a5de993675f313a7b4c7",
+    "source_sha256": "c9486262d6368400176f909b0993195f9118268c90fb9e7984b92f6f06033018",
     "crop": null,
-    "sha256": "d1e917a6c74f0e7b5eca742c58bc80a47e17bfbf5e06a5de993675f313a7b4c7",
-    "file": "glass-preset-water-light-d1e917a6c74f.png",
-    "source_commit": "4ba447dca0f3af4b6da68697ae93c18ffa37a993",
-    "effect_build": "dd2016a1cd08111df0e805d22bd2089316639a2d5fc1d389152fb079c2c21967",
+    "sha256": "c9486262d6368400176f909b0993195f9118268c90fb9e7984b92f6f06033018",
+    "file": "glass-preset-water-light-c9486262d636.png",
+    "source_commit": "5272a50cad4e2f80c11179cba932efa691582de9",
+    "effect_build": "1c9ba73d29397b0440282e35fd95b555561df51cbe75d389784f7af1351be07c",
     "edition": "golden-gate",
     "kind": "installer-material",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-water",
-    "wallpaper": "MacExuma"
+    "wallpaper": "MacAnime-CoastalRailway"
   },
   "glass-preset-water-dark.png": {
     "source": "glass-water-dark.png",
-    "source_sha256": "b76da8e3f912a4ff7b68b73a9748ef01b4053575c9972c5c29e04a830f2cd8b2",
+    "source_sha256": "9404fe775263f72e243d90b303c3ab5a0fa8e8ec25acc2b7d371c958786087a5",
     "crop": null,
-    "sha256": "b76da8e3f912a4ff7b68b73a9748ef01b4053575c9972c5c29e04a830f2cd8b2",
-    "file": "glass-preset-water-dark-b76da8e3f912.png",
-    "source_commit": "4ba447dca0f3af4b6da68697ae93c18ffa37a993",
-    "effect_build": "dd2016a1cd08111df0e805d22bd2089316639a2d5fc1d389152fb079c2c21967",
+    "sha256": "9404fe775263f72e243d90b303c3ab5a0fa8e8ec25acc2b7d371c958786087a5",
+    "file": "glass-preset-water-dark-9404fe775263.png",
+    "source_commit": "5272a50cad4e2f80c11179cba932efa691582de9",
+    "effect_build": "1c9ba73d29397b0440282e35fd95b555561df51cbe75d389784f7af1351be07c",
     "edition": "golden-gate",
     "kind": "installer-material",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "material": "glass-water",
-    "wallpaper": "MacExuma"
+    "wallpaper": "MacAnime-CoastalRailway"
   },
   "exuma.jpg": {
     "source": "src/offline/wallpapers/MacExuma/contents/images/4928x3280.jpg",
@@ -2920,11 +2902,24 @@
     "crop": null
   },
   "exuma-dark.jpg": {
-    "source": "src/offline/wallpapers/MacExuma/contents/images/4928x3280.jpg",
-    "source_sha256": "1fab739508f0710d5b4234374b61a8e421d22ccc6e9508159b9b6ed912a75094",
-    "sha256": "b01d56293e69baed6dfb83fa2f256390e91a3cfd029670f162808900d163716b",
-    "file": "exuma-b01d56293e69.jpg",
-    "crop": null
+    "file": "exuma-dark-65a1720c826e.jpg",
+    "sha256": "65a1720c826e7b96d8ae6c8cda001faac03a2ec1b8375e503109bad7c177d79f",
+    "source": "src/offline/wallpapers/MacExuma/contents/images_dark/4928x3280.jpg",
+    "source_sha256": "489ffb0f07a92ab5383ad68f7ee3efc9e84f50f903d896f14708b3716e168a36",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 3:2 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Change the daylight turquoise shoals to an elegant moonlit aerial seascape. Match the exact shoreline, sandbars, cloud shapes and every shallow channel. Use dark indigo, deep teal and a faint silvery reflection, with the intricate original sand geometry still readable. Keep the camera directly overhead. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1536,
+      1024
+    ],
+    "generated_sha256": "20da801fdd2f42b285dedb0807cf26d7cac0fc8836a34dfc34488be05f7e29e3",
+    "size": [
+      4928,
+      3280
+    ],
+    "variant": "night",
+    "reference_sha256": "1fab739508f0710d5b4234374b61a8e421d22ccc6e9508159b9b6ed912a75094"
   },
   "desktop-widgets-off.jpg": {
     "source": "candidate-off.png",
@@ -2955,5 +2950,380 @@
     "desktop_source_commit": "e797a1576bd853a5be391bf6a1d0e6c5c296241f",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "placement_source_sha256": "aecf3b1477085683d5f67cfa6533fafff90121d997918a8aa631b378f99f3df8"
+  },
+  "big-sur.jpg": {
+    "file": "big-sur-733efce61844.jpg",
+    "sha256": "733efce618447f888927c2eca9297ae4785edfc9d74e3e876268fd2fb56cd8ed",
+    "source": "src/offline/wallpapers/MacHeritage-BigSur/contents/images/3840x2160.jpg",
+    "source_sha256": "c78b2974b08511e1ffab7249c1f2de174b7777430b706d5426cd3c5a61a26ac3"
+  },
+  "big-sur-dark.jpg": {
+    "file": "big-sur-dark-3a399da2287d.jpg",
+    "sha256": "3a399da2287d752bb3adde92ce17c43ba28f3ac6a81da6f3a4c46b578202d6ce",
+    "source": "src/offline/wallpapers/MacHeritage-BigSur/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "b98df3ce17fb40dfc80c4e03e2f96fa3d747620e30687816b5d97446f036a761"
+  },
+  "ventura.jpg": {
+    "file": "ventura-bf5a565b02b0.jpg",
+    "sha256": "bf5a565b02b07abc149fc212e76342caf34d7e20215c06968ea940c8f7aa2902",
+    "source": "src/offline/wallpapers/MacHeritage-Ventura/contents/images/3840x2160.jpg",
+    "source_sha256": "eb1807a405f1e392800acf2cbb20f35174e548c5c08c6b51f7260fbe4d77bd64"
+  },
+  "ventura-dark.jpg": {
+    "file": "ventura-dark-514f7a0c3072.jpg",
+    "sha256": "514f7a0c3072c32fbeea6e9d11ec79d09f5eba98ce57186da3b4afe58d5bc00e",
+    "source": "src/offline/wallpapers/MacHeritage-Ventura/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "6621a7fc8fd4217128e3b7216b3ee13203accaac63155d48f01e36013011e79d"
+  },
+  "sequoia.jpg": {
+    "file": "sequoia-6bbe73afa8ea.jpg",
+    "sha256": "6bbe73afa8ea6a81cff503a313beae9ef0982097203faa432a17b905906ee8ce",
+    "source": "src/offline/wallpapers/MacHeritage-Sequoia/contents/images/3840x2160.jpg",
+    "source_sha256": "70ff419293255ee9ce41989c4a6b07f17fb633f2fd25a82ad263b018a1c6264b"
+  },
+  "sequoia-dark.jpg": {
+    "file": "sequoia-dark-d17a6c8ace29.jpg",
+    "sha256": "d17a6c8ace291aeeac61c427c76fee7f747994cfc8b4c98a7270d24011f00ac2",
+    "source": "src/offline/wallpapers/MacHeritage-Sequoia/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "04dfa776b57a15a93d8ee8929c6c7a87c3b9820b8342022bbcd992605bc809fe"
+  },
+  "beach-dawn.jpg": {
+    "file": "beach-dawn-caab35860851.jpg",
+    "sha256": "caab35860851240a1f5ded08303bdd09ff5831064a34158628d34756d38b4dde",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Dawn/contents/images/3840x2160.jpg",
+    "source_sha256": "8486c27cce985a0eb112ae29a4acd0391c4551c2ca110c5d6815ba207a83aff0"
+  },
+  "beach-day.jpg": {
+    "file": "beach-day-06447160862f.jpg",
+    "sha256": "06447160862ffcc801c75a321b4438e6a9ca1e2af5dd5ff481c5dc2df9c0254a",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Day/contents/images/3840x2160.jpg",
+    "source_sha256": "931820958784e5fb20edadeb6d06ce29e8683086e114a389ac0031c10260c8ab"
+  },
+  "beach-night.jpg": {
+    "file": "beach-night-1e0c95a0507e.jpg",
+    "sha256": "1e0c95a0507ef730485336923273a3854e93ce3be95f0469631495d3f91a96ca",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Night/contents/images/3840x2160.jpg",
+    "source_sha256": "0d3eb6fcf07c78f8b20ea1e474f8bce72f9414e781260a9c0713ebe3f4a1dfc9",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Relight the moonlit shoreline into a crisp overcast dawn turning to daylight. Preserve the precise water ripple geometry, boulders, trees and camera viewpoint. Use pale blue and soft grey clouds, silvery clear water and natural pale golden foreground highlights. Keep the shadows and atmosphere photographic. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "4e36ae2376227f6e4c001ece90155a38a13ce96f2bcfb16c1b6598aa975e25c1",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "73296227d1cce2f3483045a7b40fc8ac500cf1659ce6b0fe829b95cc2896ed1a"
+  },
+  "landscape-evening.jpg": {
+    "file": "landscape-evening-23b3c7657f6f.jpg",
+    "sha256": "23b3c7657f6f31ba49f01ea6d16d59c8d49a16c56e469bd040830210b8f5685f",
+    "source": "src/offline/wallpapers/MacTahoe-Landscape-Evening/contents/images/3840x2160.jpg",
+    "source_sha256": "ffbac0c9fc8295e33f95a4753992b17a3cf31f7e2c77adb6e2394ed4cdc0052d",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Relight the dark early evening photo into a bright morning shortly after a rain shower. Match the exact rocks, mountains, tree, lake and camera crop. Keep the same bank of large clouds in a brighter blue-silver sky and show mild warm highlights on the rocks and soft reflections on the lake. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "b57b768858f494422070fb46242a98dbd6ee3d04507ac5f638c4e6b7986109c7",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
+  },
+  "anime-coast.jpg": {
+    "file": "anime-coast-8a6eaa5417cd.jpg",
+    "sha256": "8a6eaa5417cd95470f4d1eff5ce6144b8ae52151a57662e59479050071e56161",
+    "source": "src/offline/wallpapers/MacAnime-CoastalRailway/contents/images/3840x2160.jpg",
+    "source_sha256": "1dfa37575e3e5b8e80c4e4aacfe5e9916ff5f92f4e5c39513c105f70e9f5830e",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. A quiet rural signal station on a hillside above a bright turquoise sea, a tiny cream train curving toward the water, white summer clouds and sunlit grasses. Use an unusually wide scenic vista, with tracks in the lower third and clean cobalt sky above. Teal and warm ochre palette.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "189f1ac4e443a3481a3c2f9d307632a6e9575f4008d3b742d85cd4c25646e61c",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day"
+  },
+  "anime-coast-dark.jpg": {
+    "file": "anime-coast-dark-e48b1c2d200d.jpg",
+    "sha256": "e48b1c2d200d40934f5c764662384d0942b8ad3345d951148a6aa351caa6e8b6",
+    "source": "src/offline/wallpapers/MacAnime-CoastalRailway/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "ff5cfb995a907f29cd9902d6faa93cc0e96a5108153a7bb3c6b5da8d8a56e179",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Edit the supplied original landscape wallpaper as a single 16:9 frame. It is an appearance-mode pair, so preserve the reference's camera position, crop, perspective, horizon, silhouettes and the placement, sizes and shapes of all major objects. Match the precise painterly anime linework and textures. Change the time and quality of light only. Turn bright summer afternoon into a deep indigo, moonlit summer night. Keep the exact coastline, summer foliage, railway signal, train, hut, track and cloud silhouettes. A little warm light comes through the same station and train windows. Use quiet blue reflections along the coast and sufficient moonlit detail in the foreground. Full bleed, with no text, logo, watermark, interface, new subjects, borders or decorative effects.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "1ef420b096d13cc57f10f9dc6e2a4fca8c2b305e367b3edaa8b1eee13821450d",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "189f1ac4e443a3481a3c2f9d307632a6e9575f4008d3b742d85cd4c25646e61c"
+  },
+  "anime-village.jpg": {
+    "file": "anime-village-3d303b05e663.jpg",
+    "sha256": "3d303b05e663363957bf57ed07887e2e7597a3385d7eb9664ef27a92d7c688f5",
+    "source": "src/offline/wallpapers/MacAnime-SnowLanterns/contents/images/3840x2160.jpg",
+    "source_sha256": "d447094499acce6e76b5dda9ccfe5e701b6acbda52fd1688574d71a163f351f6",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Edit the supplied original landscape wallpaper as a single 16:9 frame. It is an appearance-mode pair, so preserve the reference's camera position, crop, perspective, horizon, silhouettes and the placement, sizes and shapes of all major objects. Match the precise painterly anime linework and textures. Change the time and quality of light only. Change blue hour to a clear winter morning. Keep the timber houses, snowbanks, footpath, silhouettes of the trees and mountains, and lantern positions. Use crisp pale gold morning light, blue snow shadows, gently lit snowflakes, and a bright blue sky. Existing lanterns may be dim or unlit. Full bleed, with no text, logo, watermark, interface, new subjects, borders or decorative effects.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "108afa6815cf9db9e156db57661e8867b6d632653ab24713f96568189d94a40d",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "13451c478e822a12a09b2e696626834a7cc3c102d0e51bc0c275f773bdae3206"
+  },
+  "anime-village-dark.jpg": {
+    "file": "anime-village-dark-73edad94fdea.jpg",
+    "sha256": "73edad94fdea5b0b2631c8715fe7e051afb0d2f866e7989e3c9c88b7aa4a27f4",
+    "source": "src/offline/wallpapers/MacAnime-SnowLanterns/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "29420141c3321e6d51a115429eb06cde44d8b631d71657468f4d001d71738838",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. A small snowbound mountain village at blue hour, a winding path of warm paper lanterns between timber roofs, forested hills softly stacking into the mist. Deep violet-blue shadows with restrained amber windows. Quiet, vast sky and a gentle snowfall.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "13451c478e822a12a09b2e696626834a7cc3c102d0e51bc0c275f773bdae3206",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night"
+  },
+  "anime-city.jpg": {
+    "file": "anime-city-aa65739e3727.jpg",
+    "sha256": "aa65739e37277b6b50b9b0ad568ac0a99101fc6809818b2cfc4c5ae4843bb1fb",
+    "source": "src/offline/wallpapers/MacAnime-RainyCrossing/contents/images/3840x2160.jpg",
+    "source_sha256": "5e7d5368e5f8df7d55817e9d64348b3cc80a61baec718210ed1a997cbd884319",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. An empty neighborhood tram crossing just after a warm summer rain, view from street level toward the last apricot light, blue-gray buildings and gently lit shop windows reflected in the asphalt. Keep architecture honest and shop signs pictorial without text. Restrained apricot and steel-blue palette.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "d8ca87cff8fe6ce287b5507b398d821705ec51457f9ea05e3d5ea714e3af213c",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day"
+  },
+  "anime-city-dark.jpg": {
+    "file": "anime-city-dark-56b18904c2d8.jpg",
+    "sha256": "56b18904c2d83e2b74c2ccced9583f0dd0f34751f89a8c48622240980eff9249",
+    "source": "src/offline/wallpapers/MacAnime-RainyCrossing/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "ca905b3cc636630f2cfd74c7987c57df56973b460d07d94790e5c32893c1a853",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Make a night companion to the supplied animation background. Keep the exact same viewpoint, aspect ratio, crop, tram rails, crossing, house shapes, utility cables, trees, and puddles, with the precise same anime paintwork. Change the lighting to fully dark after the rain, with a deep midnight-blue sky, a few warm existing storefront windows and restrained amber or blue street reflections on the wet pavement. The whole scene must clearly read as night. Keep it quiet and empty, with no new subjects, no text or logo and no compositional changes. Single full-bleed 16:9 wallpaper.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "6df4b3b05e1af7cc5a87ba3f609ebfc8f382ec4eefe84cbd87e0636601c9c5d8",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "d8ca87cff8fe6ce287b5507b398d821705ec51457f9ea05e3d5ea714e3af213c"
+  },
+  "anime-meadow.jpg": {
+    "file": "anime-meadow-95ad5081ec27.jpg",
+    "sha256": "95ad5081ec271ce13cca1d6fea4f7e229891230f648c08ec5983f185d54c0e65",
+    "source": "src/offline/wallpapers/MacAnime-AlpineMeadow/contents/images/3840x2160.jpg",
+    "source_sha256": "b3a3d033b7edf136df5b72053e6994d36a7afbc5cc5dd5f9e82af145175c01d7",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. An elevated alpine meadow flowing toward a lake, a narrow path winding through pink and white wildflowers, one distant wooden refuge and clean snow-touched mountain silhouettes in the clear morning. Green, dusty rose and soft mineral blue, in gentle sunlight.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "54c0602bef6f7f06f0ef1a4a174e7acc777c932c4d03f40da6eb136a9a02c869",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day"
+  },
+  "anime-meadow-dark.jpg": {
+    "file": "anime-meadow-dark-46bdd3af4122.jpg",
+    "sha256": "46bdd3af4122dee5f52412af3cfd43e55fbdc70770f19c4f448dcefb91b8b52f",
+    "source": "src/offline/wallpapers/MacAnime-AlpineMeadow/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "578b4123023dad17391395509920260de5b50866eebb4545b0a7da646c84394b",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Edit the supplied original landscape wallpaper as a single 16:9 frame. It is an appearance-mode pair, so preserve the reference's camera position, crop, perspective, horizon, silhouettes and the placement, sizes and shapes of all major objects. Match the precise painterly anime linework and textures. Change the time and quality of light only. Change the clear mountain morning into a quiet night with moonlit mountains and a deep indigo sky. Keep the same path, wildflowers, lake, wooden refuge, skyline and landforms at the same positions. Use softly lit cool-blue grasses and flowers, a subtle warm light in the existing refuge, and enough contrast to read the original scene. Full bleed, with no text, logo, watermark, interface, new subjects, borders or decorative effects.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "2edc3163f58193b3cc9d55e83b8c3547eae34773930357c92013b42d36496e75",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "54c0602bef6f7f06f0ef1a4a174e7acc777c932c4d03f40da6eb136a9a02c869"
+  },
+  "anime-moon.jpg": {
+    "file": "anime-moon-32805d72f97e.jpg",
+    "sha256": "32805d72f97e546c8f2117e929a0214406e74dfa2e930bef040795709c26cc83",
+    "source": "src/offline/wallpapers/MacAnime-MoonlitShrine/contents/images/3840x2160.jpg",
+    "source_sha256": "08c248f17835a34b9e9e33ec45a38ceb1cd54d64445f9fcb6031aa9c23db59fd",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Edit the supplied original landscape wallpaper as a single 16:9 frame. It is an appearance-mode pair, so preserve the reference's camera position, crop, perspective, horizon, silhouettes and the placement, sizes and shapes of all major objects. Match the precise painterly anime linework and textures. Change the time and quality of light only. Change the moonlit grove into a soft misty morning. Use a bright pale area of early sunlight in the same part of sky instead of the conspicuous moon. Keep exactly the cedar silhouettes, old stone steps, gate and their perspective. Use silvery fog with muted jade foliage and pale morning blue in the distance. Full bleed, with no text, logo, watermark, interface, new subjects, borders or decorative effects.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "fa84115d86c6de1ea46a45a262537ef810fbcd4c510f4a6bde837fa7f6d5b77f",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "day",
+    "reference_sha256": "b66478473f0b37190302f34f1d76ec5f8fea7ff02da3e3c9454591a5883e0abf"
+  },
+  "anime-moon-dark.jpg": {
+    "file": "anime-moon-dark-56e0c6f13da3.jpg",
+    "sha256": "56e0c6f13da3d03620da4421b393330f22fe1ebe7060cfdae644389a41ad24ed",
+    "source": "src/offline/wallpapers/MacAnime-MoonlitShrine/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "a3710b8fd780a200ea8bc5ba1fbc351a938f2b1534f922609f287d359b4b7c5d",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. An old stone stair with a small simple wooden gate in a quiet cedar grove, one distant lantern and a broad moon seen through pale layers of evening mist. Strong simple foreground silhouettes, quiet open indigo sky, touches of jade and pale silver. Dreamlike and legible, softly lit throughout.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "b66478473f0b37190302f34f1d76ec5f8fea7ff02da3e3c9454591a5883e0abf",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night"
+  },
+  "iridescence-dark.jpg": {
+    "source": "src/offline/wallpapers/MacTahoe-Iridescence/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "070e0daac18004b3fa3c1875b7d75e7f9d00e31c62e32aa21f136bbc2c175b62",
+    "crop": null,
+    "sha256": "a7522c9a93df2ef2ea4235031233a29d23e78a79ae916ecf7685a021bce005ec",
+    "file": "iridescence-a7522c9a93df.jpg"
+  },
+  "beach-dawn-dark.jpg": {
+    "file": "beach-dawn-dark-d5d26c654cc5.jpg",
+    "sha256": "d5d26c654cc50ceefe57245c0369e65dd574b34639e657d2d0e66a9c3a9e42a3",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Dawn/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "f039423bd9451bc81a18987db19575f0c135b30cd091b2be9688f07594ee6502",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Change the pink dawn photograph to moonlit blue hour, with a deep indigo sky, faint rose near the horizon, and quiet cool reflections. Preserve the precise shape and position of every boulder, mountain ridge, reflection and stand of trees. Same naturalistic photograph, new light only. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "0512aced955f686fef304af7796614f27570333817d130950011164c407ac8db",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "8486c27cce985a0eb112ae29a4acd0391c4551c2ca110c5d6815ba207a83aff0"
+  },
+  "beach-day-dark.jpg": {
+    "file": "beach-day-dark-0055abe38798.jpg",
+    "sha256": "0055abe3879874f2ffea373ad68e861e581e341cbfb2356ea9d53b1a154f406f",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Day/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "62998b7d271baef33f4e91868b55df0fd0e1b31dbb7362871bcae97eb72da926",
+    "kind": "generated-wallpaper-variant",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one full-bleed 16:9 desktop wallpaper edit of the supplied image, as its complementary system-appearance variant. The image is the exact composition reference. Preserve framing, aspect ratio, camera angle, underlying textures, and the positioning and silhouette of every major form. Relight the clear sunny Tahoe cove as a crisp night under moonlight. Keep the exact rocks above and under the water, mountain horizon, and trees. Use a restrained navy sky and moonlit cyan shallows; keep the background dark enough for desktop icons and make it clearly night. Keep a faithful, refined result at desktop size. No letters, no watermark, no border, no new objects and no interface.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "232fe745fc0e26af2cffb45ac0f94363dc5c377d797d1d05ecefe53f10a7b4e1",
+    "size": [
+      3840,
+      2160
+    ],
+    "variant": "night",
+    "reference_sha256": "931820958784e5fb20edadeb6d06ce29e8683086e114a389ac0031c10260c8ab"
+  },
+  "beach-night-dark.jpg": {
+    "file": "beach-night-daab344c113f.jpg",
+    "sha256": "daab344c113f0749caceba57c37c4b09c3ad3e3567311100eead29e1e0316261",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Night/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "73296227d1cce2f3483045a7b40fc8ac500cf1659ce6b0fe829b95cc2896ed1a"
+  },
+  "landscape-evening-dark.jpg": {
+    "file": "landscape-evening-143839cd771b.jpg",
+    "sha256": "143839cd771bf39a058623d2b37962cd85f7e846bd726f9b1338f596d1dcd29c",
+    "source": "src/offline/wallpapers/MacTahoe-Landscape-Evening/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
+  },
+  "dock-art.jpg": {
+    "file": "dock-art-c202da30a1e7.jpg",
+    "sha256": "c202da30a1e775bd9cece1c006e692c391c22d61c70d8096dd0a57ba658e5978",
+    "kind": "generated-layout-illustration",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Use case: stylized-concept. Produce one original panoramic illustration at approximately 2.26:1 for the Dock choice tile in a Linux desktop theme installer. Think of a contemporary macOS-inspired desktop as proportions and material only, interpreted as an original visual, not a screenshot. Orthographic, straight on, no perspective tilt. In the bottom third, a single unobtrusive thin horizontal tray of lightly frosted translucent glass sits above the desktop edge. It spans around 62% of the width, has a fine pale lip, a quiet contact shadow, and no neon rim, bevel, reflections on a tabletop or extrusion. On it, a neat row of seven small, equally spaced matte squircle app tokens. The bases of the tokens sit comfortably inside the tray. Use ORIGINAL icons: a cyan folded folder, a deep violet abstract orbit, a warm cream notepad, a coral waveform, a blue rain cloud, a green landscape, and a pale gray recycling basket separated by one subtle vertical rule. Flat-on icon faces, mostly soft surfaces, colors distinct but harmonious. The full-bleed background is a beautiful original, soft painterly alpine lake with a calm pale lilac sky, distant periwinkle mountains, muted teal water, sage green hills, and a warm peach corner of reflected evening light. Visible fine gouache and paper texture, clean organized silhouette and generous breathing room. Keep the whole tray and every token within the central 80% width, with a 9% bottom safety margin for crops. The simple dock must be clear at 362×160. No menu bar, window, frame, typography, letters, numbers, branded logos, photographic effects or other UI.",
+    "size": [
+      1086,
+      480
+    ],
+    "generated_size": [
+      1880,
+      836
+    ],
+    "generated_sha256": "3eed23a53ecbc26ba63592bce42c5222f54d4fa5c8153175a88199d071e19d8b"
+  },
+  "menu-bar-art.jpg": {
+    "file": "menu-bar-art-06e3bc3374b0.jpg",
+    "sha256": "06e3bc3374b0453855fa9b7262299a4dea35ef342ec166409ed6c27141651f4f",
+    "kind": "generated-layout-illustration",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Use case: precise-object-edit. Make an enlarged product-detail interpretation of the Menu Bar tile, using the supplied original canyon artwork as the edit target. Keep its handmade gouache treatment and indigo-to-apricot canyon palette. The visual priority changes dramatically: the pale frosted-glass menu bar is the hero of the picture. Enlarge it to occupy about 76–80% of the frame width and about 29–32% of its height, positioned dead center both horizontally and vertically. Keep both ends fully visible with a modest 10–12% breathing margin on each side, so it reads as a compact menu strip. One bar only. Straight-on orthographic view with no tilt. Preserve the recognizable original diamond/mountain mark at the left, two short dark menu dashes, and the Wi-Fi, battery and slider pictograms at the right, redrawn cleanly at the new larger scale with generous internal spacing. Slightly rounded thin hairline border, subtle frosted translucence and soft color bleed from the background. The backdrop is secondary: soften and simplify the valley into broad painterly indigo and terracotta silhouettes, with a small suggestion of the river visually behind the hero, muted contrast and no finely detailed landscape drawing competing for attention. Maintain a warm, premium editorial look with very readable controls. Finished image 2.26:1 panoramic for a 362×160 card. No letters, numbers, logos, desktop screenshots, oversized physical tray, long full-width panel, thick extrusion or neon glow.",
+    "size": [
+      1086,
+      480
+    ],
+    "generated_size": [
+      1884,
+      835
+    ],
+    "generated_sha256": "2479aad2f95994d551663c765c2802870fcb0620e5e0beff05b5050c64b6457f",
+    "reference_sha256": "b87ee52019350a2043a3099a173be1dcc2adab328196b5e8117da4dc194195b4"
   }
 }

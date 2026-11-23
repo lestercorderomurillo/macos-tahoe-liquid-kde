@@ -44,3 +44,6 @@ msgstr "Tienda de aplicaciones"
 
 msgid "System Settings"
 msgstr "Preferencias del sistema"
+
+msgid "Configure Dock…"
+msgstr "Configurar Dock…"

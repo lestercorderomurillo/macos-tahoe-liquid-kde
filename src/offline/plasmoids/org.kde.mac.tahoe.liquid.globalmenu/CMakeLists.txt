@@ -41,6 +41,7 @@ add_subdirectory(libdbusmenuqt)
 # Note: plasma_add_applet requires a CMake-valid target name (no hyphens).
 # The QML module URI also cannot contain hyphens (QML syntax constraint).
 # For this C++ applet the ID uses dots: org.kde.mac.tahoe.liquid.globalmenu.
+file(GLOB menu_icons CONFIGURE_DEPENDS RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}" "qml/menu-icons/*.svg")
 plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
     QML_SOURCES
         qml/config.qml
@@ -53,6 +54,7 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
         qml/AboutWindow.qml
         qml/ApplicationAboutWindow.qml
         qml/configSystemMenu.qml
+        qml/SystemMenuSettingsLink.qml
     CPP_SOURCES
         appmenuapplet.cpp
         appmenumodel.cpp
@@ -64,6 +66,7 @@ plasma_add_applet(org.kde.mac.tahoe.liquid.globalmenu
         qml/copy-dark.svg
     QML_ARGS DEPENDENCIES QtCore org.kde.plasma.core
 )
+ecm_target_qml_sources(org.kde.mac.tahoe.liquid.globalmenu PATH menu-icons SOURCES ${menu_icons})
 
 target_include_directories(org.kde.mac.tahoe.liquid.globalmenu PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/libdbusmenuqt

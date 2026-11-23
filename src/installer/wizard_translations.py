@@ -21,7 +21,189 @@ Less than a minute remaining|Falta menos de un minuto|剩余不到一分钟|Falt
 Finishing…|Finalizando…|正在完成…|Finalizando…|Wird abgeschlossen…
 Show installation details|Mostrar detalles de instalación|显示安装详情|Mostrar detalhes da instalação|Installationsdetails anzeigen
 Hide installation details|Ocultar detalles de instalación|隐藏安装详情|Ocultar detalhes da instalação|Installationsdetails ausblenden
+Location|Ubicación|位置|Localização|Ort
+City name (e.g. London)|Nombre de la ciudad (p. ej., Londres)|城市名称（例如伦敦）|Nome da cidade (ex.: Londres)|Stadtname (z. B. London)
+Matching locations|Ubicaciones coincidentes|匹配的位置|Locais correspondentes|Passende Orte
+Celsius (°C)|Celsius (°C)|摄氏度 (°C)|Celsius (°C)|Celsius (°C)
+Fahrenheit (°F)|Fahrenheit (°F)|华氏度 (°F)|Fahrenheit (°F)|Fahrenheit (°F)
+Location search and forecasts use Open-Meteo.|La búsqueda de ubicaciones y los pronósticos usan Open-Meteo.|位置搜索和天气预报使用 Open-Meteo。|A busca de locais e as previsões usam Open-Meteo.|Die Ortssuche und Wettervorhersage verwenden Open-Meteo.
+Location search is unavailable.|La búsqueda de ubicaciones no está disponible.|位置搜索不可用。|A busca de locais está indisponível.|Die Ortssuche ist nicht verfügbar.
+No matching locations.|No se encontraron ubicaciones.|没有匹配的位置。|Nenhum local encontrado.|Keine passenden Orte gefunden.
+Weather (Panel)|Tiempo en la barra|面板天气|Clima no painel|Wetter in der Leiste
+Weather|Tiempo|天气|Clima|Wetter
+Temperature unit|Unidad de temperatura|温度单位|Unidade de temperatura|Temperatureinheit
+About|Acerca de|关于|Sobre|Über
+Photos|Fotos|照片|Fotos|Fotos
+Folder|Carpeta|文件夹|Pasta|Ordner
+Change photo every|Cambiar de foto cada|照片切换间隔|Trocar a foto a cada|Foto wechseln alle
+Shuffle|Orden aleatorio|随机播放|Ordem aleatória|Zufällige Reihenfolge
+Browse…|Examinar…|浏览…|Procurar…|Durchsuchen …
+ min| min| 分钟| min| Min.
+Leave empty to use your Pictures folder. Subfolders are not included.|Déjalo vacío para usar tu carpeta Imágenes. Las subcarpetas quedan excluidas.|留空以使用图片文件夹。子文件夹不包含在内。|Deixe vazio para usar a pasta Imagens. Subpastas ficam de fora.|Leer lassen, um den Bilderordner zu verwenden. Unterordner bleiben unberücksichtigt.
+Widget settings|Ajustes de widgets|小组件设置|Ajustes de widgets|Miniprogramm-Einstellungen
+Analog Clock|Reloj analógico|模拟时钟|Relógio analógico|Analoguhr
+Analog Clock II|Reloj analógico II|模拟时钟 II|Relógio analógico II|Analoguhr II
+Analog Clock III|Reloj analógico III|模拟时钟 III|Relógio analógico III|Analoguhr III
+Glass Text Clock|Reloj de texto de cristal|玻璃文字时钟|Relógio de texto de vidro|Glastextuhr
+Digital Clock|Reloj digital|数字时钟|Relógio digital|Digitaluhr
+Timer|Temporizador|计时器|Temporizador|Timer
+Clock|Reloj|时钟|Relógio|Uhr
+Style|Estilo|样式|Estilo|Stil
+Solid|Sólido|实色|Sólido|Deckend
+Switch automatically|Cambiar automáticamente|自动切换|Alternar automaticamente|Automatisch wechseln
+Follow system|Seguir el sistema|跟随系统|Seguir o sistema|Systemeinstellung folgen
+Use 24-hour time|Usar formato de 24 horas|使用 24 小时制|Usar formato de 24 horas|24-Stunden-Format verwenden
+Animate the second hand continuously|Animar el segundero de forma continua|连续动画显示秒针|Animar o ponteiro dos segundos continuamente|Sekundenzeiger kontinuierlich animieren
+Glass tint|Tinte del cristal|玻璃色调|Tonalidade do vidro|Glastönung
+Fully opaque background|Fondo completamente opaco|完全不透明背景|Fundo totalmente opaco|Vollständig deckender Hintergrund
+Corner radius|Radio de las esquinas|圆角半径|Raio dos cantos|Eckenradius
+Corner smoothness|Suavidad de las esquinas|圆角平滑度|Suavidade dos cantos|Eckenweichheit
+Digit font|Fuente de los dígitos|数字字体|Fonte dos dígitos|Ziffernschrift
+Text tint|Tinte del texto|文字色调|Tonalidade do texto|Texttönung
+Text color|Color del texto|文字颜色|Cor do texto|Textfarbe
+Edge thickness|Grosor del borde|边缘厚度|Espessura da borda|Randstärke
+Refraction strength|Intensidad de la refracción|折射强度|Intensidade da refração|Brechungsstärke
+Refraction index|Índice de refracción|折射率|Índice de refração|Brechungsindex
+Color fringing|Franja de color|色边|Franjas de cor|Farbsäume
+Edge highlight|Brillo del borde|边缘高光|Realce da borda|Kantenlicht
+Blur & performance|Desenfoque y rendimiento|模糊与性能|Desfoque e desempenho|Unschärfe und Leistung
+Blur radius|Radio del desenfoque|模糊半径|Raio do desfoque|Unschärferadius
+Blur quality|Calidad del desenfoque|模糊质量|Qualidade do desfoque|Unschärfequalität
+Performance (Dual Kawase)|Rendimiento (Dual Kawase)|性能（Dual Kawase）|Desempenho (Dual Kawase)|Leistung (Dual Kawase)
+Quality (Gaussian)|Calidad (gaussiano)|质量（高斯）|Qualidade (gaussiano)|Qualität (Gauß)
+Update the glass every frame|Actualizar el cristal en cada fotograma|每帧更新玻璃|Atualizar o vidro a cada quadro|Glas in jedem Bild aktualisieren
+Reset glass settings|Restablecer ajustes de cristal|重置玻璃设置|Restaurar ajustes do vidro|Glaseinstellungen zurücksetzen
+Reset blur settings|Restablecer ajustes de desenfoque|重置模糊设置|Restaurar ajustes de desfoque|Unschärfeeinstellungen zurücksetzen
+Copy style|Copiar estilo|复制样式|Copiar estilo|Stil kopieren
+Paste style|Pegar estilo|粘贴样式|Colar estilo|Stil einfügen
+Style copied.|Estilo copiado.|样式已复制。|Estilo copiado.|Stil kopiert.
+The clipboard doesn't contain a copied style.|El portapapeles no contiene un estilo copiado.|剪贴板中没有已复制的样式。|A área de transferência não contém um estilo copiado.|Die Zwischenablage enthält keinen kopierten Stil.
+Style applied. Press Save to keep it.|Estilo aplicado. Pulsa Guardar para conservarlo.|样式已应用。按保存以保留。|Estilo aplicado. Pressione Salvar para mantê-lo.|Stil angewendet. Zum Behalten auf Speichern klicken.
+Widget shortcuts|Atajos de widgets|小组件快捷键|Atalhos de widgets|Miniprogramm-Kürzel
+Control Center|Centro de control|控制中心|Central de Controle|Kontrollzentrum
+Install Acrylic Glass to edit its materials.|Instala Cristal acrílico para editar sus materiales.|安装亚克力玻璃后即可编辑材质。|Instale o Vidro acrílico para editar seus materiais.|Installiere Acrylglas, um seine Materialien zu bearbeiten.
+Acrylic Glass|Cristal acrílico|亚克力玻璃|Vidro acrílico|Acrylglas
+Battery|Batería|电池|Bateria|Akku
+Bluetooth|Bluetooth|蓝牙|Bluetooth|Bluetooth
+Dock Separator|Separador del Dock|程序坞分隔符|Separador do Dock|Dock-Trenner
+Downloads|Descargas|下载|Downloads|Downloads
+Notifications|Notificaciones|通知|Notificações|Benachrichtigungen
+Wi-Fi|Wi-Fi|无线局域网|Wi-Fi|WLAN
+Now Playing|En reproducción|正在播放|Reproduzindo|Aktuelle Wiedergabe
+File Sharing|Compartir archivos|文件共享|Compartilhamento de arquivos|Dateifreigabe
+Overview|Vista general|概览|Visão geral|Übersicht
+Screen Mirroring|Duplicar pantalla|屏幕镜像|Espelhamento de tela|Bildschirmspiegelung
+Dark Mode|Modo oscuro|深色模式|Modo escuro|Dunkler Modus
+Screenshot|Captura de pantalla|截屏|Captura de tela|Bildschirmfoto
+Focus|Concentración|专注|Foco|Fokus
+Bluetooth Settings…|Ajustes de Bluetooth…|蓝牙设置…|Configurações de Bluetooth…|Bluetooth-Einstellungen …
+Display|Pantalla|显示器|Tela|Bildschirm
+Sound|Sonido|声音|Som|Ton
+Activation shortcut|Atajo de activación|激活快捷键|Atalho de ativação|Aktivierungskürzel
+Icon color palette|Paleta de colores de iconos|图标配色|Paleta de cores dos ícones|Symbolfarbpalette
+Apps preferences|Preferencias de Apps|应用程序偏好设置|Preferências de Apps|Apps-Einstellungen
+Open from Apps|Abrir desde Apps|从应用程序打开|Abrir em Apps|Über Apps öffnen
+Launcher layout|Diseño del lanzador|启动器布局|Layout do lançador|Starter-Layout
+Launcher position|Posición del lanzador|启动器位置|Posição do lançador|Starterposition
+Floating launcher|Lanzador flotante|浮动启动器|Lançador flutuante|Schwebender Starter
+Distance from screen edge|Distancia al borde de la pantalla|距屏幕边缘的距离|Distância da borda da tela|Abstand zum Bildschirmrand
+Distance from panel|Distancia al panel|距面板的距离|Distância do painel|Abstand zur Leiste
+Show session actions|Mostrar acciones de sesión|显示会话操作|Mostrar ações da sessão|Sitzungsaktionen anzeigen
+Apps icon|Icono de Apps|应用程序图标|Ícone de Apps|Apps-Symbol
+Use a custom icon|Usar un icono personalizado|使用自定义图标|Usar um ícone personalizado|Eigenes Symbol verwenden
+Custom icon|Icono personalizado|自定义图标|Ícone personalizado|Eigenes Symbol
+Icon name or file|Nombre o archivo del icono|图标名称或文件|Nome ou arquivo do ícone|Symbolname oder Datei
+Choose an icon|Elegir un icono|选择图标|Escolher um ícone|Symbol auswählen
+Icons (*.png *.xpm *.svg *.svgz)|Iconos (*.png *.xpm *.svg *.svgz)|图标 (*.png *.xpm *.svg *.svgz)|Ícones (*.png *.xpm *.svg *.svgz)|Symbole (*.png *.xpm *.svg *.svgz)
+Clear Icon|Restablecer icono|重置图标|Restaurar ícone|Symbol zurücksetzen
+Grids and lists|Cuadrículas y listas|网格和列表|Grades e listas|Raster und Listen
+Grid icon size|Tamaño de iconos en la cuadrícula|网格图标大小|Tamanho dos ícones da grade|Symbolgröße im Raster
+Tahoe columns|Columnas de Tahoe|Tahoe 列数|Colunas do Tahoe|Tahoe-Spalten
+Golden Gate columns|Columnas de Golden Gate|Golden Gate 列数|Colunas do Golden Gate|Golden-Gate-Spalten
+Grid rows|Filas de la cuadrícula|网格行数|Linhas da grade|Rasterzeilen
+Compact list items|Elementos de lista compactos|紧凑列表项|Itens de lista compactos|Kompakte Listeneinträge
+Show list item descriptions|Mostrar las descripciones de la lista|显示列表项说明|Mostrar descrições dos itens da lista|Beschreibungen der Listeneinträge anzeigen
+Use system font settings|Usar las fuentes del sistema|使用系统字体设置|Usar configurações de fonte do sistema|Systemschrifteinstellungen verwenden
+Edition default|Predeterminado de la edición|版本默认设置|Padrão da edição|Vorgabe der Edition
+Near the Apps button|Cerca del botón Apps|靠近应用程序按钮|Perto do botão Apps|In der Nähe der Apps-Schaltfläche
+Panel center|Centro del panel|面板中央|Centro do painel|Leistenmitte
+Screen center|Centro de la pantalla|屏幕中央|Centro da tela|Bildschirmmitte
+Dock preferences|Preferencias del Dock|程序坞偏好设置|Preferências do Dock|Dock-Einstellungen
+Behavior|Comportamiento|行为|Comportamento|Verhalten
+Hover magnification|Ampliación al pasar el puntero|悬停放大|Ampliação ao passar o cursor|Vergrößerung beim Überfahren
+Show window previews|Mostrar vistas previas de las ventanas|显示窗口预览|Mostrar prévias das janelas|Fenstervorschauen anzeigen
+Highlight the hovered window|Resaltar la ventana bajo el puntero|突出显示悬停窗口|Destacar a janela sob o cursor|Fenster unter dem Zeiger hervorheben
+Show audio indicators|Mostrar indicadores de audio|显示音频指示器|Mostrar indicadores de áudio|Audioindikatoren anzeigen
+Mute by clicking the audio indicator|Silenciar al pulsar el indicador de audio|点击音频指示器静音|Silenciar ao clicar no indicador de áudio|Beim Klick auf den Audioindikator stummschalten
+Show media and volume controls in previews|Mostrar controles multimedia y de volumen en las vistas previas|在预览中显示媒体和音量控件|Mostrar controles de mídia e volume nas prévias|Medien- und Lautstärkeregler in Vorschauen anzeigen
+Fill free space on the panel|Ocupar el espacio libre del panel|填充面板的空闲空间|Preencher o espaço livre do painel|Freien Platz in der Leiste ausfüllen
+Maximum task width|Anchura máxima de las tareas|任务最大宽度|Largura máxima da tarefa|Maximale Aufgabenbreite
+Maximum rows or columns|Máximo de filas o columnas|最大行数或列数|Máximo de linhas ou colunas|Maximale Anzahl an Zeilen oder Spalten
+Always use multiple rows or columns|Usar siempre varias filas o columnas|始终使用多行或多列|Sempre usar várias linhas ou colunas|Immer mehrere Zeilen oder Spalten verwenden
+Group tasks|Agrupar tareas|任务分组|Agrupar tarefas|Aufgaben gruppieren
+When clicking a grouped task|Al pulsar una tarea agrupada|点击分组任务时|Ao clicar em uma tarefa agrupada|Beim Klick auf eine gruppierte Aufgabe
+Combine grouped tasks into one button|Combinar tareas agrupadas en un botón|将分组任务合并为一个按钮|Combinar tarefas agrupadas em um botão|Gruppierte Aufgaben zu einer Schaltfläche zusammenfassen
+Group only when the task manager is full|Agrupar solo cuando el gestor de tareas esté lleno|仅在任务管理器已满时分组|Agrupar apenas quando o gerenciador de tarefas estiver cheio|Nur bei voller Aufgabenleiste gruppieren
+Sort tasks|Ordenar tareas|任务排序|Ordenar tarefas|Aufgaben sortieren
+Keep launchers separate|Mantener los lanzadores separados|单独显示启动器|Manter lançadores separados|Starter getrennt halten
+Hide launchers after application startup|Ocultar los lanzadores al abrir la aplicación|启动应用后隐藏启动器|Ocultar lançadores após iniciar o aplicativo|Starter nach dem Anwendungsstart ausblenden
+Minimize the active task when clicked|Minimizar la tarea activa al pulsarla|点击时最小化活动任务|Minimizar a tarefa ativa ao clicar|Aktive Aufgabe beim Klick minimieren
+Middle-click action|Acción del botón central|鼠标中键操作|Ação do botão do meio|Aktion der mittleren Maustaste
+Scrolling behavior|Acción al desplazar la rueda|滚动行为|Comportamento da rolagem|Scrollverhalten
+Skip minimized tasks when scrolling|Omitir tareas minimizadas al desplazar|滚动时跳过最小化任务|Ignorar tarefas minimizadas ao rolar|Minimierte Aufgaben beim Scrollen überspringen
+Show tasks only from the current desktop|Mostrar solo tareas del escritorio actual|仅显示当前桌面的任务|Mostrar apenas tarefas da área de trabalho atual|Nur Aufgaben der aktuellen Arbeitsfläche anzeigen
+Show tasks only from the current activity|Mostrar solo tareas de la actividad actual|仅显示当前活动的任务|Mostrar apenas tarefas da atividade atual|Nur Aufgaben der aktuellen Aktivität anzeigen
+Show tasks only from the current display|Mostrar solo tareas de la pantalla actual|仅显示当前屏幕的任务|Mostrar apenas tarefas da tela atual|Nur Aufgaben des aktuellen Bildschirms anzeigen
+Show only minimized tasks|Mostrar solo tareas minimizadas|仅显示最小化任务|Mostrar apenas tarefas minimizadas|Nur minimierte Aufgaben anzeigen
+Show the hidden panel when a window wants attention|Mostrar el panel oculto cuando una ventana solicite atención|窗口请求关注时显示隐藏面板|Mostrar o painel oculto quando uma janela solicitar atenção|Ausgeblendete Leiste bei Aufmerksamkeitsanforderung anzeigen
+Reverse where new tasks appear|Invertir la posición de las nuevas tareas|反转新任务的显示位置|Inverter a posição das novas tarefas|Position neuer Aufgaben umkehren
+Narrow|Estrecha|窄|Estreita|Schmal
+Wide|Ancha|宽|Larga|Breit
+Do not group|Sin agrupar|不分组|Não agrupar|Nicht gruppieren
+By program name|Por nombre de programa|按程序名称|Por nome do programa|Nach Programmname
+Cycle through tasks|Recorrer tareas|循环切换任务|Percorrer tarefas|Zwischen Aufgaben wechseln
+Small window previews|Vistas previas pequeñas|小窗口预览|Prévias pequenas das janelas|Kleine Fenstervorschauen
+Large window previews|Vistas previas grandes|大窗口预览|Prévias grandes das janelas|Große Fenstervorschauen
+Text list|Lista de texto|文本列表|Lista de texto|Textliste
+Do not sort|Sin ordenar|不排序|Não ordenar|Nicht sortieren
+Manually|Manualmente|手动|Manualmente|Manuell
+Alphabetically|Alfabéticamente|按字母顺序|Em ordem alfabética|Alphabetisch
+By desktop|Por escritorio|按桌面|Por área de trabalho|Nach Arbeitsfläche
+By activity|Por actividad|按活动|Por atividade|Nach Aktivität
+By horizontal window position|Por posición horizontal de la ventana|按窗口水平位置|Pela posição horizontal da janela|Nach horizontaler Fensterposition
+Do nothing|No hacer nada|不执行操作|Não fazer nada|Nichts unternehmen
+Close window or group|Cerrar ventana o grupo|关闭窗口或分组|Fechar janela ou grupo|Fenster oder Gruppe schließen
+Open a new window|Abrir una ventana nueva|打开新窗口|Abrir uma nova janela|Neues Fenster öffnen
+Minimize or restore|Minimizar o restaurar|最小化或还原|Minimizar ou restaurar|Minimieren oder wiederherstellen
+Toggle grouping|Alternar la agrupación|切换分组|Alternar agrupamento|Gruppierung umschalten
+Bring to current desktop|Traer al escritorio actual|移至当前桌面|Trazer para a área de trabalho atual|Auf die aktuelle Arbeitsfläche holen
+Cycle through all tasks|Recorrer todas las tareas|循环切换所有任务|Percorrer todas as tarefas|Alle Aufgaben durchlaufen
+Cycle through the hovered task’s windows|Recorrer las ventanas de la tarea bajo el puntero|循环切换悬停任务的窗口|Percorrer janelas da tarefa sob o cursor|Fenster der Aufgabe unter dem Zeiger durchlaufen
+Adjust the hovered task’s volume|Ajustar el volumen de la tarea bajo el puntero|调整悬停任务的音量|Ajustar o volume da tarefa sob o cursor|Lautstärke der Aufgabe unter dem Zeiger ändern
 Dock appearance|Apariencia del Dock|程序坞外观|Aparência do Dock|Dock-Erscheinungsbild
+System menu|Menú del sistema|系统菜单|Menu do sistema|Systemmenü
+Actions|Acciones|操作|Ações|Aktionen
+Menu icon|Icono del menú|菜单图标|Ícone do menu|Menüsymbol
+Apple|Manzana|苹果|Maçã|Apfel
+Penguin|Pingüino|企鹅|Pinguim|Pinguin
+Pear|Pera|梨|Pera|Birne
+Detect distribution|Detectar distribución|自动检测发行版|Detectar distribuição|Distribution erkennen
+Use system font in About This Computer|Usar la tipografía del sistema en Acerca de este equipo|在“关于这台计算机”中使用系统字体|Usar a fonte do sistema em Sobre Este Computador|In „Über diesen Computer“ die Systemschrift verwenden
+About This Computer icon|Icono de Acerca de este equipo|“关于这台计算机”图标|Ícone de Sobre Este Computador|Symbol für „Über diesen Computer“
+System Settings icon|Icono de Ajustes del sistema|系统设置图标|Ícone dos Ajustes do Sistema|Symbol der Systemeinstellungen
+Force Quit icon|Icono de Forzar salida|强制退出图标|Ícone de Forçar Encerramento|Symbol für „Sofort beenden“
+Sleep icon|Icono de Suspender|睡眠图标|Ícone de Repouso|Ruhezustandssymbol
+Restart icon|Icono de Reiniciar|重新启动图标|Ícone de Reiniciar|Neustartsymbol
+Shut Down icon|Icono de Apagar|关机图标|Ícone de Desligar|Ausschaltsymbol
+Lock Screen icon|Icono de Bloquear pantalla|锁定屏幕图标|Ícone de Bloquear Tela|Symbol für „Bildschirm sperren“
+Log Out icon|Icono de Cerrar sesión|注销图标|Ícone de Encerrar Sessão|Abmeldesymbol
+Sleep command|Comando de suspensión|睡眠命令|Comando de repouso|Ruhezustandsbefehl
+Restart command|Comando de reinicio|重新启动命令|Comando para reiniciar|Neustartbefehl
+Shut Down command|Comando de apagado|关机命令|Comando para desligar|Ausschaltbefehl
+Lock Screen command|Comando de bloqueo de pantalla|锁定屏幕命令|Comando para bloquear a tela|Befehl zum Sperren des Bildschirms
+App Store icon|Icono de la tienda|应用商店图标|Ícone da loja de aplicativos|App-Store-Symbol
+App Store command|Comando de la tienda|应用商店命令|Comando da loja de aplicativos|App-Store-Befehl
+Log Out command|Comando de cierre de sesión|注销命令|Comando para encerrar a sessão|Abmeldebefehl
 Keep current Dock icons|Conservar los iconos actuales del Dock|保留当前程序坞图标|Manter os ícones atuais do Dock|Aktuelle Dock-Symbole behalten
 macOS-style Dock icons|Iconos del Dock estilo macOS|macOS 风格的程序坞图标|Ícones do Dock no estilo macOS|Dock-Symbole im macOS-Stil
 Application icons|Iconos de las aplicaciones|应用图标|Ícones dos aplicativos|Anwendungssymbole
@@ -120,6 +302,7 @@ Light and dark, following your appearance.|Claros y oscuros, según la aparienci
 Glass|Cristal|玻璃|Vidro|Glas
 Translucent, with your chosen color.|Translúcidos, con el color que elijas.|半透明，使用所选颜色。|Translúcidos, com a cor escolhida.|Durchscheinend, in deiner gewählten Farbe.
 Keep my icons|Conservar mis iconos|保留我的图标|Manter meus ícones|Meine Symbole beibehalten
+Use the theme icons|Usar iconos del tema|使用主题图标|Usar os ícones do tema|Symbole des Designs verwenden
 Theme color|Color del tema|主题颜色|Cor do tema|Themenfarbe
 Blue|Azul|蓝色|Azul|Blau
 Purple|Violeta|紫色|Roxo|Violett
@@ -131,6 +314,7 @@ Green|Verde|绿色|Verde|Grün
 Gray|Grafito|石墨色|Grafite|Graphit
 Landscape|Paisaje|风景|Paisagem|Landschaft
 Keep my wallpaper|Conservar mi fondo|保留我的壁纸|Manter meu papel de parede|Meinen Hintergrund beibehalten
+Use the theme wallpaper|Usar fondo del tema|使用主题壁纸|Usar o papel de parede do tema|Hintergrund des Designs verwenden
 Choose a file…|Elegir archivo…|选择文件…|Escolher arquivo…|Datei auswählen…
 Choose a wallpaper|Elegir un fondo de pantalla|选择壁纸|Escolher um papel de parede|Hintergrund auswählen
 Categories and apps in one window.|Categorías y aplicaciones en una ventana.|分类和应用位于同一窗口。|Categorias e aplicativos em uma janela.|Kategorien und Apps in einem Fenster.
@@ -152,6 +336,8 @@ Keep Firefox as it is|Conservar Firefox como está|保持 Firefox 原样|Manter 
 Recommended · Files theme|Recomendado · Estilo Files del tema|推荐 · Files 风格|Recomendado · Estilo Files do tema|Empfohlen · Files-Stil des Themas
 KDE file manager|Gestor de archivos de KDE|KDE 文件管理器|Gerenciador de arquivos do KDE|Dateimanager von KDE
 Add folder shortcuts to the sidebar|Añadir accesos a mis carpetas en la barra lateral|在侧栏中添加文件夹快捷方式|Adicionar atalhos de pastas à barra lateral|Ordnerverknüpfungen zur Seitenleiste hinzufügen
+Skip widgets|Omitir widgets|跳过小组件|Ignorar widgets|Miniprogramme überspringen
+Install widgets|Instalar widgets|安装小组件|Instalar widgets|Miniprogramme installieren
 Skip widget pack|Omitir paquete de widgets|跳过小组件套装|Ignorar pacote de widgets|Widget-Paket überspringen
 Install Liquid Glass widgets|Instalar widgets Liquid Glass|安装 Liquid Glass 小组件|Instalar widgets Liquid Glass|Liquid-Glass-Widgets installieren
 Remove any widgets previously installed by this theme.|Elimina los widgets instalados anteriormente por este tema.|移除此主题之前安装的小组件。|Remove os widgets instalados anteriormente por este tema.|Entfernt zuvor von diesem Design installierte Widgets.
@@ -179,6 +365,7 @@ Your documents and personal applications are kept.|Tus documentos y aplicaciones
 The operation could not be completed|No se pudo completar la operación|无法完成操作|Não foi possível concluir a operação|Der Vorgang konnte nicht abgeschlossen werden
 Next|Siguiente|下一步|Avançar|Weiter
 Back|Atrás|返回|Voltar|Zurück
+Forward|Adelante|前进|Avançar|Vorwärts
 Retry|Reintentar|重试|Tentar novamente|Erneut versuchen
 Save|Guardar|保存|Salvar|Speichern
 Step|Paso|步骤|Etapa|Schritt
@@ -193,7 +380,41 @@ OLED protection|Protección OLED|OLED 保护|Proteção OLED|OLED-Schutz
 Enabled|Activado|已启用|Ativado|Aktiviert
 Disabled|Desactivado|已禁用|Desativado|Deaktiviert
 Auto|Automática|自动|Automática|Automatisch
-Custom|Archivo elegido|所选文件|Arquivo escolhido|Gewählte Datei'''
+Custom|Archivo elegido|所选文件|Arquivo escolhido|Gewählte Datei
+Settings|Ajustes|设置|Ajustes|Einstellungen
+General|General|通用|Geral|Allgemein
+Restoration|Restauración|恢复|Restauração|Wiederherstellung
+Reinstall|Reinstalar|重新安装|Reinstalar|Neu installieren
+Review your reinstallation|Revisa la reinstalación|检查重新安装选项|Revise a reinstalação|Neuinstallation überprüfen
+Language|Idioma|语言|Idioma|Sprache
+Search|Buscar|搜索|Buscar|Suchen
+Search settings|Buscar ajustes|搜索设置|Buscar ajustes|Einstellungen suchen
+Clear search|Borrar búsqueda|清除搜索|Limpar busca|Suche löschen
+No matching settings|No se encontraron ajustes|未找到匹配的设置|Nenhum ajuste encontrado|Keine passenden Einstellungen
+Open Settings|Abrir Ajustes|打开设置|Abrir Ajustes|Einstellungen öffnen
+Welcome|Bienvenida|欢迎|Boas-vindas|Willkommen
+Dock|Dock|程序坞|Dock|Dock
+Startup|Arranque|启动|Inicialização|Start
+Review|Revisión|检查|Revisão|Übersicht
+Review changes|Revisar cambios|检查更改|Revisar alterações|Änderungen prüfen
+Dock icons|Iconos del Dock|程序坞图标|Ícones do Dock|Dock-Symbole
+Trash|Papelera|废纸篓|Lixeira|Papierkorb
+Empty trash icon|Icono de papelera vacía|空废纸篓图标|Ícone da lixeira vazia|Symbol für leeren Papierkorb
+Full trash icon|Icono de papelera llena|满废纸篓图标|Ícone da lixeira cheia|Symbol für vollen Papierkorb
+Trash Settings…|Ajustes de la papelera…|废纸篓设置…|Ajustes da lixeira…|Papierkorb-Einstellungen …
+No matching widgets in this Plasma session.|No hay widgets de este tipo en esta sesión de Plasma.|此 Plasma 会话中没有匹配的小组件。|Nenhum widget correspondente nesta sessão do Plasma.|Keine passenden Miniprogramme in dieser Plasma-Sitzung.
+Widget {id}|Widget {id}|小组件 {id}|Widget {id}|Miniprogramm {id}
+Widget instance|Instancia del widget|小组件实例|Instância do widget|Miniprogramm-Instanz
+Saved|Guardado|已保存|Salvo|Gespeichert
+Applying these changes may reinstall components and restart Plasma.|Aplicar estos cambios puede reinstalar componentes y reiniciar Plasma.|应用这些更改可能会重新安装组件并重启 Plasma。|Aplicar estas alterações pode reinstalar componentes e reiniciar o Plasma.|Diese Änderungen können Komponenten neu installieren und Plasma neu starten.
+Windows|Ventanas|窗口|Janelas|Fenster
+Icons & Typography|Iconos y tipografía|图标与字体|Ícones e tipografia|Symbole & Typografie
+Applications|Aplicaciones|应用程序|Aplicativos|Anwendungen
+Startup & Display|Arranque y pantalla|启动与显示|Inicialização e tela|Start & Anzeige
+Dock and menu bar|Dock y barra de menús|程序坞与菜单栏|Dock e barra de menus|Dock und Menüleiste
+Applying appearance…|Aplicando apariencia…|正在应用外观…|Aplicando aparência…|Erscheinungsbild wird angewendet …
+Install the theme to change the desktop appearance.|Instala el tema para cambiar la apariencia del escritorio.|请先安装主题以更改桌面外观。|Instale o tema para alterar a aparência da área de trabalho.|Installiere das Design, um das Erscheinungsbild zu ändern.
+Could not apply the appearance. Try again.|No se pudo aplicar la apariencia. Inténtalo de nuevo.|无法应用外观。请重试。|Não foi possível aplicar a aparência. Tente novamente.|Erscheinungsbild konnte nicht angewendet werden. Versuche es erneut.'''
 
 CATALOGS = {code: {} for code in ('es', 'zh_CN', 'pt_BR', 'de')}
 for row in _ROWS.splitlines():

@@ -202,11 +202,11 @@ def test_native_wizard_navigation_preserves_choices_and_waits_for_completion(rep
 import sys
 from pathlib import Path
 sys.path[:0] = [str(Path.cwd() / 'src/scripts'), str(Path.cwd() / 'src/installer')]
-from PyQt6.QtWidgets import QApplication, QPushButton, QLabel
+from PyQt6.QtWidgets import QApplication, QComboBox, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtTest import QTest
 from installer_ui import _make_installer_bridge
-from wizard_window import InstallerWindow, ChoiceCard, STEPS, ASSETS
+from wizard_window import CheckOption, ChoiceCard, InstallerWindow, RadioOption, STEPS, INSTALL_FLOW, ASSETS
 import installer_choices
 import cli
 cli._theme_is_already_installed = lambda: False
@@ -267,9 +267,24 @@ for page, _ in STEPS:
             expected = 'SF Pro Display' if widget.objectName() == 'pageTitle' else 'SF Pro Text'
             assert QFontInfo(widget.font()).family() == expected, (page, widget.objectName())
     cards = window.content.findChildren(ChoiceCard)
-    if page in ('appearance', 'icons', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows', 'fonts', 'files'):
+    if page in ('appearance', 'wallpaper', 'window_controls', 'button_position', 'shadows'):
         assert cards and cards[0].isChecked(), page
         assert cards[0].height() > 80, page
+    if page == 'files':
+        assert not cards
+        selected = window.content.findChild(RadioOption, 'choice-files-' + window.defaults['files'])
+        assert selected.isChecked()
+    if page == 'fonts':
+        selector = window.content.findChild(QComboBox, 'choice-fonts')
+        assert selector.count() == 2 and selector.currentData() == window.choices['fonts']
+        original_font_choice = selector.currentData()
+        selector.setCurrentIndex(selector.findData(not original_font_choice))
+        assert window.choices['fonts'] is not original_font_choice
+        selector.setCurrentIndex(selector.findData(original_font_choice))
+    if page == 'icons':
+        styles = dict(window.choice_widgets['icons'])
+        assert styles[window.choices['icons']].isChecked()
+        assert all(not styles[key].icon().isNull() for key in ('regular', 'dark', 'clear', 'glass'))
 # Match the capture VM's larger system typography: the added shadows row must
 # still leave the complete summary visible at the normal wizard size.
 original_font = window.font()
@@ -298,9 +313,8 @@ assert calls == [('install', window.defaults)]
 bridge._running = False; bridge.finished.emit(0)
 calls.clear()
 window.page = 'welcome'; window.render(); window.advance()
-assert window.page == 'appearance' and not calls
+assert window.page == 'theme' and not calls
 window.page = 'files'; window.render(); app.processEvents()
-from wizard_window import CheckOption, RadioOption
 bookmarks = window.content.findChild(CheckOption, 'choice-nautilus_bookmarks')
 assert bookmarks.isChecked()
 bookmarks.setFocus(); QTest.keyClick(bookmarks, Qt.Key.Key_Space)
@@ -308,20 +322,36 @@ assert not window.choices['nautilus_bookmarks']
 for page, key in [('firefox', 'firefox'), ('boot', 'plymouth')]:
     window.page = page; window.render(); app.processEvents(); app.processEvents()
     options = window.content.findChildren(RadioOption)
-    assert len(options) == 2 and options[0].y() == options[1].y()
-    assert abs(options[0].width() - options[1].width()) <= 1
+    assert len(options) == 2 and abs(options[0].width() - options[1].width()) <= 1
+    assert options[0].x() == options[1].x() == window.body.contentsMargins().left()
+    assert options[0].y() < options[1].y()
+    if page == 'boot':
+        preview = window.content.findChild(QLabel, 'bootAnimationPreview')
+        size = preview.pixmap().deviceIndependentSize()
+        assert (size.width(), size.height()) == (108, 108)
+        assert preview.pixmap().toImage().pixelColor(0, 0).alpha() == 0
+        assert abs(preview.geometry().center().x() - window.content.rect().center().x()) <= 1
+        assert preview.geometry().bottom() < options[0].y()
+    else:
+        assert all(label.pixmap().isNull() for label in window.content.findChildren(QLabel))
     options[1].click(); app.processEvents()
     assert window.choices[key] is False
-window.page = 'launcher'; window.render()
-cards = window.content.findChildren(ChoiceCard)
-first = cards[0].accessibleName()
-cards[1].click(); app.processEvents(); app.processEvents()
-assert window.content.findChildren(ChoiceCard)[0].accessibleName() == first
+window.page = 'launcher'; window.render(); app.processEvents()
+options = window.content.findChildren(RadioOption)
+preview = window.content.findChild(QLabel, 'launcherArtwork')
+assert len(options) == 3 and options[0].isChecked()
+assert len({option.x() for option in options}) == 1
+assert preview.geometry().bottom() < options[0].y() < options[1].y() < options[2].y()
+original_art = preview.pixmap().toImage()
+options[0].setFocus(); QTest.keyClick(options[0], Qt.Key.Key_Down); app.processEvents()
+assert options[1].isChecked() and preview.pixmap().toImage() != original_art
 selected = window.choices['launcher']
-# Selection does not shift card edges, and dots stay centered despite unequal button labels.
-cards = window.content.findChildren(ChoiceCard)
-assert cards[0].y() == cards[1].y()
-assert cards[0].height() == cards[1].height()
+edition_art = preview.pixmap().toImage()
+options[2].click(); app.processEvents()
+assert window.choices['launcher'] == 'keep' and preview.pixmap().toImage() != edition_art
+options[1].click(); app.processEvents()
+assert preview.pixmap().toImage() == edition_art
+# Selection leaves the dot rail centered despite unequal button labels.
 assert abs(window.dots.mapTo(window, window.dots.rect().center()).x() - window.width()/2) <= 2
 window.page = 'wallpaper'; window.render(); window.advance(); app.processEvents()
 assert window.page == 'desktop_widgets' and window.choices['desktop_widgets'] is True
@@ -334,7 +364,7 @@ window.advance(); assert window.page == 'launcher'
 window.previous(); assert window.page == 'desktop_widgets' and window.choices['desktop_widgets'] is False
 window.page = 'summary'; window.render()
 window.content.findChild(QPushButton, 'edit-desktop_widgets').click()
-assert window.page == 'desktop_widgets'
+assert window.page == 'desktop' and window.panel_frames['desktop_widgets'].isVisible()
 window.content.findChild(ChoiceCard, 'choice-desktop_widgets-True').click()
 window.advance()
 assert window.page == 'summary' and window.choices['desktop_widgets'] is True
@@ -343,7 +373,7 @@ window.content.findChild(ChoiceCard, 'choice-window_controls-glassy').click()
 assert window.choices['window_controls'] == 'glassy'
 window.page = 'summary'; window.render(); app.processEvents()
 window.content.findChild(QPushButton, 'edit-window_controls').click()
-assert window.page == 'window_controls'
+assert window.page == 'window_details' and window.panel_frames['window_controls'].isVisible()
 window.content.findChild(ChoiceCard, 'choice-window_controls-flat').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['window_controls'] == 'flat'
@@ -357,21 +387,38 @@ assert window.choices['button_position'] == 'right'
 window.content.findChild(ChoiceCard, 'choice-button_position-keep').click()
 window.page = 'summary'; window.render(); app.processEvents()
 window.content.findChild(QPushButton, 'edit-button_position').click()
-assert window.page == 'button_position'
+assert window.page == 'window_details' and window.panel_frames['button_position'].isVisible()
 window.content.findChild(ChoiceCard, 'choice-button_position-left').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['button_position'] == 'left'
 window.page = 'icons'; window.render(); app.processEvents()
-window.content.findChild(ChoiceCard, 'choice-icons-keep').click(); app.processEvents()
+styles = dict(window.choice_widgets['icons'])
+keep = window.content.findChild(RadioOption, 'choice-icons-keep')
+theme = window.content.findChild(RadioOption, 'choice-icons-theme')
+appearance = [window.content.findChild(RadioOption, 'choice-icon_appearance-' + value)
+              for value in ('auto', 'light', 'dark')]
+styles['clear'].click()
+appearance[-1].click()
+keep.click(); app.processEvents()
 assert window.choices['icons'] == 'keep'
-assert sum(card.isChecked() for card in window.content.findChildren(ChoiceCard)) == 1
+assert keep.isChecked() and not theme.isChecked()
+assert all(not style.isChecked() and not style.isEnabled() for style in styles.values())
+assert all(not option.isEnabled() for option in appearance)
+theme.click(); app.processEvents()
+assert theme.isChecked() and not keep.isChecked() and styles['clear'].isChecked()
+assert window.choices['icons'] == 'clear' and window.choices['icon_appearance'] == 'dark'
+assert all(option.isEnabled() for option in appearance)
 window.content.findChild(QPushButton, 'color-green').click(); app.processEvents()
 assert window.choices['color'] == 'green'
 
 window.page = 'summary'; window.render()
 window.content.findChild(QPushButton, 'edit-icons').click()
-assert window.page == 'icons'
+assert window.page == 'personalization' and window.panel_frames['icons'].isVisible()
 window.select('icons', 'glass'); app.processEvents(); window.advance()
+assert window.page == 'summary' and window.choices['launcher'] == selected
+window.content.findChild(QPushButton, 'edit-launcher').click(); app.processEvents()
+assert window.page == 'desktop' and window.panel_frames['launcher'].isVisible()
+window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['launcher'] == selected
 window.advance()
 assert window.page == 'progress' and calls[-1][0] == 'install'
@@ -452,9 +499,9 @@ assert not window.isVisible()
 # This catches both immediate rebuilds and zero-delay render callbacks.
 window = InstallerWindow(bridge)
 window.show(); app.processEvents()
-from PyQt6.QtWidgets import QSpinBox, QFileDialog
+from PyQt6.QtWidgets import QSpinBox, QFileDialog, QStyle, QStyleOptionSpinBox, QToolButton
 from PyQt6.QtGui import QPixmap, QColor
-from PyQt6.QtCore import QObject, QEvent
+from PyQt6.QtCore import QObject, QEvent, QSize
 class PageEvents(QObject):
     def __init__(self):
         super().__init__(); self.hidden = 0
@@ -468,9 +515,14 @@ for page in ('appearance', 'icons', 'wallpaper', 'launcher', 'layout', 'effects'
     content = window.content
     observer = PageEvents(); content.installEventFilter(observer)
     controls = content.findChildren(ChoiceCard) + content.findChildren(RadioOption)
+    if page == 'effects':
+        controls += content.findChildren(CheckOption)
     if page == 'icons':
+        controls += content.findChildren(QToolButton)
         controls += [content.findChild(QPushButton, 'color-green'), content.findChild(QPushButton, 'color-red')]
     for control in controls + controls[::-1]:
+        if not control.isEnabled():
+            continue
         control.setFocus(); QTest.mouseClick(control, Qt.MouseButton.LeftButton)
         app.processEvents(); app.processEvents()
         assert window.content is content and window.scroll.widget() is content, page
@@ -483,44 +535,88 @@ for page in ('appearance', 'icons', 'wallpaper', 'launcher', 'layout', 'effects'
     content.removeEventFilter(observer)
 window.page = 'icons'; window.render(); app.processEvents()
 photo = window.glass_preview
-regular = window.content.findChild(ChoiceCard, 'choice-icons-regular').photo
-regular_image = regular.pixmap.toImage()
+regular = window.content.findChild(QToolButton, 'choice-icons-regular')
+regular_image = regular.icon().pixmap(QSize(32, 32)).toImage()
 window.select('color', 'blue')
-before = photo.pixmap.toImage(); before_swatch = window.color_buttons['green'].grab().toImage()
+before = photo.icon().pixmap(QSize(32, 32)).toImage(); before_swatch = window.color_buttons['green'].grab().toImage()
 window.select('color', 'green'); app.processEvents()
-assert photo is window.glass_preview and photo.pixmap.toImage() != before
+assert photo is window.glass_preview and photo.icon().pixmap(QSize(32, 32)).toImage() != before
 assert window.color_buttons['green'].grab().toImage() != before_swatch
-assert regular.pixmap.toImage() == regular_image
+assert regular.icon().pixmap(QSize(32, 32)).toImage() == regular_image
 assert window.color_buttons['green'].isChecked() and not window.color_buttons['blue'].isChecked()
 window.select('icons', 'glass')
 window.select('icons', 'keep')
-assert sum(card.isChecked() for card in window.content.findChildren(ChoiceCard)) == 1
+assert window.content.findChild(RadioOption, 'choice-icons-keep').isChecked()
+assert not any(button.isChecked() for _, button in window.choice_widgets['icons'])
 window.page = 'wallpaper'; window.render(); app.processEvents()
 content = window.content
+from wizard_window import WallpaperStrip
+strip, = content.findChildren(WallpaperStrip)
+cards = strip.findChildren(ChoiceCard)
+assert len(cards) == 20 and all(card.accessibleName() and not card.findChildren(QLabel) for card in cards)
+for card in cards:
+    preview = card.photo.pixmap.toImage()
+    mid_x, mid_y = preview.width() // 2, preview.height() // 2
+    seam = [preview.pixelColor(x, mid_y) for x in range(mid_x - 1, mid_x + 2)]
+    assert any(min(pixel.red(), pixel.green(), pixel.blue()) >= 200 for pixel in seam), card.objectName()
+row_positions = sorted({card.y() for card in cards})
+assert len(row_positions) == 2
+assert [sum(card.y() == y for card in cards) for y in row_positions] == [10, 10]
+assert not any(label.text() == 'Anime' for label in content.findChildren(QLabel))
+file_position = window.wallpaper_file_button.mapTo(content, window.wallpaper_file_button.rect().topLeft())
+scroll = strip.horizontalScrollBar()
+assert scroll.maximum() > 0
+scroll.setValue(scroll.maximum())
+assert window.wallpaper_file_button.mapTo(content, window.wallpaper_file_button.rect().topLeft()) == file_position
+keep = content.findChild(RadioOption, 'choice-wallpaper-keep')
+theme = content.findChild(RadioOption, 'choice-wallpaper-theme')
+theme.click()
+assert theme.isChecked()
+original_wallpaper = window.choices['wallpaper']
+bottom = content.findChild(ChoiceCard, 'choice-wallpaper-anime-coast')
+top = next(card for card in cards if card.x() == bottom.x() and card.y() == row_positions[0])
+top.setFocus(); QTest.keyClick(top, Qt.Key.Key_Down)
+assert bottom.hasFocus() and bottom.isChecked()
+QTest.keyClick(bottom, Qt.Key.Key_Up)
+assert top.hasFocus() and top.isChecked()
+window.select('wallpaper', original_wallpaper)
 import tempfile
 with tempfile.TemporaryDirectory() as directory:
     path = Path(directory) / 'wallpaper.png'
     pixmap = QPixmap(10, 10); pixmap.fill(QColor('red')); pixmap.save(str(path))
     original_dialog = QFileDialog.getOpenFileName
     QFileDialog.getOpenFileName = lambda *args: (str(path), '')
+    keep.click()
+    assert window.choices['wallpaper'] == 'keep'
+    assert all(not card.isEnabled() and not card.isChecked() for card in cards)
+    assert not window.wallpaper_file_button.isEnabled()
+    window.choose_file()
+    assert window.choices['wallpaper'] == 'keep'
+    theme.click()
+    assert all(card.isEnabled() for card in cards) and window.wallpaper_file_button.isEnabled()
+    assert window.choices['wallpaper'] == original_wallpaper
     window.choose_file()
     QFileDialog.getOpenFileName = original_dialog
     app.processEvents()
     assert window.content is content and window.choices['wallpaper'] == 'custom'
-    assert window.wallpaper_filename.isVisible() and window.wallpaper_filename.text() == path.name
+    assert window.custom_wallpaper.isVisible() and window.custom_wallpaper.text() == window.t('Custom file')
     assert not any(card.isChecked() for card in content.findChildren(ChoiceCard))
     window.select('wallpaper', 'keep')
-    assert not window.wallpaper_filename.isVisible()
+    assert keep.isChecked() and not window.custom_wallpaper.isVisible()
+    theme.click()
+    assert window.choices['wallpaper'] == 'custom' and window.choices['wallpaper_path'] == str(path)
     window.select('wallpaper', 'tahoe')
-    assert not content.findChild(ChoiceCard, 'choice-wallpaper-keep').isChecked()
+    assert theme.isChecked() and not window.custom_wallpaper.isVisible()
 window.page = 'files'; window.render(); app.processEvents()
 bookmarks = window.bookmarks
 bookmarks.setChecked(False)
-window.select('files', 'dolphin'); assert not bookmarks.isVisible()
-window.select('files', 'nautilus'); assert bookmarks.isVisible() and not bookmarks.isChecked()
+window.content.findChild(RadioOption, 'choice-files-dolphin').click()
+assert window.choices['files'] == 'dolphin' and not bookmarks.isVisible()
+window.content.findChild(RadioOption, 'choice-files-nautilus').click()
+assert window.choices['files'] == 'nautilus' and bookmarks.isVisible() and not bookmarks.isChecked()
 window.content.findChild(RadioOption, 'choice-files-keep').click(); app.processEvents()
 assert window.choices['files'] == 'keep' and not bookmarks.isVisible()
-assert not any(card.isChecked() for card in window.content.findChildren(ChoiceCard))
+assert sum(option.isChecked() for option in window.content.findChildren(RadioOption)) == 1
 window.advance(); app.processEvents()
 assert window.page == 'boot'
 window.previous(); app.processEvents()
@@ -560,10 +656,16 @@ reset = window.content.findChild(CheckOption, 'choice-reset_layout')
 assert not reset.isChecked() and all(not card.isEnabled() for card in cards)
 reset.click(); app.processEvents()
 assert window.choices['reset_layout'] and all(card.isEnabled() for card in cards)
+visibility = window.content.findChild(QComboBox, 'dock-visibility')
+original_visibility = visibility.currentData()
+visibility.setCurrentIndex(visibility.findData('dodgewindows'))
+assert window.choices['dock_visibility'] == 'dodgewindows'
+visibility.setCurrentIndex(visibility.findData(original_visibility))
 assert window.scroll.verticalScrollBar().maximum() == 0
 window.page = 'effects'; window.render(); app.processEvents()
-assert not window.content.findChildren(RadioOption)
-assert not any(c.objectName().startswith('choice-shadows-') for c in window.content.findChildren(ChoiceCard))
+assert not window.content.findChildren(ChoiceCard)
+assert [option.objectName() for option in window.content.findChildren(CheckOption)] == [
+    'choice-acrylic_glass', 'choice-rounded_corners']
 window.page = 'shadows'; window.render(); app.processEvents()
 assert window.choices['shadows'] == 'medium'
 options = window.content.findChildren(ChoiceCard)
@@ -575,39 +677,178 @@ assert window.scroll.verticalScrollBar().maximum() == 0
 window.page = 'summary'; window.render(); app.processEvents()
 assert window.choices['shadows'] == 'hard'
 window.content.findChild(QPushButton, 'edit-shadows').click(); app.processEvents()
-assert window.page == 'shadows'
+assert window.page == 'window_details' and window.panel_frames['shadows'].isVisible()
 window.content.findChild(ChoiceCard, 'choice-shadows-soft').click()
 window.advance(); app.processEvents()
 assert window.page == 'summary' and window.choices['shadows'] == 'soft'
 window.page = 'oled'; window.render(); app.processEvents()
 spins = window.content.findChildren(QSpinBox)
+assert len(spins) == 2
+assert all(spin.geometry().right() == window.content.rect().right() - window.body.contentsMargins().right()
+           for spin in spins)
 window.select('oled_care', True); assert all(spin.isEnabled() for spin in spins)
-spins[0].setValue(17)
+spins[0].setValue(16)
+option = QStyleOptionSpinBox()
+spins[0].initStyleOption(option)
+up = spins[0].style().subControlRect(QStyle.ComplexControl.CC_SpinBox, option,
+                                    QStyle.SubControl.SC_SpinBoxUp, spins[0])
+QTest.mouseClick(spins[0], Qt.MouseButton.LeftButton, pos=up.center())
+assert window.choices['oled_interval'] == 17
 window.select('oled_care', False); assert all(not spin.isEnabled() for spin in spins)
 window.select('oled_care', True); assert spins[0].value() == 17
-# Current wallpaper cards render actual files and package light/dark partners.
-from wizard_window import current_wallpaper_preview
-from PyQt6.QtCore import QUrl
+import os
+window.choices.update(files='nautilus', acrylic_glass=True)
+window.page = 'welcome'; window.render(); app.processEvents()
+assert len(INSTALL_FLOW) == 10
+window.resize(window.minimumSize())
+scrollable_steps = set()
+for section in INSTALL_FLOW[1:]:
+    window.advance(); app.processEvents()
+    assert window.page == section and window.dots.isVisible() and window.next.isVisible()
+    assert window.scroll.horizontalScrollBar().maximum() == 0
+    assert window.content.findChild(QPushButton, 'optionPanelTitle') is None
+    if window.scroll.verticalScrollBar().maximum() > 0:
+        scrollable_steps.add(section)
+    if section == 'windows':
+        assert window.panel_frames['glass_style'].isVisible()
+    if section in {'windows', 'window_details', 'startup', 'summary'}:
+        window.resize(1200, window.minimumHeight()); app.processEvents()
+        assert window.scroll.verticalScrollBar().maximum() == 0, section
+        window.resize(window.minimumSize()); app.processEvents()
+    if section == 'desktop':
+        assert all(window.panel_frames[key].isVisible() for key in ('wallpaper', 'desktop_widgets', 'launcher'))
+    if section == 'dock_bar':
+        assert 'launcher' not in window.panel_frames
+assert 'desktop' in scrollable_steps
+assert not scrollable_steps.intersection({'windows', 'window_details', 'startup', 'summary'}), scrollable_steps
+window.previous()
+assert window.page == 'startup'
+window.page = 'done'
+window.open_installed_settings()
+assert window.sidebar.isVisible() and not window.dots.isVisible()
+assert list(window.section_buttons)[1:5] == ['theme', 'desktop', 'dock_bar', 'windows']
+assert window.section_buttons['dock_bar'].text() == 'Dock'
+window.search.setText('Launcher position')
+assert window.filter_settings() == ['desktop']
+window.search.setText('idioma')
+assert window.filter_settings() == ['general']
+window.open_search_result()
+assert window.page == 'general' and window.settings_back.isEnabled()
+window.settings_back.click()
+assert window.page == 'theme' and window.settings_forward.isEnabled()
+window.settings_forward.click()
+assert window.page == 'general'
+window.navigate_settings('desktop')
+QTest.qWait(50)
+assert all(window.panel_frames[key].isVisible() for key in ('wallpaper', 'desktop_widgets'))
+assert window.content.findChild(QPushButton, 'optionPanelTitle') is None
+bar = window.scroll.verticalScrollBar()
+assert bar.maximum() > 0
+assert window.scroll.horizontalScrollBar().maximum() == 0
+offset = min(170, bar.maximum())
+bar.setValue(offset)
+window.section_buttons['desktop'].click()
+assert window.section_buttons['desktop'].isChecked() and bar.value() == offset
+window.navigate_settings('general')
+QTest.qWait(50)
+QTest.keyClick(window, Qt.Key.Key_Left, Qt.KeyboardModifier.AltModifier)
+QTest.qWait(50)
+assert window.page == 'desktop' and bar.value() == offset
+QTest.keyClick(window, Qt.Key.Key_Right, Qt.KeyboardModifier.AltModifier)
+QTest.qWait(50)
+assert window.page == 'general'
+window.settings_back.click()
+QTest.qWait(50)
+assert window.page == 'desktop' and bar.value() == offset
+window.navigate_settings('windows')
+assert not window.settings_forward.isEnabled()
+window.search.setText('zzzzz')
+assert window.no_results.isVisible()
+window.search.clear()
+window.navigate_settings('theme')
+
+# Exercise the real process adapter with a session-local switcher.
 import theme_switch
-snapshot = theme_switch._wallpapers_from_config
-with tempfile.TemporaryDirectory() as directory:
-    package = Path(directory) / 'My wallpaper'
-    for folder, color in [('images', 'red'), ('images_dark', 'blue')]:
-        destination = package / 'contents' / folder / 'image.png'
-        destination.parent.mkdir(parents=True)
-        tile = QPixmap(80, 40); tile.fill(QColor(color)); tile.save(str(destination))
-    for path in [package, package/'contents/images/image.png', package/'contents/images_dark/image.png']:
-        theme_switch._wallpapers_from_config = lambda: [{'screen': 0, 'image': QUrl.fromLocalFile(str(path)).toString()}]
-        preview = current_wallpaper_preview(100, 50).toImage()
-        assert preview.pixelColor(10, 50) == QColor('red')
-        assert preview.pixelColor(190, 50) == QColor('blue')
-    theme_switch._wallpapers_from_config = lambda: [{'screen': 0, 'image': str(package/'missing.png')}]
-    assert not current_wallpaper_preview(100, 50).isNull()
-theme_switch._wallpapers_from_config = snapshot
+state = theme_switch._appearance_state_path()
+state.parent.mkdir(parents=True, exist_ok=True)
+state.write_text('{"preference":"light"}')
+switcher = state.parent / 'mac-tahoe-theme-switch'
+switcher.write_text("""#!/bin/sh
+if [ "$1" = "dark" ]; then
+    printf '%s' '{"preference":"dark"}' > "$XDG_STATE_HOME/mac-tahoe-liquid-kde/appearance.json"
+else
+    exit 1
+fi
+""")
+switcher.chmod(0o700)
+os.environ['PATH'] = str(switcher.parent) + ':' + os.environ['PATH']
+window.refresh_settings_appearance()
+assert window.choices['appearance'] == 'light'
+window.select('appearance', 'dark')
+for _ in range(100):
+    if window.appearance_process is None:
+        break
+    QTest.qWait(10)
+assert window.choices['appearance'] == 'dark' and not window.appearance_error
+window.select('appearance', 'light')
+for _ in range(100):
+    if window.appearance_process is None:
+        break
+    QTest.qWait(10)
+assert window.choices['appearance'] == 'dark' and window.appearance_error
+window.navigate_settings('startup')
+assert set(window.panel_frames) == {'boot'}
+window.search.setText('pantalla')
+matches = window.filter_settings()
+assert matches[0] == 'display' and 'desktop' in matches
+assert window.section_list.itemAt(0).widget() is window.section_buttons['display']
+assert window.search.clear_action.isVisible()
+window.search.setFocus()
+QTest.keyClick(window.search, Qt.Key.Key_Return)
+assert window.page == 'display' and set(window.panel_frames) == {'oled'}
+window.search.setFocus()
+QTest.keyClick(window.search, Qt.Key.Key_Escape)
+assert not window.search.text() and all(not button.isHidden() for button in window.section_buttons.values())
+assert not window.search.clear_action.isVisible()
+assert window.section_list.itemAt(0).widget() is window.section_buttons['general']
+window.select('oled_care', not window.choices['oled_care'])
+assert window.settings_review.isVisible()
+window.settings_review.click()
+assert window.page == 'summary' and not window.settings_mode and window.reconfiguring
+assert not window.choices['reset_layout']
+window.previous()
+assert window.page == 'display' and window.settings_mode and window.settings_review.isVisible()
+window.select('oled_care', window.settings_baseline['oled_care'])
+window.navigate_settings('general')
+assert not window.settings_review.isVisible()
+original_calls = len(calls)
+window.content.findChild(QPushButton, 'settingsReinstall').click()
+assert window.page == 'summary' and window.next.text() == window.t('Reinstall')
+assert len(calls) == original_calls and not window.choices['reset_layout']
+window.back.click()
+assert window.page == 'general' and window.settings_mode
+window.content.findChild(QPushButton, 'settingsReinstall').click()
+window.next.click()
+assert window.page == 'progress' and calls[-1][0] == 'install'
+assert not calls[-1][1]['reset_layout']
+bridge._running = False; bridge.finished.emit(0)
+window.next.click()
+assert window.page == 'general' and window.settings_mode
+window.content.findChild(QPushButton, 'settingsUninstall').click()
+assert window.page == 'uninstall' and window.next.text() == window.t('Uninstall')
+assert len(calls) == original_calls + 1
+window.back.click()
+assert window.page == 'general' and window.settings_mode
+window.content.findChild(QPushButton, 'settingsUninstall').click()
+window.next.click()
+assert window.page == 'progress' and calls[-1][0] == 'uninstall'
+bridge._running = False; bridge.finished.emit(0)
+assert window.page == 'removed'
 window.close()
 print('native wizard flow passed')
 '''
     env = os.environ | {"QT_QPA_PLATFORM": "offscreen", "XDG_CONFIG_HOME": str(tmp_path),
+                        "XDG_STATE_HOME": str(tmp_path / "state"),
                         "MAC_TAHOE_NO_UPDATE_CHECK": "true", "PYTHONDONTWRITEBYTECODE": "1"}
     result = subprocess.run([sys.executable, "-c", script, edition], cwd=repo, env=env,
                             capture_output=True, text=True, timeout=45)
@@ -667,8 +908,9 @@ for dark in (False, True):
         assert app.style().objectName().lower() == 'fusion'
         assert app.palette() == window.palette()
         assert window.font().family() == 'SF Pro Text'
-        assert window._desktop_font.family() == font.family()
-        assert abs(window.font().pointSizeF() - font.pointSizeF() * 7/6) < .01
+        assert app.property('installerDesktopFont').family() == font.family()
+        assert abs(window.settings_font.pointSizeF() - max(8.5, font.pointSizeF())) < .01
+        assert abs(window.font().pointSizeF() - max(8.5, window.settings_font.pointSizeF() * .96)) < .01
         assert window.palette().highlight().color().name() == '#007aff'
         capture = window.grab().toImage()
         if baseline is None:

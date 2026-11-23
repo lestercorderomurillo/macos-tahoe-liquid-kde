@@ -229,3 +229,6 @@ msgstr "El interruptor físico bloquea el Wi-Fi"
 
 msgid "Wi-Fi is off"
 msgstr "El Wi-Fi está desactivado"
+
+msgid "Configure in Settings…"
+msgstr "Configurar en Ajustes…"

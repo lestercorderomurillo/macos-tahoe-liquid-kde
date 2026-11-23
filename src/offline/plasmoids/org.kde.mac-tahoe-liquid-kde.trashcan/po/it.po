@@ -22,3 +22,6 @@ msgstr "Cestino"
 
 msgid "Trash Settings…"
 msgstr "Impostazioni del cestino..."
+
+msgid "Configure Trash"
+msgstr "Configura il cestino"

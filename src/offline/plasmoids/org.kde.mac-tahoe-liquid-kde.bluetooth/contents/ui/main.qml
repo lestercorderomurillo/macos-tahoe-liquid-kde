@@ -5,6 +5,9 @@ import org.kde.plasma.core as PlasmaCore
 import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Controls
 PlasmoidItem {
     id: root
+    Controls.SettingsEntry { id: settingsEntry; widgetId: Plasmoid.id }
+    Plasmoid.hasConfigurationInterface: !settingsEntry.available
+    Plasmoid.contextualActions: [settingsEntry]
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     preferredRepresentation: fullRepresentation
     compactRepresentation: null

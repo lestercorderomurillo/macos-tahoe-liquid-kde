@@ -74,6 +74,9 @@ msgstr "Fermer la fenêtre"
 msgid "Commands"
 msgstr "Commandes"
 
+msgid "Configure System Menu…"
+msgstr "Configurer le menu système…"
+
 msgid "Copied"
 msgstr "Copié"
 

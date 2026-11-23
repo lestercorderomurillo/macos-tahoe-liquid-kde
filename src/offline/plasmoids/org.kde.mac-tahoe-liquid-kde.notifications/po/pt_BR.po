@@ -229,3 +229,6 @@ msgstr "O Wi-Fi está bloqueado pelo botão físico"
 
 msgid "Wi-Fi is off"
 msgstr "O Wi-Fi está desligado"
+
+msgid "Configure in Settings…"
+msgstr "Configurar em Ajustes…"

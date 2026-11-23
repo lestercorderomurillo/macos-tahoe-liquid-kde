@@ -8,6 +8,9 @@ import org.kde.mac.tahoe.launcher as Native
 import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Controls
 PlasmoidItem {
     id: root
+    Controls.SettingsEntry { id: settingsEntry; widgetId: Plasmoid.id }
+    Plasmoid.hasConfigurationInterface: !settingsEntry.available
+    Plasmoid.contextualActions: [settingsEntry]
     readonly property color notificationTextColor: Kirigami.Theme.textColor
     readonly property color notificationBackgroundColor: Kirigami.Theme.backgroundColor
     readonly property color notificationDisabledColor: Kirigami.Theme.disabledTextColor

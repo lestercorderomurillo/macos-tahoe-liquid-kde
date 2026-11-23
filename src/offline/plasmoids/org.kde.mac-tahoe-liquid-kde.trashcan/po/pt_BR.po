@@ -22,3 +22,6 @@ msgstr "Lixeira"
 
 msgid "Trash Settings…"
 msgstr "Configurações da lixeira…"
+
+msgid "Configure Trash"
+msgstr "Configurar lixeira"

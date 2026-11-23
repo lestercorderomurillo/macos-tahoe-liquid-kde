@@ -19,6 +19,47 @@ def test_bundle_holds_the_widget_set_and_photos():
     assert (archive.parent / "LICENSE").read_text().startswith("                    GNU GENERAL PUBLIC LICENSE")
 
 
+def test_panel_weather_route_preserves_existing_context_actions(tmp_path):
+    from weather_panel_settings import MARKER, PLUGIN, stage_configuration_route
+
+    archive = ROOT / "src/offline/desktop-widgets/liquidglass-kde-widgets.tar.zst"
+    main = tmp_path / PLUGIN / "contents/ui/main.qml"
+    subprocess.run(["tar", "--zstd", "-xf", str(archive), "-C", str(tmp_path),
+                    f"./{PLUGIN}/contents/ui/main.qml"], check=True)
+    stage_configuration_route(tmp_path / PLUGIN)
+    updated = main.read_text()
+    assert MARKER in updated
+    assert "section: \"weather_panel\"" in updated
+    assert "[refreshAction, settingsEntry].concat(commonActions.list)" in updated
+    assert "settingsEntry.available ? Qt.NoButton : Qt.RightButton" in updated
+    stage_configuration_route(tmp_path / PLUGIN)
+    assert main.read_text() == updated
+
+
+def test_migrated_desktop_widget_settings_cover_the_bundled_schema_and_clipboard(tmp_path):
+    from xml.etree import ElementTree
+    from desktop_widget_settings import MARKER, NAMES, PREFIX, STYLE_KEYS, read_schema, stage_configuration_route
+
+    archive = ROOT / "src/offline/desktop-widgets/liquidglass-kde-widgets.tar.zst"
+    subprocess.run(["tar", "--zstd", "-xf", str(archive), "-C", str(tmp_path),
+                    *("./" + PREFIX + name for name in NAMES)], check=True)
+    for variant in NAMES:
+        package = tmp_path / (PREFIX + variant)
+        xml = ElementTree.parse(package / "contents/config/main.xml")
+        assert read_schema(package).DEFAULTS.keys() == {
+            node.attrib["name"] for node in xml.findall(".//{*}entry")}
+        stage_configuration_route(package)
+        main = package / "contents/ui/main.qml"
+        updated = main.read_text()
+        assert MARKER in updated
+        assert 'section: "desktop_widget"' in updated
+        assert "commonActions.support] : commonActions.list" in updated
+        stage_configuration_route(package)
+        assert main.read_text() == updated
+        codec = (package / "contents/ui/components/styleCodec.js").read_text()
+        assert all(f'{key}: "{value}"' in codec for key, value in STYLE_KEYS.items())
+
+
 @pytest.fixture
 def widgets(tmp_path, monkeypatch):
     from steps import plasmoids

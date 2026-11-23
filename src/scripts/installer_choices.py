@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import ast
 import json
 import os
 import re
 from pathlib import Path
 
 from launcher_defaults import edition_name
+from theme_switch import WALLPAPER_PAIRS as WALLPAPERS
 
 COLORS = {
     "blue": "#007aff", "purple": "#af52de", "pink": "#ff2d55",
@@ -25,22 +27,13 @@ ENUMS = {
     # Light/dark variant of the icons, independent of the appearance (macOS).
     "icon_appearance": ("auto", "light", "dark"),
     "color": tuple(COLORS),
-    "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "exuma", "keep", "custom"),
+    "wallpaper": (*WALLPAPERS, "keep", "custom"),
     "launcher": ("tahoe", "golden", "keep"),
     "files": ("nautilus", "dolphin", "keep"),
     "shadows": ("none", "soft", "medium", "hard"),
     "window_controls": ("flat", "glassy"),
     "button_position": ("left", "right", "keep"),
     "glass_style": tuple(preset["choice"] for preset in GLASS_PRESETS),
-}
-WALLPAPERS = {
-    "exuma": ("MacExuma", "MacExuma"),
-    "prism": ("MacPrism", "MacPrism"),
-    "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
-    "tahoe": ("MacTahoe", "MacTahoe"),
-    "golden": ("MacGoldenGate", "MacGoldenGate"),
-    "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),
-    "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon"),
 }
 
 
@@ -121,6 +114,23 @@ def validate(value: object) -> dict:
     if result["wallpaper"] == "custom" and not os.path.isabs(path):
         raise ValueError("Choose a wallpaper file")
     return result
+
+
+def installed_choices() -> dict | None:
+    """Read the options embedded by the last graphical installation."""
+    switcher = Path.home() / ".local/bin/mac-tahoe-theme-switch"
+    try:
+        with switcher.open(encoding="utf-8") as stream:
+            for line in stream:
+                if line.startswith("INSTALLER_OPTIONS = "):
+                    stored = ast.literal_eval(line.split(" = ", 1)[1].strip())
+                    if not isinstance(stored, dict) or not stored:
+                        return None
+                    stored.pop("preserved_icon", None)
+                    return validate(stored)
+    except (OSError, SyntaxError, ValueError, TypeError):
+        return None
+    return None
 
 
 def selected() -> dict:

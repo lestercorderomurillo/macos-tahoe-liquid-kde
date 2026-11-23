@@ -23,3 +23,6 @@ msgid "Enter any icon name from your current icon theme."
 msgstr "Introduce cualquier nombre de icono del tema actual."
 msgid "Trash Settings…"
 msgstr "Preferencias de la papelera…"
+
+msgid "Configure Trash"
+msgstr "Configurar papelera"

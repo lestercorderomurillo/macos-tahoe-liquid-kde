@@ -28,6 +28,9 @@
       <default>true</default>
     </entry>
 
+    <entry name="menuIconPreset" type="String">
+      <default>custom</default>
+    </entry>
     <entry name="menuIcon" type="String">
       <default>start-here-symbolic</default>
     </entry>
@@ -64,8 +67,12 @@
       <default>user-identity</default>
     </entry>
 
+    <entry name="cmdAppStore" type="String">
+      <label>Program and arguments to open from the App Store menu item.</label>
+      <default></default>
+    </entry>
     <entry name="cmdSleep" type="String">
-      <default>qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement requestSuspend</default>
+      <default>qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam</default>
     </entry>
     <entry name="cmdRestart" type="String">
       <default>qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot</default>

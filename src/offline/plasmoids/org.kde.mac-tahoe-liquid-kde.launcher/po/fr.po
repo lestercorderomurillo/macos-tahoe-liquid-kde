@@ -208,3 +208,6 @@ msgstr "Choisir…"
 msgctxt "@item:inmenu Reset icon to default"
 msgid "Clear Icon"
 msgstr "Effacer l’icône"
+
+msgid "Configure Apps…"
+msgstr "Configurer Apps…"

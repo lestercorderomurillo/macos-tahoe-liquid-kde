@@ -143,3 +143,6 @@ msgstr "Copiar detalles"
 
 msgid "Close %1"
 msgstr "Cerrar %1"
+
+msgid "Configure System Menu…"
+msgstr "Configurar menú del sistema…"

@@ -16,11 +16,14 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusMessage>
+#include <QFile>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QFileInfo>
 #include <QPersistentModelIndex>
+#include <QRegularExpression>
 #include <QStandardPaths>
+#include <QSysInfo>
 #include <QTimer>
 #include <KDesktopFile>
 #include <QLineEdit>
@@ -37,6 +40,24 @@
 // File-scope state
 
 int AppMenuApplet::s_refs = 0;
+
+QUrl AppMenuApplet::systemMenuIcon(const QString &preset, const QUrl &directory) const
+{
+    const bool automatic = preset == QStringLiteral("distro");
+    QString name = automatic ? QSysInfo::productType() : preset;
+    if (automatic && name == QStringLiteral("opensuse")) {
+        name = QStringLiteral("opensuse-tumbleweed");
+    }
+    static const QRegularExpression validName(QStringLiteral("^[a-z0-9-]+$"));
+    if (validName.match(name).hasMatch()) {
+        const QUrl icon = directory.resolved(QUrl(name + QStringLiteral(".svg")));
+        const QString path = icon.isLocalFile() ? icon.toLocalFile() : QStringLiteral(":") + icon.path();
+        if (QFile::exists(path)) {
+            return icon;
+        }
+    }
+    return automatic ? directory.resolved(QUrl(QStringLiteral("penguin.svg"))) : QUrl();
+}
 
 namespace {
 /// DBus name we register as while at least one AppMenuApplet is alive.
@@ -561,12 +582,16 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     auto* menu = m_systemMenu.data();
     menu->clear();
 
-    const auto cfg = config();
+    const auto legacy = config();
+    const auto appearance = legacy.group(QStringLiteral("Appearance"));
+    const auto readSetting = [&appearance, &legacy](const char* key, const QString& fallback) {
+        return appearance.readEntry(key, legacy.readEntry(key, fallback));
+    };
 
     const auto preset = SystemMenuStyle::themePreset();
     static_cast<SystemMenuStyle*>(menu->style())->setPreset(preset);
-    auto icon = [&cfg, preset](const char* key, const QString& fallback) {
-        return SystemMenuStyle::menuIcon(cfg.readEntry(key, fallback), fallback, preset);
+    auto icon = [&readSetting, preset](const char* key, const QString& fallback) {
+        return SystemMenuStyle::menuIcon(readSetting(key, fallback), fallback, preset);
     };
 
     menu->addAction(icon("iconAbout", QStringLiteral("computer")), i18n("About This Computer"), this, [this]() { Q_EMIT aboutRequested(); });
@@ -575,9 +600,14 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
 
     menu->addAction(icon("iconSystemSettings", QStringLiteral("preferences-system")), i18n("System Settings…"),
         []() { runCommand(QStringLiteral("systemsettings")); });
-    if (!QStandardPaths::findExecutable(QStringLiteral("plasma-discover")).isEmpty()) {
-        menu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")), i18n("App Store…"),
-            []() { runCommand(QStringLiteral("plasma-discover")); });
+    const QString storeCommand = readSetting("cmdAppStore", QString()).trimmed();
+    QStringList storeArgs = QProcess::splitCommand(storeCommand.isEmpty() ? QStringLiteral("plasma-discover") : storeCommand);
+    if (!storeArgs.isEmpty()) {
+        const QString program = QStandardPaths::findExecutable(storeArgs.takeFirst());
+        if (!program.isEmpty()) {
+            menu->addAction(icon("iconAppStore", QStringLiteral("software-store-symbolic")), i18n("App Store…"),
+                [program, storeArgs]() { QProcess::startDetached(program, storeArgs); });
+        }
     }
 
     menu->addSeparator();
@@ -588,12 +618,12 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     menu->addSeparator();
 
     menu->addAction(icon("iconSleep", QStringLiteral("system-suspend")), i18n("Sleep"),
-        [cmd = cfg.readEntry(
+        [cmd = readSetting(
              "cmdSleep", QStringLiteral("qdbus6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus-qt6 org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam || qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement/Actions/SuspendSession org.kde.Solid.PowerManagement.Actions.SuspendSession.suspendToRam"))]() {
             runSuspendAction(cmd);
         });
     menu->addAction(icon("iconRestart", QStringLiteral("system-reboot")), i18n("Restart…"),
-        [cmd = cfg.readEntry("cmdRestart", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
+        [cmd = readSetting("cmdRestart", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptReboot"))]() {
             runSystemAction(cmd,
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("/LogoutPrompt"),
@@ -601,7 +631,7 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
                 QStringLiteral("promptReboot"));
         });
     menu->addAction(icon("iconShutDown", QStringLiteral("system-shutdown")), i18n("Shut Down…"),
-        [cmd = cfg.readEntry("cmdShutDown", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
+        [cmd = readSetting("cmdShutDown", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptShutDown"))]() {
             runSystemAction(cmd,
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("/LogoutPrompt"),
@@ -612,14 +642,14 @@ void AppMenuApplet::triggerSystemMenu(QQuickItem* ctx)
     menu->addSeparator();
 
     auto* lockAction = menu->addAction(icon("iconLockScreen", QStringLiteral("system-lock-screen")), i18n("Lock Screen"),
-        [cmd = cfg.readEntry("cmdLockScreen", QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
+        [cmd = readSetting("cmdLockScreen", QStringLiteral("qdbus6 org.freedesktop.ScreenSaver /ScreenSaver Lock || loginctl lock-session"))]() {
             runCommand(cmd);
         });
     lockAction->setShortcut(QKeySequence(Qt::CTRL | Qt::META | Qt::Key_Q));
     lockAction->setShortcutContext(Qt::WidgetShortcut);
     const QString firstName = KUser().property(KUser::FullName).toString().section(QLatin1Char(' '), 0, 0);
     auto* logoutAction = menu->addAction(icon("iconLogOut", QStringLiteral("user-identity")), i18n("Log Out %1…", firstName),
-        [cmd = cfg.readEntry("cmdLogOut", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
+        [cmd = readSetting("cmdLogOut", QStringLiteral("qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout"))]() {
             runSystemAction(cmd,
                 QStringLiteral("org.kde.LogoutPrompt"),
                 QStringLiteral("/LogoutPrompt"),
