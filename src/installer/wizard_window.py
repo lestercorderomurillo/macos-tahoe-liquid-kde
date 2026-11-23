@@ -1060,7 +1060,8 @@ class InstallerWindow(OpaqueSurface):
                 terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons",
                           "System menu", "App Store icon", "App Store command", "Log Out command",
                           "Apps preferences", "Open from Apps", "Launcher position", "Grid icon size",
-                          "Activation shortcut", "Hover magnification")
+                          "Activation shortcut", "Hover magnification", "Control Center", "Widget shortcuts",
+                          "Wi-Fi", "Bluetooth", "Battery", "Downloads", "Notifications")
             keywords = search_text(" ".join((*terms, *(self.t(term) for term in terms))))
             match = all(term in keywords for term in query)
             button.setVisible(match)
@@ -1709,7 +1710,9 @@ class InstallerWindow(OpaqueSurface):
         import dock_preferences
         import launcher_preferences
         from dock_apps import desktop_applications
-        from plasmoid_settings import apply, instances, SHORTCUT_WIDGETS, TYPED_PREFERENCES
+        from plasmoid_settings import (
+            apply, instances, BAR_WIDGET_LABELS, CONTROL_CENTER_FIELDS, SHORTCUT_WIDGETS, TYPED_PREFERENCES,
+        )
         text_fields = {
             "trash": (
                 ("emptyIcon", "Empty trash icon", "user-trash"),
@@ -1722,7 +1725,14 @@ class InstallerWindow(OpaqueSurface):
             ),
         }
         for kind, title in (("dock", "Dock preferences"), ("launcher", "Apps preferences"),
-                            ("trash", "Trash"), ("system_menu", "System menu")):
+                            ("trash", "Trash"), ("control_center", "Control Center"),
+                            ("bar_shortcuts", "Widget shortcuts"), ("system_menu", "System menu")):
+            try:
+                widgets = instances(kind)
+            except RuntimeError:
+                widgets = {}
+            if not widgets and kind in ("control_center", "bar_shortcuts"):
+                continue
             panel = self.option_card()
             column = QVBoxLayout(panel)
             column.setContentsMargins(12, 10, 12, 10)
@@ -1731,24 +1741,27 @@ class InstallerWindow(OpaqueSurface):
             header = QHBoxLayout()
             header.addWidget(heading, 1)
             column.addLayout(header)
-            try:
-                widgets = instances(kind)
-            except RuntimeError:
-                widgets = {}
             if not widgets:
                 column.addWidget(self.label("No matching widgets in this Plasma session."))
                 self.body.addWidget(panel)
                 continue
 
             picker = GlassComboBox()
-            for instance in sorted(widgets):
-                picker.addItem(self.t("Widget {id}").format(id=instance), instance)
+            if kind == "bar_shortcuts":
+                names = {instance: self.t(BAR_WIDGET_LABELS[record["_plugin"]])
+                         for instance, record in widgets.items()}
+                for instance, name in sorted(names.items(), key=lambda item: (item[1].casefold(), item[0])):
+                    suffix = f" ({instance})" if list(names.values()).count(name) > 1 else ""
+                    picker.addItem(name + suffix, instance)
+            else:
+                for instance in sorted(widgets):
+                    picker.addItem(self.t("Widget {id}").format(id=instance), instance)
             preferred = picker.findData(self.requested_widget)
             if preferred >= 0:
                 picker.setCurrentIndex(preferred)
                 self.widget_settings_target = panel
             picker.setAccessibleName(self.t("Widget instance"))
-            picker.setVisible(len(widgets) > 1)
+            picker.setVisible(len(widgets) > 1 or kind == "bar_shortcuts")
             column.addWidget(picker)
             controls = {}
             rows = {}
@@ -1843,7 +1856,15 @@ class InstallerWindow(OpaqueSurface):
                     form.addStretch()
                     tabs.addTab(tab, self.t(label))
                 column.addWidget(tabs)
-            else:
+            elif kind == "control_center":
+                grid = QGridLayout()
+                for index, (key, label) in enumerate(CONTROL_CENTER_FIELDS.items()):
+                    checkbox = CheckOption(self.t(label))
+                    checkbox.setObjectName(key)
+                    controls[key] = checkbox
+                    grid.addWidget(checkbox, index // 2, index % 2)
+                column.addLayout(grid)
+            elif kind in text_fields:
                 grid = QGridLayout()
                 grid.setColumnStretch(0, 1)
                 grid.setColumnStretch(2, 2)
@@ -1868,7 +1889,8 @@ class InstallerWindow(OpaqueSurface):
             result = self.label("")
             result.setObjectName("detail")
             save = GlassButton(self.t("Save"))
-            if typed is not None:
+            save_in_header = typed is not None or kind in ("control_center", "bar_shortcuts")
+            if save_in_header:
                 header.addWidget(save)
             else:
                 buttons.addStretch()
@@ -1894,7 +1916,7 @@ class InstallerWindow(OpaqueSurface):
                     storage.clicked.connect(lambda: subprocess.Popen(
                         [shell, "kcm_trash"], start_new_session=True))
                 buttons.addWidget(storage)
-            if typed is None:
+            if not save_in_header:
                 column.addLayout(buttons)
             result.hide()
             column.addWidget(result)

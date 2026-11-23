@@ -5,6 +5,9 @@ import org.kde.plasma.core as PlasmaCore
 import "MenuBarSync.js" as MenuBarSync
 PlasmoidItem {
     id: root
+    SettingsEntry { id: settingsEntry; widgetId: Plasmoid.id }
+    Plasmoid.hasConfigurationInterface: !settingsEntry.available
+    Plasmoid.contextualActions: [settingsEntry]
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     StatusTrayStyle {
         panelItem: root
@@ -50,7 +53,15 @@ PlasmoidItem {
         visualParent: root
         location: Plasmoid.location
         surfaces: controls.surfaces
-        mainItem: ControlView { id: controls; shadowMargin: 170; preferences: Plasmoid.configuration; width: implicitWidth; height: implicitHeight; onCloseRequested: popup.dismiss() }
+        mainItem: ControlView {
+            id: controls
+            shadowMargin: 170
+            preferences: Plasmoid.configuration
+            openControlSettings: settingsEntry.available ? () => settingsEntry.trigger() : null
+            width: implicitWidth
+            height: implicitHeight
+            onCloseRequested: popup.dismiss()
+        }
         onVisibleChanged: { if (visible) { requestActivate(); controls.forceActiveFocus(); } else controls.section = ""; }
     }
 }

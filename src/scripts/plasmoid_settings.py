@@ -10,7 +10,33 @@ from launcher_defaults import LAUNCHER_ID
 from theme_switch import _evaluate_plasma_script
 
 TYPED_PREFERENCES = {"dock": dock_preferences, "launcher": launcher_preferences}
-SHORTCUT_WIDGETS = {"dock", "launcher", "trash"}
+SHORTCUT_WIDGETS = {"dock", "launcher", "trash", "bar_shortcuts", "control_center"}
+WIDGET_PREFIX = "org.kde.mac-tahoe-liquid-kde."
+BAR_WIDGET_LABELS = {
+    WIDGET_PREFIX + "acrylicglass": "Acrylic Glass",
+    WIDGET_PREFIX + "battery": "Battery",
+    WIDGET_PREFIX + "bluetooth": "Bluetooth",
+    WIDGET_PREFIX + "dockseparator": "Dock Separator",
+    WIDGET_PREFIX + "downloads": "Downloads",
+    WIDGET_PREFIX + "notifications": "Notifications",
+    WIDGET_PREFIX + "wifi": "Wi-Fi",
+}
+CONTROL_CENTER_FIELDS = {
+    "showWifi": "Wi-Fi",
+    "showBluetooth": "Bluetooth",
+    "showBattery": "Battery",
+    "showMedia": "Now Playing",
+    "showSharing": "File Sharing",
+    "showOverview": "Overview",
+    "showMirroring": "Screen Mirroring",
+    "showDarkMode": "Dark Mode",
+    "showScreenshot": "Screenshot",
+    "showFocus": "Focus",
+    "showNotifications": "Notifications",
+    "showSettings": "Bluetooth Settings…",
+    "showDisplay": "Display",
+    "showAudio": "Sound",
+}
 
 SETTINGS = {
     "trash": (
@@ -22,6 +48,11 @@ SETTINGS = {
     ),
     "launcher": (
         {LAUNCHER_ID}, "General", launcher_preferences.DEFAULTS,
+    ),
+    "bar_shortcuts": (BAR_WIDGET_LABELS.keys(), "General", {}),
+    "control_center": (
+        {WIDGET_PREFIX + "controlcenter"}, "General",
+        dict.fromkeys(CONTROL_CENTER_FIELDS, True) | {"showNotifications": False, "showSettings": False},
     ),
     "system_menu": (
         {"org.kde.mac.tahoe.liquid.globalmenu"}, "Appearance",
@@ -52,7 +83,7 @@ def _request(kind, instance=None, changes=None):
         raise ValueError("Invalid Dock preference value" if kind == "dock" else "Invalid launcher preference value")
     payload = json.dumps({"plugins": sorted(plugins), "group": group, "defaults": defaults,
                           "instance": instance, "changes": changes, "dock": kind == "dock",
-                          "hasShortcut": has_shortcut})
+                          "hasShortcut": has_shortcut, "identifyPlugin": kind in {"dock", "bar_shortcuts"}})
     script = """
 const request = REQUEST;
 const result = {};
@@ -93,10 +124,10 @@ for (const container of containers) {
             }
             values[key] = widget.readConfig(key, fallback);
         }
-        if (request.dock) {
+        if (request.identifyPlugin)
             values._plugin = widget.type;
+        if (request.dock)
             values._vertical = container.formFactor === "vertical";
-        }
         result[widget.id] = values;
     }
 }
@@ -107,7 +138,7 @@ print(JSON.stringify(result));
         decoded = json.loads(result)
         if not isinstance(decoded, dict):
             raise ValueError
-        if typed is not None:
+        if typed is not None or kind == "control_center":
             for values in decoded.values():
                 for key, default in defaults.items():
                     value = values.get(key, default)

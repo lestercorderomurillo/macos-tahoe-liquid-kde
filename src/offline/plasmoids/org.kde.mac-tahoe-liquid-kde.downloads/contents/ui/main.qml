@@ -4,9 +4,12 @@ import QtQuick.Layouts
 import org.kde.mac.tahoe.launcher as NativeLauncher
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
+import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Controls
 
 PlasmoidItem {
     id: root
+    Controls.SettingsEntry { id: settingsEntry; widgetId: Plasmoid.id }
+    Plasmoid.hasConfigurationInterface: !settingsEntry.available
     NativeLauncher.DockCell {
         id: dockCell
         applet: root
@@ -39,11 +42,13 @@ PlasmoidItem {
         Qt.openUrlExternally(recent.folder);
         popup.visible = false;
     }
-    Plasmoid.contextualActions: [PlasmaCore.Action {
+    PlasmaCore.Action {
+        id: openDownloads
         text: i18n("Open Downloads")
         icon.name: "folder-open"
         onTriggered: root.openFolder()
-    }]
+    }
+    Plasmoid.contextualActions: [settingsEntry, openDownloads]
 
     fullRepresentation: NativeLauncher.DockIcon {
         location: Plasmoid.location

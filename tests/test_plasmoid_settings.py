@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 import re
+from xml.etree import ElementTree
 
 import pytest
 
@@ -95,3 +96,31 @@ def test_apps_form_covers_the_config_and_preserves_editions_and_file_urls(monkey
     assert values["goldenGateColumns"] == 8 and values["numberColumns"] == 5
     assert values["floating"] is False
     assert values["activationShortcut"] == "Meta+Shift+F11"
+
+
+def test_control_center_retains_every_tile_and_its_existing_default():
+    plugin = plasmoid_settings.WIDGET_PREFIX + "controlcenter"
+    package = Path(__file__).resolve().parents[1] / "src/offline/plasmoids" / plugin / "contents"
+    edit = (package / "ui/EditControls.qml").read_text()
+    assert set(re.findall(r'key:"(\w+)"', edit)) == plasmoid_settings.CONTROL_CENTER_FIELDS.keys()
+    schema = ElementTree.parse(package / "config/main.xml")
+    defaults = {node.attrib["name"]: node.findtext("{*}default") == "true"
+                for node in schema.findall(".//{*}entry")}
+    assert plasmoid_settings.SETTINGS["control_center"][2] == defaults
+
+
+def test_bar_widgets_use_plasma_activation_shortcut_and_keep_plugin_identity(monkeypatch):
+    plugin = plasmoid_settings.WIDGET_PREFIX + "downloads"
+
+    def evaluate(script):
+        request = json.loads(script.split("const request = ", 1)[1].split(";\n", 1)[0])
+        assert request["plugins"] == sorted(plasmoid_settings.BAR_WIDGET_LABELS)
+        assert request["identifyPlugin"] and request["hasShortcut"]
+        assert request["defaults"] == {}
+        assert request["changes"] == {"activationShortcut": "Meta+Shift+F11"}
+        return json.dumps({25: {"activationShortcut": "Meta+Shift+F11", "_plugin": plugin}})
+
+    monkeypatch.setattr(plasmoid_settings, "_evaluate_plasma_script", evaluate)
+    assert plasmoid_settings.apply("bar_shortcuts", 25, {"activationShortcut": "Meta+Shift+F11"}) == {
+        "activationShortcut": "Meta+Shift+F11", "_plugin": plugin,
+    }

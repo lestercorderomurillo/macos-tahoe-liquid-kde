@@ -232,3 +232,6 @@ msgstr "La connessione Wi-Fi è bloccata dall'interruttore hardware"
 
 msgid "Wi-Fi is off"
 msgstr "La connessione Wi-Fi è spenta"
+
+msgid "Configure in Settings…"
+msgstr "Configura in Impostazioni…"

@@ -21,6 +21,25 @@ Less than a minute remaining|Falta menos de un minuto|剩余不到一分钟|Falt
 Finishing…|Finalizando…|正在完成…|Finalizando…|Wird abgeschlossen…
 Show installation details|Mostrar detalles de instalación|显示安装详情|Mostrar detalhes da instalação|Installationsdetails anzeigen
 Hide installation details|Ocultar detalles de instalación|隐藏安装详情|Ocultar detalhes da instalação|Installationsdetails ausblenden
+Widget shortcuts|Atajos de widgets|小组件快捷键|Atalhos de widgets|Miniprogramm-Kürzel
+Control Center|Centro de control|控制中心|Central de Controle|Kontrollzentrum
+Acrylic Glass|Cristal acrílico|亚克力玻璃|Vidro acrílico|Acrylglas
+Battery|Batería|电池|Bateria|Akku
+Bluetooth|Bluetooth|蓝牙|Bluetooth|Bluetooth
+Dock Separator|Separador del Dock|程序坞分隔符|Separador do Dock|Dock-Trenner
+Downloads|Descargas|下载|Downloads|Downloads
+Notifications|Notificaciones|通知|Notificações|Benachrichtigungen
+Wi-Fi|Wi-Fi|无线局域网|Wi-Fi|WLAN
+Now Playing|En reproducción|正在播放|Reproduzindo|Aktuelle Wiedergabe
+File Sharing|Compartir archivos|文件共享|Compartilhamento de arquivos|Dateifreigabe
+Overview|Vista general|概览|Visão geral|Übersicht
+Screen Mirroring|Duplicar pantalla|屏幕镜像|Espelhamento de tela|Bildschirmspiegelung
+Dark Mode|Modo oscuro|深色模式|Modo escuro|Dunkler Modus
+Screenshot|Captura de pantalla|截屏|Captura de tela|Bildschirmfoto
+Focus|Concentración|专注|Foco|Fokus
+Bluetooth Settings…|Ajustes de Bluetooth…|蓝牙设置…|Configurações de Bluetooth…|Bluetooth-Einstellungen …
+Display|Pantalla|显示器|Tela|Bildschirm
+Sound|Sonido|声音|Som|Ton
 Activation shortcut|Atajo de activación|激活快捷键|Atalho de ativação|Aktivierungskürzel
 Icon color palette|Paleta de colores de iconos|图标配色|Paleta de cores dos ícones|Symbolfarbpalette
 Apps preferences|Preferencias de Apps|应用程序偏好设置|Preferências de Apps|Apps-Einstellungen
