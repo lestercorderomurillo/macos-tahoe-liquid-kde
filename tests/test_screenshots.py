@@ -152,10 +152,8 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
     assert abs(fill.alphaF() - expected_alpha) < .005, (sys.argv[2], mode, fill.getRgbF())
     assert abs(secondary.alphaF() - (.90 if clear and foreground == 255 else .85)) < .005
     base = QColor(palette[mode]).getRgb()[:3]
-    extreme = 0 if foreground == 255 else 255
-    expected_ink = [round(channel * .6 + extreme * .4) for channel in base]
-    assert all(abs(actual - expected) <= 1 for actual, expected in
-               zip(secondary.getRgb()[:3], expected_ink)), (secondary.name(), expected_ink)
+    # With no compositor sample, the theme supplies the exact secondary RGB.
+    assert secondary.getRgb()[:3] == base, (secondary.name(), base)
     if clear and foreground == 255:
         # Composite the actual QML fill over the reported black backdrop.
         # Include secondary labels' alpha, not just the primary text.
