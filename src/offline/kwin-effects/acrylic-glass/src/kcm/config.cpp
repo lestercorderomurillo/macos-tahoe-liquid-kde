@@ -7,6 +7,7 @@
 #include "presets.h"
 #include "../componentmaterials.h"
 #include <KLocalizedString>
+#include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QProcess>
@@ -28,8 +29,10 @@ namespace KWin {
 K_PLUGIN_CLASS(LiquidGlassEffectConfig)
 
 LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginMetaData& data)
-    : KCModule(parent, data)
+    : KCModule(qobject_cast<QWidget *>(parent), data)
 {
+    if (this->parent() != parent)
+        setParent(parent);
     ui.setupUi(widget());
     const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
     int row = 0;
@@ -47,8 +50,9 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
         i18n("Control Center"), i18n("About This Computer"), i18n("Dock"), i18n("Top panel")};
     for (int i = 0; i < GlassMaterials::components.size(); ++i)
         m_componentSelector->addItem(labels.at(i), GlassMaterials::components.at(i));
+    ui.presetGroupForm->addRow(i18n("Component"), m_componentSelector);
     auto *rowLayout = new QHBoxLayout;
-    rowLayout->addWidget(m_componentSelector, 1);
+    rowLayout->addStretch();
     auto *copy = new QPushButton(i18n("Copy values"), widget());
     auto *paste = new QPushButton(i18n("Paste values"), widget());
     copy->setObjectName(QStringLiteral("copyComponentValues"));
@@ -56,7 +60,7 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
     paste->setEnabled(false);
     rowLayout->addWidget(copy);
     rowLayout->addWidget(paste);
-    ui.presetGroupForm->addRow(i18n("Component"), rowLayout);
+    ui.presetGroupForm->addRow(rowLayout);
     connect(copy, &QPushButton::clicked, this, [this, paste] {
         captureComponent();
         m_copiedValues = m_materials.value(component()).toObject();
@@ -300,6 +304,37 @@ void LiquidGlassEffectConfig::save()
 }
 
 } // namespace KWin
+
+// The installed Settings app hosts the same editor as KWin's effect module.
+extern "C" Q_DECL_EXPORT void mttkde_attach_glass_editor(QWidget *host)
+{
+    auto *editor = new KWin::LiquidGlassEffectConfig(host, KPluginMetaData());
+    auto *controls = editor->widget();
+    auto *layout = qobject_cast<QBoxLayout *>(host->layout());
+    if (!layout) {
+        layout = new QVBoxLayout(host);
+        layout->addWidget(controls);
+    }
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::RestoreDefaults | QDialogButtonBox::Reset
+                                         | QDialogButtonBox::Apply, host);
+    auto *apply = buttons->button(QDialogButtonBox::Apply);
+    auto *reset = buttons->button(QDialogButtonBox::Reset);
+    buttons->setObjectName(QStringLiteral("glassEditorButtons"));
+    layout->insertWidget(0, buttons);
+    QObject::connect(apply, &QPushButton::clicked, editor, &KCModule::save);
+    QObject::connect(reset, &QPushButton::clicked, editor, &KCModule::load);
+    QObject::connect(buttons->button(QDialogButtonBox::RestoreDefaults), &QPushButton::clicked,
+                     editor, &KCModule::defaults);
+    const auto updateActions = [editor, apply, reset] {
+        apply->setEnabled(editor->needsSave());
+        reset->setEnabled(editor->needsSave());
+    };
+    QObject::connect(editor, &KCModule::needsSaveChanged, buttons, updateActions);
+    editor->load();
+    updateActions();
+}
 
 #include "config.moc"
 #include "moc_config.cpp"

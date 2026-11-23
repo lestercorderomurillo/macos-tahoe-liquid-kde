@@ -23,6 +23,7 @@ Show installation details|Mostrar detalles de instalación|显示安装详情|Mo
 Hide installation details|Ocultar detalles de instalación|隐藏安装详情|Ocultar detalhes da instalação|Installationsdetails ausblenden
 Widget shortcuts|Atajos de widgets|小组件快捷键|Atalhos de widgets|Miniprogramm-Kürzel
 Control Center|Centro de control|控制中心|Central de Controle|Kontrollzentrum
+Install Acrylic Glass to edit its materials.|Instala Cristal acrílico para editar sus materiales.|安装亚克力玻璃后即可编辑材质。|Instale o Vidro acrílico para editar seus materiais.|Installiere Acrylglas, um seine Materialien zu bearbeiten.
 Acrylic Glass|Cristal acrílico|亚克力玻璃|Vidro acrílico|Acrylglas
 Battery|Batería|电池|Bateria|Akku
 Bluetooth|Bluetooth|蓝牙|Bluetooth|Bluetooth

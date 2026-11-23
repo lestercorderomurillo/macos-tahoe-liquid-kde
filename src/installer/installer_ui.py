@@ -916,7 +916,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--uninstall", action="store_true", help="Open the graphical uninstaller.")
     parser.add_argument("--mode", choices=("install", "settings"), default="install",
                         help="Open guided installation or installed settings.")
-    parser.add_argument("--section", choices=("appearance", "general", "theme", "desktop", "dock_bar", "windows", "applications", "startup"),
+    parser.add_argument("--section", choices=("appearance", "general", "theme", "desktop", "dock_bar", "windows",
+                                             "acrylic_glass", "applications", "startup"),
                         default="appearance",
                         help="Section to open in settings mode.")
     parser.add_argument("--widget", type=int, help="Open settings for a Plasma widget instance.")

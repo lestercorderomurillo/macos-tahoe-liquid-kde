@@ -14,6 +14,10 @@ PlasmaCore.Action {
     visible: available
     onTriggered: launcher.connectSource(launcher.program + "--section=dock_bar --widget=" + widgetId)
 
+    function openAcrylicGlass() {
+        launcher.connectSource(launcher.program + "--section=acrylic_glass");
+    }
+
     readonly property P5Support.DataSource launcher: P5Support.DataSource {
         engine: "executable"
         property bool available: false

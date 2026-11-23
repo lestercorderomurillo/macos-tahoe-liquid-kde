@@ -55,7 +55,8 @@ SECTIONS = {
     "theme": ("Appearance", "appearance", ("#777fc0", "#262c68"), ("appearance", "icons", "fonts")),
     "desktop": ("Desktop", "stage-manager", ("#61adbf", "#1d5973"), ("wallpaper", "desktop_widgets")),
     "dock_bar": ("Desktop & Dock", "mirroring", ("#718dc0", "#3a507c"), ("launcher", "layout")),
-    "windows": ("Windows", "airplay", ("#69a38e", "#305e55"), ("effects", "window_controls", "button_position", "shadows", "glass_style")),
+    "windows": ("Windows", "airplay", ("#69a38e", "#305e55"),
+                ("effects", "window_controls", "button_position", "shadows", "glass_style", "acrylic_glass_editor")),
     "applications": ("Applications", "screenshot", ("#8c83bd", "#4d427b"), ("files", "firefox")),
     "startup": ("Startup & Display", "sun", ("#bc945f", "#795336"), ("boot", "oled")),
 }
@@ -76,13 +77,14 @@ PANEL_LABELS = {
     "launcher": "Launcher", "layout": "Dock and menu bar", "effects": "Effects",
     "window_controls": "Window controls", "button_position": "Window buttons",
     "shadows": "Window shadows", "files": "Files", "firefox": "Firefox",
-    "glass_style": "Window glass", "boot": "Boot animation", "oled": "OLED protection",
+    "glass_style": "Window glass", "acrylic_glass_editor": "Acrylic Glass",
+    "boot": "Boot animation", "oled": "OLED protection",
 }
 SETTINGS_PAGES = {
     "general": ("General", "settings", ("#99a9bc", "#3e506a"), ()),
     **SECTIONS,
 }
-SECTION_ALIASES = {"appearance": "theme"}
+SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows"}
 PANEL_SECTIONS = {panel: section for section, (_, _, _, panels) in SECTIONS.items() for panel in panels}
 PANEL_STEPS = {panel: step for step, (_, panels) in INSTALL_SECTIONS.items() for panel in panels}
 
@@ -796,9 +798,11 @@ class InstallerWindow(OpaqueSurface):
         self.asset_edition = "golden-gate" if self.edition == "Golden Gate" else "tahoe"
         self.settings_mode = mode == "settings"
         self.requested_widget = widget
+        self.acrylic_glass_editor = None
+        self.requested_glass_editor = self.settings_mode and section == "acrylic_glass"
         section = SECTION_ALIASES.get(section, section)
         self.page = section if self.settings_mode else "uninstall" if uninstall else "welcome"
-        self.expanded_panels = {}
+        self.expanded_panels = {"windows": {"acrylic_glass_editor"}} if self.requested_glass_editor else {}
         self.panel_frames = {}
         self.settings_baseline = None
         self.reconfiguring = False
@@ -1412,6 +1416,9 @@ class InstallerWindow(OpaqueSurface):
             self.setUpdatesEnabled(updates_enabled)
 
     def _render(self):
+        if self.acrylic_glass_editor is not None:
+            self.acrylic_glass_editor.hide()
+            self.acrylic_glass_editor.setParent(self)
         # Qt stylesheets can resolve child palettes from the application rather
         # than their parent. Keep that application-local palette consistent too.
         QApplication.setPalette(self.palette())
@@ -1487,16 +1494,31 @@ class InstallerWindow(OpaqueSurface):
             QFrame#settingsOptionPanel {{
                 background: {panel_surface}; border: 1px solid {separator}; border-radius: 8px;
             }}
-            QTabWidget#widgetPreferenceTabs::pane {{ border: 0; }}
-            QTabWidget#widgetPreferenceTabs QTabBar::tab {{
+            QTabWidget#widgetPreferenceTabs::pane, QWidget#acrylicGlassEditor QTabWidget::pane {{ border: 0; }}
+            QTabWidget#widgetPreferenceTabs QTabBar::tab, QWidget#acrylicGlassEditor QTabBar::tab {{
                 background: {field_surface}; color: {muted}; padding: 5px 12px;
                 border: 1px solid {separator}; border-radius: 6px;
                 margin-right: 4px;
             }}
-            QTabWidget#widgetPreferenceTabs QTabBar::tab:selected {{
+            QTabWidget#widgetPreferenceTabs QTabBar::tab:selected, QWidget#acrylicGlassEditor QTabBar::tab:selected {{
                 background: {hover}; color: {foreground};
             }}
             QTabWidget#widgetPreferenceTabs QTabBar::tab:focus {{ border-color: {self.accent}; }}
+            QWidget#acrylicGlassEditor QTabBar::tab:focus {{ border-color: {self.accent}; }}
+            QWidget#acrylicGlassEditor QComboBox, QWidget#acrylicGlassEditor QAbstractSpinBox,
+            QWidget#acrylicGlassEditor QPlainTextEdit, QWidget#acrylicGlassEditor QPushButton {{
+                background: {field_surface}; color: {foreground};
+                border: 1px solid {separator}; border-radius: 6px; padding: 4px 6px;
+            }}
+            QWidget#acrylicGlassEditor QPushButton:enabled:hover {{ background: {hover}; }}
+            QWidget#acrylicGlassEditor QPushButton:disabled {{ color: {muted}; }}
+            QWidget#acrylicGlassEditor QGroupBox {{
+                border: 1px solid {separator}; border-radius: 8px;
+                margin-top: 9px; padding: 6px;
+            }}
+            QWidget#acrylicGlassEditor QGroupBox::title {{
+                subcontrol-origin: margin; left: 10px; padding: 0 4px;
+            }}
             QWidget[widgetPreferenceRow="true"] QCheckBox {{ padding: 3px 0; }}
             QPushButton#optionPanelTitle {{
                 color: {foreground}; background: transparent; text-align: left;
@@ -1670,7 +1692,8 @@ class InstallerWindow(OpaqueSurface):
             self.body = QVBoxLayout(body)
             self.body.setContentsMargins(12, 4, 12, 12)
             self.body.setSpacing(9)
-            getattr(self, "page_" + panel)()
+            if panel != "acrylic_glass_editor":
+                getattr(self, "page_" + panel)()
             self.body = original
 
             def expand(opened, *, widget=body, name=panel, button=toggle):
@@ -1679,6 +1702,8 @@ class InstallerWindow(OpaqueSurface):
                 button.setAccessibleName(text)
                 widget.setVisible(opened)
                 if opened:
+                    if name == "acrylic_glass_editor":
+                        self.mount_acrylic_glass_editor(widget.layout())
                     if not self.settings_mode:
                         for another, other_button in toggles.items():
                             if another != name:
@@ -1689,15 +1714,32 @@ class InstallerWindow(OpaqueSurface):
 
             toggle.toggled.connect(expand)
             expand(toggle.isChecked())
-            if (self.settings_mode and self.settings_baseline is None and panel != "appearance"):
+            if (self.settings_mode and self.settings_baseline is None
+                    and panel not in ("appearance", "acrylic_glass_editor")):
                 toggle.setEnabled(False)
                 body.setEnabled(False)
             original.addWidget(frame)
         if "glass_style" in self.panel_frames:
             self.panel_frames["glass_style"].setVisible(self.show_glass_style())
+        if self.requested_glass_editor:
+            self.widget_settings_target = self.panel_frames.get("acrylic_glass_editor")
+            self.requested_glass_editor = False
 
         if self.settings_mode and self.page == "dock_bar":
             self.page_dock_and_menu_widgets()
+
+    def mount_acrylic_glass_editor(self, layout):
+        if layout.count():
+            return
+        if self.acrylic_glass_editor is None:
+            from acrylic_glass_editor import create_acrylic_glass_editor
+            self.acrylic_glass_editor = create_acrylic_glass_editor(self)
+        if self.acrylic_glass_editor is None:
+            layout.addWidget(self.label("Install Acrylic Glass to edit its materials."))
+        else:
+            self.acrylic_glass_editor.setFont(relative_font(self, .90))
+            layout.addWidget(self.acrylic_glass_editor)
+            self.acrylic_glass_editor.show()
 
     def reveal_requested_widget(self):
         if self.widget_settings_target is not None:
