@@ -9,6 +9,7 @@ import re
 from pathlib import Path
 
 from launcher_defaults import edition_name
+from theme_switch import WALLPAPER_PAIRS as WALLPAPERS
 
 COLORS = {
     "blue": "#007aff", "purple": "#af52de", "pink": "#ff2d55",
@@ -26,22 +27,13 @@ ENUMS = {
     # Light/dark variant of the icons, independent of the appearance (macOS).
     "icon_appearance": ("auto", "light", "dark"),
     "color": tuple(COLORS),
-    "wallpaper": ("tahoe", "golden", "landscape", "sonoma", "prism", "macos", "exuma", "keep", "custom"),
+    "wallpaper": (*WALLPAPERS, "keep", "custom"),
     "launcher": ("tahoe", "golden", "keep"),
     "files": ("nautilus", "dolphin", "keep"),
     "shadows": ("none", "soft", "medium", "hard"),
     "window_controls": ("flat", "glassy"),
     "button_position": ("left", "right", "keep"),
     "glass_style": tuple(preset["choice"] for preset in GLASS_PRESETS),
-}
-WALLPAPERS = {
-    "exuma": ("MacExuma", "MacExuma"),
-    "prism": ("MacPrism", "MacPrism"),
-    "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
-    "tahoe": ("MacTahoe", "MacTahoe"),
-    "golden": ("MacGoldenGate", "MacGoldenGate"),
-    "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),
-    "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon"),
 }
 
 

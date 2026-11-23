@@ -670,7 +670,7 @@ def _read_portal_color_scheme() -> int | None:
     return None
 
 
-_WALLPAPER_PAIRS = {
+WALLPAPER_PAIRS = {
     "exuma": ("MacExuma", "MacExuma"),
     "prism": ("MacPrism", "MacPrism"),
     "macos": ("MacHeritage-Monterey", "MacHeritage-Monterey"),
@@ -678,6 +678,19 @@ _WALLPAPER_PAIRS = {
     "golden": ("MacGoldenGate", "MacGoldenGate"),
     "landscape": ("MacTahoe-Landscape-Morning", "MacTahoe-Landscape-Night"),
     "sonoma": ("MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon"),
+    "big-sur": ("MacHeritage-BigSur", "MacHeritage-BigSur"),
+    "ventura": ("MacHeritage-Ventura", "MacHeritage-Ventura"),
+    "sequoia": ("MacHeritage-Sequoia", "MacHeritage-Sequoia"),
+    "iridescence": ("MacTahoe-Iridescence", "MacTahoe-Iridescence"),
+    "beach-dawn": ("MacTahoe-Beach-Dawn", "MacTahoe-Beach-Dawn"),
+    "beach-day": ("MacTahoe-Beach-Day", "MacTahoe-Beach-Day"),
+    "beach-night": ("MacTahoe-Beach-Night", "MacTahoe-Beach-Night"),
+    "landscape-evening": ("MacTahoe-Landscape-Evening", "MacTahoe-Landscape-Evening"),
+    "anime-coast": ("MacAnime-CoastalRailway", "MacAnime-CoastalRailway"),
+    "anime-village": ("MacAnime-SnowLanterns", "MacAnime-SnowLanterns"),
+    "anime-city": ("MacAnime-RainyCrossing", "MacAnime-RainyCrossing"),
+    "anime-meadow": ("MacAnime-AlpineMeadow", "MacAnime-AlpineMeadow"),
+    "anime-moon": ("MacAnime-MoonlitShrine", "MacAnime-MoonlitShrine"),
 }
 
 
@@ -699,13 +712,13 @@ def _wallpaper_path(mode: str) -> Path | None:
             # unchanged named pair should still follow its day/night cycle.
             owned = {str(item["image"]).removeprefix("file://").rstrip("/")
                      for item in state["last_applied"] if item["screen"] not in state["user_screens"]}
-            choice = next((key for key, pair in _WALLPAPER_PAIRS.items()
+            choice = next((key for key, pair in WALLPAPER_PAIRS.items()
                            if key not in ("tahoe", "golden") and
                            any(str(base / name) in owned for name in pair)), None)
     if choice == "custom":
         custom = base / "MacTahoe-Custom" / "wallpaper"
         return custom if custom.is_file() else None
-    pair = _WALLPAPER_PAIRS.get(choice)
+    pair = WALLPAPER_PAIRS.get(choice)
     auto = base / (pair[mode == "dark"] if pair else default_wallpaper())
     if auto.is_dir():
         return auto
@@ -776,7 +789,7 @@ def _load_wallpaper_state() -> dict:
     if not isinstance(raw, dict):
         return state
     state["initialized"] = raw.get("initialized") is True
-    if isinstance(raw.get("choice"), str) and raw["choice"] in _WALLPAPER_PAIRS:
+    if isinstance(raw.get("choice"), str) and raw["choice"] in WALLPAPER_PAIRS:
         state["choice"] = raw["choice"]
     if isinstance(raw.get("enabled"), bool):
         state["enabled"] = raw["enabled"]
@@ -1005,7 +1018,7 @@ def _wallpaper_image_is_theme_managed(
         image: str) -> bool:
     base = Path(os.environ.get("XDG_DATA_HOME") or
                 str(Path.home() / ".local/share")) / "wallpapers"
-    names = {name for pair in _WALLPAPER_PAIRS.values() for name in pair}
+    names = {name for pair in WALLPAPER_PAIRS.values() for name in pair}
     managed = [str(base / name) for name in names | {"MacTahoe-Light", "MacTahoe-Dark"}]
     if image.startswith("file://"):
         image = image[7:]
@@ -1135,7 +1148,7 @@ def _apply_wallpaper(
         # Keep baselines for temporarily disconnected monitors.
         absent = [item for item in last_applied if item["screen"] not in current_by_screen]
         state["last_applied"] = _normalize_wallpaper_snapshot(absent + observed + applied)
-        if choice in _WALLPAPER_PAIRS:
+        if choice in WALLPAPER_PAIRS:
             state["choice"] = choice
         if choice == "custom":
             state.pop("choice", None)

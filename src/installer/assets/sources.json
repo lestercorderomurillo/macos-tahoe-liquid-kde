@@ -2947,5 +2947,155 @@
     "desktop_source_commit": "e797a1576bd853a5be391bf6a1d0e6c5c296241f",
     "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703",
     "placement_source_sha256": "aecf3b1477085683d5f67cfa6533fafff90121d997918a8aa631b378f99f3df8"
+  },
+  "big-sur.jpg": {
+    "file": "big-sur-733efce61844.jpg",
+    "sha256": "733efce618447f888927c2eca9297ae4785edfc9d74e3e876268fd2fb56cd8ed",
+    "source": "src/offline/wallpapers/MacHeritage-BigSur/contents/images/3840x2160.jpg",
+    "source_sha256": "c78b2974b08511e1ffab7249c1f2de174b7777430b706d5426cd3c5a61a26ac3"
+  },
+  "big-sur-dark.jpg": {
+    "file": "big-sur-dark-3a399da2287d.jpg",
+    "sha256": "3a399da2287d752bb3adde92ce17c43ba28f3ac6a81da6f3a4c46b578202d6ce",
+    "source": "src/offline/wallpapers/MacHeritage-BigSur/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "b98df3ce17fb40dfc80c4e03e2f96fa3d747620e30687816b5d97446f036a761"
+  },
+  "ventura.jpg": {
+    "file": "ventura-bf5a565b02b0.jpg",
+    "sha256": "bf5a565b02b07abc149fc212e76342caf34d7e20215c06968ea940c8f7aa2902",
+    "source": "src/offline/wallpapers/MacHeritage-Ventura/contents/images/3840x2160.jpg",
+    "source_sha256": "eb1807a405f1e392800acf2cbb20f35174e548c5c08c6b51f7260fbe4d77bd64"
+  },
+  "ventura-dark.jpg": {
+    "file": "ventura-dark-514f7a0c3072.jpg",
+    "sha256": "514f7a0c3072c32fbeea6e9d11ec79d09f5eba98ce57186da3b4afe58d5bc00e",
+    "source": "src/offline/wallpapers/MacHeritage-Ventura/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "6621a7fc8fd4217128e3b7216b3ee13203accaac63155d48f01e36013011e79d"
+  },
+  "sequoia.jpg": {
+    "file": "sequoia-6bbe73afa8ea.jpg",
+    "sha256": "6bbe73afa8ea6a81cff503a313beae9ef0982097203faa432a17b905906ee8ce",
+    "source": "src/offline/wallpapers/MacHeritage-Sequoia/contents/images/3840x2160.jpg",
+    "source_sha256": "70ff419293255ee9ce41989c4a6b07f17fb633f2fd25a82ad263b018a1c6264b"
+  },
+  "sequoia-dark.jpg": {
+    "file": "sequoia-dark-d17a6c8ace29.jpg",
+    "sha256": "d17a6c8ace291aeeac61c427c76fee7f747994cfc8b4c98a7270d24011f00ac2",
+    "source": "src/offline/wallpapers/MacHeritage-Sequoia/contents/images_dark/3840x2160.jpg",
+    "source_sha256": "04dfa776b57a15a93d8ee8929c6c7a87c3b9820b8342022bbcd992605bc809fe"
+  },
+  "beach-dawn.jpg": {
+    "file": "beach-dawn-caab35860851.jpg",
+    "sha256": "caab35860851240a1f5ded08303bdd09ff5831064a34158628d34756d38b4dde",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Dawn/contents/images/3840x2160.jpg",
+    "source_sha256": "8486c27cce985a0eb112ae29a4acd0391c4551c2ca110c5d6815ba207a83aff0"
+  },
+  "beach-day.jpg": {
+    "file": "beach-day-06447160862f.jpg",
+    "sha256": "06447160862ffcc801c75a321b4438e6a9ca1e2af5dd5ff481c5dc2df9c0254a",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Day/contents/images/3840x2160.jpg",
+    "source_sha256": "931820958784e5fb20edadeb6d06ce29e8683086e114a389ac0031c10260c8ab"
+  },
+  "beach-night.jpg": {
+    "file": "beach-night-daab344c113f.jpg",
+    "sha256": "daab344c113f0749caceba57c37c4b09c3ad3e3567311100eead29e1e0316261",
+    "source": "src/offline/wallpapers/MacTahoe-Beach-Night/contents/images/3840x2160.jpg",
+    "source_sha256": "73296227d1cce2f3483045a7b40fc8ac500cf1659ce6b0fe829b95cc2896ed1a"
+  },
+  "landscape-evening.jpg": {
+    "file": "landscape-evening-143839cd771b.jpg",
+    "sha256": "143839cd771bf39a058623d2b37962cd85f7e846bd726f9b1338f596d1dcd29c",
+    "source": "src/offline/wallpapers/MacTahoe-Landscape-Evening/contents/images/3840x2160.jpg",
+    "source_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
+  },
+  "anime-coast.jpg": {
+    "file": "anime-coast-8a6eaa5417cd.jpg",
+    "sha256": "8a6eaa5417cd95470f4d1eff5ce6144b8ae52151a57662e59479050071e56161",
+    "source": "src/offline/wallpapers/MacAnime-CoastalRailway/contents/images/3840x2160.jpg",
+    "source_sha256": "1dfa37575e3e5b8e80c4e4aacfe5e9916ff5f92f4e5c39513c105f70e9f5830e",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. A quiet rural signal station on a hillside above a bright turquoise sea, a tiny cream train curving toward the water, white summer clouds and sunlit grasses. Use an unusually wide scenic vista, with tracks in the lower third and clean cobalt sky above. Teal and warm ochre palette.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "189f1ac4e443a3481a3c2f9d307632a6e9575f4008d3b742d85cd4c25646e61c",
+    "size": [
+      3840,
+      2160
+    ]
+  },
+  "anime-village.jpg": {
+    "file": "anime-village-73edad94fdea.jpg",
+    "sha256": "73edad94fdea5b0b2631c8715fe7e051afb0d2f866e7989e3c9c88b7aa4a27f4",
+    "source": "src/offline/wallpapers/MacAnime-SnowLanterns/contents/images/3840x2160.jpg",
+    "source_sha256": "29420141c3321e6d51a115429eb06cde44d8b631d71657468f4d001d71738838",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. A small snowbound mountain village at blue hour, a winding path of warm paper lanterns between timber roofs, forested hills softly stacking into the mist. Deep violet-blue shadows with restrained amber windows. Quiet, vast sky and a gentle snowfall.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "13451c478e822a12a09b2e696626834a7cc3c102d0e51bc0c275f773bdae3206",
+    "size": [
+      3840,
+      2160
+    ]
+  },
+  "anime-city.jpg": {
+    "file": "anime-city-aa65739e3727.jpg",
+    "sha256": "aa65739e37277b6b50b9b0ad568ac0a99101fc6809818b2cfc4c5ae4843bb1fb",
+    "source": "src/offline/wallpapers/MacAnime-RainyCrossing/contents/images/3840x2160.jpg",
+    "source_sha256": "5e7d5368e5f8df7d55817e9d64348b3cc80a61baec718210ed1a997cbd884319",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. An empty neighborhood tram crossing just after a warm summer rain, view from street level toward the last apricot light, blue-gray buildings and gently lit shop windows reflected in the asphalt. Keep architecture honest and shop signs pictorial without text. Restrained apricot and steel-blue palette.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "d8ca87cff8fe6ce287b5507b398d821705ec51457f9ea05e3d5ea714e3af213c",
+    "size": [
+      3840,
+      2160
+    ]
+  },
+  "anime-meadow.jpg": {
+    "file": "anime-meadow-95ad5081ec27.jpg",
+    "sha256": "95ad5081ec271ce13cca1d6fea4f7e229891230f648c08ec5983f185d54c0e65",
+    "source": "src/offline/wallpapers/MacAnime-AlpineMeadow/contents/images/3840x2160.jpg",
+    "source_sha256": "b3a3d033b7edf136df5b72053e6994d36a7afbc5cc5dd5f9e82af145175c01d7",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. An elevated alpine meadow flowing toward a lake, a narrow path winding through pink and white wildflowers, one distant wooden refuge and clean snow-touched mountain silhouettes in the clear morning. Green, dusty rose and soft mineral blue, in gentle sunlight.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "54c0602bef6f7f06f0ef1a4a174e7acc777c932c4d03f40da6eb136a9a02c869",
+    "size": [
+      3840,
+      2160
+    ]
+  },
+  "anime-moon.jpg": {
+    "file": "anime-moon-56e0c6f13da3.jpg",
+    "sha256": "56e0c6f13da3d03620da4421b393330f22fe1ebe7060cfdae644389a41ad24ed",
+    "source": "src/offline/wallpapers/MacAnime-MoonlitShrine/contents/images/3840x2160.jpg",
+    "source_sha256": "a3710b8fd780a200ea8bc5ba1fbc351a938f2b1534f922609f287d359b4b7c5d",
+    "kind": "generated-wallpaper",
+    "generator": "OpenAI ImageGen",
+    "prompt": "Create one original wide landscape desktop wallpaper. It must be a single full-bleed 16:9 image, maximum practical detail at 4K desktop viewing size. Original hand-painted anime background art with clean cel shapes, selectively textured gouache, carefully composed depth, and restrained color. Detail concentrated in the lower and middle thirds, clear space above and at the edges for desktop UI. No lettering, watermarks, interface, frame, logos, or recognizable franchise characters. An old stone stair with a small simple wooden gate in a quiet cedar grove, one distant lantern and a broad moon seen through pale layers of evening mist. Strong simple foreground silhouettes, quiet open indigo sky, touches of jade and pale silver. Dreamlike and legible, softly lit throughout.",
+    "generated_size": [
+      1672,
+      941
+    ],
+    "generated_sha256": "b66478473f0b37190302f34f1d76ec5f8fea7ff02da3e3c9454591a5883e0abf",
+    "size": [
+      3840,
+      2160
+    ]
   }
 }

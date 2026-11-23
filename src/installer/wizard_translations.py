@@ -368,6 +368,7 @@ Step|Paso|步骤|Etapa|Schritt
 Appearance|Apariencia|外观|Aparência|Erscheinungsbild
 Icons|Iconos|图标|Ícones|Symbole
 Wallpaper|Fondo de pantalla|壁纸|Papel de parede|Hintergrund
+Anime|Anime|动画|Anime|Anime
 Launcher|Launcher|启动器|Lançador|Starter
 Fonts|Fuentes|字体|Fontes|Schriftarten
 Files|Archivos|文件|Arquivos|Dateien

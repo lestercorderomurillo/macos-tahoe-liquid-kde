@@ -29,6 +29,22 @@ from progress_model import ProgressModel, elapsed_text
 ASSETS = Path(__file__).with_name("assets")
 ASSET_FILES = json.loads((ASSETS / "sources.json").read_text())
 SETTING_ART_SIZE = 112
+WALLPAPER_GROUPS = (
+    ("Wallpapers", (
+        ("tahoe", "Tahoe"), ("golden", "Golden Gate"), ("landscape", "Landscape"),
+        ("sonoma", "Sonoma"), ("prism", "Prism"), ("macos", "Monterey"), ("exuma", "Exuma"),
+        ("big-sur", "Big Sur"), ("ventura", "Ventura"), ("sequoia", "Sequoia"),
+        ("iridescence", "Iridescence"), ("beach-dawn", "Tahoe Beach — Dawn"),
+        ("beach-day", "Tahoe Beach — Day"), ("beach-night", "Tahoe Beach — Night"),
+        ("landscape-evening", "Tahoe Landscape — Evening"),
+    )),
+    ("Anime", (
+        ("anime-coast", "Coastal Railway"), ("anime-village", "Snow Lanterns"),
+        ("anime-city", "Rainy Crossing"), ("anime-meadow", "Alpine Meadow"),
+        ("anime-moon", "Moonlit Shrine"),
+    )),
+)
+WALLPAPER_TITLES = {key: title for _, group in WALLPAPER_GROUPS for key, title in group}
 CONTROL_SYMBOLS = (ASSETS.parents[1] / "offline/plasmoids"
                    / "org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols")
 STEPS = (
@@ -811,6 +827,39 @@ class PageScrollArea(QScrollArea):
         painter.fillRect(event.rect(), color)
 
 
+class WallpaperStrip(QScrollArea):
+    def __init__(self):
+        super().__init__()
+        self.setObjectName("wallpaperStrip")
+        self.setFrameShape(QFrame.Shape.NoFrame)
+        self.setWidgetResizable(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.viewport().setAutoFillBackground(False)
+        self.horizontalScrollBar().setSingleStep(36)
+
+    def wheelEvent(self, event):
+        pixels = event.pixelDelta()
+        angle = event.angleDelta()
+        horizontal = pixels.x() or int(angle.x() / 3)
+        vertical = pixels.y() or int(angle.y() / 3)
+        if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+            delta = horizontal or vertical
+        elif abs(horizontal) > abs(vertical):
+            delta = horizontal
+        else:
+            event.ignore()
+            return
+        bar = self.horizontalScrollBar()
+        bar.setValue(bar.value() - delta)
+        event.accept()
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.FocusIn and isinstance(watched, ChoiceCard):
+            self.ensureWidgetVisible(watched, 6, 0)
+        return super().eventFilter(watched, event)
+
+
 def installer_palette(dark):
     """The wizard owns its colors; desktop settings only select light or dark."""
     palette = QPalette(QApplication.style().standardPalette())
@@ -1461,7 +1510,8 @@ class InstallerWindow(OpaqueSurface):
             self.launcher_art.setPixmap(picture(f"launcher-{value}-art.png", SETTING_ART_SIZE, SETTING_ART_SIZE))
             self.refresh_launcher_warning()
 
-    def cards(self, key, items, *, columns=2, independent=False, compact=False, default_first=True):
+    def cards(self, key, items, *, columns=2, independent=False, compact=False, default_first=True,
+              layout=None, fixed_width=None):
         grid = QGridLayout()
         grid.setHorizontalSpacing(18 if columns == 2 else 14)
         grid.setVerticalSpacing(14)
@@ -1493,7 +1543,9 @@ class InstallerWindow(OpaqueSurface):
                 row_cards = []
             row_cards.append(card)
             card.row_cards = row_cards
-        self.body.addLayout(grid)
+            if fixed_width is not None:
+                card.setFixedWidth(fixed_width)
+        (self.body if layout is None else layout).addLayout(grid)
         return group
 
     def radio(self, key, values, *, inline=False, font_scale=.93, option_layout=None):
@@ -1604,6 +1656,17 @@ class InstallerWindow(OpaqueSurface):
             QScrollArea#pageScroll QScrollBar::sub-line:vertical {{ height: 0; }}
             QScrollArea#pageScroll QScrollBar::add-page:vertical,
             QScrollArea#pageScroll QScrollBar::sub-page:vertical {{ background: transparent; }}
+            QScrollArea#wallpaperStrip, QWidget#wallpaperStripContent {{ background: transparent; }}
+            QScrollArea#wallpaperStrip QScrollBar:horizontal {{
+                background: {field_surface}; height: 8px; border-radius: 4px; margin: 1px 0;
+            }}
+            QScrollArea#wallpaperStrip QScrollBar::handle:horizontal {{
+                background: {self.line}; border-radius: 3px; min-width: 32px;
+            }}
+            QScrollArea#wallpaperStrip QScrollBar::add-line:horizontal,
+            QScrollArea#wallpaperStrip QScrollBar::sub-line:horizontal {{ width: 0; }}
+            QScrollArea#wallpaperStrip QScrollBar::add-page:horizontal,
+            QScrollArea#wallpaperStrip QScrollBar::sub-page:horizontal {{ background: transparent; }}
             QFrame#optionPanel {{
                 background: {panel_surface}; border: 1px solid {separator}; border-radius: 10px;
             }}
@@ -2474,11 +2537,12 @@ class InstallerWindow(OpaqueSurface):
         self.keep_wallpaper.clicked.connect(lambda _: self.select("wallpaper", "keep"))
         self.use_theme_wallpaper.clicked.connect(lambda _: self.select("wallpaper", self.theme_wallpaper))
 
-        items = [(key, label, "", picture(key+".jpg", 170, 112, key+"-dark.jpg", cover=True))
-                 for key, label in (("tahoe", "Tahoe"), ("golden", "Golden Gate"),
-                                    ("landscape", "Landscape"), ("sonoma", "Sonoma"),
-                                    ("prism", "Prism"), ("macos", "Monterey"), ("exuma", "Exuma"))]
-        self.cards("wallpaper", items, columns=4, compact=True)
+        for title, wallpapers in WALLPAPER_GROUPS:
+            if title == "Anime":
+                label = self.label(title)
+                label.setFont(relative_font(self, .78, QFont.Weight.Medium))
+                self.body.addWidget(label)
+            self.wallpaper_strip(title, wallpapers)
         row = QHBoxLayout()
         self.custom_wallpaper = self.label("Custom file")
         self.custom_wallpaper.setFont(relative_font(self, .72))
@@ -2491,6 +2555,29 @@ class InstallerWindow(OpaqueSurface):
         row.addWidget(self.wallpaper_file_button)
         self.body.addLayout(row)
         self.refresh_wallpaper_controls()
+
+    def wallpaper_strip(self, title, wallpapers):
+        strip = WallpaperStrip()
+        strip.setAccessibleName(self.t(title))
+        content = QWidget()
+        content.setObjectName("wallpaperStripContent")
+        layout = QVBoxLayout(content)
+        layout.setContentsMargins(0, 0, 0, 0)
+        items = []
+        for key, label in wallpapers:
+            companion = f"{key}-dark.jpg"
+            preview = picture(f"{key}.jpg", 170, 96, companion if companion in ASSET_FILES else None, cover=True)
+            items.append((key, label, "", preview))
+        group = self.cards("wallpaper", items, columns=len(items), compact=True, layout=layout, fixed_width=166)
+        strip.setWidget(content)
+        content.setAutoFillBackground(False)
+        strip.setFixedHeight(layout.sizeHint().height() + strip.horizontalScrollBar().sizeHint().height())
+        for card in group.buttons():
+            card.installEventFilter(strip)
+        selected = group.checkedButton()
+        if selected:
+            QTimer.singleShot(0, lambda: strip.ensureWidgetVisible(selected, 6, 0) if not sip.isdeleted(strip) else None)
+        self.body.addWidget(strip)
 
     def refresh_wallpaper_controls(self):
         selected = self.choices["wallpaper"]
@@ -2833,6 +2920,7 @@ class InstallerWindow(OpaqueSurface):
                  "glass": "Tinted", "regular": "Default", "clear": "Clear", "keep": "Keep", "golden": "Golden Gate", "tahoe": "Tahoe",
                  "landscape": "Landscape", "sonoma": "Sonoma", "macos": "Monterey", "custom": "Custom file",
                  "nautilus": "Nautilus", "dolphin": "Dolphin",
+                 **WALLPAPER_TITLES,
                  **{preset["choice"]: preset["title"] for preset in GLASS_PRESETS}}
         value = lambda key: self.t(names.get(str(c[key]), str(c[key]).capitalize()))
         enabled = lambda key: self.t("Enabled" if c[key] else "Disabled")

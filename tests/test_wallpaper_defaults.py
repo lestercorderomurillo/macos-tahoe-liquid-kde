@@ -5,6 +5,7 @@ import runpy
 
 import pytest
 
+from installer_choices import validate
 import theme_switch
 from steps import theme_switch as step
 from steps import wallpapers
@@ -16,6 +17,8 @@ def test_edition_selects_bundled_light_dark_package(repo, tmp_path, monkeypatch,
     (tmp_path / "defaults.json").write_text(json.dumps({"wallpaper": package}))
     monkeypatch.setattr(theme_switch, "__file__", str(source))
     monkeypatch.setenv("XDG_DATA_HOME", str(repo / "src/offline"))
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    monkeypatch.delenv("MTTKDE_WIZARD_OPTIONS", raising=False)
     expected = repo / "src/offline/wallpapers" / package
     for mode in ("light", "dark"):
         assert theme_switch._wallpaper_path(mode) == expected
@@ -31,6 +34,18 @@ def test_invalid_defaults_fall_back_safely(tmp_path, monkeypatch, raw):
     monkeypatch.setattr(theme_switch, "__file__", str(tmp_path / "theme_switch.py"))
     (tmp_path / "defaults.json").write_text(raw)
     assert theme_switch.default_wallpaper() == "MacTahoe"
+
+
+def test_anime_wallpaper_is_packaged_and_survives_switching(repo, monkeypatch):
+    from PIL import Image
+
+    monkeypatch.setenv("XDG_DATA_HOME", str(repo / "src/offline"))
+    monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", json.dumps(validate({"wallpaper": "anime-city"})))
+    package = repo / "src/offline/wallpapers/MacAnime-RainyCrossing"
+    assert theme_switch._wallpaper_path("light") == theme_switch._wallpaper_path("dark") == package
+    assert theme_switch._wallpaper_image_is_theme_managed(package.as_uri())
+    with Image.open(package / "contents/images/3840x2160.jpg") as image:
+        assert image.size == (3840, 2160) and image.format == "JPEG"
 
 
 def test_installed_default_survives_without_checkout(tmp_path, monkeypatch):

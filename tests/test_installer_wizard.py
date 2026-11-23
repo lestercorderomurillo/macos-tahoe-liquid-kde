@@ -550,8 +550,17 @@ assert window.content.findChild(RadioOption, 'choice-icons-keep').isChecked()
 assert not any(button.isChecked() for _, button in window.choice_widgets['icons'])
 window.page = 'wallpaper'; window.render(); app.processEvents()
 content = window.content
+from wizard_window import WallpaperStrip
+strips = content.findChildren(WallpaperStrip)
 cards = content.findChildren(ChoiceCard)
-assert len(cards) == 7 and all(card.accessibleName() and not card.findChildren(QLabel) for card in cards)
+assert [len(strip.findChildren(ChoiceCard)) for strip in strips] == [15, 5]
+assert len(cards) == 20 and all(card.accessibleName() and not card.findChildren(QLabel) for card in cards)
+file_position = window.wallpaper_file_button.mapTo(content, window.wallpaper_file_button.rect().topLeft())
+for strip in strips:
+    scroll = strip.horizontalScrollBar()
+    assert scroll.maximum() > 0
+    scroll.setValue(scroll.maximum())
+    assert window.wallpaper_file_button.mapTo(content, window.wallpaper_file_button.rect().topLeft()) == file_position
 keep = content.findChild(RadioOption, 'choice-wallpaper-keep')
 theme = content.findChild(RadioOption, 'choice-wallpaper-theme')
 theme.click()

@@ -101,6 +101,8 @@ _FIXED_NAMES = (
     "MacHeritage-Sequoia", "MacHeritage-Sequoia-Sunrise",
     "MacHeritage-Sonoma", "MacHeritage-Sonoma-Horizon",
     "MacHeritage-Ventura", "MacHeritage-Monterey", "MacHeritage-BigSur",
+    "MacAnime-CoastalRailway", "MacAnime-SnowLanterns", "MacAnime-RainyCrossing",
+    "MacAnime-AlpineMeadow", "MacAnime-MoonlitShrine",
 )
 
 
