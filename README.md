@@ -154,15 +154,11 @@ File, Edit and the other application menus follow the active window. Open the sy
 
 <br>
 
-### Acrylic Glass 2.0 with Dynamic Tinting
+### Acrylic Glass 2.0 with Adaptive Contrast
 
-Adaptive text contrast in the Apple and application menus.
-
-<p align="center">
-  <img src="src/screenshots/previews/acrylic-glass-dynamic-tinting-c13767e72b64.png" alt="Two menus with text switching between black and white over light and dark backgrounds" width="830">
-</p>
-
-<!-- User-supplied comparison image. SHA-256 c13767e72b648e38bc92e49005378616cca5f80e3a639f8f979d5a591fe27c0d -->
+The theme sets the base text color. Adaptive Contrast can make that color slightly
+lighter or darker when it blends into the background. Turn it off to use the
+theme color throughout the menu bar.
 
 <br>
 
@@ -270,7 +266,7 @@ Find and reuse copied text and images directly from Launchpad.
 
 ### Tahoe System Information (Alpha)
 
-Hardware, software and theme details with dynamic text tinting.
+Hardware, software and theme details with Adaptive Contrast.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Light system information window" width="415">
