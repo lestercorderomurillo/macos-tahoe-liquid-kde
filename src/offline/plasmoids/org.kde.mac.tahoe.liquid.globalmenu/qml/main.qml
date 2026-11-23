@@ -147,6 +147,7 @@ PlasmoidItem {
     preferredRepresentation: Plasmoid.configuration.compactView ? compactRepresentation : fullRepresentation
 
     compactRepresentation: PlasmaComponents3.ToolButton {
+        id: compactButton
         readonly property int fakeIndex: 0
         Layout.fillWidth: false
         Layout.fillHeight: false
@@ -156,6 +157,12 @@ PlasmoidItem {
         checkable: appMenuModel.menuAvailable && Plasmoid.currentIndex === fakeIndex
         checked: checkable
         icon.name: "application-menu"
+        Binding {
+            target: compactButton
+            property: "icon.color"
+            when: menuInk.panelSource !== null
+            value: menuInk.foreground
+        }
 
         display: PlasmaComponents3.AbstractButton.IconOnly
         text: Plasmoid.title
@@ -164,15 +171,15 @@ PlasmoidItem {
         onClicked: Plasmoid.trigger(this, 0);
     }
 
+    Native.WallpaperInk {
+        id: menuInk
+        item: root
+        base: root.Kirigami.Theme.textColor
+        active: root.wallpaperTint
+    }
+
     component TopBarDelegate: MenuDelegate {
-        id: button
-        foregroundColor: ink.foreground
-        Native.WallpaperInk {
-            id: ink
-            item: button
-            base: button.baseForeground
-            active: root.wallpaperTint
-        }
+        foregroundColor: menuInk.panelSource ? menuInk.foreground : baseForeground
     }
 
     fullRepresentation: GridLayout {

@@ -1,42 +1,26 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "panelwallpaper.h"
 #include "glassink.h"
+#include "glasssettings.h"
 
-#include <QDBusConnection>
-#include <QDBusPendingCallWatcher>
-#include <QDBusPendingReply>
+#include <Plasma/Containment>
+#include <Plasma/Corona>
+#include <QQmlProperty>
+#include <QPointer>
 #include <QDir>
+#include <QEvent>
 #include <QFutureWatcher>
 #include <QGuiApplication>
 #include <QImageReader>
 #include <QPalette>
-#include <QQuickWindow>
 #include <QScreen>
 #include <QTimer>
 #include <QtConcurrentRun>
 #include <limits>
-#include <memory>
 #include <optional>
 
 namespace {
 using namespace Qt::StringLiterals;
-
-constexpr auto plasma = "org.kde.plasmashell";
-const auto shellPath = u"/PlasmaShell"_s;
-const auto shellInterface = u"org.kde.PlasmaShell"_s;
-
-QColor wallpaperColor(const QVariant &value, QColor fallback)
-{
-    if (const QColor color = value.value<QColor>(); color.isValid()) return color;
-    // QColor is marshalled by Qt D-Bus as a structure containing its QRgb.
-    const auto argument = value.value<QDBusArgument>();
-    if (argument.currentSignature() != u"(u)") return fallback;
-    uint rgba = 0;
-    argument.beginStructure();
-    argument >> rgba;
-    argument.endStructure();
-    return QColor::fromRgba(rgba);
-}
 
 QImage loadWallpaper(const QString &source, QSize screen, bool dark, int fillMode)
 {
@@ -93,11 +77,6 @@ struct Wallpaper {
     QColor background;
     int mode;
     bool blur;
-    // Shared by the delegates on this output. Replacing the wallpaper drops this cache.
-    QRectF panelBounds{};
-    QColor panelPreferred{};
-    GlassInk::Family panelFamily = GlassInk::Family::Dark;
-
     QColor pixel(QPointF point) const
     {
         if (image.isNull()) return background;
@@ -125,6 +104,8 @@ struct Wallpaper {
 
 struct WallpaperSpec {
     QSize screen;
+    QRect panel;
+    QString plugin;
     QString source;
     QColor color;
     int mode;
@@ -133,158 +114,159 @@ struct WallpaperSpec {
     bool operator==(const WallpaperSpec &) const = default;
 };
 
-class Wallpapers : public QObject
+QColor panelInk(const WallpaperSpec &spec)
+{
+    QImage image;
+    if (spec.plugin != u"org.kde.color") {
+        if (spec.plugin != u"org.kde.image" && spec.plugin != u"org.kde.slideshow") return {};
+        image = loadWallpaper(spec.source, spec.screen, spec.dark, spec.mode);
+        if (image.isNull()) return {};
+    }
+    const Wallpaper wallpaper{spec.screen, std::move(image), spec.color, spec.mode, spec.blur};
+    const QRectF panel(spec.panel);
+    const auto samples = GlassInk::sample(GlassInk::component, panel.center(), panel.size() * .49, [&](QPointF point) {
+        const QColor pixel = wallpaper.pixel(point);
+        if (!pixel.isValid()) return QColor();
+        // Interpolate the same stops painted by the top bar's scrim.
+        const double segment = std::clamp((point.y() - panel.top()) / panel.height(), 0., 1.) * 8;
+        const double left = std::floor(segment);
+        const double right = std::min(8., left + 1);
+        QColor scrim = Qt::black;
+        scrim.setAlphaF(std::lerp(PanelWallpaper::scrimOpacityAt(left / 8), PanelWallpaper::scrimOpacityAt(right / 8), segment - left));
+        return GlassInk::composite(pixel, scrim);
+    });
+    return samples.tone(Qt::white, samples.family(Qt::white));
+}
+
+// One observer and one result for all applets sharing this panel window.
+class PanelInk : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QColor foreground READ foreground NOTIFY changed)
 public:
-    Wallpapers()
+    PanelInk(QQuickWindow *window, Plasma::Containment *panel)
+        : QObject(window), m_window(window), m_panel(panel)
     {
-        connect(&m_timer, &QTimer::timeout, this, [this] {
-            for (auto i = m_outputs.cbegin(); i != m_outputs.cend(); ++i) refresh(i.key(), i.value());
-        });
-        QDBusConnection::sessionBus().connect(QString::fromLatin1(plasma), shellPath, shellInterface,
-                                               u"wallpaperChanged"_s, this, SLOT(refreshOutput(uint)));
+        m_refresh.setSingleShot(true);
+        connect(&m_refresh, &QTimer::timeout, this, &PanelInk::refresh);
+        connect(&m_settings, &GlassSettings::changed, this, &PanelInk::schedule);
+        connect(panel, &Plasma::Containment::screenChanged, this, &PanelInk::schedule);
+        connect(panel->corona(), &Plasma::Corona::screenOwnerChanged, this, &PanelInk::schedule);
+        connect(panel->corona(), &Plasma::Corona::containmentAdded, this, &PanelInk::schedule);
+        connect(panel->corona(), &Plasma::Corona::screenGeometryChanged, this, &PanelInk::schedule);
+        connect(window, &QWindow::screenChanged, this, &PanelInk::schedule);
+        connect(window, &QWindow::widthChanged, this, &PanelInk::schedule);
+        connect(window, &QWindow::heightChanged, this, &PanelInk::schedule);
+        connect(window, &QWindow::xChanged, this, &PanelInk::schedule);
+        connect(window, &QWindow::yChanged, this, &PanelInk::schedule);
+        // KDE can change the package's day/night image with the application palette.
+        window->installEventFilter(this);
+        schedule();
     }
-
-    void addWatcher(int screen, QSize size)
-    {
-        auto &output = m_outputs[screen];
-        if (!output) output = std::make_shared<Output>();
-        ++output->watchers;
-        resize(screen, size);
-        if (!m_timer.isActive()) m_timer.start(2000);
-    }
-
-    void removeWatcher(int screen)
-    {
-        const auto output = m_outputs.value(screen);
-        if (!output || --output->watchers) return;
-        m_outputs.remove(screen);
-        if (m_outputs.isEmpty()) m_timer.stop();
-    }
-
-    void resize(int screen, QSize size)
-    {
-        const auto output = m_outputs.value(screen);
-        if (output && output->size != size) {
-            output->size = size;
-            refresh(screen, output);
-        }
-    }
-
-    Wallpaper *current(int screen) const
-    {
-        const auto output = m_outputs.value(screen);
-        return output && output->wallpaper ? &*output->wallpaper : nullptr;
-    }
+    QColor foreground() const { return m_ink.isValid() ? m_ink : qGuiApp->palette().color(QPalette::WindowText); }
+    bool observes(Plasma::Containment *panel) const { return m_panel == panel; }
 
 Q_SIGNALS:
-    void changed(int screen);
+    void changed();
+
+private Q_SLOTS:
+    void schedule() { m_refresh.start(0); }
 
 private:
-    struct Output {
-        int watchers = 0;
-        QSize size;
-        bool pending = false;
-        std::optional<WallpaperSpec> spec;
-        std::optional<Wallpaper> wallpaper;
-    };
-
-    Q_SLOT void refreshOutput(uint screen)
+    bool eventFilter(QObject *object, QEvent *event) override
     {
-        if (const auto output = m_outputs.value(int(screen))) refresh(int(screen), output);
+        if (event->type() == QEvent::ApplicationPaletteChange || event->type() == QEvent::PaletteChange) {
+            schedule();
+            if (!m_ink.isValid()) Q_EMIT changed();
+        }
+        return QObject::eventFilter(object, event);
     }
 
-    void refresh(int screen, std::shared_ptr<Output> output)
+    void refresh()
     {
-        if (output->pending) return;
-        output->pending = true;
-        // Read the active desktop's live configuration map. Slide changes
-        // update that map before Plasma saves the desktop configuration.
-        auto call = QDBusMessage::createMethodCall(QString::fromLatin1(plasma), shellPath, shellInterface, u"wallpaper"_s);
-        call << uint(screen);
-        auto *query = new QDBusPendingCallWatcher(QDBusConnection::sessionBus().asyncCall(call, 2000), this);
-        connect(query, &QDBusPendingCallWatcher::finished, this, [this, query, output, screen] {
-            const QDBusPendingReply<QVariantMap> reply = *query;
-            query->deleteLater();
-            output->pending = false;
-            if (m_outputs.value(screen) != output || reply.isError()) return;
-            const auto config = reply.value();
-            const auto plugin = config.value(u"wallpaperPlugin"_s).toString();
-            const bool solid = plugin == u"org.kde.color";
-            if (!solid && plugin != u"org.kde.image" && plugin != u"org.kde.slideshow") {
-                output->spec.reset();
-                if (output->wallpaper) {
-                    output->wallpaper.reset();
-                    Q_EMIT changed(screen);
-                }
-                return;
+        if (!m_settings.dynamicTinting() || !m_panel || !m_window->screen() || m_window->size().isEmpty()) return;
+        Plasma::Containment *desktop = nullptr;
+        for (auto *containment : m_panel->corona()->containments()) {
+            if (containment->containmentType() == Plasma::Containment::Desktop
+                && int(m_panel->screen()) >= 0 && containment->screen() == m_panel->screen()) {
+                desktop = containment;
+                break;
             }
-            const WallpaperSpec spec{
-                output->size,
-                config.value(u"Image"_s).toString(),
-                wallpaperColor(config.value(u"Color"_s), solid ? QColor(u"#1d99f3"_s) : QColor(Qt::white)),
-                config.value(u"FillMode"_s, 2).toInt(),
-                config.value(u"Blur"_s).toBool(),
-                GlassInk::luminance(qGuiApp->palette().color(QPalette::Window)) < .179
-            };
-            if (output->spec == spec) return;
-            output->spec = spec;
-            output->pending = true;
-            auto *job = new QFutureWatcher<std::optional<Wallpaper>>(this);
-            connect(job, &QFutureWatcher<std::optional<Wallpaper>>::finished, this, [this, job, output, screen] {
-                job->deleteLater();
-                output->pending = false;
-                if (m_outputs.value(screen) != output) return;
-                output->wallpaper = job->result();
-                Q_EMIT changed(screen);
-            });
-            job->setFuture(QtConcurrent::run([spec, solid]() -> std::optional<Wallpaper> {
-                QImage image = solid ? QImage() : loadWallpaper(spec.source, spec.screen, spec.dark, spec.mode);
-                if (image.isNull() && !solid) return std::nullopt;
-                return Wallpaper{spec.screen, std::move(image), spec.color, spec.mode, spec.blur};
-            }));
+        }
+        if (m_desktop != desktop) {
+            if (m_desktop) disconnect(m_desktop, nullptr, this, nullptr);
+            m_desktop = desktop;
+            if (desktop) {
+                connect(desktop, &Plasma::Containment::wallpaperGraphicsObjectChanged, this, &PanelInk::schedule);
+                connect(desktop, &Plasma::Containment::wallpaperPluginChanged, this, &PanelInk::schedule);
+            }
+        }
+        auto *wallpaper = desktop ? desktop->property("wallpaperGraphicsObject").value<QObject *>() : nullptr;
+        if (m_wallpaper != wallpaper) {
+            if (m_wallpaper) disconnect(m_wallpaper, nullptr, this, nullptr);
+            m_wallpaper = wallpaper;
+            if (wallpaper) QQmlProperty(wallpaper, u"configuration"_s).connectNotifySignal(this, SLOT(schedule()));
+        }
+        auto *config = wallpaper ? wallpaper->property("configuration").value<QObject *>() : nullptr;
+        if (config != m_config) {
+            if (m_config) disconnect(m_config, nullptr, this, nullptr);
+            m_config = config;
+            if (config) {
+                for (const auto &key : {u"Image"_s, u"Color"_s, u"FillMode"_s, u"Blur"_s})
+                    QQmlProperty(config, key).connectNotifySignal(this, SLOT(schedule()));
+            }
+        }
+        if (!desktop || !wallpaper) {
+            ++m_generation;
+            m_requested.reset();
+            return;
+        }
+        const QRect screen = m_window->screen()->geometry();
+        const QPoint origin = m_window->width() == screen.width() ? QPoint() : m_window->position() - screen.topLeft();
+        const auto plugin = desktop->wallpaperPlugin();
+        const auto setting = [config](const char *key) { return config ? config->property(key) : QVariant{}; };
+        auto background = setting("Color").value<QColor>();
+        if (!background.isValid()) background = plugin == u"org.kde.color" ? QColor(u"#1d99f3"_s) : QColor(Qt::white);
+        const auto fillMode = setting("FillMode");
+        const QString source = setting("Image").toString();
+        const QUrl url(source);
+        const bool automaticVariant = url.fragment().isEmpty()
+            && QFileInfo(url.isLocalFile() ? url.toLocalFile() : source).isDir();
+        const WallpaperSpec spec{screen.size(), QRect(origin, m_window->size()), plugin,
+            source, background, fillMode.isValid() ? fillMode.toInt() : 2,
+            setting("Blur").toBool(), automaticVariant && GlassInk::luminance(qGuiApp->palette().color(QPalette::Window)) < .179};
+        if (m_requested == spec) return;
+        m_requested = spec;
+        // Keep the displayed ink while decoding. A superseded job cannot publish.
+        const auto generation = ++m_generation;
+        auto *job = new QFutureWatcher<QColor>(this);
+        connect(job, &QFutureWatcher<QColor>::finished, this, [this, job, generation] {
+            job->deleteLater();
+            if (generation != m_generation) return;
+            m_ink = job->result();
+            Q_EMIT changed();
         });
+        job->setFuture(QtConcurrent::run(panelInk, spec));
     }
-
-    QTimer m_timer;
-    QHash<int, std::shared_ptr<Output>> m_outputs;
+    QQuickWindow *m_window;
+    QPointer<Plasma::Containment> m_panel, m_desktop;
+    QPointer<QObject> m_wallpaper, m_config;
+    GlassSettings m_settings;
+    QTimer m_refresh;
+    std::optional<WallpaperSpec> m_requested;
+    quint64 m_generation = 0;
+    QColor m_ink;
 };
-
-Wallpapers &wallpapers()
-{
-    static Wallpapers store;
-    return store;
-}
 }
 
-PanelWallpaper::PanelWallpaper(QObject *parent) : QObject(parent)
+QObject *PanelWallpaper::sourceFor(QQuickWindow *window, QObject *containment) const
 {
-    connect(&wallpapers(), &Wallpapers::changed, this, [this](int screen) {
-        if (screen == m_screen) revise();
-    });
-}
-
-PanelWallpaper::~PanelWallpaper()
-{
-    if (m_screen >= 0) wallpapers().removeWatcher(m_screen);
-}
-
-void PanelWallpaper::setWatching(bool watching)
-{
-    if (m_watching == watching) return;
-    m_watching = watching;
-    if (!watching && m_screen >= 0) {
-        wallpapers().removeWatcher(m_screen);
-        m_screen = -1;
+    auto *panel = qobject_cast<Plasma::Containment *>(containment);
+    if (!window || !panel || !panel->corona()) return nullptr;
+    for (auto *source : window->findChildren<PanelInk *>(Qt::FindDirectChildrenOnly)) {
+        if (source->observes(panel)) return source;
     }
-    Q_EMIT watchingChanged();
-}
-
-void PanelWallpaper::revise()
-{
-    ++m_revision;
-    Q_EMIT changed();
+    return new PanelInk(window, panel);
 }
 
 qreal PanelWallpaper::scrimOpacityAt(qreal position)
@@ -293,52 +275,6 @@ qreal PanelWallpaper::scrimOpacityAt(qreal position)
     constexpr double decay = 5.0;
     const double tail = std::exp(-decay);
     return peak * (std::exp(-decay * std::clamp(position, 0., 1.)) - tail) / (1. - tail);
-}
-
-QColor PanelWallpaper::foregroundAt(QQuickItem *item, int screenNumber, QPointF center, QColor base)
-{
-    if (!m_watching || screenNumber < 0 || !item || !item->window() || !item->window()->screen()) return base;
-    const auto *window = item->window();
-    const auto screen = window->screen()->geometry();
-    if (m_screen != screenNumber) {
-        if (m_screen >= 0) wallpapers().removeWatcher(m_screen);
-        m_screen = screenNumber;
-        wallpapers().addWatcher(m_screen, screen.size());
-    } else {
-        wallpapers().resize(m_screen, screen.size());
-    }
-    auto *wallpaper = wallpapers().current(m_screen);
-    if (!wallpaper) return base;
-
-    // A full-width top panel is anchored to its output. Wayland clients can
-    // report a window-local origin even on a secondary output.
-    const QPointF origin = window->width() == screen.width() ? screen.topLeft() : window->position();
-    const QPointF point = origin + center;
-    const QSizeF radius(std::clamp(item->width() / 3, 3., 42.), std::clamp(item->height() / 4, 2., 6.));
-    const auto surfaceAt = [&](QPointF sample) {
-        const QPointF local = sample - screen.topLeft();
-        const QColor pixel = wallpaper->pixel(QPointF(std::clamp(local.x(), 0., double(screen.width() - 1)),
-                                                     std::clamp(local.y(), 0., double(screen.height() - 1))));
-        if (!pixel.isValid()) return QColor();
-        // Interpolate the same samples used by the Qt Quick gradient.
-        const double position = std::clamp((sample.y() - origin.y()) / std::max(1, window->height()), 0., 1.);
-        const double segment = position * 8;
-        const double left = std::floor(segment);
-        const double right = std::min(8., left + 1);
-        QColor scrim = Qt::black;
-        scrim.setAlphaF(std::lerp(scrimOpacityAt(left / 8), scrimOpacityAt(right / 8), segment - left));
-        return GlassInk::composite(pixel, scrim);
-    };
-    // Every applet on this panel uses the same global rectangle and palette.
-    const QRectF bounds(origin, window->size());
-    const auto preferred = qGuiApp->palette().color(QPalette::WindowText);
-    if (wallpaper->panelBounds != bounds || wallpaper->panelPreferred != preferred) {
-        wallpaper->panelBounds = bounds;
-        wallpaper->panelPreferred = preferred;
-        wallpaper->panelFamily = GlassInk::sample(GlassInk::component,
-            bounds.center(), bounds.size() * .45, surfaceAt).family(preferred);
-    }
-    return GlassInk::sample(GlassInk::label, point, radius, surfaceAt).tone(base, wallpaper->panelFamily);
 }
 
 #include "panelwallpaper.moc"
