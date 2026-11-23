@@ -15,6 +15,15 @@ _REPLACEMENTS = {
     }
 
     // Don't treat docks as windows."""),
+        ("    // Ignore hardcoded exceptions (KWin, lockscreen, etc.)", """    // The installer and Settings share a client-drawn window edge and corner mask.
+    // Keep Acrylic Glass blur on that surface without redirecting its frame again.
+    const auto classes = kwindow->windowClass().split(QLatin1Char(' '));
+    if (classes.contains(QStringLiteral("org.kde.mac-tahoe-liquid-kde.settings"), Qt::CaseInsensitive) ||
+        classes.contains(QStringLiteral("mac-tahoe-liquid-kde-installer"), Qt::CaseInsensitive)) {
+        return false;
+    }
+
+    // Ignore hardcoded exceptions (KWin, lockscreen, etc.)"""),
     ),
     "src/Window.h": (
         ("        KWin::EffectWindow *w;", """        KWin::EffectWindow *w;

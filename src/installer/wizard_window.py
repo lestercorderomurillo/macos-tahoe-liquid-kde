@@ -235,22 +235,26 @@ def paint_glass_control(widget, painter, *, pressed=False, backed=False):
     """Keep the face even; concentrate reflections along the capsule edge."""
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     light = widget.window().palette().window().color().lightnessF() > .5
-    rect = QRectF(1, 1, widget.width()-2, widget.height()-3)
+    rect = QRectF(1, 1, widget.width()-2, widget.height()-(2 if backed else 3))
     radius = rect.height()/2
     if backed:
         # Give the toolbar's shadow a solid silhouette while retaining its rim and reflections.
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(widget.window().surface_color)
         painter.drawRoundedRect(rect, radius, radius)
-    painter.setBrush(Qt.BrushStyle.NoBrush)
-    painter.setPen(QPen(QColor(0, 0, 0, 12 if light else 28), 1))
-    painter.drawRoundedRect(rect.translated(0, .8), radius, radius)
+    else:
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        painter.setPen(QPen(QColor(0, 0, 0, 12 if light else 28), 1))
+        painter.drawRoundedRect(rect.translated(0, .8), radius, radius)
     alpha = 80 if light else 16
     if widget.underMouse() and widget.isEnabled():
         alpha += 14
     fill = QColor(0, 0, 0, 8) if pressed and light else QColor(255, 255, 255, 9 if pressed else alpha)
     painter.setBrush(fill)
-    painter.setPen(QPen(QColor(0, 0, 0, 22) if light else QColor(255, 255, 255, 24), .5))
+    edge_color = QColor(0, 0, 0, 22) if light else QColor(255, 255, 255, 24)
+    if backed:
+        edge_color = QColor(86, 96, 112, 20) if light else QColor(229, 235, 243, 23)
+    painter.setPen(QPen(edge_color, .45 if backed else .5))
     painter.drawRoundedRect(rect, radius, radius)
     # Opposing highlights fade around the sides rather than banding the face.
     rim = QLinearGradient(rect.topLeft(), rect.bottomRight())
@@ -259,7 +263,7 @@ def paint_glass_control(widget, painter, *, pressed=False, backed=False):
                             (1, 220 if light else 115)):
         rim.setColorAt(position, QColor(255, 255, 255, alpha))
     painter.setBrush(Qt.BrushStyle.NoBrush)
-    painter.setPen(QPen(rim, 1))
+    painter.setPen(QPen(rim, .7 if backed else 1))
     edge = rect.adjusted(.45, .45, -.45, -.45)
     painter.drawRoundedRect(edge, radius-.45, radius-.45)
     if widget.hasFocus() and getattr(widget, "keyboard_focus", False):
@@ -893,9 +897,15 @@ class WizardFrame(QWidget):
         painter.fillPath(outside.subtracted(path), Qt.GlobalColor.transparent)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
         highlight = QLinearGradient(0, .375, 0, self.height() - .375)
-        highlight.setColorAt(0, QColor(142, 142, 142, 148))
-        highlight.setColorAt(1, QColor(98, 98, 98, 187))
-        painter.strokePath(path, QPen(highlight, .75))
+        if self.window().settings_mode:
+            light = self.palette().window().color().lightnessF() > .5
+            highlight.setColorAt(0, QColor(164, 174, 185, 110) if light else QColor(177, 188, 202, 91))
+            highlight.setColorAt(1, QColor(114, 126, 142, 116) if light else QColor(121, 134, 151, 107))
+            painter.strokePath(path, QPen(highlight, .5))
+        else:
+            highlight.setColorAt(0, QColor(142, 142, 142, 148))
+            highlight.setColorAt(1, QColor(98, 98, 98, 187))
+            painter.strokePath(path, QPen(highlight, .75))
 
 
 
@@ -1155,7 +1165,7 @@ class InstallerWindow(OpaqueSurface):
         self.settings_forward.setObjectName("settingsForward")
         self.settings_forward.clicked.connect(lambda: self.move_settings_history(1))
         history = HistoryControl(self.settings_back, self.settings_forward)
-        add_surface_shadow(history, radius=15, offset=2.25, opacity=93)
+        add_surface_shadow(history, radius=14, offset=0, opacity=74)
         toolbar.addWidget(history)
         toolbar.addSpacing(6)
         self.settings_review = GlassButton()
@@ -1163,7 +1173,7 @@ class InstallerWindow(OpaqueSurface):
         self.settings_review.backed = True
         self.settings_review.setFont(relative_font(self, .78, QFont.Weight.Medium))
         self.settings_review.clicked.connect(self.review_settings_changes)
-        add_surface_shadow(self.settings_review, radius=16, offset=2.25, opacity=98)
+        add_surface_shadow(self.settings_review, radius=15, offset=0, opacity=78)
         self.settings_title = self.label("")
         self.settings_title.setFont(relative_font(self, .91, QFont.Weight.Medium))
         toolbar.addWidget(self.settings_title, 1)

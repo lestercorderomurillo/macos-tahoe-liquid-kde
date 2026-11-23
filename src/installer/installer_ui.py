@@ -816,12 +816,14 @@ def _launch_preview_pyqt(uninstall=False, *, mode="install", section="appearance
     try:
         from PyQt6.QtCore import QTimer
         from PyQt6.QtWidgets import QApplication
+        from settings_launcher import DESKTOP_ENTRY
         from wizard_window import InstallerWindow
     except ImportError:
         return -1
     os.environ.setdefault("QT_NO_XDG_DESKTOP_PORTAL", "1")
     app = QApplication.instance() or QApplication(sys.argv[:1])
     app.setApplicationName("mac-tahoe-liquid-kde-installer")
+    app.setDesktopFileName(DESKTOP_ENTRY.removesuffix(".desktop"))
     app.setQuitOnLastWindowClosed(False)
     bridge = _make_installer_bridge()
     window = InstallerWindow(bridge, uninstall=uninstall, mode=mode, section=section, widget=widget)
