@@ -16,7 +16,7 @@ from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPat
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
-    QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
+    QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
     QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QTabWidget, QVBoxLayout, QWidget,
 )
 
@@ -1055,10 +1055,12 @@ class InstallerWindow(OpaqueSurface):
             if page == "general":
                 terms += ("Language",)
             elif page == "theme":
-                terms += ("Light", "Dark", "Auto", "Color")
+                terms += ("Light", "Dark", "Auto", "Icon appearance", "Icon color palette", "Tinted")
             elif page == "dock_bar":
                 terms += ("Trash", "Empty trash icon", "Full trash icon", "Dock icons",
-                          "System menu", "App Store icon", "App Store command", "Log Out command")
+                          "System menu", "App Store icon", "App Store command", "Log Out command",
+                          "Apps preferences", "Open from Apps", "Launcher position", "Grid icon size",
+                          "Activation shortcut", "Hover magnification")
             keywords = search_text(" ".join((*terms, *(self.t(term) for term in terms))))
             match = all(term in keywords for term in query)
             button.setVisible(match)
@@ -1484,17 +1486,17 @@ class InstallerWindow(OpaqueSurface):
             QFrame#settingsOptionPanel {{
                 background: {panel_surface}; border: 1px solid {separator}; border-radius: 8px;
             }}
-            QTabWidget#dockPreferenceTabs::pane {{ border: 0; }}
-            QTabWidget#dockPreferenceTabs QTabBar::tab {{
+            QTabWidget#widgetPreferenceTabs::pane {{ border: 0; }}
+            QTabWidget#widgetPreferenceTabs QTabBar::tab {{
                 background: {field_surface}; color: {muted}; padding: 5px 12px;
                 border: 1px solid {separator}; border-radius: 6px;
                 margin-right: 4px;
             }}
-            QTabWidget#dockPreferenceTabs QTabBar::tab:selected {{
+            QTabWidget#widgetPreferenceTabs QTabBar::tab:selected {{
                 background: {hover}; color: {foreground};
             }}
-            QTabWidget#dockPreferenceTabs QTabBar::tab:focus {{ border-color: {self.accent}; }}
-            QWidget[dockPreferenceRow="true"] QCheckBox {{ padding: 3px 0; }}
+            QTabWidget#widgetPreferenceTabs QTabBar::tab:focus {{ border-color: {self.accent}; }}
+            QWidget[widgetPreferenceRow="true"] QCheckBox {{ padding: 3px 0; }}
             QPushButton#optionPanelTitle {{
                 color: {foreground}; background: transparent; text-align: left;
                 border: 1px solid transparent; border-radius: 7px; padding: 7px 10px;
@@ -1516,6 +1518,11 @@ class InstallerWindow(OpaqueSurface):
                 border: 1px solid {separator}; border-radius: 8px; padding: 3px 6px;
             }}
             QLineEdit#settingsSearch:focus, QLineEdit#widgetSettingField:focus {{ border-color: {self.accent}; }}
+            QKeySequenceEdit QLineEdit {{
+                background: {field_surface}; color: {foreground};
+                border: 1px solid {separator}; border-radius: 8px; padding: 3px 6px;
+            }}
+            QKeySequenceEdit QLineEdit:focus {{ border-color: {self.accent}; }}
             QPushButton[navigation="section"] {{
                 color: {foreground}; text-align: left; border: 1px solid transparent;
                 border-radius: 7px; padding: 3px 6px;
@@ -1699,8 +1706,10 @@ class InstallerWindow(OpaqueSurface):
             self.requested_widget = None
 
     def page_dock_and_menu_widgets(self):
-        from dock_preferences import APPEARANCE, BEHAVIOR, CHOICES, DEFAULTS, DOCK_ICONS, ICONS_ONLY, RANGES, TASKS_ONLY
-        from plasmoid_settings import apply, instances
+        import dock_preferences
+        import launcher_preferences
+        from dock_apps import desktop_applications
+        from plasmoid_settings import apply, instances, SHORTCUT_WIDGETS, TYPED_PREFERENCES
         text_fields = {
             "trash": (
                 ("emptyIcon", "Empty trash icon", "user-trash"),
@@ -1712,7 +1721,8 @@ class InstallerWindow(OpaqueSurface):
                 ("cmdLogOut", "Log Out command", ""),
             ),
         }
-        for kind, title in (("dock", "Dock preferences"), ("trash", "Trash"), ("system_menu", "System menu")):
+        for kind, title in (("dock", "Dock preferences"), ("launcher", "Apps preferences"),
+                            ("trash", "Trash"), ("system_menu", "System menu")):
             panel = self.option_card()
             column = QVBoxLayout(panel)
             column.setContentsMargins(12, 10, 12, 10)
@@ -1743,21 +1753,24 @@ class InstallerWindow(OpaqueSurface):
             controls = {}
             rows = {}
             displayed = {}
-            if kind == "dock":
+            typed = TYPED_PREFERENCES.get(kind)
+            if typed is not None:
                 tabs = QTabWidget()
-                tabs.setObjectName("dockPreferenceTabs")
+                tabs.setObjectName("widgetPreferenceTabs")
                 tabs.setFont(relative_font(self, .9))
-                for label, labels in (("Appearance", APPEARANCE), ("Behavior", BEHAVIOR)):
+                pages = ({"Appearance": dock_preferences.APPEARANCE, "Behavior": dock_preferences.BEHAVIOR}
+                         if kind == "dock" else launcher_preferences.FORMS)
+                for label, labels in pages.items():
                     tab = QWidget()
                     form = QVBoxLayout(tab)
                     form.setContentsMargins(0, 6, 0, 0)
                     form.setSpacing(4)
                     for key, text in labels.items():
                         row = QWidget()
-                        row.setProperty("dockPreferenceRow", True)
+                        row.setProperty("widgetPreferenceRow", True)
                         line = QHBoxLayout(row)
                         line.setContentsMargins(0, 0, 0, 0)
-                        if isinstance(DEFAULTS[key], bool):
+                        if isinstance(typed.DEFAULTS[key], bool):
                             field = CheckOption(self.t(text))
                             line.addWidget(field, 1)
                         else:
@@ -1765,22 +1778,68 @@ class InstallerWindow(OpaqueSurface):
                             title_label.setWordWrap(True)
                             title_label.setMinimumWidth(130)
                             line.addWidget(title_label, 1)
-                            if key in CHOICES:
+                            if key == "launcherApplication":
                                 field = GlassComboBox()
-                                for value, choice in CHOICES[key].items():
+                                field.setMinimumContentsLength(16)
+                                field.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+                                field.addItem(self.t("Launchpad"), "")
+                                for app_id, name in sorted(desktop_applications().items(), key=lambda app: app[1].casefold()):
+                                    field.addItem(name, app_id)
+                            elif key in typed.CHOICES:
+                                field = GlassComboBox()
+                                for value, choice in typed.CHOICES[key].items():
                                     field.addItem(self.t(choice), value)
-                            else:
+                            elif key in typed.RANGES:
                                 field = QSpinBox()
-                                field.setRange(*RANGES[key])
+                                field.setRange(*typed.RANGES[key])
                                 if key == "dockMagnification":
                                     field.setSuffix("%")
                                     field.setSingleStep(5)
+                            else:
+                                field = QLineEdit()
+                                field.setObjectName("widgetSettingField")
+                                field.setPlaceholderText(self.t("Icon name or file"))
                             field.setAccessibleName(title_label.text())
                             line.addWidget(field)
-                        field.setObjectName(key)
+                            if key == "customButtonImage":
+                                browse = GlassButton(self.t("Choose…"))
+                                browse.clicked.connect(lambda _, target=field, enabled=controls["useCustomButtonImage"]:
+                                                       self.choose_launcher_image(target, enabled))
+                                line.addWidget(browse)
+                        field.setProperty("preferenceKey", key)
+                        if not isinstance(field, QLineEdit):
+                            field.setObjectName(key)
                         rows[key] = row
                         controls[key] = field
                         form.addWidget(row)
+                    if kind == "launcher" and label == "Icon":
+                        preview = QLabel()
+                        preview.setFixedSize(38, 38)
+                        icon, custom, use_custom = (controls[key] for key in
+                                                    ("icon", "customButtonImage", "useCustomButtonImage"))
+
+                        def refresh_icon(*_, target=preview, base=icon, image=custom, use=use_custom):
+                            value = image.text() if use.isChecked() else base.text()
+                            url = QUrl(value)
+                            filename = url.toLocalFile() if url.isLocalFile() else value
+                            artwork = QIcon(filename) if Path(filename).is_absolute() else QIcon.fromTheme(filename)
+                            target.setPixmap(artwork.pixmap(36, 36))
+
+                        reset_icon = GlassButton(self.t("Clear Icon"))
+
+                        def clear_icon(*_, base=icon, use=use_custom):
+                            base.setText("start-here-kde-symbolic")
+                            use.setChecked(False)
+
+                        reset_icon.clicked.connect(clear_icon)
+                        icon.textChanged.connect(refresh_icon)
+                        custom.textChanged.connect(refresh_icon)
+                        use_custom.toggled.connect(refresh_icon)
+                        icon_preview = QHBoxLayout()
+                        icon_preview.addWidget(preview)
+                        icon_preview.addStretch()
+                        icon_preview.addWidget(reset_icon)
+                        form.insertLayout(0, icon_preview)
                     form.addStretch()
                     tabs.addTab(tab, self.t(label))
                 column.addWidget(tabs)
@@ -1809,12 +1868,24 @@ class InstallerWindow(OpaqueSurface):
             result = self.label("")
             result.setObjectName("detail")
             save = GlassButton(self.t("Save"))
-            if kind == "dock":
-                header.addWidget(result)
+            if typed is not None:
                 header.addWidget(save)
             else:
-                buttons.addWidget(result, 1)
+                buttons.addStretch()
                 buttons.addWidget(save)
+            if kind in SHORTCUT_WIDGETS:
+                shortcut = QKeySequenceEdit()
+                shortcut.setObjectName("activationShortcut")
+                shortcut.setClearButtonEnabled(True)
+                shortcut.setAccessibleName(self.t("Activation shortcut"))
+                shortcut_row = QHBoxLayout()
+                shortcut_row.addWidget(self.label("Activation shortcut"), 1)
+                shortcut_row.addWidget(shortcut)
+                if typed is not None:
+                    column.insertLayout(column.indexOf(tabs), shortcut_row)
+                else:
+                    column.addLayout(shortcut_row)
+                controls["activationShortcut"] = shortcut
             if kind == "trash":
                 storage = GlassButton(self.t("Trash Settings…"))
                 shell = shutil.which("kcmshell6")
@@ -1823,8 +1894,10 @@ class InstallerWindow(OpaqueSurface):
                     storage.clicked.connect(lambda: subprocess.Popen(
                         [shell, "kcm_trash"], start_new_session=True))
                 buttons.addWidget(storage)
-            if kind != "dock":
+            if typed is None:
                 column.addLayout(buttons)
+            result.hide()
+            column.addWidget(result)
 
             def update_dock_dependencies(*_, fields=controls):
                 grouped = fields["groupingStrategy"].currentData() != 0
@@ -1836,7 +1909,18 @@ class InstallerWindow(OpaqueSurface):
                 fields["separateLaunchers"].setEnabled(fields["sortingStrategy"].currentData() == 1)
                 fields["forceStripes"].setEnabled(fields["maxStripes"].value() > 1)
 
+            def update_launcher_dependencies(*_, fields=controls, launcher_rows=rows):
+                centered = fields["launcherPosition"].currentData() == 2
+                fields["floating"].setEnabled(not centered)
+                if centered:
+                    fields["floating"].setChecked(True)
+                for key in ("offsetX", "offsetY"):
+                    launcher_rows[key].setVisible(centered or fields["floating"].isChecked())
+                launcher_rows["customButtonImage"].setEnabled(fields["useCustomButtonImage"].isChecked())
+
             def field_value(field):
+                if isinstance(field, QKeySequenceEdit):
+                    return field.keySequence().toString()
                 if isinstance(field, QLineEdit):
                     return field.text()
                 if isinstance(field, QSpinBox):
@@ -1846,53 +1930,64 @@ class InstallerWindow(OpaqueSurface):
                 return field.isChecked()
 
             def load(*_, selected=picker, fields=controls, values=widgets, status=result,
-                     dock_rows=rows, dependencies=update_dock_dependencies, baseline=displayed):
+                     widget_rows=rows, category=kind, dock_dependencies=update_dock_dependencies,
+                     launcher_dependencies=update_launcher_dependencies, baseline=displayed):
                 saved = values[selected.currentData()]
-                icons_only = saved.get("_plugin") == DOCK_ICONS
-                for key, row in dock_rows.items():
-                    row.setVisible((key not in ICONS_ONLY or icons_only)
-                                   and (key not in TASKS_ONLY or not icons_only)
-                                   and (key != "taskMaxWidth" or not saved.get("_vertical")))
+                if category == "dock":
+                    icons_only = saved.get("_plugin") == dock_preferences.DOCK_ICONS
+                    for key, row in widget_rows.items():
+                        row.setVisible((key not in dock_preferences.ICONS_ONLY or icons_only)
+                                       and (key not in dock_preferences.TASKS_ONLY or not icons_only)
+                                       and (key != "taskMaxWidth" or not saved.get("_vertical")))
                 for key, field in fields.items():
-                    value = saved[key]
-                    if isinstance(field, QLineEdit):
+                    value = saved.get(key, "")
+                    if isinstance(field, QKeySequenceEdit):
+                        field.setKeySequence(QKeySequence.fromString(value))
+                    elif isinstance(field, QLineEdit):
                         field.setText(value)
                         field.setCursorPosition(0)
                     elif isinstance(field, QSpinBox):
                         field.setValue(value)
                     elif isinstance(field, QComboBox):
+                        if key == "launcherApplication" and field.findData(value) == -1:
+                            field.addItem(value, value)
                         field.setCurrentIndex(field.findData(value))
                     else:
                         field.setChecked(value is True or str(value).lower() == "true")
-                    baseline[key] = field_value(field)
-                if dock_rows:
-                    dependencies()
+                if category == "dock":
+                    dock_dependencies()
+                elif category == "launcher":
+                    launcher_dependencies()
+                baseline.update((key, field_value(field)) for key, field in fields.items())
                 status.clear()
+                status.hide()
 
             def save_widget(*_, selected=picker, fields=controls, values=widgets, category=kind, status=result,
-                            dock_rows=rows, baseline=displayed):
+                            widget_rows=rows, baseline=displayed):
                 identifier = selected.currentData()
                 desired = {}
                 for key, field in fields.items():
-                    if key in dock_rows and dock_rows[key].isHidden():
+                    if key in widget_rows and widget_rows[key].isHidden():
                         continue
                     value = field_value(field)
                     if value is not None and value != baseline[key]:
                         desired[key] = value
                 if desired.get("maxStripes") == 1:
                     desired["forceStripes"] = False
+                if "launcherPosition" in desired:
+                    desired["floating"] = fields["floating"].isChecked()
                 try:
                     if desired:
                         values[identifier] = apply(category, identifier, desired)
                 except (RuntimeError, ValueError) as error:
                     status.setText(self.t(str(error)))
                 else:
-                    for key in desired:
+                    for key, value in desired.items():
+                        if isinstance(fields[key], QCheckBox):
+                            fields[key].setChecked(value)
                         baseline[key] = field_value(fields[key])
-                    if desired.get("maxStripes") == 1:
-                        fields["forceStripes"].setChecked(False)
-                        baseline["forceStripes"] = False
                     status.setText(self.t("Saved"))
+                status.show()
 
             if kind == "dock":
                 for key in ("groupingStrategy", "wheelEnabled", "sortingStrategy"):
@@ -1900,10 +1995,21 @@ class InstallerWindow(OpaqueSurface):
                 for key in ("groupPopups", "indicateAudioStreams"):
                     controls[key].toggled.connect(update_dock_dependencies)
                 controls["maxStripes"].valueChanged.connect(update_dock_dependencies)
+            elif kind == "launcher":
+                controls["launcherPosition"].currentIndexChanged.connect(update_launcher_dependencies)
+                for key in ("floating", "useCustomButtonImage"):
+                    controls[key].toggled.connect(update_launcher_dependencies)
             picker.currentIndexChanged.connect(load)
             save.clicked.connect(save_widget)
             load()
             self.body.addWidget(panel)
+
+    def choose_launcher_image(self, field, enabled):
+        filename, _ = QFileDialog.getOpenFileName(self, self.t("Choose an icon"), "",
+                                                   self.t("Icons (*.png *.xpm *.svg *.svgz)"))
+        if filename:
+            field.setText(QUrl.fromLocalFile(filename).toString())
+            enabled.setChecked(True)
 
     def page_general(self):
         panel = QFrame()

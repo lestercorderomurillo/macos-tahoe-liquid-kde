@@ -5,6 +5,7 @@ import re
 import pytest
 
 from dock_preferences import APPEARANCE, BEHAVIOR, DEFAULTS, DOCK_ICONS, DOCK_TASKS
+import launcher_preferences
 import plasmoid_settings
 
 
@@ -68,3 +69,29 @@ def test_dock_normalizes_values_and_preserves_existing_sort_modes(monkeypatch):
     with pytest.raises(ValueError, match="Invalid widget preferences"):
         plasmoid_settings.apply("dock", 21, {"dockMagnification": True})
     assert len(called) == 1
+
+
+def test_apps_form_covers_the_config_and_preserves_editions_and_file_urls(monkeypatch):
+    prefs = launcher_preferences
+    ui = Path(__file__).resolve().parents[1] / "src/offline/plasmoids" / prefs.LAUNCHER_ID / "contents/ui"
+    legacy = set(re.findall(r"\bproperty\s+\w+\s+cfg_(\w+)", (ui / "ConfigGeneral.qml").read_text()))
+    assert legacy == {key for page in prefs.FORMS.values() for key in page} == prefs.DEFAULTS.keys()
+    image = "file:///home/tester/my%20icon.svg"
+    changes = {"launcherPreset": 0, "customButtonImage": image, "goldenGateColumns": 8,
+               "activationShortcut": "Meta+Shift+F11"}
+
+    def evaluate(script):
+        request = json.loads(script.split("const request = ", 1)[1].split(";\n", 1)[0])
+        assert request["plugins"] == [prefs.LAUNCHER_ID]
+        assert request["hasShortcut"]
+        assert "activationShortcut" not in request["defaults"]
+        assert request["changes"] == changes
+        return json.dumps({18: changes | {"numberColumns": "5", "floating": "false"}})
+
+    monkeypatch.setattr(plasmoid_settings, "_evaluate_plasma_script", evaluate)
+    values = plasmoid_settings.apply("launcher", 18, changes)
+    assert values["launcherPreset"] == 0
+    assert values["customButtonImage"] == image
+    assert values["goldenGateColumns"] == 8 and values["numberColumns"] == 5
+    assert values["floating"] is False
+    assert values["activationShortcut"] == "Meta+Shift+F11"

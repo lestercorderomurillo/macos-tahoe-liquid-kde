@@ -37,6 +37,8 @@ PlasmoidItem {
         visible: settingsRoute.available
         onTriggered: settingsRoute.connectSource(settingsRoute.program + "--section=dock_bar --widget=" + Plasmoid.id)
     }
+    Plasmoid.hasConfigurationInterface: !settingsRoute.available
+    Plasmoid.contextualActions: [tasks.dockSettingsAction]
 
     P5Support.DataSource {
         id: settingsRoute

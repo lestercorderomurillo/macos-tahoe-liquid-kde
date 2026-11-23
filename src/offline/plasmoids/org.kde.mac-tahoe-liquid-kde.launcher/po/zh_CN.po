@@ -148,3 +148,6 @@ msgstr "启动台"
 
 msgid "Clipboard history is unavailable."
 msgstr "剪贴板历史记录不可用。"
+
+msgid "Configure Apps…"
+msgstr "配置应用程序…"

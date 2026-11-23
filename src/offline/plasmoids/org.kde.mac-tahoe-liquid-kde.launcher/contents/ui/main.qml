@@ -5,6 +5,7 @@ import org.kde.plasma.plasmoid 2.0
 
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.components 3.0 as PlasmaComponents
+import org.kde.plasma.plasma5support as P5Support
 
 import org.kde.ksvg as KSvg
 
@@ -24,7 +25,22 @@ PlasmoidItem {
             || Plasmoid.formFactor === PlasmaCore.Types.Vertical
         vertical: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     }
-    readonly property var dockConfigureAction: Plasmoid.internalAction("configure")
+    readonly property var dockConfigureAction: configureApps.visible ? configureApps : Plasmoid.internalAction("configure")
+    Plasmoid.hasConfigurationInterface: !settingsRoute.available
+
+    P5Support.DataSource {
+        id: settingsRoute
+        engine: "executable"
+        property bool available: false
+        readonly property string program: "sh -c 'exec \"$HOME/.local/bin/mac-tahoe-settings\" \"$@\"' settings "
+        readonly property string check: program + "--available"
+        connectedSources: [check]
+        onNewData: (source, data) => {
+            if (source === check)
+                available = Number(data["exit code"]) === 0;
+            disconnectSource(source);
+        }
+    }
     readonly property var dockButtonIcon: Plasmoid.icon
     property MenuRepresentation appsWindow
     function ensureAppsWindow() {
@@ -210,6 +226,13 @@ PlasmoidItem {
     }
 
      Plasmoid.contextualActions: [
+        PlasmaCore.Action {
+            id: configureApps
+            text: i18n("Configure Apps…")
+            icon.name: "configure"
+            visible: settingsRoute.available
+            onTriggered: settingsRoute.connectSource(settingsRoute.program + "--section=dock_bar --widget=" + Plasmoid.id)
+        },
         PlasmaCore.Action {
             text: i18n("Edit Applications…")
             icon.name: "kmenuedit"

@@ -4,8 +4,13 @@ from __future__ import annotations
 
 import json
 
+import dock_preferences
+import launcher_preferences
+from launcher_defaults import LAUNCHER_ID
 from theme_switch import _evaluate_plasma_script
-from dock_preferences import DEFAULTS, DOCK_ICONS, DOCK_TASKS, CHOICES, RANGES
+
+TYPED_PREFERENCES = {"dock": dock_preferences, "launcher": launcher_preferences}
+SHORTCUT_WIDGETS = {"dock", "launcher", "trash"}
 
 SETTINGS = {
     "trash": (
@@ -13,7 +18,10 @@ SETTINGS = {
         {"emptyIcon": "user-trash", "fullIcon": "user-trash-full"},
     ),
     "dock": (
-        {DOCK_ICONS, DOCK_TASKS}, "General", DEFAULTS,
+        {dock_preferences.DOCK_ICONS, dock_preferences.DOCK_TASKS}, "General", dock_preferences.DEFAULTS,
+    ),
+    "launcher": (
+        {LAUNCHER_ID}, "General", launcher_preferences.DEFAULTS,
     ),
     "system_menu": (
         {"org.kde.mac.tahoe.liquid.globalmenu"}, "Appearance",
@@ -25,22 +33,26 @@ SETTINGS = {
 
 def _request(kind, instance=None, changes=None):
     plugins, group, defaults = SETTINGS[kind]
+    typed = TYPED_PREFERENCES.get(kind)
+    has_shortcut = kind in SHORTCUT_WIDGETS
+    valid_keys = defaults | ({"activationShortcut": ""} if has_shortcut else {})
     if instance is not None and (type(instance) is not int or instance <= 0):
         raise ValueError("Invalid widget ID")
     if changes is not None and (instance is None or any(
-        key not in defaults or type(value) is not type(defaults[key])
+        key not in valid_keys or type(value) is not type(valid_keys[key])
         or isinstance(value, str) and (len(value) > 4096 or any(c in value for c in "\0\r\n"))
         for key, value in changes.items()
     )):
         raise ValueError("Invalid widget preferences")
-    if kind == "dock" and changes and any(
-        (key in CHOICES and value not in CHOICES[key])
-        or (key in RANGES and not RANGES[key][0] <= value <= RANGES[key][1])
+    if typed is not None and changes and any(
+        (key in typed.CHOICES and value not in typed.CHOICES[key])
+        or (key in typed.RANGES and not typed.RANGES[key][0] <= value <= typed.RANGES[key][1])
         for key, value in changes.items()
     ):
-        raise ValueError("Invalid Dock preference value")
+        raise ValueError("Invalid Dock preference value" if kind == "dock" else "Invalid launcher preference value")
     payload = json.dumps({"plugins": sorted(plugins), "group": group, "defaults": defaults,
-                          "instance": instance, "changes": changes, "dock": kind == "dock"})
+                          "instance": instance, "changes": changes, "dock": kind == "dock",
+                          "hasShortcut": has_shortcut})
     script = """
 const request = REQUEST;
 const result = {};
@@ -53,11 +65,25 @@ for (const container of containers) {
             continue;
         widget.currentConfigGroup = [request.group];
         if (request.changes !== null) {
-            for (const key of Object.keys(request.changes))
-                widget.writeConfig(key, request.changes[key]);
-            widget.reloadConfig();
+            let shortcutAccepted = true;
+            if ("activationShortcut" in request.changes) {
+                const previous = widget.globalShortcut;
+                widget.globalShortcut = request.changes.activationShortcut;
+                shortcutAccepted = widget.globalShortcut === request.changes.activationShortcut;
+                if (!shortcutAccepted)
+                    widget.globalShortcut = previous;
+            }
+            if (shortcutAccepted) {
+                for (const key of Object.keys(request.changes)) {
+                    if (key !== "activationShortcut")
+                        widget.writeConfig(key, request.changes[key]);
+                }
+                widget.reloadConfig();
+            }
         }
         const values = {};
+        if (request.hasShortcut)
+            values.activationShortcut = widget.globalShortcut;
         for (const key of Object.keys(request.defaults)) {
             let fallback = request.defaults[key];
             if (request.group === "Appearance") {
@@ -81,17 +107,19 @@ print(JSON.stringify(result));
         decoded = json.loads(result)
         if not isinstance(decoded, dict):
             raise ValueError
-        if kind == "dock":
+        if typed is not None:
             for values in decoded.values():
                 for key, default in defaults.items():
                     value = values.get(key, default)
                     if isinstance(default, bool):
                         values[key] = value is True or str(value).lower() == "true"
-                    elif type(value) is not int:
+                    elif isinstance(default, int) and type(value) is not int:
                         try:
                             values[key] = int(value)
                         except (ValueError, TypeError):
                             values[key] = default
+                    elif isinstance(default, str):
+                        values[key] = str(value) if value is not None else default
         return {int(key): value for key, value in decoded.items()}
     except (TypeError, ValueError):
         raise RuntimeError("Could not read widget preferences from Plasma.") from None

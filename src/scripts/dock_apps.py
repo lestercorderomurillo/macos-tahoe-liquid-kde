@@ -92,7 +92,7 @@ def application_roots() -> list[Path]:
     return list(dict.fromkeys(p for p in roots if p.is_absolute()))
 
 
-def installed_apps(roots: list[Path] | None = None) -> dict[str, str]:
+def desktop_applications(roots: list[Path] | None = None) -> dict[str, str]:
     """Honor user desktop overrides, including Hidden entries, before system ones."""
     entries = {}
     for root in application_roots() if roots is None else roots:
@@ -117,6 +117,11 @@ def installed_apps(roots: list[Path] | None = None) -> dict[str, str]:
                 entries[desktop_id] = entry.get("Name", desktop_id)
             except (OSError, UnicodeError, configparser.Error, KeyError, ValueError):
                 continue
+    return {desktop_id: name for desktop_id, name in entries.items() if name is not None}
+
+
+def installed_apps(roots: list[Path] | None = None) -> dict[str, str]:
+    entries = desktop_applications(roots)
     return {category: next((entries[c] for c in candidates if entries.get(c)), "")
             for category, candidates in CANDIDATES.items()}
 

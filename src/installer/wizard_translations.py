@@ -21,6 +21,35 @@ Less than a minute remaining|Falta menos de un minuto|剩余不到一分钟|Falt
 Finishing…|Finalizando…|正在完成…|Finalizando…|Wird abgeschlossen…
 Show installation details|Mostrar detalles de instalación|显示安装详情|Mostrar detalhes da instalação|Installationsdetails anzeigen
 Hide installation details|Ocultar detalles de instalación|隐藏安装详情|Ocultar detalhes da instalação|Installationsdetails ausblenden
+Activation shortcut|Atajo de activación|激活快捷键|Atalho de ativação|Aktivierungskürzel
+Icon color palette|Paleta de colores de iconos|图标配色|Paleta de cores dos ícones|Symbolfarbpalette
+Apps preferences|Preferencias de Apps|应用程序偏好设置|Preferências de Apps|Apps-Einstellungen
+Open from Apps|Abrir desde Apps|从应用程序打开|Abrir em Apps|Über Apps öffnen
+Launcher layout|Diseño del lanzador|启动器布局|Layout do lançador|Starter-Layout
+Launcher position|Posición del lanzador|启动器位置|Posição do lançador|Starterposition
+Floating launcher|Lanzador flotante|浮动启动器|Lançador flutuante|Schwebender Starter
+Distance from screen edge|Distancia al borde de la pantalla|距屏幕边缘的距离|Distância da borda da tela|Abstand zum Bildschirmrand
+Distance from panel|Distancia al panel|距面板的距离|Distância do painel|Abstand zur Leiste
+Show session actions|Mostrar acciones de sesión|显示会话操作|Mostrar ações da sessão|Sitzungsaktionen anzeigen
+Apps icon|Icono de Apps|应用程序图标|Ícone de Apps|Apps-Symbol
+Use a custom icon|Usar un icono personalizado|使用自定义图标|Usar um ícone personalizado|Eigenes Symbol verwenden
+Custom icon|Icono personalizado|自定义图标|Ícone personalizado|Eigenes Symbol
+Icon name or file|Nombre o archivo del icono|图标名称或文件|Nome ou arquivo do ícone|Symbolname oder Datei
+Choose an icon|Elegir un icono|选择图标|Escolher um ícone|Symbol auswählen
+Icons (*.png *.xpm *.svg *.svgz)|Iconos (*.png *.xpm *.svg *.svgz)|图标 (*.png *.xpm *.svg *.svgz)|Ícones (*.png *.xpm *.svg *.svgz)|Symbole (*.png *.xpm *.svg *.svgz)
+Clear Icon|Restablecer icono|重置图标|Restaurar ícone|Symbol zurücksetzen
+Grids and lists|Cuadrículas y listas|网格和列表|Grades e listas|Raster und Listen
+Grid icon size|Tamaño de iconos en la cuadrícula|网格图标大小|Tamanho dos ícones da grade|Symbolgröße im Raster
+Tahoe columns|Columnas de Tahoe|Tahoe 列数|Colunas do Tahoe|Tahoe-Spalten
+Golden Gate columns|Columnas de Golden Gate|Golden Gate 列数|Colunas do Golden Gate|Golden-Gate-Spalten
+Grid rows|Filas de la cuadrícula|网格行数|Linhas da grade|Rasterzeilen
+Compact list items|Elementos de lista compactos|紧凑列表项|Itens de lista compactos|Kompakte Listeneinträge
+Show list item descriptions|Mostrar las descripciones de la lista|显示列表项说明|Mostrar descrições dos itens da lista|Beschreibungen der Listeneinträge anzeigen
+Use system font settings|Usar las fuentes del sistema|使用系统字体设置|Usar configurações de fonte do sistema|Systemschrifteinstellungen verwenden
+Edition default|Predeterminado de la edición|版本默认设置|Padrão da edição|Vorgabe der Edition
+Near the Apps button|Cerca del botón Apps|靠近应用程序按钮|Perto do botão Apps|In der Nähe der Apps-Schaltfläche
+Panel center|Centro del panel|面板中央|Centro do painel|Leistenmitte
+Screen center|Centro de la pantalla|屏幕中央|Centro da tela|Bildschirmmitte
 Dock preferences|Preferencias del Dock|程序坞偏好设置|Preferências do Dock|Dock-Einstellungen
 Behavior|Comportamiento|行为|Comportamento|Verhalten
 Hover magnification|Ampliación al pasar el puntero|悬停放大|Ampliação ao passar o cursor|Vergrößerung beim Überfahren
