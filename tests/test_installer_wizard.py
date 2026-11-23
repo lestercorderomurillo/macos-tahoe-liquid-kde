@@ -202,7 +202,7 @@ def test_native_wizard_navigation_preserves_choices_and_waits_for_completion(rep
 import sys
 from pathlib import Path
 sys.path[:0] = [str(Path.cwd() / 'src/scripts'), str(Path.cwd() / 'src/installer')]
-from PyQt6.QtWidgets import QApplication, QPushButton, QLabel
+from PyQt6.QtWidgets import QApplication, QComboBox, QPushButton, QLabel
 from PyQt6.QtCore import Qt
 from PyQt6.QtTest import QTest
 from installer_ui import _make_installer_bridge
@@ -267,9 +267,16 @@ for page, _ in STEPS:
             expected = 'SF Pro Display' if widget.objectName() == 'pageTitle' else 'SF Pro Text'
             assert QFontInfo(widget.font()).family() == expected, (page, widget.objectName())
     cards = window.content.findChildren(ChoiceCard)
-    if page in ('appearance', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows', 'fonts', 'files'):
+    if page in ('appearance', 'wallpaper', 'launcher', 'window_controls', 'button_position', 'shadows', 'files'):
         assert cards and cards[0].isChecked(), page
         assert cards[0].height() > 80, page
+    if page == 'fonts':
+        selector = window.content.findChild(QComboBox, 'choice-fonts')
+        assert selector.count() == 2 and selector.currentData() == window.choices['fonts']
+        original_font_choice = selector.currentData()
+        selector.setCurrentIndex(selector.findData(not original_font_choice))
+        assert window.choices['fonts'] is not original_font_choice
+        selector.setCurrentIndex(selector.findData(original_font_choice))
     if page == 'icons':
         styles = dict(window.choice_widgets['icons'])
         assert styles[window.choices['icons']].isChecked()
@@ -766,7 +773,7 @@ for dark in (False, True):
         assert app.style().objectName().lower() == 'fusion'
         assert app.palette() == window.palette()
         assert window.font().family() == 'SF Pro Text'
-        assert window._desktop_font.family() == font.family()
+        assert app.property('installerDesktopFont').family() == font.family()
         assert abs(window.settings_font.pointSizeF() - font.pointSizeF() * 7/6) < .01
         assert font.pointSizeF() <= window.font().pointSizeF() < window.settings_font.pointSizeF()
         assert window.palette().highlight().color().name() == '#007aff'
