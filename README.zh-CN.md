@@ -688,7 +688,8 @@ macOS 徽标、随附壁纸、系统声音及 SF Pro / SF Mono 字体仍属于 A
 - **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: 基础图标和光标；GTK 设计参考。 [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) 在此作为 MIT 许可的分支维护，支持配置备份和恢复。
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** 和 **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur 及其玻璃分支：Acrylic Glass 使用的上游代码（KWin 模糊效果作者的署名保留在源码头部）。
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0，离线随附并由布局步骤安装，用于为面板着色（GPL-3.0，附带许可证）。
-- 随附的 Liquid Glass 桌面小部件由 **jaxparrow07** 开发，照片小部件和 Solid/Glass 样式自动切换功能由 **RoxasYTB** 开发（GPL-3.0，附带许可证）。 [liquidglass-kde-widgets](https://github.com/jaxparrow07/liquidglass-kde-widgets) · [#41](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/41) · [#40](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/40)
+- **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**：`liquidglass-kde-widgets` 提供主题随附的 Liquid Glass 桌面小部件套件（GPL-3.0，附带许可证）。
+- **[RoxasYTB](https://github.com/RoxasYTB)**：[照片小部件](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/41)可在桌面上显示照片。[Solid/Glass 样式自动切换](https://github.com/jaxparrow07/liquidglass-kde-widgets/pull/40)会在屏幕上有窗口打开时启用 Glass 样式。
 - **[Matin Lotfaliei / KDE-Rounded-Corners](https://github.com/matinlotfali/KDE-Rounded-Corners)**: GPL-3.0 许可的 KWin 窗口圆角特效，从固定的 v0.9.0 版本获取并在线基于宿主 KWin SDK 构建（同时安装许可证）。
 - **[ful1e5](https://github.com/ful1e5)**: `apple_cursor`: 替代光标设计参考。
 - **[sahibjotsaggu](https://github.com/sahibjotsaggu)**: `San-Francisco-Pro-Fonts`: SF Pro / SF Mono 包的来源。
