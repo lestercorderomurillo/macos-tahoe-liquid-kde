@@ -25,6 +25,8 @@ from progress_model import ProgressModel, elapsed_text
 
 ASSETS = Path(__file__).with_name("assets")
 ASSET_FILES = json.loads((ASSETS / "sources.json").read_text())
+CONTROL_SYMBOLS = (ASSETS.parents[1] / "offline/plasmoids"
+                   / "org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/symbols")
 STEPS = (
     ("welcome", ""), ("appearance", "Which appearance would you like?"),
     ("icons", "Which icons and color would you like?"),
@@ -56,9 +58,38 @@ PAGE_LABELS = {
     "oled": "OLED protection", "summary": "Review",
 }
 SETTINGS_PAGES = {
-    "general": ("preferences-system", ("Language",)),
-    "appearance": ("preferences-desktop-theme", ("Light", "Dark", "Auto", "Theme")),
+    "general": ("settings", ("#99a9bc", "#3e506a"), ("Language",)),
+    "appearance": ("appearance", ("#777fc0", "#262c68"), ("Light", "Dark", "Auto", "Theme")),
 }
+
+
+def settings_icon(symbol, colors):
+    """Mount the project's existing symbols on small frosted tiles."""
+    size = 24
+    pixmap = QPixmap(size * 3, size * 3)
+    pixmap.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(pixmap)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
+    painter.scale(3, 3)
+    tile = QPainterPath()
+    tile.addRoundedRect(QRectF(1, 1, 22, 22), 6, 6)
+    fill = QLinearGradient(3, 0, 20, 24)
+    fill.setColorAt(0, QColor(colors[0]))
+    fill.setColorAt(1, QColor(colors[1]))
+    painter.fillPath(tile, fill)
+    rim = QLinearGradient(0, 1, 0, 23)
+    rim.setColorAt(0, QColor(255, 255, 255, 188))
+    rim.setColorAt(1, QColor(255, 255, 255, 28))
+    painter.strokePath(tile, QPen(rim, .8))
+    glyph = QPixmap()
+    artwork = (CONTROL_SYMBOLS / f"mttkde-control-{symbol}.svg").read_bytes()
+    artwork = artwork.replace(b'width="24" height="24"', b'width="72" height="72"', 1)
+    glyph.loadFromData(artwork.replace(b"currentColor", b"#ffffff"), "SVG")
+    painter.drawPixmap(QRectF(4.6, 4.6, 14.8, 14.8), glyph, QRectF(glyph.rect()))
+    painter.end()
+    pixmap.setDevicePixelRatio(3)
+    return QIcon(pixmap)
 
 
 def search_text(value):
@@ -789,24 +820,15 @@ class InstallerWindow(OpaqueSurface):
         self.search.textChanged.connect(self.filter_settings)
         self.search.returnPressed.connect(self.open_search_result)
         sidebar.addWidget(self.search)
-        identity = QHBoxLayout()
-        identity.setContentsMargins(5, 9, 4, 9)
-        identity.setSpacing(8)
-        badge = QLabel()
-        badge.setPixmap(picture("logo-27.png" if self.asset_edition == "golden-gate" else "logo-26.png", 29, 29))
-        identity.addWidget(badge)
-        name = self.label(self.edition)
-        name.setFont(relative_font(self, .82, QFont.Weight.DemiBold))
-        identity.addWidget(name, 1)
-        sidebar.addLayout(identity)
+        sidebar.addSpacing(9)
         self.section_buttons = {}
-        for page, (icon, _) in SETTINGS_PAGES.items():
+        for page, (symbol, colors, _) in SETTINGS_PAGES.items():
             button = QPushButton()
             button.setObjectName("section-" + page)
             button.setProperty("navigation", "section")
             button.setFont(relative_font(self, .82))
-            button.setIconSize(QSize(16, 16))
-            button.setIcon(QIcon.fromTheme(icon))
+            button.setIconSize(QSize(21, 21))
+            button.setIcon(settings_icon(symbol, colors))
             button.setCheckable(True)
             button.clicked.connect(lambda _, target=page: self.navigate_settings(target))
             sidebar.addWidget(button)
@@ -960,7 +982,7 @@ class InstallerWindow(OpaqueSurface):
         query = search_text(self.search.text()).split()
         matches = []
         for page, button in self.section_buttons.items():
-            terms = (PAGE_LABELS[page], *SETTINGS_PAGES[page][1])
+            terms = (PAGE_LABELS[page], *SETTINGS_PAGES[page][2])
             keywords = search_text(" ".join((*terms, *(self.t(term) for term in terms))))
             match = all(term in keywords for term in query)
             button.setVisible(match)
@@ -1031,6 +1053,15 @@ class InstallerWindow(OpaqueSurface):
         self.configure_window_mode()
         self.page = "appearance"
         self.render()
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+        if self.settings_mode:
+            # This part of the window can blend with the desktop compositor.
+            # The search field and lettering remain above the translucent tint.
+            painter = QPainter(self)
+            painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Clear)
+            painter.fillRect(self.sidebar.geometry().intersected(event.rect()), Qt.GlobalColor.transparent)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
@@ -1294,10 +1325,11 @@ class InstallerWindow(OpaqueSurface):
             button.setText(self.t(PAGE_LABELS[page]))
             button.setChecked(page == self.page)
         self.filter_settings()
-        sidebar_surface = "#e9eef2" if light else "#2c3039"
-        field_surface = "#f7f9fa" if light else "#363b47"
-        hover = "#dbe4ec" if light else "#3b4350"
-        selected = "#1764b4" if light else "#3168a8"
+        sidebar_top, sidebar_bottom = (("rgba(244, 250, 253, 238)", "rgba(223, 233, 241, 232)") if light
+                                       else ("rgba(49, 58, 72, 242)", "rgba(32, 38, 51, 238)"))
+        field_surface = "rgba(255, 255, 255, 163)" if light else "rgba(255, 255, 255, 22)"
+        hover = "rgba(94, 134, 175, 28)" if light else "rgba(153, 182, 226, 32)"
+        selected_top, selected_bottom = ("#267bbc", "#175794") if light else ("#3b78b7", "#2a527f")
         separator = "#e2e7ec" if light else "#3b4049"
         panel_surface = "#f0f3f6" if light else "#30343d"
         self.close_button.setAccessibleName(self.t("Close"))
@@ -1305,7 +1337,9 @@ class InstallerWindow(OpaqueSurface):
         self.refresh_window_controls()
         stylesheet = f"""
             QFrame#settingsSidebar {{
-                background: {sidebar_surface}; border-right: 1px solid {separator};
+                background: qlineargradient(x1: 0, y1: 0, x2: .75, y2: 1,
+                    stop: 0 {sidebar_top}, stop: 1 {sidebar_bottom});
+                border-right: 1px solid {separator};
             }}
             QFrame#settingsPanel {{ background: {panel_surface}; border-radius: 10px; }}
             QWidget#settingsToolbar {{
@@ -1320,15 +1354,19 @@ class InstallerWindow(OpaqueSurface):
             QPushButton#settingsBack:focus, QPushButton#settingsForward:focus {{ border-color: {self.accent}; }}
             QLineEdit#settingsSearch {{
                 background: {field_surface}; color: {foreground};
-                border: 1px solid {separator}; border-radius: 6px; padding: 3px 5px;
+                border: 1px solid {separator}; border-radius: 8px; padding: 3px 6px;
             }}
             QLineEdit#settingsSearch:focus {{ border-color: {self.accent}; }}
             QPushButton[navigation="section"] {{
                 color: {foreground}; text-align: left; border: 1px solid transparent;
-                border-radius: 5px; padding: 4px 6px;
+                border-radius: 7px; padding: 3px 6px;
             }}
             QPushButton[navigation="section"]:hover {{ background: {hover}; }}
-            QPushButton[navigation="section"]:checked {{ background: {selected}; color: white; }}
+            QPushButton[navigation="section"]:checked {{
+                background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                    stop: 0 {selected_top}, stop: 1 {selected_bottom});
+                border-top-color: rgba(255, 255, 255, 45); color: white;
+            }}
             QPushButton[navigation="section"]:focus {{ border-color: {self.accent}; }}
             QLabel {{ background: transparent; color: {foreground}; }}
             QLabel#detail, QLabel#versionLabel {{ color: {muted}; }}
