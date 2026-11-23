@@ -110,7 +110,7 @@ int main(int argc, char **argv)
             const double after = std::abs(GlassInk::lightness(tone) - surface);
             if ((before >= .20 && tone != base) || after < before
                 || GlassInk::familyOf(tone) != GlassInk::familyOf(base)
-                || tone.alpha() != base.alpha() || std::abs(tone.red() - base.red()) > 51) return 27;
+                || tone.alpha() != base.alpha() || std::abs(tone.red() - base.red()) > 102) return 27;
         }
     }
     if (localTone(Qt::black, Qt::black).red() != 49 || localTone(Qt::white, Qt::white).red() != 204

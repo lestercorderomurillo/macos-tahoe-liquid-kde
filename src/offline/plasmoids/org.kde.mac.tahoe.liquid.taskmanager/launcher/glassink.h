@@ -68,7 +68,7 @@ public:
     {
         if (m_samples.isEmpty() || !base.isValid() || !base.alpha()) return base;
         constexpr double minimum = .20;
-        constexpr int maximumShift = 51; // At most one fifth of the encoded channel range.
+        constexpr int maximumShift = 102; // At most two fifths of the encoded channel range.
         double best = separation(base);
         if (best >= minimum) return base;
         QColor result = base;
