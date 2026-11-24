@@ -1,33 +1,26 @@
 {
-  "version": "0.84.16",
+  "version": "0.84.17",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "The inline tray chevron follows the spacing of the adjacent menu bar controls.",
+  "scope": "The menu bar brush opens the Acrylic Glass editor in Settings, including when the installed launcher must be recovered from the edition source.",
   "checks": [
     {
-      "command": "Golden Gate KDE neon Plasma 6.8.1 Wayland VM: inspect the populated system tray with Panel Colorizer, capture before and after at the same scale, then click the chevron in light and dark appearances and inspect the expanded row.",
+      "command": "Run the affected pytest cases for theme switch installation and uninstallation with isolated user paths, wallpaper defaults and Settings source records for both editions.",
       "result": "passed"
     },
     {
-      "command": "Verify installed InlineTray.qml, PanelButton.qml and ControlStyle.js hashes against the approved candidate. Verify the recorded frame hashes and run python3 src/scripts/component_manifest.py in Tahoe.",
+      "command": "Install and reinstall in a disposable Golden Gate KDE neon Plasma 6.8.1 Wayland guest. With both launcher paths missing at panel startup, restore only the source record and click the brush. Restore the normal launcher and click again without restarting Plasma. Inspect the active window, native editor module and installed file hashes.",
       "result": "passed"
     }
   ],
-  "approval": "Maintainer requested release after reviewing the before-and-after spacing comparison for both editions.",
   "captures": [],
-  "preview_commit": "15c70dc3c0a0e71c3025af4d33c72102a37c538f",
-  "preview_sha256": {
-    "original-light": "d039fa30cbf9a9dda2f425c135c572a50e1dcfae6c400ac59c8c68e9d10fcbeb",
-    "final-light": "b0df121458c0342f9de59203de88e2e3cb35d2f53303a047df58fa1054208788",
-    "final-expanded-light": "3e1b1a2ccc61d51cedb6d4491e2dc94ea311afe3d491c250095923cd94d6b55f",
-    "final-dark": "06306df4554b8ab0de8628aa94f7656c3ba502edacfedf734ee3cdece000643a",
-    "final-expanded-dark": "099145f25d14fb4ec8f51429672122212b52a219412e2f643a5331e5ba55095d"
-  },
+  "qualified_commit": "9e0524bbf993a79e30338471852d74a2946c8521",
   "installed_source_sha256": {
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/InlineTray.qml": "9c4df0737191aa3a67ad8853a145d435fc74371bb9ef129e73d733a6b98c56b2",
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/ControlStyle.js": "f5d14b17a6d54a0a6eb65415f9cbffe97390c5a41ae88267fc72110276ca2319",
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/PanelButton.qml": "fc00c52099dbc97af623a8cf279738660f76be219917e8f975551e7c747d351a"
+    "component-hashes.json": "5b8abb0ece9ecde15f9a8951c83e7a93c2a307395643338df61c9497261d3bf2",
+    "src/scripts/settings_launcher.py": "06b33b18855212072a25dc7424c03a53949ca48a29b9d5c3c2778cf8a4ddec1a",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.acrylicglass/contents/ui/main.qml": "ca332bee4eafd53341f2862150bc7483b28bc63398303fe827aef8ef388d51dc",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/SettingsEntry.qml": "f52997268aba8bbb16e3b5b2c42733666eaf48e0a44c2b1ca40a0155164962ba"
   },
-  "comparison_sha256": "624f01acdd934a77a32373ece054d3f351cb246b5c3f573950a5cadc14fda30e",
-  "coverage_limits": "The focused capture exercised the shared panel implementation on Golden Gate under Wayland. A separate Tahoe session and X11 were not captured.",
-  "source_sha256": "8bff0cab742e4a1393eda30fb710c4ded2f1361cda8412b50530440a0d28a6d2"
+  "preview_sha256": "a97130d3c35de7a50aecd89786dd0189fbdb920a1a19289002c9161446be7985",
+  "coverage_limits": "The installed panel interaction was exercised on Golden Gate under Wayland. Tahoe uses the same panel implementation. X11 and a separate Tahoe desktop were not exercised.",
+  "source_sha256": "1dd84857fa471ce5153a1df25af43665b6eb870da77b54210f5c2d197ecccb58"
 }
