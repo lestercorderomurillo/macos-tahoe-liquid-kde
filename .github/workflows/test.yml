@@ -64,7 +64,10 @@ jobs:
         run: |
           mkdir -p build/ccache
           # KWin uses udmabuf for software rendering on the GPU-less runner.
-          sudo modprobe udmabuf
+          if [[ ! -c /dev/udmabuf ]]; then
+            sudo modprobe udmabuf
+            sudo udevadm settle
+          fi
           docker run --rm --device=/dev/udmabuf -v "$PWD:/repo" -w /repo \
             -e CMAKE_C_COMPILER_LAUNCHER=ccache -e CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -e CCACHE_DIR=/repo/build/ccache -e CCACHE_BASEDIR=/repo \
