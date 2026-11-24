@@ -328,6 +328,13 @@ toolbarspring {
 	align-self: center !important;
 }
 
+/* Recent Firefox renders the labelled button inside a shadow root. Give
+   its host the same minimum height as the visible button face. */
+#urlbar[searchmode] .searchmode-switcher {
+	align-self: center !important;
+	min-block-size: 30px !important;
+}
+
 /* Search mode indicator */
 #nav-bar #urlbar toolbarbutton#urlbar-searchmode-switcher:not(#urlbar-zoom-button):not(.subviewbutton):not(.titlebar-button):not(.close-button) {
 	appearance: none;
