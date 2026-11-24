@@ -922,7 +922,7 @@ def test_apply_install_context_skips_live_lookandfeel(monkeypatch):
     """The installer passes the ``install`` context
     because its final Plasma restart loads the theme anyway — running
     the live LAF apply too adds 2-14s of retry sleeps and races the
-    QML teardown. Every other sub-call still runs in both contexts."""
+    QML teardown. Install applies the final palette and style directly."""
     import theme_switch
     calls: list = []
     write_kwargs: list[dict] = []
@@ -932,11 +932,14 @@ def test_apply_install_context_skips_live_lookandfeel(monkeypatch):
         lambda mode, **kw: write_kwargs.append(kw) or True,
     )
 
+    broadcasts = []
+    monkeypatch.setattr(theme_switch, "_broadcast_widget_style_change", broadcasts.append)
     assert theme_switch.apply("dark", context="install") is True
     assert "_apply_lookandfeel_live" not in calls
     assert "apply_cursortheme_live" in calls
-    assert "cycle_widget_style_live" in calls
-    assert write_kwargs == [{"force_color_reload": True}]
+    assert "cycle_widget_style_live" not in calls
+    assert broadcasts == [theme_switch.KVANTUM_STYLE]
+    assert write_kwargs == [{"force_color_reload": False}]
 
     calls.clear()
     write_kwargs.clear()

@@ -487,7 +487,9 @@ def restart_plasma() -> None:
     # has no user service manager, so a failed kquitapp6 lands here directly.
     if not stopped and not restarted_via_systemd:
         _hard_kill_plasma(systemd)
-        _wait_for_old_plasma_exit(original_pids, attempts=6)
+        if not _wait_for_old_plasma_exit(original_pids, attempts=6):
+            fail(tr('Plasma restart did not produce a running shell'))
+            return
 
     if not restarted_via_systemd:
         _start_plasma(systemd)
@@ -509,7 +511,7 @@ def restart_plasma() -> None:
             refresh_acrylic_glass()
         ok(tr('Plasma restarted '))
     else:
-        warn(tr('Plasma restart did not produce a running shell'))
+        fail(tr('Plasma restart did not produce a running shell'))
 
 def _scrub_kdedefaults() -> None:
     # The scrub lives in a bundled kconf_update helper; run just

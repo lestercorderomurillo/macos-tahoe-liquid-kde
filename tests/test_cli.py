@@ -785,7 +785,7 @@ def test_wizard_update_preserves_layout_and_respects_file_manager(
     # Force the retry condition: preservation must skip both layout passes.
     assert phases.count(("layout", "install")) == (2 if layout_runs else 0)
     if layout_runs:
-        assert phases.index(("apply", "restart_plasma")) < phases.index(("layout", "finish_reset"))
+        assert phases.index(("apply", "restart_plasma")) < phases.index(("layout", "install"))
     else:
         assert ("layout", "finish_reset") not in phases
     if not reset:
@@ -794,7 +794,7 @@ def test_wizard_update_preserves_layout_and_respects_file_manager(
     assert defaults == ([(nautilus.DOLPHIN_DESKTOP, mime)
                          for mime in (nautilus.MIME_FOLDER, nautilus.MIME_SEARCH)]
                         if file_manager == "dolphin" else [])
-    assert ("apply", "restart_plasma") in phases
+    assert phases.count(("apply", "restart_plasma")) == 1
 
 
 @pytest.mark.parametrize("file_manager", ["dolphin", "keep"])

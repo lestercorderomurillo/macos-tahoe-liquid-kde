@@ -180,10 +180,13 @@ def test_restart_rejects_false_positive_systemd_restart(monkeypatch):
     monkeypatch.setattr(apply, "_start_plasma",
                         lambda systemd: starts.append(systemd) or True)
 
+    failures = []
+    monkeypatch.setattr(apply, "fail", failures.append)
     apply.restart_plasma()
 
     assert hard == [True]
-    assert starts == [True]
+    assert failures
+    assert starts == []
 
 
 def test_restart_hard_kills_only_after_both_graceful_paths_fail(monkeypatch):

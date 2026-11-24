@@ -1169,14 +1169,19 @@ def _run_install_steps(feat: dict[str, object]) -> int:
         note(tr('Applies settings, flushes caches, restarts KWin'))
         run_phase("apply", "install")
 
-        # Layout runs after apply — the Plasma JS scripting API can't
-        # find the custom plasmoids by ID until their packages are on disk.
+        # Replace the shell before any layout script creates applets. A shell
+        # still mapping the previous native plugins can crash during teardown.
+        _flush_icon_cache_signal()
+        step('Restarting Plasma')
+        note(tr('Restarts Plasma shell to load all changes'))
+        if not run_phase("apply", "restart_plasma"):
+            progress_event("phase", id="apply", state="failed")
+            return 1
+
         if feat.get("layout", True) and step_exists("layout"):
             step('Installing Layout')
             note(tr(FEATURE_DESC["layout"]))
             run_phase("layout", "install")
-
-        _flush_icon_cache_signal()
 
         progress_event('phase', id='apply', state='failed' if errors else 'done')
         progress_event('phase', id='verify', state='running')
@@ -1188,10 +1193,6 @@ def _run_install_steps(feat: dict[str, object]) -> int:
             run_phase("layout", "migrate_status_controls")
         if feat.get("plasmoids", True):
             run_phase("plasmoids", "migrate_settings_context")
-
-        step('Restarting Plasma')
-        note(tr('Restarts Plasma shell to load all changes'))
-        run_phase("apply", "restart_plasma")
 
         if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
             step('Retrying Layout')
