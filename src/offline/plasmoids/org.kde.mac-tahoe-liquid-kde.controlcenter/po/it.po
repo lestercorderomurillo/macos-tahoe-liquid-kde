@@ -50,6 +50,9 @@ msgstr "Cancella la cronologia"
 msgid "Collapse"
 msgstr "Comprimi"
 
+msgid "Configure in Settings…"
+msgstr "Configura in Impostazioni…"
+
 msgid "Connect a battery to see its status."
 msgstr "Collegare una batteria per vedere il suo stato."
 
@@ -100,6 +103,9 @@ msgstr "Concentrazione"
 
 msgid "Fully charged"
 msgstr "Completamente carica"
+
+msgid "Hide hidden icons"
+msgstr "Nascondi le icone aggiuntive"
 
 msgid "High Power"
 msgstr "Prestazioni elevate"
@@ -212,6 +218,9 @@ msgstr "Cattura schermata"
 msgid "Send"
 msgstr "Invia"
 
+msgid "Show hidden icons"
+msgstr "Mostra le icone nascoste"
+
 msgid "Sound"
 msgstr "Audio"
 
@@ -229,12 +238,3 @@ msgstr "La connessione Wi-Fi è bloccata dall'interruttore hardware"
 
 msgid "Wi-Fi is off"
 msgstr "La connessione Wi-Fi è spenta"
-
-msgid "Configure in Settings…"
-msgstr "Configura in Impostazioni…"
-
-msgid "Hide hidden icons"
-msgstr "Nascondi le icone aggiuntive"
-
-msgid "Show hidden icons"
-msgstr "Mostra le icone nascoste"

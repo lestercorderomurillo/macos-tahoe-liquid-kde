@@ -11,13 +11,21 @@ import subprocess
 import xml.etree.ElementTree as ET
 
 
+from localization import CATALOG_CODES
+
+
 ROOT = Path(__file__).resolve().parents[1]
-LANGUAGES = ("pt_BR", "de", "fr", "it", "ru")
 STATUS_MENUS = json.loads((ROOT / "scripts/locales/status_menus.json").read_text(encoding="utf-8"))
 KCM_DOMAIN = "kwin_effect_liquidglass"
 PLURAL_FORMS = {
     "pt_BR": (2, "n > 1"),
     "fr": (2, "n > 1"),
+    "ja": (1, "0"),
+    "ko": (1, "0"),
+    "zh_CN": (1, "0"),
+    "hi": (2, "n > 1"),
+    "pl": (3, "n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2"),
+    "ar": (6, "n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5"),
     "ru": (3, "n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2"),
 }
 _STRING = r'"(?:[^"\\]|\\.)*"'
@@ -92,9 +100,9 @@ def write_catalog(base: Path, domain: str, messages: dict,
 
 
 def main() -> None:
-    for language in LANGUAGES:
+    for language in CATALOG_CODES:
         catalog = json.loads((ROOT / "scripts/locales" / f"{language}.json").read_text(encoding="utf-8"))
-        catalog.update(STATUS_MENUS[language])
+        catalog.update(STATUS_MENUS.get(language, {}))
         for widget in sorted((ROOT / "offline/plasmoids").glob("org.kde.mac*")):
             messages = widget_messages(widget)
             if not messages:
@@ -103,19 +111,6 @@ def main() -> None:
             write_catalog(widget, f"plasma_applet_{widget.name}", messages, language, catalog, locales)
         effect = ROOT / "offline/kwin-effects/acrylic-glass"
         write_catalog(effect, KCM_DOMAIN, kcm_messages(), language, catalog, effect / "locale")
-
-    # These original controls share translated views but keep independent applet
-    # domains, so adding a satellite never depends on Control Center being loaded.
-    import localization
-    for suffix in ("downloads", "controlcenter", "battery", "bluetooth", "wifi", "notifications"):
-        widget = ROOT / "offline/plasmoids" / ("org.kde.mac-tahoe-liquid-kde." + suffix)
-        messages = widget_messages(widget)
-        for language in ("es", "zh_CN"):
-            catalog = {message: localization.translate(message, language) for _, message in messages}
-            catalog.update(STATUS_MENUS[language])
-            write_catalog(widget, f"plasma_applet_{widget.name}", messages, language, catalog,
-                          widget / "contents/locale")
-
 
 if __name__ == "__main__":
     main()

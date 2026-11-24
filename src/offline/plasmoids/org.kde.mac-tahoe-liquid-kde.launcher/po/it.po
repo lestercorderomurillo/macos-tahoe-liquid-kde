@@ -29,6 +29,9 @@ msgstr "Opzioni degli appunti"
 msgid "Compact list items"
 msgstr "Elenco compatto"
 
+msgid "Configure Apps…"
+msgstr "Configura App…"
+
 msgid "Confirm clear history"
 msgstr "Conferma la cancellazione della cronologia"
 
@@ -208,6 +211,3 @@ msgstr "Scegli..."
 msgctxt "@item:inmenu Reset icon to default"
 msgid "Clear Icon"
 msgstr "Rimuovi icona"
-
-msgid "Configure Apps…"
-msgstr "Configura App…"

@@ -6,7 +6,7 @@ msgid "Add to Favorites"
 msgstr "Zu Favoriten hinzufügen"
 
 msgid "Applications"
-msgstr "Programme"
+msgstr "Anwendungen"
 
 msgid "Apps"
 msgstr "Apps"
@@ -28,6 +28,9 @@ msgstr "Zwischenablageoptionen"
 
 msgid "Compact list items"
 msgstr "Kompakte Listeneinträge"
+
+msgid "Configure Apps…"
+msgstr "Apps einrichten …"
 
 msgid "Confirm clear history"
 msgstr "Verlauf löschen bestätigen"
@@ -208,6 +211,3 @@ msgstr "Auswählen…"
 msgctxt "@item:inmenu Reset icon to default"
 msgid "Clear Icon"
 msgstr "Symbol zurücksetzen"
-
-msgid "Configure Apps…"
-msgstr "Apps einrichten …"

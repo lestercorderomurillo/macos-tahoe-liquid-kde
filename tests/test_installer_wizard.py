@@ -429,7 +429,7 @@ for completed in (0, 100, 6366):
     bridge._handle_record('__STATUS__\t' + message)
     app.processEvents()
     assert window.progress.accessibleDescription() == message
-    assert window.operation_detail.text() == "Preparing…"
+    assert window.operation_detail.text() == window.t("Preparing…")
     assert message in window.log.toPlainText()
     assert bridge._step_index == step_index and bridge.progress == progress
     assert bridge.running and window.page == 'progress'
@@ -437,20 +437,20 @@ bridge._handle_record('14\tInstalling fonts\tInstalling fonts')
 assert bridge._step_index == step_index + 1
 assert window.progress.accessibleDescription() == 'Installing fonts'
 assert calls[-1][1]['icons'] == 'glass'
-# The operation view is English and reports elapsed time, not a misleading phase-count ETA.
+# The operation view follows the selected language and reports elapsed time.
 import wizard_window
 from types import SimpleNamespace
 wizard_window.time = SimpleNamespace(monotonic=lambda: 1200.)
 window._operation_started = 600.
 bridge._progress = .5
 window.refresh_progress()
-assert window.remaining_label.text() == 'Elapsed 10 min 00 sec'
+assert window.remaining_label.text() == 'Tiempo transcurrido: 10 min 00 s'
 assert window.log.isHidden() and not window.details_toggle.isChecked()
 window.details_toggle.click(); app.processEvents()
 assert window.log.isVisible() and window.details_toggle.isChecked()
-assert window.details_toggle.accessibleName() == 'Hide details'
-assert 'Installing ' in window.log.toPlainText()
-assert 'System checks' in window.log.toPlainText()
+assert window.details_toggle.accessibleName() == 'Ocultar detalles'
+assert 'Instalando ' in window.log.toPlainText()
+assert 'Comprobaciones del sistema' in window.log.toPlainText()
 assert not window.findChildren(QLabel, 'phase-system')
 window.full_output_toggle.click(); app.processEvents()
 frozen_font = window.log.font().toString()
@@ -463,8 +463,8 @@ assert window.log.document().defaultFont().toString() == frozen_document_font
 assert window.log.palette().base().color().name() == '#191b20'
 assert 'New output after the desktop font changed' in window.log.toPlainText()
 window.details_toggle.click(); app.processEvents()
-assert window.log.isHidden() and window.details_toggle.accessibleName() == 'Show details'
-for fraction, expected in [(0, 'Elapsed 10 min 00 sec'), (.99, 'Elapsed 10 min 00 sec'), (1, 'Elapsed 10 min 00 sec')]:
+assert window.log.isHidden() and window.details_toggle.accessibleName() == 'Mostrar detalles'
+for fraction, expected in [(0, 'Tiempo transcurrido: 10 min 00 s'), (.99, 'Tiempo transcurrido: 10 min 00 s'), (1, 'Tiempo transcurrido: 10 min 00 s')]:
     bridge._progress = fraction; window.refresh_progress()
     assert window.remaining_label.text() == expected
 bridge._language = 'it'; window.refresh_progress()
@@ -472,7 +472,7 @@ assert window.remaining_label.text() == 'Tempo trascorso: 10 min 00 s'
 assert window.full_output_toggle.text() == 'Mostra riepilogo'
 assert 'Verifiche di sistema' in bridge.summary.text(window.t)
 bridge._language = 'de'; bridge._progress = .5; window.refresh_progress()
-assert window.remaining_label.text() == 'Elapsed 10 min 00 sec'
+assert window.remaining_label.text() == 'Verstrichene Zeit: 10 Min. 00 Sek.'
 bridge._language = 'es'
 
 bridge._running = False; bridge.finished.emit(0)

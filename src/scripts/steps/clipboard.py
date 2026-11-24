@@ -15,6 +15,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 """
 
 from localization import tr
+from localization_bundle import standalone_source
 
 import os
 import json
@@ -209,7 +210,7 @@ def install() -> None:
             _write_atomic(_shortcut_state(), json.dumps({"keys": previous}), 0o600)
     _stop_service()   # a running copy keeps its inode; replace the files atomically
     _write_atomic(DAEMON_DEST, daemon_built.read_bytes(), 0o755)
-    _write_atomic(POPUP_DEST, popup_src.read_bytes(), 0o644)
+    _write_atomic(POPUP_DEST, standalone_source(popup_src.read_text(encoding="utf-8")), 0o644)
     _write_atomic(LAUNCHER_DEST, LAUNCHER_TEMPLATE.format(popup=shlex.quote(str(POPUP_DEST))), 0o755)
     _write_atomic(DESKTOP_DEST, DESKTOP_TEMPLATE.format(launcher=_desktop_exec(LAUNCHER_DEST)), 0o644)
     _write_atomic(AUTOSTART_DEST, AUTOSTART_TEMPLATE.format(daemon=_desktop_exec(DAEMON_DEST)), 0o644)

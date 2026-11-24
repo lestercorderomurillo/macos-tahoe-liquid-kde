@@ -11,6 +11,9 @@ msgstr "Navegador"
 msgid "Calendar"
 msgstr "Calendário"
 
+msgid "Configure Dock…"
+msgstr "Configurar Dock…"
+
 msgid "Files"
 msgstr "Arquivos"
 
@@ -37,6 +40,3 @@ msgstr "Usar ícones do Dock no estilo macOS"
 
 msgid "Video"
 msgstr "Vídeo"
-
-msgid "Configure Dock…"
-msgstr "Configurar Dock…"

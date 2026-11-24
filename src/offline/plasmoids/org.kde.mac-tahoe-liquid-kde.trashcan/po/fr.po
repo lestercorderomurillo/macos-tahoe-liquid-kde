@@ -2,6 +2,9 @@
 msgid ""
 msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00:00-0600\nLast-Translator: MacTahoe Liquid KDE contributors\nLanguage-Team: fr\nLanguage: fr\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
 
+msgid "Configure Trash"
+msgstr "Configurer la corbeille"
+
 msgid "Empty Trash"
 msgstr "Vider la corbeille"
 
@@ -22,6 +25,3 @@ msgstr "Corbeille"
 
 msgid "Trash Settings…"
 msgstr "Réglages de la corbeille…"
-
-msgid "Configure Trash"
-msgstr "Configurer la corbeille"

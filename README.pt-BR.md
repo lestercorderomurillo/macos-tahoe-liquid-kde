@@ -382,7 +382,7 @@ Uma aparência coordenada da inicialização ao desligamento, com desbloqueio in
 - **Integração de aplicativos:** Navegação ao estilo Finder no Nautilus, integração de menus GTK e tema do Firefox com backup de perfis.
 - **Informações do sistema e inicialização:** Janela de informações do sistema e tela de inicialização opcional que combina com o tema.
 - **Instalação e recuperação:** Instalador gráfico com recursos do tema incluídos, atualizações e backups das configurações que podem ser restaurados durante a desinstalação.
-- **Idiomas:** Instalador disponível em inglês, espanhol, chinês simplificado, português brasileiro, alemão, francês, italiano e russo. Os widgets do Plasma também são traduzidos.
+- **Idiomas:** Escolha o idioma do instalador nos ajustes. Os widgets do Plasma usam o idioma da área de trabalho.
 - **Compatibilidade:** Plasma 6.6–6.8 em sistemas baseados em Arch ou Fedora, openSUSE, Debian e KDE neon.
 - **Recursos opcionais:** Proteção para telas OLED e suporte experimental ao NixOS e ao Home Manager.
 
@@ -416,13 +416,13 @@ Para liberar espaço em disco mantendo sua cópia Git e o trabalho local:
 | 🇫🇷 Francês | ![Disponível](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italiano | ![Disponível](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Russo | ![Disponível](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japonês | ![Planejado](https://img.shields.io/badge/Planned-D4A017) |
-| 🇰🇷 Coreano | ![Planejado](https://img.shields.io/badge/Planned-D4A017) |
-| 🇸🇦 Árabe | ![Planejado](https://img.shields.io/badge/Planned-D4A017) |
-| 🇮🇳 Hindi | ![Planejado](https://img.shields.io/badge/Planned-D4A017) |
-| 🇳🇱 Holandês | ![Planejado](https://img.shields.io/badge/Planned-D4A017) |
-| 🇵🇱 Polonês | ![Planejado](https://img.shields.io/badge/Planned-D4A017) |
-| 🇹🇷 Turco | ![Planejado](https://img.shields.io/badge/Planned-D4A017) |
+| 🇯🇵 Japonês | ![Prévia](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 Coreano | ![Prévia](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 Árabe | ![Prévia](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 Hindi | ![Prévia](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 Holandês | ![Prévia](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 Polonês | ![Prévia](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 Turco | ![Prévia](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>Requisitos</b></summary>

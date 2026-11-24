@@ -93,7 +93,7 @@ msgid "Cu&t"
 msgstr "Recor&tar"
 
 msgid "Desktop"
-msgstr "Mesa"
+msgstr "Área de trabalho"
 
 msgid "Desktop file"
 msgstr "Arquivo de desktop"
@@ -195,7 +195,7 @@ msgid "Restore"
 msgstr "Restaurar"
 
 msgid "Search"
-msgstr "Pesquisar"
+msgstr "Buscar"
 
 msgid "Search application menu actions"
 msgstr "Pesquisar ações do menu do aplicativo"

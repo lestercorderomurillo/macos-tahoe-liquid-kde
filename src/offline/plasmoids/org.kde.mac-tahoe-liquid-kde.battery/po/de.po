@@ -30,7 +30,7 @@ msgid "Bluetooth"
 msgstr "Bluetooth"
 
 msgid "Bluetooth Settings…"
-msgstr "Bluetooth-Einstellungen…"
+msgstr "Bluetooth-Einstellungen …"
 
 msgid "Bluetooth is off"
 msgstr "Bluetooth ist ausgeschaltet"
@@ -52,6 +52,9 @@ msgstr "Verlauf löschen"
 
 msgid "Collapse"
 msgstr "Einklappen"
+
+msgid "Configure in Settings…"
+msgstr "In den Einstellungen konfigurieren …"
 
 msgid "Connect a battery to see its status."
 msgstr "Akku anschließen, um den Status zu sehen."
@@ -103,6 +106,9 @@ msgstr "Fokus"
 
 msgid "Fully charged"
 msgstr "Vollständig geladen"
+
+msgid "Hide hidden icons"
+msgstr "Zusätzliche Symbole ausblenden"
 
 msgid "High Power"
 msgstr "Hohe Leistung"
@@ -215,6 +221,9 @@ msgstr "Bildschirmfoto"
 msgid "Send"
 msgstr "Senden"
 
+msgid "Show hidden icons"
+msgstr "Ausgeblendete Symbole anzeigen"
+
 msgid "Sound"
 msgstr "Ton"
 
@@ -232,12 +241,3 @@ msgstr "WLAN ist durch den Hardwareschalter gesperrt"
 
 msgid "Wi-Fi is off"
 msgstr "WLAN ist ausgeschaltet"
-
-msgid "Configure in Settings…"
-msgstr "In den Einstellungen konfigurieren …"
-
-msgid "Hide hidden icons"
-msgstr "Zusätzliche Symbole ausblenden"
-
-msgid "Show hidden icons"
-msgstr "Ausgeblendete Symbole anzeigen"

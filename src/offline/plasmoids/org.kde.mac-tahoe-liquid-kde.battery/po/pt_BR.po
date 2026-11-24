@@ -53,6 +53,9 @@ msgstr "Limpar histórico"
 msgid "Collapse"
 msgstr "Recolher"
 
+msgid "Configure in Settings…"
+msgstr "Configurar em Ajustes…"
+
 msgid "Connect a battery to see its status."
 msgstr "Conecte uma bateria para ver o status."
 
@@ -104,6 +107,9 @@ msgstr "Foco"
 msgid "Fully charged"
 msgstr "Totalmente carregada"
 
+msgid "Hide hidden icons"
+msgstr "Ocultar ícones adicionais"
+
 msgid "High Power"
 msgstr "Alto Desempenho"
 
@@ -111,7 +117,7 @@ msgid "Known Networks"
 msgstr "Redes conhecidas"
 
 msgid "Light"
-msgstr "Claro"
+msgstr "Clara"
 
 msgid "Low Power"
 msgstr "Pouca Energia"
@@ -156,7 +162,7 @@ msgid "Notifications"
 msgstr "Notificações"
 
 msgid "Now Playing"
-msgstr "Em reprodução"
+msgstr "Reproduzindo"
 
 msgid "Off"
 msgstr "Desativado"
@@ -215,6 +221,9 @@ msgstr "Captura de tela"
 msgid "Send"
 msgstr "Enviar"
 
+msgid "Show hidden icons"
+msgstr "Mostrar ícones ocultos"
+
 msgid "Sound"
 msgstr "Som"
 
@@ -232,12 +241,3 @@ msgstr "O Wi-Fi está bloqueado pelo botão físico"
 
 msgid "Wi-Fi is off"
 msgstr "O Wi-Fi está desligado"
-
-msgid "Configure in Settings…"
-msgstr "Configurar em Ajustes…"
-
-msgid "Hide hidden icons"
-msgstr "Ocultar ícones adicionais"
-
-msgid "Show hidden icons"
-msgstr "Mostrar ícones ocultos"

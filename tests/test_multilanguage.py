@@ -19,7 +19,7 @@ from localization_bundle import standalone_source
 import log
 
 
-LANGUAGES = ("pt_BR", "de", "fr", "it", "ru")
+LANGUAGES = localization.CATALOG_CODES
 
 
 @pytest.mark.parametrize(("value", "expected"), [
@@ -38,7 +38,7 @@ def test_locale_aliases_are_exact(value, expected):
 @pytest.mark.parametrize("language", LANGUAGES)
 def test_every_python_message_has_a_complete_catalog(repo, language):
     catalog = localization._TRANSLATIONS[language]
-    assert set(localization._ES) <= catalog.keys()
+    assert catalog.keys() == localization._TRANSLATIONS["es"].keys()
     for path in [*Path(repo / "src/scripts").rglob("*.py"),
                  repo / "src/installer/installer_ui.py"]:
         for node in ast.walk(ast.parse(path.read_text())):
@@ -70,7 +70,7 @@ def test_translation_preserves_fields_and_commands(language):
 
 @pytest.mark.parametrize("language", LANGUAGES)
 def test_catalogs_cover_all_project_widget_and_kcm_messages(repo, language):
-    catalog = localization._TRANSLATIONS[language] | build_translations.STATUS_MENUS[language]
+    catalog = localization._TRANSLATIONS[language] | build_translations.STATUS_MENUS.get(language, {})
     widgets = repo / "src/offline/plasmoids"
     for widget in widgets.glob("org.kde.mac*"):
         messages = build_translations.widget_messages(widget)
@@ -126,7 +126,11 @@ def test_installed_helpers_translate_without_repository_or_pythonpath(
     result = subprocess.run([sys.executable, "-I", str(installed)], cwd=sandbox,
                             env=env, capture_output=True, text=True)
     assert result.returncode == 1
-    assert result.stderr.startswith({"pt_BR": "Uso:", "de": "Aufruf:", "fr": "Utilisation :", "it": "Uso:", "ru": "Использование:"}[language])
+    usage = next(key for key in localization._TRANSLATIONS[language]
+                 if key.startswith("Usage: mac-tahoe-" + ("oled-care" if script == "oled_care.py" else "theme-switch")))
+    assert result.stderr.strip() == localization.translate(usage, language)
+    assert not result.stderr.startswith("Usage:")
+
     assert "Traceback" not in result.stderr
 
 

@@ -315,7 +315,7 @@ A matching look from startup to shutdown, with built-in unlocking for LUKS2-encr
 - **App integration:** Finder-style browsing in Nautilus, GTK menu integration and Firefox theming with profile backups.
 - **System information and startup:** A themed system information window and an optional matching boot splash.
 - **Setup and recovery:** A graphical installer with bundled theme assets, updates and settings backups that can be restored on uninstall.
-- **Languages:** The installer is available in English, Spanish, Simplified Chinese, Brazilian Portuguese, German, French, Italian and Russian. Plasma widgets are also translated.
+- **Languages:** Choose the installer language in Settings. Plasma widgets follow the desktop language.
 - **Compatibility:** Plasma 6.6–6.8 on Arch- and Fedora-based systems, openSUSE, Debian and KDE neon.
 - **Optional features:** OLED panel protection and experimental NixOS and Home Manager support.
 
@@ -349,13 +349,13 @@ To free disk space while keeping your Git checkout and local work:
 | 🇫🇷 French | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italian | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Russian | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanese | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| 🇰🇷 Korean | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| 🇸🇦 Arabic | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| 🇮🇳 Hindi | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| 🇳🇱 Dutch | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| 🇵🇱 Polish | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| 🇹🇷 Turkish | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
+| 🇯🇵 Japanese | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 Korean | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 Arabic | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 Hindi | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 Dutch | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 Polish | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 Turkish | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>Requirements</b></summary>

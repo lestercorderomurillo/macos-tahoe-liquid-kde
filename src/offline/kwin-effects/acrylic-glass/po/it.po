@@ -140,9 +140,6 @@ msgstr "Elenco delle finestre con sfocatura forzata"
 msgid "Glass"
 msgstr "Vetro"
 
-msgid "Golden Gate (Official)"
-msgstr "Golden Gate (ufficiale)"
-
 msgid "Grain"
 msgstr "Grana"
 
@@ -220,12 +217,6 @@ msgstr "Sfoca lo sfondo dietro il vetro. Con 0 lo sfondo resta nitido."
 
 msgid "Surface"
 msgstr "Superficie"
-
-msgid "Tahoe (Clear)"
-msgstr "Tahoe (trasparente)"
-
-msgid "Tahoe (Frosted)"
-msgstr "Tahoe (satinato)"
 
 msgid "Tint strength"
 msgstr "Intensità della tinta"

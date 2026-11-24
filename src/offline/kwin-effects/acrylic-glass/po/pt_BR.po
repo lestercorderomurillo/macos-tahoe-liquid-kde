@@ -140,9 +140,6 @@ msgstr "Lista de desfoque forçado"
 msgid "Glass"
 msgstr "Vidro"
 
-msgid "Golden Gate (Official)"
-msgstr "Golden Gate (Official)"
-
 msgid "Grain"
 msgstr "Granulação"
 
@@ -220,12 +217,6 @@ msgstr "Suaviza o fundo atrás do vidro. 0 mantém o fundo nítido."
 
 msgid "Surface"
 msgstr "Superfície"
-
-msgid "Tahoe (Clear)"
-msgstr "Tahoe (Transparente)"
-
-msgid "Tahoe (Frosted)"
-msgstr "Tahoe (Fosco)"
 
 msgid "Tint strength"
 msgstr "Intensidade da tonalidade"

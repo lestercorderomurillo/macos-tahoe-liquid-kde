@@ -104,6 +104,9 @@ msgstr "Фокусирование"
 msgid "Fully charged"
 msgstr "Полностью заряжен"
 
+msgid "Hide hidden icons"
+msgstr "Свернуть список значков"
+
 msgid "High Power"
 msgstr "Высокая производительность"
 
@@ -214,6 +217,9 @@ msgstr "Снимок экрана"
 
 msgid "Send"
 msgstr "Отправить"
+
+msgid "Show hidden icons"
+msgstr "Показать скрытые значки"
 
 msgid "Sound"
 msgstr "Звук"

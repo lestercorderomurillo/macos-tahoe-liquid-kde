@@ -140,9 +140,6 @@ msgstr "Liste de flou forcé"
 msgid "Glass"
 msgstr "Verre"
 
-msgid "Golden Gate (Official)"
-msgstr "Golden Gate (officiel)"
-
 msgid "Grain"
 msgstr "Grain"
 
@@ -220,12 +217,6 @@ msgstr "Adoucit l’arrière-plan derrière le verre. 0 laisse l’arrière-plan
 
 msgid "Surface"
 msgstr "Surface"
-
-msgid "Tahoe (Clear)"
-msgstr "Tahoe (transparent)"
-
-msgid "Tahoe (Frosted)"
-msgstr "Tahoe (dépoli)"
 
 msgid "Tint strength"
 msgstr "Intensité de la teinte"

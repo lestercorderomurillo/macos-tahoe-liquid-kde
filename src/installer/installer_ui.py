@@ -457,9 +457,9 @@ def _make_installer_bridge():
         def language(self) -> str:
             return self._language
 
-        @pyqtProperty("QVariantList", constant=True)
+        @pyqtProperty("QVariantList", notify=languageChanged)
         def languages(self):
-            return language_options("en")
+            return language_options(self._language)
 
         @pyqtSlot(str, result=str)
         def translate(self, message: str) -> str:

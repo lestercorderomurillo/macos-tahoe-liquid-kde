@@ -4,10 +4,12 @@ let
   kde = pkgs.kdePackages;
   version = lib.strings.trim (builtins.readFile ../VERSION);
   offline = ../src/offline;
-  locale = if lib.hasPrefix "pt_BR" language then "pt_BR"
-    else if lib.hasPrefix "de" language then "de" else if lib.hasPrefix "fr" language then "fr"
-    else if builtins.match "it([_.@-].*)?" language != null then "it"
-    else if builtins.match "ru([_.@-].*)?" language != null then "ru" else "en";
+  normalized = lib.replaceStrings [ "-" ] [ "_" ] (lib.toLower language);
+  matches = pattern: builtins.match pattern normalized != null;
+  locale = if matches "pt(_br)?([.@].*)?" then "pt_BR"
+    else if matches "zh(_cn|_hans(_[a-z]+)?)?([.@].*)?" then "zh_CN"
+    else lib.findFirst (code: matches (code + "([_.@].*)?")) "en"
+      [ "es" "de" "fr" "it" "ru" "ja" "ko" "ar" "hi" "nl" "pl" "tr" ];
   passwordPrompt = if locale == "en" then "Password:"
     else (builtins.fromJSON (builtins.readFile (../src/scripts/locales + "/${locale}.json")))."Password:";
   meta = {

@@ -29,6 +29,9 @@ msgstr "Opções da área de transferência"
 msgid "Compact list items"
 msgstr "Itens de lista compactos"
 
+msgid "Configure Apps…"
+msgstr "Configurar Apps…"
+
 msgid "Confirm clear history"
 msgstr "Confirmar limpeza do histórico"
 
@@ -114,7 +117,7 @@ msgid "Lists:"
 msgstr "Listas:"
 
 msgid "Medium"
-msgstr "Médio"
+msgstr "Médias"
 
 msgid "No results"
 msgstr "Nenhum resultado"
@@ -192,7 +195,7 @@ msgid "Unpin"
 msgstr "Desafixar"
 
 msgid "Use system font settings"
-msgstr "Usar configurações de fontes do sistema"
+msgstr "Usar configurações de fonte do sistema"
 
 msgid "View content as"
 msgstr "Visualizar conteúdo como"
@@ -207,7 +210,4 @@ msgstr "Escolher…"
 
 msgctxt "@item:inmenu Reset icon to default"
 msgid "Clear Icon"
-msgstr "Redefinir ícone"
-
-msgid "Configure Apps…"
-msgstr "Configurar Apps…"
+msgstr "Restaurar ícone"

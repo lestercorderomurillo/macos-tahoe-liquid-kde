@@ -6,7 +6,8 @@ import json, os, re, signal, subprocess, sys, time
 import base64
 import tempfile
 import html
-from PyQt6.QtCore import Qt, QTimer, QRectF, QPointF, QSize, QObject, pyqtSignal, pyqtSlot
+from localization import tr
+from PyQt6.QtCore import Qt, QDateTime, QLocale, QTimer, QRectF, QPointF, QSize, QObject, pyqtSignal, pyqtSlot
 from PyQt6.QtDBus import QDBusConnection, QDBusInterface
 from PyQt6.QtGui import QColor, QIcon, QImage, QPainter, QPainterPath, QPen, QPixmap
 from PyQt6.QtWidgets import (QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLineEdit, QScrollArea,
@@ -266,20 +267,20 @@ class Row(QFrame):
             self.label.setText(soft_breaks(shown) if expanded else " ".join(self.text.split()))
             self.label.setToolTip(self.text[:EXPANDED_CHARS])
         else:
-            self.label.setText("Image")
+            self.label.setText(tr("Image"))
         col.addWidget(self.label)
-        stamp = time.strftime("%I:%M %p", time.localtime(item.get("ts", 0) / 1000)).lstrip("0")
-        details = "Text" if self.kind == "text" else f"Image · {item.get('w', 0)} × {item.get('h', 0)} · {human_size(item.get('bytes', 0))}"
-        self.caption = QLabel(("Pinned · " if self.pinned else "") + details + " · Copied " + stamp)
+        stamp = QLocale.system().toString(QDateTime.fromMSecsSinceEpoch(int(item.get("ts", 0))).time(), QLocale.FormatType.ShortFormat)
+        details = tr("Text") if self.kind == "text" else tr("Image") + f" · {item.get('w', 0)} × {item.get('h', 0)} · {human_size(item.get('bytes', 0))}"
+        self.caption = QLabel((tr("Pinned") + " · " if self.pinned else "") + details + " · " + tr("Copied {time}", time=stamp))
         self.caption.setTextFormat(Qt.TextFormat.PlainText)
         self.caption.setStyleSheet("color:palette(window-text);")
         self.caption.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
         col.addWidget(self.caption)
         outer.addLayout(col, 1)
-        self.b_copy = IconButton("copy", "Copy  (Enter)")
-        self.b_pin = IconButton("pin", "Unpin  (Ctrl+P)" if self.pinned else "Pin  (Ctrl+P)", self)
+        self.b_copy = IconButton("copy", tr("Copy") + "  (Enter)")
+        self.b_pin = IconButton("pin", tr("Unpin") + "  (Ctrl+P)" if self.pinned else tr("Pin") + "  (Ctrl+P)", self)
         self.b_pin.active = self.pinned
-        self.b_del = IconButton("delete", "Pinned — unpin to delete" if self.pinned else "Delete  (Del)", self)
+        self.b_del = IconButton("delete", tr("Pinned — unpin to delete") if self.pinned else tr("Delete") + "  (Del)", self)
         self.b_del.locked = self.pinned
         self.b_pin.hide(); self.b_del.hide()
         self.b_copy.clicked.connect(lambda: popup.choose(self.id))
@@ -291,10 +292,10 @@ class Row(QFrame):
 
     def context_menu(self, pos):
         menu = QMenu(self)
-        menu.addAction("Unpin" if self.pinned else "Pin", lambda: self.popup.toggle_pin(self.id))
-        delete = menu.addAction("Delete", lambda: self.popup.delete(self.id)); delete.setEnabled(not self.pinned)
+        menu.addAction(tr("Unpin") if self.pinned else tr("Pin"), lambda: self.popup.toggle_pin(self.id))
+        delete = menu.addAction(tr("Delete"), lambda: self.popup.delete(self.id)); delete.setEnabled(not self.pinned)
         if self.kind == "text":
-            menu.addAction("Show less" if self.expanded else "Show full text", lambda: self.popup.toggle_expand(self.id))
+            menu.addAction(tr("Show less") if self.expanded else tr("Show full text"), lambda: self.popup.toggle_expand(self.id))
         menu.exec(self.mapToGlobal(pos))
 
     def resizeEvent(self, ev):
@@ -348,7 +349,7 @@ class Popup(QWidget):
     def __init__(self, backend, auto_close=True):
         super().__init__()
         self.backend, self.auto_close = backend, auto_close
-        self.setWindowTitle("Clipboard")
+        self.setWindowTitle(tr("Clipboard"))
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint, True)
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
         self.items = []
@@ -365,7 +366,7 @@ class Popup(QWidget):
         root = QVBoxLayout(self); root.setContentsMargins(16, 12, 16, 12); root.setSpacing(8)
         top = QHBoxLayout(); top.setSpacing(12)
         glyph = QLabel(); glyph.setPixmap(QIcon.fromTheme("edit-copy").pixmap(28, 32)); top.addWidget(glyph)
-        self.search = QLineEdit(); self.search.setPlaceholderText("Clipboard"); self.search.setClearButtonEnabled(True)
+        self.search = QLineEdit(); self.search.setPlaceholderText(tr("Clipboard")); self.search.setClearButtonEnabled(True)
         self.search.setMinimumHeight(46)
         f = self.search.font(); f.setPointSizeF(f.pointSizeF() * 2); self.search.setFont(f)
         self.search.setStyleSheet("QLineEdit{border:none;padding:0;background:transparent;}")
@@ -373,7 +374,7 @@ class Popup(QWidget):
         self.search.installEventFilter(self)
         top.addWidget(self.search, 1)
         self.options = QPushButton("···"); self.options.setFixedSize(28, 28)
-        self.options.setToolTip("Clipboard options")
+        self.options.setToolTip(tr("Clipboard options"))
         self.options.setStyleSheet("QPushButton{border:1px solid palette(window-text);border-radius:14px;background:transparent;}")
         top.addWidget(self.options)
         root.addLayout(top)
@@ -399,9 +400,9 @@ class Popup(QWidget):
 
         self.status = QLabel(""); self.status.setStyleSheet("color:palette(highlight);font-weight:bold;"); self.status.hide()
         root.addWidget(self.status)
-        self.clear_btn = QPushButton("Clear all", self); self.clear_btn.setFlat(True)
+        self.clear_btn = QPushButton(tr("Clear all"), self); self.clear_btn.setFlat(True)
         self.clear_btn.setCursor(Qt.CursorShape.PointingHandCursor); self.clear_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.clear_btn.setToolTip("Remove all history (pinned items stay)")
+        self.clear_btn.setToolTip(tr("Remove all history (pinned items stay)"))
         self.clear_btn.clicked.connect(self.clear_clicked)
         self._flash_timer = QTimer(self); self._flash_timer.setSingleShot(True); self._flash_timer.timeout.connect(self.end_flash)
         self._clear_armed = False
@@ -447,11 +448,11 @@ class Popup(QWidget):
         if not entries:
             q = self.search.text().strip()
             if not self.backend.available():
-                title, sub = "Clipboard service unavailable", "mac-tahoe-clipd isn’t running."
+                title, sub = tr("Clipboard service unavailable"), tr("mac-tahoe-clipd isn’t running.")
             elif q:
-                title, sub = "No results", f"Nothing matches “{q}”."
+                title, sub = tr("No results"), tr("Nothing matches “{query}”.", query=q)
             else:
-                title, sub = "Nothing copied yet", "Text and images you copy will appear here."
+                title, sub = tr("Nothing copied yet"), tr("Text and images you copy will appear here.")
             box = QLabel(f"<div style='text-align:center'><b>{title}</b><br><span style='opacity:0.6'>{html.escape(sub)}</span></div>")
             box.setAlignment(Qt.AlignmentFlag.AlignCenter); box.setTextFormat(Qt.TextFormat.RichText)
             box.setMinimumHeight(140); self.empty_msg = box
@@ -531,7 +532,7 @@ class Popup(QWidget):
 
     def end_flash(self):
         n = len(self.marked)
-        self.status.setText(f"{n} selected"); self.status.setVisible(n > 0)
+        self.status.setText(tr("{count} selected", count=n)); self.status.setVisible(n > 0)
 
     def clear_marks(self):
         self.marked = set(); self.apply_selection(scroll=False)
@@ -574,7 +575,7 @@ class Popup(QWidget):
         pinned = {i["id"] for i in self.items if i.get("pinned")}
         doomed = [i for i in item_ids if i not in pinned]
         if len(doomed) < len(item_ids):
-            self.flash("Pinned items stay \u2014 unpin to delete")
+            self.flash(tr("Pinned — unpin to delete"))
         if not doomed:
             return
         old = self.sel
@@ -595,15 +596,15 @@ class Popup(QWidget):
 
     def options_menu(self):
         menu = QMenu(self)
-        clear = menu.addAction("Clear all?" if self._clear_armed else "Clear history", self.clear_clicked)
+        clear = menu.addAction(tr("Clear all?") if self._clear_armed else tr("Clear history"), self.clear_clicked)
         clear.setEnabled(self.clear_btn.isEnabled())
         menu.exec(self.options.mapToGlobal(self.options.rect().bottomLeft()))
         if self._clear_armed:
-            self.options.setToolTip("Click again to confirm clearing history")
+            self.options.setToolTip(tr("Click again to confirm clearing history"))
 
     def clear_clicked(self):
         if not self._clear_armed:
-            self._clear_armed = True; self.clear_btn.setText("Clear all?")
+            self._clear_armed = True; self.clear_btn.setText(tr("Clear all?"))
             self.clear_btn.setStyleSheet("QPushButton{color:#ff5f57;font-weight:bold;}")
             self._clear_timer.start(3000); return
         self.disarm_clear()
@@ -611,7 +612,7 @@ class Popup(QWidget):
         self.reload(reset=True)
 
     def disarm_clear(self):
-        self._clear_armed = False; self.clear_btn.setText("Clear all"); self.clear_btn.setStyleSheet("")
+        self._clear_armed = False; self.clear_btn.setText(tr("Clear all")); self.clear_btn.setStyleSheet("")
 
     # ── input ──
     def eventFilter(self, obj, ev):

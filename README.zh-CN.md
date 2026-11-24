@@ -382,7 +382,7 @@ Wi-Fi、声音、亮度和通知集中在一个玻璃菜单中。外观按钮用
 - **应用集成：**Nautilus 提供 Finder 风格的文件浏览体验，并支持 GTK 菜单集成和带配置备份的 Firefox 主题。
 - **系统信息与启动：**主题化的系统信息窗口和可选的配套启动画面。
 - **安装与恢复：**图形化安装程序随附主题资源，支持更新和设置备份，可在卸载时恢复设置。
-- **语言：**安装程序支持英语、西班牙语、简体中文、巴西葡萄牙语、德语、法语、意大利语和俄语，Plasma 小部件也提供翻译。
+- **语言：** 可在设置中选择安装程序的语言。Plasma 小部件使用桌面的语言。
 - **兼容性：**支持基于 Arch 或 Fedora 的系统以及 openSUSE、Debian 和 KDE neon 上的 Plasma 6.6–6.8。
 - **可选功能：**OLED 屏幕保护，以及对 NixOS 和 Home Manager 的实验性支持。
 
@@ -416,13 +416,13 @@ cd macos-tahoe-liquid-kde
 | 🇫🇷 法语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 意大利语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 俄语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 日语 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| 🇰🇷 韩语 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| 🇸🇦 阿拉伯语 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| 🇮🇳 印地语 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| 🇳🇱 荷兰语 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| 🇵🇱 波兰语 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| 🇹🇷 土耳其语 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
+| 🇯🇵 日语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 韩语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 阿拉伯语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 印地语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 荷兰语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 波兰语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 土耳其语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>系统要求</b></summary>

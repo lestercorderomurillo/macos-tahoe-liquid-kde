@@ -140,9 +140,6 @@ msgstr "Liste für erzwungene Unschärfe"
 msgid "Glass"
 msgstr "Glas"
 
-msgid "Golden Gate (Official)"
-msgstr "Golden Gate (Official)"
-
 msgid "Grain"
 msgstr "Körnung"
 
@@ -220,12 +217,6 @@ msgstr "Zeichnet den Hintergrund hinter dem Glas weich. Bei 0 bleibt der Hinterg
 
 msgid "Surface"
 msgstr "Oberfläche"
-
-msgid "Tahoe (Clear)"
-msgstr "Tahoe (Klar)"
-
-msgid "Tahoe (Frosted)"
-msgstr "Tahoe (Mattiert)"
 
 msgid "Tint strength"
 msgstr "Tönungsstärke"

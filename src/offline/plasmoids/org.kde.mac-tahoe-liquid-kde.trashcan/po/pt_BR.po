@@ -2,6 +2,9 @@
 msgid ""
 msgstr "Project-Id-Version: MacTahoe Liquid KDE\nPO-Revision-Date: 2026-10-22 00:00-0600\nLast-Translator: MacTahoe Liquid KDE contributors\nLanguage-Team: pt_BR\nLanguage: pt_BR\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
 
+msgid "Configure Trash"
+msgstr "Configurar lixeira"
+
 msgid "Empty Trash"
 msgstr "Esvaziar lixeira"
 
@@ -21,7 +24,4 @@ msgid "Trash"
 msgstr "Lixeira"
 
 msgid "Trash Settings…"
-msgstr "Configurações da lixeira…"
-
-msgid "Configure Trash"
-msgstr "Configurar lixeira"
+msgstr "Ajustes da lixeira…"

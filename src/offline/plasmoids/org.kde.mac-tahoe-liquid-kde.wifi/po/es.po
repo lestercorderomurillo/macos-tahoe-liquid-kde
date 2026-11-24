@@ -50,6 +50,9 @@ msgstr "Borrar historial"
 msgid "Collapse"
 msgstr "Contraer"
 
+msgid "Configure in Settings…"
+msgstr "Configure in Settings…"
+
 msgid "Connect a battery to see its status."
 msgstr "Conecta una batería para ver su estado."
 
@@ -100,6 +103,9 @@ msgstr "Concentración"
 
 msgid "Fully charged"
 msgstr "Carga completa"
+
+msgid "Hide hidden icons"
+msgstr "Ocultar los iconos adicionales"
 
 msgid "High Power"
 msgstr "Alto rendimiento"
@@ -212,6 +218,9 @@ msgstr "Captura de pantalla"
 msgid "Send"
 msgstr "Enviar"
 
+msgid "Show hidden icons"
+msgstr "Mostrar iconos ocultos"
+
 msgid "Sound"
 msgstr "Sonido"
 
@@ -229,9 +238,3 @@ msgstr "El interruptor físico bloquea el Wi-Fi"
 
 msgid "Wi-Fi is off"
 msgstr "El Wi-Fi está desactivado"
-
-msgid "Hide hidden icons"
-msgstr "Ocultar los iconos adicionales"
-
-msgid "Show hidden icons"
-msgstr "Mostrar iconos ocultos"

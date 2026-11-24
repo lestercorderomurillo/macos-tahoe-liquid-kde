@@ -29,6 +29,9 @@ msgstr "Options du presse-papiers"
 msgid "Compact list items"
 msgstr "Éléments de liste compacts"
 
+msgid "Configure Apps…"
+msgstr "Configurer Apps…"
+
 msgid "Confirm clear history"
 msgstr "Confirmer l’effacement de l’historique"
 
@@ -208,6 +211,3 @@ msgstr "Choisir…"
 msgctxt "@item:inmenu Reset icon to default"
 msgid "Clear Icon"
 msgstr "Effacer l’icône"
-
-msgid "Configure Apps…"
-msgstr "Configurer Apps…"

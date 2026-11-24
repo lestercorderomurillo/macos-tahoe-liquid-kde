@@ -93,7 +93,7 @@ msgid "Cu&t"
 msgstr "&Ausschneiden"
 
 msgid "Desktop"
-msgstr "Schreibtisch"
+msgstr "Arbeitsfläche"
 
 msgid "Desktop file"
 msgstr "Desktop-Datei"
@@ -132,7 +132,7 @@ msgid "Home"
 msgstr "Benutzerordner"
 
 msgid "Location"
-msgstr "Speicherort"
+msgstr "Ort"
 
 msgid "Lock Screen"
 msgstr "Bildschirm sperren"
