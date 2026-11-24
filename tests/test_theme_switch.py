@@ -1983,7 +1983,7 @@ def test_switch_systemd_probe_requires_inactive_and_not_enabled(monkeypatch):
 
 
 def test_switch_uninstall_retains_state_when_execution_cannot_be_neutralized(
-        monkeypatch, tmp_path):
+        sandbox, monkeypatch, tmp_path):
     import steps.theme_switch as step
 
     # Directories make unlink() fail without monkeypatching pathlib globally.
@@ -2021,7 +2021,7 @@ def test_switch_uninstall_retains_state_when_execution_cannot_be_neutralized(
     assert any("could not be neutralized" in message for message in failures)
 
 
-def test_switch_uninstall_reports_state_cleanup_failure(monkeypatch, tmp_path):
+def test_switch_uninstall_reports_state_cleanup_failure(sandbox, monkeypatch, tmp_path):
     import steps.theme_switch as step
 
     bad_state = tmp_path / "state-as-directory"
@@ -2049,7 +2049,7 @@ def test_switch_uninstall_reports_state_cleanup_failure(monkeypatch, tmp_path):
 
 
 def test_switch_uninstall_reports_kde_config_cleanup_failure(
-        monkeypatch, tmp_path):
+        sandbox, monkeypatch, tmp_path):
     import steps.theme_switch as step
 
     failures: list[str] = []
@@ -2125,7 +2125,7 @@ def test_switcher_scan_matches_only_exact_same_user_installed_paths(
 
 
 def test_switch_uninstall_retains_state_until_running_switcher_drains(
-        monkeypatch, tmp_path):
+        sandbox, monkeypatch, tmp_path):
     import steps.theme_switch as step
 
     state_file = tmp_path / "state/wallpapers.json"

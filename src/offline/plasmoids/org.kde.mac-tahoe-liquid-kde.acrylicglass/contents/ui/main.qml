@@ -6,12 +6,6 @@ import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Cont
 
 PlasmoidItem {
     id: root
-    function openGlassSettings() {
-        if (settingsEntry.available)
-            settingsEntry.open();
-        else
-            commands.run("acrylic");
-    }
     Controls.SettingsEntry {
         id: settingsEntry
         section: "acrylic_glass"
@@ -27,11 +21,11 @@ PlasmoidItem {
         wallpaperTint: Plasmoid.location === PlasmaCore.Types.TopEdge
         symbol: Plasmoid.icon
         label: Plasmoid.title
-        onClicked: root.openGlassSettings()
+        onClicked: settingsEntry.open()
     }
     Controls.ControlCommands { id: commands }
     Connections {
         target: Plasmoid
-        function onActivated() { root.openGlassSettings(); }
+        function onActivated() { settingsEntry.open(); }
     }
 }
