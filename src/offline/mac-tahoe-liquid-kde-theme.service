@@ -1,18 +1,13 @@
 [Unit]
 Description=MacTahoe Liquid KDE — apply auto light/dark theme
-# Run after the desktop is up — not at boot, not at the login screen.
-# plasma-plasmashell.service comes up once the user has logged in and
-# plasmashell is reachable. The script itself sleeps 10s before each
-# plasma-apply-lookandfeel attempt and retries up to 3 times, so no
-# ExecStartPre wait is needed here.
+# Prefer an established desktop when login and timer jobs are queued together.
 After=plasma-plasmashell.service graphical-session.target
 PartOf=graphical-session.target
 
 [Service]
 Type=oneshot
 ExecStart=%h/.local/bin/mac-tahoe-theme-switch scheduled
-# A dual-boot RTC can be wrong until NTP synchronizes. Keep the current
-# appearance while offline and retry only that temporary failure.
+# Retry when the scheduled job is waiting for a display or clock sync.
 RestartForceExitStatus=75
 RestartSec=15s
 TimeoutStartSec=3min

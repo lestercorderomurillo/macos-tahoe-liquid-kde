@@ -2332,6 +2332,10 @@ def main(argv: list[str]) -> int:
                 _save_appearance_state({**_read_appearance_state(), "session_default": argv[1]})
         return result
     if mode == "scheduled":
+        # A persistent timer can catch up before Plasma imports its display
+        # into the user manager. Leave the saved selection intact on retry.
+        if not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
+            return 75
         state = _read_appearance_state()
         if (state.get("preference") == "auto"
                 and detect_mode_by_time() != state.get("applied")

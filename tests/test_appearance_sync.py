@@ -8,6 +8,7 @@ import theme_switch as ts
 
 @pytest.fixture
 def desktop(sandbox, monkeypatch):
+    monkeypatch.setenv('WAYLAND_DISPLAY', 'wayland-test')
     config = sandbox / '.config'
     monkeypatch.setenv('XDG_RUNTIME_DIR', str(sandbox))
     monkeypatch.setattr(ts, 'wait_for_clock_sync', lambda **_: True)
@@ -25,6 +26,24 @@ def desktop(sandbox, monkeypatch):
     monkeypatch.setattr(ts, '_apply_unlocked', apply)
     monkeypatch.setattr(ts, '_kwrite', lambda *args: True)
     return native, calls, config
+
+
+def test_login_catchup_retries_before_sampling_desktop(desktop, monkeypatch):
+    _, calls, _ = desktop
+    monkeypatch.setattr(ts, '_sync_session_env', lambda: None)
+    monkeypatch.setattr(ts, 'detect_mode_by_time', lambda: 'dark')
+    assert ts.select_appearance('auto') == 0
+    before = ts._read_appearance_state()
+    monkeypatch.setattr(ts, 'detect_mode_by_time', lambda: 'light')
+    monkeypatch.delenv('DISPLAY', raising=False)
+    monkeypatch.delenv('WAYLAND_DISPLAY')
+    assert ts.main(['scheduled']) == 75
+    assert ts._read_appearance_state() == before
+    assert calls == ['dark']
+    monkeypatch.setenv('WAYLAND_DISPLAY', 'wayland-test')
+    assert ts.main(['scheduled']) == 0
+    assert calls == ['dark', 'light']
+    assert ts._read_appearance_state()['preference'] == 'auto'
 
 
 def test_native_manual_overrides_auto_and_stale_timer_cannot_revert(desktop, monkeypatch):
