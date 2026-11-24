@@ -1,18 +1,14 @@
 {
-  "version": "0.84.7",
+  "version": "0.84.8",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Match installed Settings size, navigation controls, panel groups and sidebar tint to Files.",
-  "approval": "Maintainer requested release after the installed Golden Gate Settings preview.",
+  "scope": "Prevent an auto-hidden Dock from being painted on its previous monitor during a pointer handoff.",
   "checks": [
     {
-      "command": "Open installed Golden Gate Settings at the saved Nautilus size of 1743 \u00d7 847 logical pixels and drag its right border to resize to 1415 \u00d7 847.",
+      "command": "python -m pytest -q tests/test_dock_always_visible.py tests/test_dock_follows_screen_dwell.py (Tahoe shared implementation)",
       "result": "passed"
     }
   ],
   "captures": [],
-  "approved_golden_gate_preview_sha256": {
-    "ventanas.png": "898c311b476c4821d9b82394a98bbe33e6579afcc70bd7ba85d320026be096e3"
-  },
-  "coverage_limits": "Golden Gate was captured in dark mode under KWin on X11. Tahoe shares the same Settings implementation.",
-  "source_sha256": "6be7ee6d71a69a343b0afe7a0432b5bb68e099f79c4ada3d6ff20b5ae8c11e76"
+  "coverage_limits": "Script regression checks simulate two outputs. The updated effect was loaded on a two-monitor KDE Wayland desktop. Physical pointer motion was not independently observed.",
+  "source_sha256": "9458e0f4602f45fb018a0b6a40b018476ae702faa1b47e4a964de666b24ec181"
 }

@@ -47,3 +47,43 @@ def test_motion_effect_declares_the_setting_it_reads():
     root = Path(__file__).resolve().parents[1] / "src/offline/kwin-effects/dock-flush/contents"
     assert 'effect.readConfig("FitAboveDock"' in (root / "code/main.js").read_text()
     assert '<entry name="FitAboveDock" type="Bool">' in (root / "config/main.xml").read_text()
+
+
+def test_hidden_dock_is_never_painted_on_departure_screen():
+    import shutil
+    import subprocess
+    from pathlib import Path
+
+    import pytest
+    if not shutil.which("node"):
+        pytest.skip("node is unavailable")
+    script = Path(__file__).resolve().parents[1] / "src/offline/kwin-effects/dock-flush/contents/code/main.js"
+    harness = """
+const assert = require('node:assert/strict');
+function signal() {
+    const listeners = [];
+    return { connect: f => listeners.push(f), emit: (...args) => listeners.forEach(f => f(...args)) };
+}
+const left = { geometry: { x: 0, y: 0, width: 2649, height: 1490 } };
+const right = { geometry: { x: 2649, y: 0, width: 1920, height: 1080 } };
+const dock = { dock: true, visible: false, y: 1420, screen: left, windowHiddenChanged: signal() };
+const effects = { stackingOrder: [dock, { screen: right }], cursorPos: { x: 3600, y: 1079 },
+    windowAdded: signal(), windowClosed: signal(), desktopChanged: signal(), mouseChanged: signal() };
+const effect = { readConfig: () => false, animationEnded: signal() };
+const Effect = { Opacity: 1 };
+const active = new Set();
+function animate(options) { active.add(options); return options; }
+function cancel(id) { active.delete(id); }
+"""
+    checks = """
+effects.mouseChanged.emit(effects.cursorPos);
+assert.equal(active.size, 0);
+dock.visible = true;
+dock.windowHiddenChanged.emit();
+effects.mouseChanged.emit(effects.cursorPos);
+assert.equal(active.size, 1);
+dock.visible = false;
+dock.windowHiddenChanged.emit();
+assert.equal(active.size, 0);
+"""
+    subprocess.run(["node", "-e", harness + script.read_text() + checks], check=True)

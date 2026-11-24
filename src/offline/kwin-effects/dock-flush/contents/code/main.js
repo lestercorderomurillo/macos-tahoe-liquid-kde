@@ -141,7 +141,10 @@ function stopWait() {
 
 function pointerMoved(pos) {
     const d = theDock();
-    const key = d ? edgeScreen(pos, d) : null;
+    // Even an opacity animation from 1 to 1 makes KWin paint a hidden
+    // window. Only time a departure while there is a visible Dock to slide.
+    // The KWin script times the actual panel move independently.
+    const key = d && d.visible ? edgeScreen(pos, d) : null;
     if (leaving && key !== pending) {
         cancel(leaving.id);
         leaving = null;
@@ -182,7 +185,10 @@ function watch(w) {
     if (w.windowFrameGeometryChanged) w.windowFrameGeometryChanged.connect(function () { geometryChanged(w); });
     if (w.windowMaximizedStateChanged) w.windowMaximizedStateChanged.connect(refresh);
     if (w.minimizedChanged) w.minimizedChanged.connect(refresh);
-    if (w.windowHiddenChanged) w.windowHiddenChanged.connect(refresh);
+    if (w.windowHiddenChanged) w.windowHiddenChanged.connect(function () {
+        if (isDock(w) && !w.visible) pointerMoved(effects.cursorPos);
+        refresh();
+    });
 }
 
 // Plasma does not move the Dock window to the new screen: it closes it and
