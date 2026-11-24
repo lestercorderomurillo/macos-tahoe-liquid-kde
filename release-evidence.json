@@ -1,23 +1,26 @@
 {
-  "version": "0.84.9",
+  "version": "0.84.10",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Update tray and calendar contrast from the active Plasma Activity on each monitor.",
+  "scope": "Settings now records Meta alone as the launcher activation shortcut.",
   "checks": [
     {
-      "command": "python -m pytest -q tests/test_wallpaper_activity.py in the primary Arch SDK (Plasma 6.8.3), private Wayland session, two outputs and two Activities",
+      "command": "python -m pytest -q tests/test_plasmoid_settings.py (12 passed)",
+      "result": "passed"
+    },
+    {
+      "command": "QEMU guest keyboard input in KDE neon Plasma 6.8.1 Wayland: Settings saved Meta and Meta+F11, cleared the binding, and opened Launchpad with a tap of Meta. Verified the launcher widget action separately with Meta removed from the desktop-wide action.",
+      "result": "passed"
+    },
+    {
+      "command": "Qt offscreen primary SDK: Meta, Meta+F11 and clearing the same shortcut editor",
       "result": "passed"
     }
   ],
-  "captures": [
-    {
-      "path": "docs/evidence/activity-contrast/preview.png",
-      "sha256": "20e676b6a5463e31f87c93990545a228fe6ac5610f7db66724bf0bd9b1d2dd38",
-      "reviewed": true,
-      "source_commit": "1d032af7642b438620770e6174bc3b27d9b118e4",
-      "sampler_sha256": "2c003ff850e88842f49e8b1ca1a3c3d04088ddcf594f4b76ef06408f335f2e62",
-      "guest_module_sha256": "be23a4e0aeb203665770cafa20834d67efe1ba22eff1ff0fb6abe669f4741aac"
-    }
-  ],
-  "coverage_limits": "The approved preview shows one of two virtual outputs in a KDE neon guest running Plasma 6.8.1 on Wayland. The first and return frames matched byte for byte. Physical monitors and a separate Golden Gate desktop were not exercised.",
-  "source_sha256": "7fe4ffb695c11f5a5e353477c8cb885207995dbadf6e21efbe46031c43494850"
+  "captures": [],
+  "coverage_limits": "Guest keyboard and launcher activation were exercised on Wayland with the Golden Gate launcher layout. Other distributions and X11 were not independently exercised for keyboard activation.",
+  "source_sha256": "4edd51abf68c1a360d0eff3292a61b026d64b3df020474d816d14b33229234ec",
+  "tested_source": {
+    "commit": "cc148f95",
+    "wizard_window_sha256": "2770efac5b1870826c06c40e1dad4c6e34147889ce0028534d837c02e4b64f44"
+  }
 }
