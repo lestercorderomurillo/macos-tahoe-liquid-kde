@@ -121,10 +121,13 @@ def raster_svg(data: bytes, size: int) -> Image.Image:
     return canvas
 
 
-def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: bool = False) -> tuple:
+def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: bool = False,
+                   regular_only: bool = False) -> tuple:
     image = raster(source, size)
     # Resolve links so the same paint settings apply to every artwork alias.
     image.info["artwork_name"] = source.resolve().stem
+    if regular_only and not glyph and source.suffix.lower() != ".svg":
+        return image, None, "original", None, 0
     if glyph or source.suffix.lower() != ".svg":
         removed = svg_input(source.read_bytes())[1] if source.suffix.lower() == ".svg" else 0
         return (*prepare(image, glyph), None, removed)
@@ -159,6 +162,7 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
     plate_index = None
     plate_probe = None
     found_artwork = False
+    classification = None
     for i, node in enumerate(drawables[:24]):
         for other in drawables:
             other.set("style", other.get("style", "") + ";display:none")
@@ -192,9 +196,21 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
             if central < 8 and (wide or rim_layer):
                 removed.append(i)
             else:
+                if regular_only and not found_artwork:
+                    # Once artwork starts, later layers cannot replace the plate.
+                    # Only a light neutral plate needs any repainting in regular mode.
+                    classification = _plate_classification(image, plate_probe)
+                    if classification != "vector-light":
+                        return image, None, classification, None, removed_images
                 found_artwork = True
+    if plate_index is None and regular_only:
+        return image, None, "original", None, removed_images
     if plate_index is None:
         return (*prepare(image), None, removed_images)
+    if classification is None:
+        classification = _plate_classification(image, plate_probe)
+    if regular_only and classification != "vector-light":
+        return image, None, classification, None, removed_images
     for i in removed:
         drawables[i].set("style", drawables[i].get("style", "") + ";display:none")
     artwork = raster_svg(ET.tostring(root), size)
@@ -207,13 +223,21 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
             node.set("style", node.get("style", "") + ";display:none")
     image.info["icon_background"] = raster_svg(ET.tostring(root), size)
     if artwork.getchannel("A").getbbox() is None:
+        if regular_only:
+            return image, None, "original", None, removed_images
         return (*prepare(image), None, removed_images)
+    if regular_only:
+        return image, None, classification, artwork, removed_images
     for i, node in enumerate(drawables):
         node.attrib.clear()
         node.attrib.update(originals[i])
         if i != plate_index:
             node.set("style", node.get("style", "") + ";display:none")
     shape = raster_svg(ET.tostring(root), size).getchannel("A")
+    return image, shape, classification, artwork, removed_images
+
+
+def _plate_classification(image: Image.Image, plate_probe: Image.Image) -> str:
     plate_pixels = [p for p in plate_probe.getdata() if p[3] > 230]
     colored = sum(max(p[:3]) - min(p[:3]) >= 20 for p in plate_pixels)
     brightness = sum(sum(p[:3]) / 3 for p in plate_pixels) / len(plate_pixels)
@@ -225,10 +249,9 @@ def prepare_source(source: Path, size: int, glyph: bool = False, *, clean_rim: b
         image.resize((64, 64), Image.Resampling.LANCZOS).getdata(),
         plate_alpha.getdata(), inset_alpha.getdata()) if outer > 230 and inner < 128]
     colored_edge = sum(max(p[:3]) - min(p[:3]) >= 20 and p[3] > 230 for p in edge_pixels)
-    classification = "vector-colored" if (colored / len(plate_pixels) > .01
+    return "vector-colored" if (colored / len(plate_pixels) > .01
         or colored_edge > len(edge_pixels) * .25) else (
         "vector-light" if brightness > 145 else "vector-dark")
-    return image, shape, classification, artwork, removed_images
 
 
 def neutral_plate(image: Image.Image) -> tuple[Image.Image | None, str]:

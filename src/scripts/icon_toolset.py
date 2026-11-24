@@ -126,16 +126,28 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
 
     def generate(path, checksum):
         check_cancelled()
-        prepared = prepare_source(path, 512, clean_rim=style in ("regular", "dark"))
-        for name, mode in zip(names, ("light", "dark")):
-            effective_mode = "dark" if style == "dark" else mode
-            if effective_mode == "dark" and checksum in dark_sources:
-                result = raster(dark_sources[checksum], 512)
+        override = dark_sources.get(checksum)
+        if override is not None:
+            dark = raster(override, 512)
+            light = dark if style == "dark" else raster(path, 512)
+        else:
+            regular = style in ("regular", "dark")
+            prepared = prepare_source(path, 512, clean_rim=regular, regular_only=regular)
+            if regular:
+                light = prepared[0]
+                dark = (render_installer(prepared, "regular", "dark", rgb, material)
+                        if prepared[2] == "vector-light" else light)
+                if style == "dark":
+                    light = dark
             else:
-                result = render_installer(prepared, "regular" if style == "dark" else style,
-                                          effective_mode, rgb, material)
-            result.resize((256, 256), Image.Resampling.LANCZOS).save(
-                output / name / "apps/256" / (path.stem + ".png"))
+                light = render_installer(prepared, style, "light", rgb, material)
+                dark = render_installer(prepared, style, "dark", rgb, material)
+        light_path, dark_path = (output / name / "apps/256" / (path.stem + ".png") for name in names)
+        light.resize((256, 256), Image.Resampling.LANCZOS).save(light_path)
+        if dark is light:
+            shutil.copyfile(light_path, dark_path)
+        else:
+            dark.resize((256, 256), Image.Resampling.LANCZOS).save(dark_path)
 
     records = {}
     total = len(entries)

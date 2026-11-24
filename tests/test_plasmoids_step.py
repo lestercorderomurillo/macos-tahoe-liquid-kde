@@ -232,3 +232,14 @@ def test_uninstall_preserves_user_overrides_of_upstream_plasmoid_ids(
     assert not owned.exists()
     assert "org.kde.plasma.taskmanager" not in plasmoids.LEGACY_DIRS
     assert "org.kde.plasma.icontasks" not in plasmoids.LEGACY_DIRS
+
+
+def test_dock_builds_shared_launcher_only_without_globalmenu(monkeypatch):
+    calls = []
+    monkeypatch.setattr(plasmoids, "cmake_build", lambda *args, targets: calls.append(targets))
+    launcher = plasmoids.TASKMANAGER_BUILD / "bin" / plasmoids._LAUNCHER_QML_RELPATH / "libmactahoelauncher.so"
+    for enabled in (True, False):
+        monkeypatch.setenv("FEAT_GLOBALMENU", str(enabled).lower())
+        plasmoids.build()
+        assert (launcher in plasmoids.build_artifacts()) != enabled
+    assert calls == [("org.kde.mac.tahoe.liquid.taskmanager",), ()]

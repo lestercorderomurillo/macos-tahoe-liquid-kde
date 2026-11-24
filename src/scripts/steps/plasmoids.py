@@ -12,7 +12,7 @@ from utils import qdbus_cmd, run_user
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
 from steps._native_build import cmake_build
 from steps._helpers import (
-    DATA_HOME, HOME, build_dir, fail, info, install_tree, ok, offline,
+    DATA_HOME, HOME, build_dir, fail, feat_enabled, info, install_tree, ok, offline,
     remove_tree, qdbus_call, warn,
     sudo_install_file, sudo_install_tree, sudo_remove, temp_dir,
 )
@@ -115,16 +115,21 @@ def deps():
 
 
 def build_artifacts() -> list[Path]:
-    return [
+    artifacts = [
         TASKMANAGER_BUILD / "bin/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so",
         TASKMANAGER_BUILD / "bin/plasma/applet/org/kde/mac/tahoe/liquid/taskmanager",
-        TASKMANAGER_BUILD / "bin" / _LAUNCHER_QML_RELPATH / "libmactahoelauncher.so",
     ]
+    if not feat_enabled("GLOBALMENU", False):
+        artifacts.append(TASKMANAGER_BUILD / "bin" / _LAUNCHER_QML_RELPATH / "libmactahoelauncher.so")
+    return artifacts
 
 
 def build() -> None:
     if (TASKMANAGER_SRC / "CMakeLists.txt").is_file():
-        cmake_build(TASKMANAGER_SRC, TASKMANAGER_BUILD, "Dock Task Manager")
+        # Global Menu installs its own build of the shared launcher module
+        # after this step. Only compile it here for a standalone Dock.
+        targets = ("org.kde.mac.tahoe.liquid.taskmanager",) if feat_enabled("GLOBALMENU", False) else ()
+        cmake_build(TASKMANAGER_SRC, TASKMANAGER_BUILD, "Dock Task Manager", targets=targets)
 
 
 def _migrate_appletsrc() -> None:
@@ -225,12 +230,13 @@ def install() -> None:
     else:
         fail(tr('org.kde.mac.tahoe.liquid.taskmanager (missing build artifact)'))
 
-    launcher_module = TASKMANAGER_BUILD / "bin" / _LAUNCHER_QML_RELPATH
-    if (launcher_module / "libmactahoelauncher.so").is_file():
-        sudo_install_tree(launcher_module, qt6_qml_dir() / _LAUNCHER_QML_RELPATH,
-                          tr('Launcher (installed native search popup)'), directory_root=qt6_qml_dir())
-    else:
-        fail(tr('Launcher (missing native search popup build artifact)'))
+    if not feat_enabled("GLOBALMENU", False):
+        launcher_module = TASKMANAGER_BUILD / "bin" / _LAUNCHER_QML_RELPATH
+        if (launcher_module / "libmactahoelauncher.so").is_file():
+            sudo_install_tree(launcher_module, qt6_qml_dir() / _LAUNCHER_QML_RELPATH,
+                              tr('Launcher (installed native search popup)'), directory_root=qt6_qml_dir())
+        else:
+            fail(tr('Launcher (missing native search popup build artifact)'))
 
     n = 0
     for widget in sorted(SRC_DIR.glob("*/")):
