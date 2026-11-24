@@ -76,8 +76,8 @@ in rec {
   task-manager = buildPlugin "task-manager" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager") {};
   acrylic-glass = buildPlugin "acrylic-glass" (offline + "/kwin-effects/acrylic-glass") {
     postInstall = ''
-      mkdir -p "$out/share/kwin/effects"
-      cp -r ${offline + "/kwin-effects/acrylic-glass/locale"} "$out/share/locale"
+      mkdir -p "$out/share/kwin/effects" "$out/share/locale"
+      cp -r ${offline + "/kwin-effects/acrylic-glass/locale"}/. "$out/share/locale/"
       cp -r ${offline + "/kwin-effects/controlcenter-transition"} "$out/share/kwin/effects/mttkde_controlcenter_transition"
     '';
   };

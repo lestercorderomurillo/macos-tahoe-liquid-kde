@@ -64,7 +64,7 @@
   "&Redo": "&Redo",
   "&Undo": "&Undo",
   "&View": "&View",
-  "--no-apply-theme: files installed but Plasma left untouched. Re-run with --apply-theme to switch over.": "--no-apply-themeDosyalar yüklenmiş ama Plasma - Dokunmadan bırakılmış. --apply-theme Değişmek için.",
+  "--no-apply-theme: files installed but Plasma left untouched. Re-run with --apply-theme to switch over.": "--no-apply-theme: dosyalar kuruldu, Plasma ayarları korundu. Temaya geçmek için --apply-theme ile yeniden çalıştırın.",
   "/etc/mkinitcpio.conf HOOKS line is missing 'plymouth' — add it after 'udev' (or 'systemd' on systemd-init) and BEFORE 'encrypt'/'filesystems', then run: sudo mkinitcpio -P": "/etc/mkinitcpio.conf HOOKS Hat eksik . 'plymouth' — sonra ekle 'udev' (veya 'systemd' - systemd-init) ve BEFORE 'encrypt'/'filesystems', sonra çalıştır: sudo -P",
   "0 sound events installed/reinstalled": "0 ses olayları installed/reinstalled",
   "1 keeps the fully blurred material; lower values reveal more of the sharp background. Text and icons keep their opacity.": "1'de, malzemenin tamamen bulanık kalması; daha düşük değerler keskin arka planın daha fazla olduğunu ortaya çıkarır.",

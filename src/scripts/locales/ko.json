@@ -64,7 +64,7 @@
   "&Redo": "&Redo",
   "&Undo": "&Undo",
   "&View": "&View",
-  "--no-apply-theme: files installed but Plasma left untouched. Re-run with --apply-theme to switch over.": "--no-apply-theme: 파일 설치됐지만 Plasma는 그대로 남아있어요. --apply-theme로 다시 실행해서 전환하세요.",
+  "--no-apply-theme: files installed but Plasma left untouched. Re-run with --apply-theme to switch over.": "--no-apply-theme: 파일을 설치했지만 Plasma 설정은 변경하지 않았습니다. 테마를 적용하려면 --apply-theme 옵션으로 다시 실행하세요.",
   "/etc/mkinitcpio.conf HOOKS line is missing 'plymouth' — add it after 'udev' (or 'systemd' on systemd-init) and BEFORE 'encrypt'/'filesystems', then run: sudo mkinitcpio -P": "/etc/mkinitcpio.conf의 HOOKS에 'plymouth'가 없습니다. 'udev'(systemd-init에서는 'systemd') 뒤, 'encrypt' 및 'filesystems' 앞에 추가한 다음 sudo mkinitcpio -P를 실행하세요.",
   "0 sound events installed/reinstalled": "0 음향 현상 installed/reinstalled",
   "1 keeps the fully blurred material; lower values reveal more of the sharp background. Text and icons keep their opacity.": "1은 완전히 흐릿한 자료를 유지하는데, 낮은 값은 날카로운 배경의 더 많은 부분을 나타냅니다. 텍스트와 아이콘은 불투명성을 유지합니다.",

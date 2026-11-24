@@ -29,6 +29,8 @@ LANGUAGES = localization.CATALOG_CODES
     ("fr_FR.UTF-8", "fr"), ("fr-CA", "fr"), ("fr_BE@euro", "fr"),
     ("it_IT.UTF-8", "it"), ("it-CH", "it"), ("italian", "en"),
     ("ru_RU.UTF-8", "ru"), ("ru-UA", "ru"), ("ru_RU@euro", "ru"), ("russian", "en"),
+    ("ja_JP.UTF-8", "ja"), ("ko_KR", "ko"), ("ar-EG", "ar"), ("hi_IN", "hi"),
+    ("nl_BE", "nl"), ("pl_PL", "pl"), ("tr_TR", "tr"),
     ("french", "en"), ("debug", "en"), ("esperanto", "en"),
 ])
 def test_locale_aliases_are_exact(value, expected):
@@ -61,6 +63,9 @@ def test_translation_preserves_fields_and_commands(language):
 
     for source, target in localization._TRANSLATIONS[language].items():
         assert target.strip(), source
+        assert "<unk>" not in target and "▁" not in target, source
+        for pattern in (r"\x1b\[[0-9;]*m", r"\*\.\w+", r"--[A-Za-z][A-Za-z0-9-]*(?:=[A-Z]+)?"):
+            assert set(re.findall(pattern, source)) <= set(re.findall(pattern, target)), source
         assert fields(source) == fields(target), source
         assert sorted(re.findall(r"%\d+", source)) == sorted(re.findall(r"%\d+", target)), source
     for source in (cli.INSTALL_HELP, cli.UNINSTALL_HELP):

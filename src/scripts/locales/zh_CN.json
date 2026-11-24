@@ -64,7 +64,7 @@
   "&Redo": "重做(&R)",
   "&Undo": "撤销(&U)",
   "&View": "查看",
-  "--no-apply-theme: files installed but Plasma left untouched. Re-run with --apply-theme to switch over.": "--no-apply-theme:文件安装了,但Plasma没有被触及.再运行--apply-theme来切换.",
+  "--no-apply-theme: files installed but Plasma left untouched. Re-run with --apply-theme to switch over.": "--no-apply-theme：文件已安装，Plasma 配置未更改。要切换到新主题，请使用 --apply-theme 重新运行。",
   "/etc/mkinitcpio.conf HOOKS line is missing 'plymouth' — add it after 'udev' (or 'systemd' on systemd-init) and BEFORE 'encrypt'/'filesystems', then run: sudo mkinitcpio -P": "/etc/mkinitcpio.conf 的 HOOKS 行中缺少 'plymouth'。请将它添加到 'udev'（使用 systemd-init 时为 'systemd'）之后、'encrypt' 和 'filesystems' 之前，然后运行 sudo mkinitcpio -P。",
   "0 sound events installed/reinstalled": "0 声音事件 installed/reinstalled",
   "1 keeps the fully blurred material; lower values reveal more of the sharp background. Text and icons keep their opacity.": "设为 1 时完全模糊背景；值越小，背景越清晰。文字和图标的不透明度保持不变。",
