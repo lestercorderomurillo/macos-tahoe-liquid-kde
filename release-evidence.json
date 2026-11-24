@@ -1,20 +1,37 @@
 {
-  "version": "0.84.4",
+  "version": "0.84.5",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Match installed Settings window and navigation sizing to Finder.",
-  "approval": "Maintainer requested release after reviewing the before, after and Finder reference.",
+  "scope": "Use compact symbols, typography and spacing for Finder empty views.",
+  "approval": "Maintainer requested release after opening the 16-image Finder gallery.",
   "checks": [
     {
-      "command": "Measured the natural Finder window with KWin and captured it alongside baseline and candidate installed Settings at the same display scale in an isolated KDE neon Wayland guest.",
+      "command": "Reviewed 16 native screenshots of eight empty states in the installed Finder in light and dark mode on KDE neon Wayland with Nautilus 46.4.",
+      "result": "passed"
+    },
+    {
+      "command": "python -m pytest -q tests/test_nautilus_styles.py (30 passed)",
       "result": "passed"
     }
   ],
   "captures": [],
   "approved_tahoe_preview_sha256": {
-    "finder.png": "bb7a603eb0392cd1b56753e082c5d0f1e7d6a2eaae7812182c5477c3329573ec",
-    "before.png": "822d44d0d9375eba76b6f060c285cedf3ae9c28913ebec938267691c19bf40b3",
-    "settings.png": "6b49c76de4f901f1f830911b12f9b40d81efa0b16d12deb1feb5f1d6d348c733"
+    "light-starred.png": "1150f24bf095e65b9efd5f6100064a4421cfc57040bb046c98435d9eb7d61936",
+    "dark-starred.png": "1b49dc184370d915fc83c2a964e5632010f040df068cfeb0050b4e8d0a668821",
+    "light-recent.png": "a1e0190b468979b0166028c25799787fd7cadc7aa9c2e187680cf6ae1a024ee0",
+    "dark-recent.png": "9a053fb776c4794b10d3d4511dfcc479180388fa1bcaae39c32bb2ea497ed83b",
+    "light-trash.png": "15765838e5504a6ab02a8ad0d03f4edcd2ef80afb2afb3bace91066bc11b4915",
+    "dark-trash.png": "e966351313c656fd465c5a914e4f028efd4c38514ab941c12139aed0b49a1d33",
+    "light-folder.png": "bd3c354d260f33aa987eb6d7c4ef1bb8667c2dfd68f70b58d5d469712074b57f",
+    "dark-folder.png": "62682b773622b8ba8dca2f0774fed6732e2f8c711afe4c087e022d0049ff731b",
+    "light-local-search.png": "858be52978be8287606ad9610778f7eedffc9c67f51591a6f5dcbe47fcc0e299",
+    "dark-local-search.png": "5d639ac5dc14fa3d823c022863106f9dc4957b8cf62c76ca0bac02f1fc05f9e4",
+    "light-global-search.png": "56dc45dbec567f2c04e58abacae57476d5d52cdc72f90c9718817bb7a4043153",
+    "dark-global-search.png": "35012f03e4473dbc81183d4389c800d4b2bbc0bc7dccbf568014fbae3cac04e8",
+    "light-servers.png": "7e90d16b7ba90801ec408a41cdd9bac5e65056bc60b00211775035d5a3f37b27",
+    "dark-servers.png": "14bb9e68a408a9ff1b8b2256bbb9f032a34d11078cc64826e8538a2f0046f817",
+    "light-places-search.png": "0c8149c7192ab513d5d7462af0cec96bd1b147f6b815100df9374e14033a0adb",
+    "dark-places-search.png": "880c861c3fa8ef0047e541d6da4cc6e5df0478d031f5e7f88428c1d9df20dd3a"
   },
-  "coverage_limits": "The desktop captures show Tahoe. Golden Gate uses the same pinned Settings implementation.",
-  "source_sha256": "4d86fb287af0f36c14ef8729fda924fc6c34c3d5332106bac9b95995742112eb"
+  "coverage_limits": "The desktop captures show Tahoe. Golden Gate uses the same pinned GTK theme. The newer Network view was not rendered in this guest.",
+  "source_sha256": "d7a32b75d6a2f0a9c4ecb2fbb8c2dafd18e4d4a03d7953d9773e52aae2694fc8"
 }

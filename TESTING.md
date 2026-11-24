@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.4**. Installed Settings opens at the Finder reference size of 1000 × 620 logical pixels. [Evidence and coverage](release-evidence.json).
+**v0.84.5**. Eight Finder empty states were reviewed in light and dark mode. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
