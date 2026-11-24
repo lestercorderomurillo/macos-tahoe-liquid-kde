@@ -1,26 +1,23 @@
 {
-  "version": "0.84.17",
+  "version": "0.84.18",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "The menu bar brush opens the Acrylic Glass editor in Settings, including when the installed launcher must be recovered from the edition source.",
+  "scope": "Installation continues when Rounded Corners is installed and enabled but KWin cannot confirm activation in the current session.",
   "checks": [
     {
-      "command": "Run the affected pytest cases for theme switch installation and uninstallation with isolated user paths, wallpaper defaults and Settings source records for both editions.",
+      "command": "python3 -m pytest -q tests/test_rounded_corners_step.py (34 passed, one opt-in native SDK build skipped). Three previously fatal live activation cases were reproduced against v0.84.17.",
       "result": "passed"
     },
     {
-      "command": "Install and reinstall in a disposable Golden Gate KDE neon Plasma 6.8.1 Wayland guest. With both launcher paths missing at panel startup, restore only the source record and click the brush. Restore the normal launcher and click again without restarting Plasma. Inspect the active window, native editor module and installed file hashes.",
+      "command": "On a disposable KDE neon 6.8.1 Wayland guest with Golden Gate defaults, run installer_backend.py install --wizard-options with Rounded Corners selected. Filter only its ID from the loadedEffects reply on the first installation. Confirm the login warning and completion. Reinstall with the real D-Bus response and confirm the effect loads.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "qualified_commit": "9e0524bbf993a79e30338471852d74a2946c8521",
+  "qualified_commit": "af735a45a8a8074dec96d4253db55e3a6216d101",
   "installed_source_sha256": {
-    "component-hashes.json": "5b8abb0ece9ecde15f9a8951c83e7a93c2a307395643338df61c9497261d3bf2",
-    "src/scripts/settings_launcher.py": "06b33b18855212072a25dc7424c03a53949ca48a29b9d5c3c2778cf8a4ddec1a",
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.acrylicglass/contents/ui/main.qml": "ca332bee4eafd53341f2862150bc7483b28bc63398303fe827aef8ef388d51dc",
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/SettingsEntry.qml": "f52997268aba8bbb16e3b5b2c42733666eaf48e0a44c2b1ca40a0155164962ba"
+    "src/scripts/steps/rounded_corners.py": "0b05ac5c5282143c5ea0d84a4ed7008abea232a0ed05893b62d6cf7be526293c",
+    "component-hashes.json": "3bea5318a3982e286fe3ce3a9c3b800addabfbb7e4e1ab51461dc81969195bec"
   },
-  "preview_sha256": "a97130d3c35de7a50aecd89786dd0189fbdb920a1a19289002c9161446be7985",
-  "coverage_limits": "The installed panel interaction was exercised on Golden Gate under Wayland. Tahoe uses the same panel implementation. X11 and a separate Tahoe desktop were not exercised.",
-  "source_sha256": "1dd84857fa471ce5153a1df25af43665b6eb870da77b54210f5c2d197ecccb58"
+  "coverage_limits": "The VM exercised the shared installer under Golden Gate defaults. The reporter\u2019s compositor state on Plasma 6.8.3 is unknown. A separate Tahoe desktop and X11 were not exercised. No native effect or shader changed.",
+  "source_sha256": "10bd269c6d4e34e375458afe0e8cc8975a74b0a9754786ee076ea318eea46a43"
 }
