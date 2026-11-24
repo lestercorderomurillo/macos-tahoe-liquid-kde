@@ -1,33 +1,24 @@
 {
-  "version": "0.84.13",
+  "version": "0.84.14",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "The menu bar reveals hidden status icons horizontally and opens each native control directly.",
+  "scope": "The scheduled appearance switch waits for Plasma at login and retries when the desktop becomes available.",
   "checks": [
     {
-      "command": "Golden Gate KDE neon Wayland VM: clicked the chevron, opened Clipboard from the expanded row, collapsed and reopened the row, and switched between light and dark appearances.",
+      "command": "python3 -m pytest -q tests/test_appearance_sync.py tests/test_clock_sync.py (42 passed)",
       "result": "passed"
     },
     {
-      "command": "Built the six translated accessibility catalogs and ran tests/test_multilanguage.py.",
+      "command": "KDE neon Wayland guest, scheduled service before Plasma at 09:00, inspect saved Auto and exit 75, start display manager, observe automatic retry at 09:00:15 and light desktop.",
       "result": "passed"
     }
   ],
-  "approval": "Maintainer approved the light/dark, closed/expanded Golden Gate preview for both editions.",
+  "approval": "Maintainer requested release after reviewing the morning login fix.",
   "captures": [],
-  "preview_commit": "236029227caac0d3296f5dd3ad4d0dd668c4b6f5",
+  "preview_commit": "81d1c0c68fd1780a9b475f0cfa48a674a49dc7de",
   "preview_sha256": {
-    "light-closed.png": "0039e20840cad03739b89c3b56726903692fb02f98f747419c8305b4a4d2063b",
-    "light-expanded.png": "1688a23029b51ca73b266fa7f1b83f5399c4fc194550e01cff32fab8d4bd7b63",
-    "dark-closed.png": "c5df02718595834da54acd2e64e8d08ca1272e2b100ccb0dbcb616390ec8aa8f",
-    "dark-expanded.png": "edc72f44ce10f4ffdbda771b8695c969f71c8cad6d94983d1a5bea1c6d9a528f",
-    "dark-reopened.png": "df4733f2fa1413ac64963622cb755a45f910f8605d46250519013ae41a129547",
-    "horizontal-detail.png": "cfbe4f8aaadb8d7af5bbdc5b1d97257e6730a3191658f88ae811db11f419da88",
-    "hidden-bar.png": "1130a8de79127a4ad7f05a7307e8f43e3054060d7efee62a96871a394ae3ef9e"
+    "login-light.png": "a2d5bd26c49b88641b4bd36f4f94c453c1278c528639776dc7faf7a33a2685ee"
   },
-  "tested_qml_sha256": {
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/InlineTray.qml": "c2861464485cc601472ecf6e2aee64b19c69d87194a1e26b21b22b06bdf4b623",
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusTrayStyle.qml": "95dc45c11d95c3ee8ed43bf90423bfdce278c6a793b4a0b0528b710c09cd2d5d"
-  },
-  "coverage_limits": "Focused visual validation used the shared QML in Golden Gate on Wayland. Tahoe appearance, X11 and automatic scheduling were not independently exercised for this preview.",
-  "source_sha256": "7ec1599df146736225bd1756f0b70c4c6fb56a6c83db86152616088cd2015535"
+  "installed_switcher_sha256": "39cea298363703b3f5f1e183f5dd4f6ab1ac911e413269a5e48dbff5ec1b3031",
+  "coverage_limits": "The morning login reproduction used the shared switcher with the Golden Gate wallpaper in KDE neon on Wayland. X11 and a separate Tahoe desktop were not exercised.",
+  "source_sha256": "037580b48b6210825f430565410acc4e137b6fae3d3f8706a04d0a8870f99b38"
 }
