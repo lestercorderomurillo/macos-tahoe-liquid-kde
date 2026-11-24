@@ -63,12 +63,17 @@ jobs:
       - name: Run disjoint test shard
         run: |
           mkdir -p build/ccache
-          docker run --rm -v "$PWD:/repo" -w /repo \
+          # KWin uses udmabuf for software rendering on the GPU-less runner.
+          sudo modprobe udmabuf
+          docker run --rm --device=/dev/udmabuf -v "$PWD:/repo" -w /repo \
             -e CMAKE_C_COMPILER_LAUNCHER=ccache -e CMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -e CCACHE_DIR=/repo/build/ccache -e CCACHE_BASEDIR=/repo \
             -e CCACHE_COMPILERCHECK=content -e CCACHE_MAXSIZE=1G \
             '${{ steps.sdk.outputs.image }}' bash -c '
               set -e
+              # Virtual outputs do not need the Arch real-time scheduling capability.
+              kwin=$(command -v kwin_wayland)
+              if [[ -n $(getcap "$kwin") ]]; then setcap -r "$kwin"; fi
               python -c "import gi; gi.require_version(\"Gtk\", \"4.0\"); from gi.repository import Gtk; from PyQt6 import QtSvg; from PIL import Image"
               QT_QPA_PLATFORM=offscreen python -c "from PyQt6.QtWidgets import QApplication, QStyleFactory; app = QApplication([]); assert QStyleFactory.create(\"kvantum\") is not None"
               command -v rsvg-convert
