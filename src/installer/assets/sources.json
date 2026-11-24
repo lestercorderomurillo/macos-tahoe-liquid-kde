@@ -3294,27 +3294,27 @@
     "source_sha256": "6eb1c8743a1b3c296977d09fb28b2d5d6759036783ed782037acb9c996f7e73d"
   },
   "dock-art.jpg": {
-    "file": "dock-art-c202da30a1e7.jpg",
-    "sha256": "c202da30a1e775bd9cece1c006e692c391c22d61c70d8096dd0a57ba658e5978",
+    "file": "dock-art-1c53b30e0513.jpg",
+    "sha256": "1c53b30e0513fb0bd11fb14c3f5328471fadf44a9cb026be1cf1ffa7c9aaeaa8",
     "kind": "generated-layout-illustration",
     "generator": "OpenAI ImageGen",
-    "prompt": "Use case: stylized-concept. Produce one original panoramic illustration at approximately 2.26:1 for the Dock choice tile in a Linux desktop theme installer. Think of a contemporary macOS-inspired desktop as proportions and material only, interpreted as an original visual, not a screenshot. Orthographic, straight on, no perspective tilt. In the bottom third, a single unobtrusive thin horizontal tray of lightly frosted translucent glass sits above the desktop edge. It spans around 62% of the width, has a fine pale lip, a quiet contact shadow, and no neon rim, bevel, reflections on a tabletop or extrusion. On it, a neat row of seven small, equally spaced matte squircle app tokens. The bases of the tokens sit comfortably inside the tray. Use ORIGINAL icons: a cyan folded folder, a deep violet abstract orbit, a warm cream notepad, a coral waveform, a blue rain cloud, a green landscape, and a pale gray recycling basket separated by one subtle vertical rule. Flat-on icon faces, mostly soft surfaces, colors distinct but harmonious. The full-bleed background is a beautiful original, soft painterly alpine lake with a calm pale lilac sky, distant periwinkle mountains, muted teal water, sage green hills, and a warm peach corner of reflected evening light. Visible fine gouache and paper texture, clean organized silhouette and generous breathing room. Keep the whole tray and every token within the central 80% width, with a 9% bottom safety margin for crops. The simple dock must be clear at 362×160. No menu bar, window, frame, typography, letters, numbers, branded logos, photographic effects or other UI.",
+    "prompt": "Create one panoramic 2.26:1 landscape image: a close-up of a classic modern macOS Tahoe Dock, almost like a real native macOS desktop crop, artistically rendered with exceptional control of glass and icon detail. Edge-to-edge cool cobalt-blue abstract glass-wave wallpaper with a little warm peach and lavender ambient light, gently defocused. Dock is the unmistakable hero and occupies about 88% of image width, centered horizontally, just below mid-height. Slim translucent frosted glass shelf with rounded corners, thin refractive lip, modest reflection, believable dark contact shadow. In one level row, draw faithfully recognizable macOS app icons, clear at 362 by 160: blue-and-white smiling Finder face, multicolor app grid, Safari blue compass with red needle, green Messages speech bubble, Mail envelope, Photos multicolor flower, System Settings gears, then a fine vertical separator and a pale wire Trash. Uniform icon size, carefully spaced, fine native shading, restrained Apple-like proportions. Icons tall enough to read at small size, shelf tightly cradles them. Straight-on screen view, no perspective scene, no app names, no title, no caption, no other UI, no menu bar, no printed lettering, no outer frame. Standalone artwork matching a coordinated desktop-settings menu bar illustration.",
     "size": [
       1086,
       480
     ],
     "generated_size": [
-      1880,
-      836
+      1885,
+      834
     ],
-    "generated_sha256": "3eed23a53ecbc26ba63592bce42c5222f54d4fa5c8153175a88199d071e19d8b"
+    "generated_sha256": "e43e714781e26b1df8363cfa3b5e30a2e0aeea12571a11d58d358e777dcb8b54"
   },
   "menu-bar-art.jpg": {
-    "file": "menu-bar-art-06e3bc3374b0.jpg",
-    "sha256": "06e3bc3374b0453855fa9b7262299a4dea35ef342ec166409ed6c27141651f4f",
+    "file": "menu-bar-art-cced2366aab1.jpg",
+    "sha256": "cced2366aab131937e121a6c5097fc5f99541fe1a1bd9c4dc857b8cc8767f528",
     "kind": "generated-layout-illustration",
     "generator": "OpenAI ImageGen",
-    "prompt": "Use case: precise-object-edit. Make an enlarged product-detail interpretation of the Menu Bar tile, using the supplied original canyon artwork as the edit target. Keep its handmade gouache treatment and indigo-to-apricot canyon palette. The visual priority changes dramatically: the pale frosted-glass menu bar is the hero of the picture. Enlarge it to occupy about 76–80% of the frame width and about 29–32% of its height, positioned dead center both horizontally and vertically. Keep both ends fully visible with a modest 10–12% breathing margin on each side, so it reads as a compact menu strip. One bar only. Straight-on orthographic view with no tilt. Preserve the recognizable original diamond/mountain mark at the left, two short dark menu dashes, and the Wi-Fi, battery and slider pictograms at the right, redrawn cleanly at the new larger scale with generous internal spacing. Slightly rounded thin hairline border, subtle frosted translucence and soft color bleed from the background. The backdrop is secondary: soften and simplify the valley into broad painterly indigo and terracotta silhouettes, with a small suggestion of the river visually behind the hero, muted contrast and no finely detailed landscape drawing competing for attention. Maintain a warm, premium editorial look with very readable controls. Finished image 2.26:1 panoramic for a 362×160 card. No letters, numbers, logos, desktop screenshots, oversized physical tray, long full-width panel, thick extrusion or neon glow.",
+    "prompt": "Create one panoramic 2.26:1 landscape image, a polished macOS Tahoe menu bar detail for a Settings choice card shown at 362x160. Edge-to-edge desktop illustration that looks very close to real macOS, with crisp, exact UI typography over an elegant blue and cobalt abstract glass-wave wallpaper with a little warm peach and lavender ambient light. Show a SINGLE authentic horizontal macOS menu bar as a thin, subtly frosted, full-width band attached to the very top edge. Its contents should be just inset enough to survive cropping. Left cluster: small Apple silhouette, bold Finder, File, Edit, View. Right: familiar Wi-Fi arcs, battery, Control Center toggles, 9:41. Beautifully typeset with real spacing, plausible macOS glyphs, readable even reduced. Make the menu bar about 19% of image height as in a close-up crop of the desktop. Wallpaper immediately below, smooth contours, serene and restrained. Straight-on flat screen detail. No external device, no floating pill, no application window, no Dock, no written title, no card border. Standalone final artwork.",
     "size": [
       1086,
       480
@@ -3323,7 +3323,6 @@
       1884,
       835
     ],
-    "generated_sha256": "2479aad2f95994d551663c765c2802870fcb0620e5e0beff05b5050c64b6457f",
-    "reference_sha256": "b87ee52019350a2043a3099a173be1dcc2adab328196b5e8117da4dc194195b4"
+    "generated_sha256": "dda525a7efc58cd3f5973f919182689b3193cff5015f484cd7da1053aaeb9905"
   }
 }
