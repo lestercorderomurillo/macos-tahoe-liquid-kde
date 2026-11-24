@@ -11,7 +11,8 @@
   <a href="README.zh-CN.md" lang="zh-CN" hreflang="zh-CN">🇨🇳 简体中文</a> ·
   <a href="README.pt-BR.md" lang="pt-BR" hreflang="pt-BR">🇧🇷 Português (Brasil)</a> ·
   <a href="README.de.md" lang="de" hreflang="de">🇩🇪 Deutsch</a> ·
-  <a href="README.fr.md" lang="fr" hreflang="fr" aria-current="page">🇫🇷 Français</a>
+  <a href="README.fr.md" lang="fr" hreflang="fr" aria-current="page">🇫🇷 Français</a> ·
+  <a href="README.ru.md" lang="ru" hreflang="ru">🇷🇺 Русский</a>
 </p>
 
 <p align="center">
