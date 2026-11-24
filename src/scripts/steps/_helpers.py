@@ -54,17 +54,17 @@ def src_dir(*parts: str) -> Path:
     return Path(os.environ.get("SRC", str(SRC_DIR)), *parts)
 
 
-def install_tree(src: Path, dest: Path, label: str | None = None) -> bool:
+def install_tree(src: Path, dest: Path, label: str | None = None, *, consume_staged: bool = False) -> bool:
     """Copy a directory tree atomically, reporting via ok()/reinstall()/fail()."""
     label = tr(label or dest.name)
     if not src.is_dir():
         fail(tr('{label} (source missing: {src})', label=label, src=src))
         return False
-    if identical(src, dest):
+    if dest.is_dir() and identical(src, dest):
         ok(tr("{label} (unchanged)", label=label))
         return True
     existed = dest.is_dir()
-    if not safe_copy(src, dest):
+    if not safe_copy(src, dest, consume_staged=consume_staged):
         fail(tr('{label} (copy failed)', label=label))
         return False
     if existed:

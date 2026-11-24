@@ -448,7 +448,7 @@ def _prune_copy_staging(staging: Path) -> None:
                     pass
 
 
-def safe_copy(src: Path | str, dest: Path | str) -> bool:
+def safe_copy(src: Path | str, dest: Path | str, *, consume_staged: bool = False) -> bool:
     """Atomic copy via out-of-tree staging + rename, with rollback on failure.
     ``symlinks=True`` or icon themes balloon 2-3x and @2x lookup breaks; staging
     avoids dest.parent because plasmashell's KDirWatch scans sibling tmp dirs
@@ -462,7 +462,7 @@ def safe_copy(src: Path | str, dest: Path | str) -> bool:
             _prune_copy_staging(staging)
             transaction = Path(tempfile.mkdtemp(prefix=".copy-", dir=staging))
             try:
-                return _copy_transaction(Path(src), Path(dest), transaction)
+                return _copy_transaction(Path(src), Path(dest), transaction, consume_staged)
             finally:
                 # A failed rollback retains the only recovery copy. It is
                 # neither a cache nor safe to discard on the next install.
@@ -473,13 +473,23 @@ def safe_copy(src: Path | str, dest: Path | str) -> bool:
         return False
 
 
-def _copy_transaction(src: Path, dest: Path, transaction: Path) -> bool:
+def _copy_transaction(src: Path, dest: Path, transaction: Path, consume_staged: bool) -> bool:
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = transaction / "new"
     bak = transaction / "backup"
 
     try:
-        shutil.copytree(src, tmp, symlinks=True)
+        # A completed, disposable staging tree can enter the same rollback
+        # transaction by rename. Ordinary source checkouts are always copied.
+        if consume_staged:
+            try:
+                src.rename(tmp)
+            except OSError as exc:
+                if exc.errno != errno.EXDEV:
+                    raise
+                shutil.copytree(src, tmp, symlinks=True)
+        else:
+            shutil.copytree(src, tmp, symlinks=True)
     except OSError:
         shutil.rmtree(tmp, ignore_errors=True)
         return False

@@ -45,7 +45,8 @@ def test_install_stages_archive_before_replacing_active_themes(
             (theme / "index.theme").write_text("new\n")
         return subprocess.CompletedProcess(args, 0, "", "")
 
-    def fake_install_tree(source, target, _label):
+    def fake_install_tree(source, target, _label, *, consume_staged):
+        assert consume_staged
         assert (target / "index.theme").read_text() == "old\n"
         shutil.rmtree(target)
         shutil.copytree(source, target)

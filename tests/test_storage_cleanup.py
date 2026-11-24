@@ -86,3 +86,15 @@ def test_copy_failure_retains_old_data_and_recovery(copying, monkeypatch, failur
     else:
         assert (dest / "obsolete").read_text() == "old"
         assert not list(cache.glob(".copy-*"))
+
+
+
+def test_disposable_staging_reuses_generated_files(copying):
+    source, dest, cache = copying
+    original = (source / "asset").stat()
+    assert utils.safe_copy(source, dest, consume_staged=True)
+    assert not source.exists()
+    assert (dest / "asset").stat().st_ino == original.st_ino
+    assert (dest / "alias").readlink() == Path("asset")
+    assert not (dest / "obsolete").exists()
+    assert not list(cache.glob(".copy-*"))

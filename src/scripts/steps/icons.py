@@ -10,10 +10,11 @@ import re
 import shutil
 import subprocess
 import tarfile
+import tempfile
 from pathlib import Path
 
 from steps._helpers import (
-    DATA_HOME, fail, info, install_tree, offline, ok, temp_dir,
+    DATA_HOME, fail, info, install_tree, offline, ok,
 )
 from utils import remove_path, run_user
 from owned_assets import install as install_owned, remove_owned
@@ -92,7 +93,8 @@ def _install_payload() -> None:
 
     n = 0
     names = list(_THEME_NAMES)
-    with temp_dir("mttkde-icons") as staging:
+    with tempfile.TemporaryDirectory(prefix=".mttkde-icons-", dir=DEST_DIR.parent) as work:
+        staging = Path(work)
         # Extract away from the live icon path. Removing an active theme before
         # this completes makes every running KDE process report
         # "Icon theme ... not found" and briefly fall back to Breeze.
@@ -126,7 +128,7 @@ def _install_payload() -> None:
                 fail(tr('{name} (index.theme missing from offline archive)', name=name))
                 continue
             def copy(src, dst):
-                if not install_tree(src, dst, name):
+                if not install_tree(src, dst, name, consume_staged=True):
                     return False
                 if shutil.which("gtk-update-icon-cache"):
                     run_user(["gtk-update-icon-cache", "-f", "-t", str(dst)],
