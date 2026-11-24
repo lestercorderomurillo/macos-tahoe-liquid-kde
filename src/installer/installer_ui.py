@@ -615,7 +615,7 @@ def _make_installer_bridge():
 
         @pyqtSlot()
         def cancel(self) -> None:
-            if not self._running:
+            if not self._running or self.summary.application_started:
                 return
             self.cancelRequested = True
             _mark_cancel_requested(self._cancel_file)

@@ -1134,6 +1134,59 @@ def installer_palette(dark):
     return palette
 
 
+class ApplyScreen(QWidget):
+    def __init__(self, wizard, screen):
+        flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
+        super().__init__(None, flags)
+        self.setScreen(screen)
+        self.setGeometry(screen.geometry())
+        self.setObjectName("applyScreen")
+        self.setStyleSheet("""
+            QWidget#applyScreen { background: black; }
+            QProgressBar { background: #323232; border: 0; border-radius: 3px; }
+            QProgressBar::chunk { background: white; border-radius: 3px; }
+            QPushButton { background: black; color: #bdbdbd; padding: 6px 12px;
+                          border: 1px solid #474747; border-radius: 5px; }
+            QPushButton:hover, QPushButton:focus { color: white; border-color: white; }
+            QPlainTextEdit { background: #101010; color: white; border: 1px solid #424242; }
+        """)
+        self.bar = QProgressBar()
+        self.bar.setRange(0, 1000)
+        self.bar.setTextVisible(False)
+        self.bar.setAccessibleName(wizard.t("Applying appearance…"))
+        self.bar.setFixedSize(min(300, max(80, screen.geometry().width() - 64)), 6)
+        self.log = QPlainTextEdit()
+        self.log.setReadOnly(True)
+        self.log.setFont(wizard._log_font)
+        self.log.setMaximumBlockCount(2000)
+        self.log.setAccessibleName(wizard.t("Installation details"))
+        self.log.hide()
+        self.toggle = QPushButton(wizard.t("View logs"))
+        self.toggle.setCheckable(True)
+        layout = QGridLayout(self)
+        layout.setContentsMargins(24, 20, 24, 20)
+        layout.setRowStretch(0, 1)
+        layout.setRowStretch(2, 1)
+        layout.addWidget(self.bar, 1, 0, Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.log, 0, 0, 3, 1)
+        layout.addWidget(self.toggle, 3, 0, Qt.AlignmentFlag.AlignRight)
+
+        def show_logs(opened):
+            self.toggle.setText(wizard.t("Hide logs" if opened else "View logs"))
+            self.bar.setVisible(not opened)
+            self.log.setVisible(opened)
+            if opened:
+                self.log.setPlainText(wizard.bridge.logTail())
+                self.log.verticalScrollBar().setValue(self.log.verticalScrollBar().maximum())
+
+        self.toggle.toggled.connect(show_logs)
+        escape = QShortcut(QKeySequence("Esc"), self)
+        escape.activated.connect(lambda: self.toggle.setChecked(False))
+
+    def closeEvent(self, event):
+        event.ignore()
+
+
 class InstallerWindow(OpaqueSurface):
     def __init__(self, bridge, *, uninstall=False, mode="install", section="appearance", widget=None):
         # Fusion ships with Qt. Use it only in this installer process so native
@@ -1386,6 +1439,7 @@ class InstallerWindow(OpaqueSurface):
             self.config_watcher = QFileSystemWatcher(dirs, self)
             self.config_watcher.directoryChanged.connect(lambda _: self.config_timer.start())
         self.transition_bus = None
+        self.apply_start_progress = None
         self.transition_screens = {}
         self.transition_dismissed = False
         app.screenAdded.connect(self.cover_screen)
@@ -3517,7 +3571,7 @@ class InstallerWindow(OpaqueSurface):
         self.remaining_label.setObjectName("detail")
         self.body.addWidget(self.remaining_label)
         if self.action == "install":
-            self.body.addWidget(self.label("Your screen may flicker briefly as your new desktop appearance is applied."))
+            self.body.addWidget(self.label("Once the components are built, the screen will go black while your desktop is updated."))
         self.details()
         self._eta_timer.start()
         self.refresh_progress()
@@ -3537,14 +3591,7 @@ class InstallerWindow(OpaqueSurface):
                 "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit")
             inhibit.setArguments([self.edition, self.t("Applying appearance…")])
             self.transition_bus.asyncCall(inhibit)
-        flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
-        cover = QWidget(None, flags)
-        cover.setScreen(screen)
-        cover.setGeometry(screen.geometry())
-        cover.setStyleSheet("background: black;")
-        cover.setCursor(Qt.CursorShape.BlankCursor)
-        escape = QShortcut(QKeySequence("Esc"), cover)
-        escape.activated.connect(self.dismiss_transition)
+        cover = ApplyScreen(self, screen)
         self.transition_screens[screen] = cover
         cover.showFullScreen()
 
@@ -3566,10 +3613,23 @@ class InstallerWindow(OpaqueSurface):
         if self.page != "progress" or not hasattr(self, "progress"):
             self._eta_timer.stop()
             return
-        for screen in QApplication.screens():
-            self.cover_screen(screen)
         fraction = max(0.0, min(1.0, self.bridge.progress))
-        self.progress.setValue(round(fraction * 1000))
+        summary = self.bridge.summary
+        if self.action == "install" and summary.active is not None:
+            self.progress.setValue(round(1000 * summary.preparation_fraction))
+            if summary.application_started:
+                self.next.setEnabled(False)
+                if self.apply_start_progress is None:
+                    self.apply_start_progress = fraction
+                    self.progress.setValue(1000)
+                    self.progress.repaint()
+                for screen in QApplication.screens():
+                    self.cover_screen(screen)
+                applied = max(0, fraction - self.apply_start_progress) / max(.01, 1 - self.apply_start_progress)
+                for cover in self.transition_screens.values():
+                    cover.bar.setValue(round(1000 * applied))
+        else:
+            self.progress.setValue(round(fraction * 1000))
         self.progress.setAccessibleDescription(self.bridge.currentStep)
         elapsed = time.monotonic() - self._operation_started if self._operation_started is not None else 0
         self.remaining_label.setText(self.operation_text("Elapsed {duration}").format(duration=elapsed_text(elapsed, self.operation_text)))
@@ -3600,6 +3660,9 @@ class InstallerWindow(OpaqueSurface):
             bar.setValue(position)
 
     def append_log(self, text):
+        for cover in self.transition_screens.values():
+            if cover.toggle.isChecked():
+                cover.log.appendPlainText(text)
         if self.page in ("progress", "error", "done", "removed") and hasattr(self, "log") and self.full_output_toggle.isChecked():
             bar = self.log.verticalScrollBar()
             following = bar.value() == bar.maximum()
@@ -3686,11 +3749,14 @@ class InstallerWindow(OpaqueSurface):
         elif self.page in ("done", "removed"):
             self.close(); return
         elif self.page == "progress":
+            if self.bridge.summary.application_started:
+                return
             self.bridge.cancel(); self.next.setEnabled(False); return
         elif self.page in ("summary", "uninstall", "error"):
             if self.page != "error":
                 self.action = "uninstall" if self.page == "uninstall" else "install"
             self.bridge.setChoices(validate(self.choices))
+            self.apply_start_progress = None
             self.transition_dismissed = False
             self.bridge.summary = ProgressModel(self.action)
             self._operation_started = time.monotonic()
@@ -3717,6 +3783,8 @@ class InstallerWindow(OpaqueSurface):
 
     def closeEvent(self, event):
         if self.appearance_process is not None:
+            event.ignore()
+        elif self.bridge.running and self.bridge.summary.application_started:
             event.ignore()
         elif self.bridge.running:
             self.close_pending = True; self.bridge.cancel(); event.ignore()

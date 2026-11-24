@@ -1,5 +1,7 @@
 {
-  "Your screen may flicker briefly as your new desktop appearance is applied.": "Votre écran peut clignoter un instant pendant que le bureau change d’apparence.",
+  "Once the components are built, the screen will go black while your desktop is updated.": "Une fois les composants compilés, l’écran deviendra noir pendant la mise à jour du bureau.",
+  "View logs": "Afficher les journaux",
+  "Hide logs": "Masquer les journaux",
   "Application menus": "Menus d’applications",
   "Blur upcoming lines": "Flouter les lignes suivantes",
   "Calendar grid text size": "Taille du texte de la grille du calendrier",
