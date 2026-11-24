@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.15**. The shared installer avoids duplicate native compilation and reuses verified icon assets across unrelated fixes. [Timings, evidence and coverage](release-evidence.json).
+**v0.84.16**. The inline tray chevron follows the spacing of the adjacent menu bar controls. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
