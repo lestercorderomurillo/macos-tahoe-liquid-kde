@@ -31,6 +31,11 @@ Item {
     }
 
     readonly property Item tray: findTray(applet("org.kde.plasma.systemtray"))
+    TrayStatusMenu {
+        grid: style.tray?.hiddenLayout ?? null
+        overview: !!style.tray && !style.tray.systemTrayState?.activeApplet
+        rows: style.delegates(grid)
+    }
     readonly property Item arrow: tray?.visibleLayout.parent?.children.find(child => child.arrowAnimationDuration !== undefined) ?? null
     readonly property Item clock: applet("org.kde.plasma.digitalclock")
 
