@@ -232,3 +232,9 @@ msgstr "O Wi-Fi está desligado"
 
 msgid "Configure in Settings…"
 msgstr "Configurar em Ajustes…"
+
+msgid "Hide hidden icons"
+msgstr "Ocultar ícones adicionais"
+
+msgid "Show hidden icons"
+msgstr "Mostrar ícones ocultos"

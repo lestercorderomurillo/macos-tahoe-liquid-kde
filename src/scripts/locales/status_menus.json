@@ -11,7 +11,9 @@
     "Power Source: Power Adapter": "Fuente de alimentación: adaptador de corriente",
     "Power Source: Battery": "Fuente de alimentación: batería",
     "Energy Mode": "Modo de energía",
-    "Battery Settings…": "Ajustes de batería…"
+    "Battery Settings…": "Ajustes de batería…",
+    "Show hidden icons": "Mostrar iconos ocultos",
+    "Hide hidden icons": "Ocultar los iconos adicionales"
   },
   "zh_CN": {
     "Bluetooth is off": "蓝牙已关闭",
@@ -25,7 +27,9 @@
     "Power Source: Power Adapter": "电源：电源适配器",
     "Power Source: Battery": "电源：电池",
     "Energy Mode": "电源模式",
-    "Battery Settings…": "电池设置…"
+    "Battery Settings…": "电池设置…",
+    "Show hidden icons": "显示隐藏的图标",
+    "Hide hidden icons": "收起隐藏的图标"
   },
   "pt_BR": {
     "Known Networks": "Redes conhecidas",
@@ -37,7 +41,9 @@
     "Power Source: Power Adapter": "Fonte de energia: adaptador de alimentação",
     "Power Source: Battery": "Fonte de energia: bateria",
     "Energy Mode": "Modo de energia",
-    "Battery Settings…": "Ajustes de bateria…"
+    "Battery Settings…": "Ajustes de bateria…",
+    "Show hidden icons": "Mostrar ícones ocultos",
+    "Hide hidden icons": "Ocultar ícones adicionais"
   },
   "de": {
     "Known Networks": "Bekannte Netzwerke",
@@ -49,7 +55,9 @@
     "Power Source: Power Adapter": "Stromquelle: Netzteil",
     "Power Source: Battery": "Stromquelle: Batterie",
     "Energy Mode": "Energiemodus",
-    "Battery Settings…": "Batterieeinstellungen…"
+    "Battery Settings…": "Batterieeinstellungen…",
+    "Show hidden icons": "Ausgeblendete Symbole anzeigen",
+    "Hide hidden icons": "Zusätzliche Symbole ausblenden"
   },
   "fr": {
     "Known Networks": "Réseaux connus",
@@ -61,7 +69,9 @@
     "Power Source: Power Adapter": "Source d’alimentation : adaptateur secteur",
     "Power Source: Battery": "Source d’alimentation : batterie",
     "Energy Mode": "Mode d’énergie",
-    "Battery Settings…": "Réglages Batterie…"
+    "Battery Settings…": "Réglages Batterie…",
+    "Show hidden icons": "Afficher les icônes masquées",
+    "Hide hidden icons": "Masquer les icônes supplémentaires"
   },
   "it": {
     "Known Networks": "Reti conosciute",
@@ -73,6 +83,8 @@
     "Power Source: Power Adapter": "Alimentazione: alimentatore",
     "Power Source: Battery": "Alimentazione: batteria",
     "Energy Mode": "Profilo energetico",
-    "Battery Settings…": "Impostazioni della batteria…"
+    "Battery Settings…": "Impostazioni della batteria…",
+    "Show hidden icons": "Mostra le icone nascoste",
+    "Hide hidden icons": "Nascondi le icone aggiuntive"
   }
 }

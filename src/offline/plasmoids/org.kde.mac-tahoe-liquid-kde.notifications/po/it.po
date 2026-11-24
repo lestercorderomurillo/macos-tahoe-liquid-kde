@@ -232,3 +232,9 @@ msgstr "La connessione Wi-Fi è spenta"
 
 msgid "Configure in Settings…"
 msgstr "Configura in Impostazioni…"
+
+msgid "Hide hidden icons"
+msgstr "Nascondi le icone aggiuntive"
+
+msgid "Show hidden icons"
+msgstr "Mostra le icone nascoste"

@@ -232,3 +232,9 @@ msgstr "El interruptor físico bloquea el Wi-Fi"
 
 msgid "Wi-Fi is off"
 msgstr "El Wi-Fi está desactivado"
+
+msgid "Hide hidden icons"
+msgstr "Ocultar los iconos adicionales"
+
+msgid "Show hidden icons"
+msgstr "Mostrar iconos ocultos"

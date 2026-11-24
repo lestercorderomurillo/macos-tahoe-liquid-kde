@@ -232,3 +232,9 @@ msgstr "无线网络已被硬件开关禁用"
 
 msgid "Wi-Fi is off"
 msgstr "无线网络已关闭"
+
+msgid "Hide hidden icons"
+msgstr "收起隐藏的图标"
+
+msgid "Show hidden icons"
+msgstr "显示隐藏的图标"

@@ -232,3 +232,9 @@ msgstr "WLAN ist ausgeschaltet"
 
 msgid "Configure in Settings…"
 msgstr "In den Einstellungen konfigurieren …"
+
+msgid "Hide hidden icons"
+msgstr "Zusätzliche Symbole ausblenden"
+
+msgid "Show hidden icons"
+msgstr "Ausgeblendete Symbole anzeigen"
