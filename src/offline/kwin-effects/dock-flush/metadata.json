@@ -7,11 +7,11 @@
             }
         ],
         "Category": "Appearance",
-        "Description": "Slides the Dock down off one screen and up onto the next, as on macOS, and lowers the always-visible Dock onto the screen edge next to maximized windows.",
+        "Description": "Slides the Dock between screens and lowers an always-visible Dock to the screen edge beside maximized windows.",
         "EnabledByDefault": true,
         "Id": "mttkde_dock_flush",
         "License": "GPL-3.0-or-later",
-        "Name": "Dock Motion"
+        "Name": "macOS Liquid KDE: Dock Motion"
     },
     "X-KDE-Ordering": 60,
     "X-Plasma-API": "javascript"

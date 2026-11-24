@@ -6,14 +6,14 @@
             }
         ],
         "Category": "Appearance",
-        "Description": "Acrylic Glass — blur and rounded corners for KDE Plasma 6.",
+        "Description": "Blurs backgrounds and rounds window corners.",
         "EnabledByDefault": false,
         "License": "GPL-3.0",
-        "Name": "Acrylic Glass",
-        "Name[pt_BR]": "Acrylic Glass",
-        "Description[pt_BR]": "Acrylic Glass — desfoque e cantos arredondados para KDE Plasma 6.",
-        "Name[de]": "Acrylic Glass",
-        "Description[de]": "Acrylic Glass — Unschärfe und abgerundete Ecken für KDE Plasma 6."
+        "Name": "macOS Liquid KDE: Acrylic Glass",
+        "Name[pt_BR]": "macOS Liquid KDE: Acrylic Glass",
+        "Description[pt_BR]": "Desfoca os fundos e arredonda os cantos das janelas.",
+        "Name[de]": "macOS Liquid KDE: Acrylic Glass",
+        "Description[de]": "Zeichnet Hintergründe weich und rundet Fensterecken ab."
     },
     "X-KDE-ConfigModule": "kwin_liquidglass_config"
 }
