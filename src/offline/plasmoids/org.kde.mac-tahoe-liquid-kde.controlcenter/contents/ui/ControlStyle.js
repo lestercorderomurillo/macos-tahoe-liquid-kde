@@ -5,6 +5,7 @@ var family = "SF Pro Text";
 var body = 13;
 var caption = 11;
 var panelIcon = 18;
+var panelButtonWidth = 30;
 var actionIcon = 22;
 var circleIcon = 26;
 // Control Center tile titles render at macOS Tahoe's 12 px semibold.

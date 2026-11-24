@@ -12,7 +12,7 @@ Item {
     property bool selected: false
     signal clicked()
     property real iconSize: 16
-    implicitWidth: 30
+    implicitWidth: Style.panelButtonWidth
     implicitHeight: implicitWidth
     Layout.minimumWidth: implicitWidth
     Layout.fillHeight: true

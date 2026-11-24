@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import "ControlStyle.js" as Style
 import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import QtQml.Models
@@ -100,7 +101,7 @@ Item {
 
         QQC.ToolButton {
             id: toggle
-            Layout.preferredWidth: strip.stockArrow.implicitWidth
+            Layout.preferredWidth: Math.max(Style.panelButtonWidth, strip.stockArrow.implicitWidth)
             Layout.fillHeight: true
             checkable: true
             checked: strip.revealed
@@ -115,6 +116,8 @@ Item {
                 implicitHeight: 16
             }
             padding: 2
+            leftPadding: padding + Math.max(0, width - strip.stockArrow.implicitWidth) / 2
+            rightPadding: leftPadding
             Native.WallpaperInk { id: ink; item: toggle; base: toggle.Kirigami.Theme.textColor }
         }
     }
