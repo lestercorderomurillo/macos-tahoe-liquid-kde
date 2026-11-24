@@ -568,12 +568,65 @@ class SettingsSearch(QLineEdit):
         painter.drawLine(QPointF(14.5, y + 2.5), QPointF(17, y + 5))
 
 
+def finder_window_size():
+    # Nautilus saves its normal window size in logical pixels on close.
+    try:
+        from gi.repository import Gio
+        source = Gio.SettingsSchemaSource.get_default()
+        schema = source.lookup("org.gnome.nautilus.window-state", True) if source else None
+        if schema and schema.has_key("initial-size"):
+            size = QSize(*Gio.Settings.new_full(schema, None, None).get_value("initial-size").unpack())
+            if not size.isEmpty():
+                return size
+    except (ImportError, TypeError, ValueError):
+        pass
+    return QSize(1000, 620)
+
+
+class ResizeBorder(QWidget):
+    """Leave content interactive and delegate border drags to the compositor."""
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.setMouseTracking(True)
+
+    def resizeEvent(self, event):
+        self.setMask(QRegion(self.rect()) - QRegion(self.rect().adjusted(6, 6, -6, -6)))
+
+    def edges(self, pos):
+        edge = Qt.Edge(0)
+        if pos.x() < 16:
+            edge |= Qt.Edge.LeftEdge
+        elif pos.x() >= self.width() - 16:
+            edge |= Qt.Edge.RightEdge
+        if pos.y() < 16:
+            edge |= Qt.Edge.TopEdge
+        elif pos.y() >= self.height() - 16:
+            edge |= Qt.Edge.BottomEdge
+        return edge
+
+    def mouseMoveEvent(self, event):
+        edge = self.edges(event.position())
+        if edge in (Qt.Edge.TopEdge, Qt.Edge.BottomEdge):
+            cursor = Qt.CursorShape.SizeVerCursor
+        elif edge in (Qt.Edge.LeftEdge, Qt.Edge.RightEdge):
+            cursor = Qt.CursorShape.SizeHorCursor
+        elif edge in (Qt.Edge.LeftEdge | Qt.Edge.TopEdge, Qt.Edge.RightEdge | Qt.Edge.BottomEdge):
+            cursor = Qt.CursorShape.SizeFDiagCursor
+        else:
+            cursor = Qt.CursorShape.SizeBDiagCursor
+        self.setCursor(cursor)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.window().windowHandle().startSystemResize(self.edges(event.position()))
+
+
 class HistoryControl(QWidget):
     def __init__(self, back, forward):
         super().__init__()
         self.setObjectName("settingsHistoryControl")
         row = QHBoxLayout(self)
-        row.setContentsMargins(3, 2, 3, 3)
+        row.setContentsMargins(2, 1, 2, 1)
         row.setSpacing(1)
         row.addWidget(back)
         row.addWidget(forward)
@@ -581,7 +634,12 @@ class HistoryControl(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        paint_glass_control(self, painter, backed=True)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        tint = self.palette().text().color()
+        tint.setAlphaF(.055)
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(tint)
+        painter.drawRoundedRect(QRectF(self.rect()), self.height()/2, self.height()/2)
         light = self.window().palette().window().color().lightnessF() > .5
         painter.setPen(QPen(QColor(0, 0, 0, 22) if light else QColor(255, 255, 255, 26), 1))
         x, y = self.width() / 2, self.height() / 2
@@ -592,7 +650,7 @@ class HistoryButton(QPushButton):
     def __init__(self, direction):
         super().__init__()
         self.direction = direction
-        self.setFixedSize(27, 24)
+        self.setFixedSize(35, 34)
 
     def paintEvent(self, event):
         super().paintEvent(event)
@@ -601,12 +659,12 @@ class HistoryButton(QPushButton):
         color = self.palette().buttonText().color()
         if not self.isEnabled():
             color.setAlphaF(.36)
-        painter.setPen(QPen(color, 1.7, Qt.PenStyle.SolidLine,
+        painter.setPen(QPen(color, 1.35, Qt.PenStyle.SolidLine,
                             Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
         x, y = self.width() / 2, self.height() / 2
-        tip = 2.5 * self.direction
-        painter.drawPolyline(QPolygonF([QPointF(x - tip, y - 4.5), QPointF(x + tip, y),
-                                        QPointF(x - tip, y + 4.5)]))
+        tip = 2.8 * self.direction
+        painter.drawPolyline(QPolygonF([QPointF(x - tip, y - 5), QPointF(x + tip, y),
+                                        QPointF(x - tip, y + 5)]))
 
 
 class CheckOption(QCheckBox):
@@ -1160,7 +1218,7 @@ class InstallerWindow(OpaqueSurface):
         self.settings_toolbar.setObjectName("settingsToolbar")
         self.settings_toolbar.setFixedHeight(50)
         toolbar = QHBoxLayout(self.settings_toolbar)
-        toolbar.setContentsMargins(13, 7, 16, 10)
+        toolbar.setContentsMargins(13, 4, 16, 8)
         toolbar.setSpacing(3)
         self.settings_back = HistoryButton(-1)
         self.settings_back.setObjectName("settingsBack")
@@ -1169,7 +1227,6 @@ class InstallerWindow(OpaqueSurface):
         self.settings_forward.setObjectName("settingsForward")
         self.settings_forward.clicked.connect(lambda: self.move_settings_history(1))
         history = HistoryControl(self.settings_back, self.settings_forward)
-        add_surface_shadow(history, radius=14, offset=0, opacity=74)
         toolbar.addWidget(history)
         toolbar.addSpacing(6)
         self.settings_review = GlassButton()
@@ -1232,6 +1289,7 @@ class InstallerWindow(OpaqueSurface):
         self.layout.addWidget(self.footer)
         self.frame_edge = WizardFrame(self)
         self.frame_edge.setGeometry(self.rect())
+        self.resize_border = ResizeBorder(self)
         self.backdrop_blurred = False
         self.blur_region = QRegion()
         self.blur_timer = QTimer(self)
@@ -1278,6 +1336,8 @@ class InstallerWindow(OpaqueSurface):
         return INSTALL_FLOW
 
     def configure_window_mode(self):
+        self.resize_border.setVisible(self.settings_mode and not self.isMaximized() and not self.isFullScreen())
+        self.main_row.setContentsMargins(*((6, 5, 0, 6) if self.settings_mode else (0, 0, 0, 0)))
         self.sidebar.setVisible(self.settings_mode)
         self.settings_toolbar.setVisible(self.settings_mode)
         self.footer.setVisible(not self.settings_mode)
@@ -1293,7 +1353,7 @@ class InstallerWindow(OpaqueSurface):
             self.header.show()
             available = self.screen().availableGeometry().size()
             self.setMinimumSize(QSize(700, 425).boundedTo(available))
-            self.resize(QSize(1000, 620).boundedTo(available))
+            self.resize(finder_window_size().boundedTo(available))
         else:
             self.sidebar_layout.removeWidget(self.header)
             self.layout.insertWidget(0, self.header)
@@ -1469,12 +1529,17 @@ class InstallerWindow(OpaqueSurface):
             # The search field and lettering remain above the translucent tint.
             painter = QPainter(self)
             painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Clear)
-            painter.fillRect(self.sidebar.geometry().intersected(event.rect()), Qt.GlobalColor.transparent)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(Qt.GlobalColor.black)
+            painter.drawRoundedRect(QRectF(self.sidebar.geometry()), 18, 18)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
         if self.settings_mode:
-            self.sidebar.setFixedWidth(min(250, self.width() // 4))
+            self.sidebar.setFixedWidth(min(240, self.width() // 4))
+        self.resize_border.setGeometry(self.rect())
+        self.resize_border.setVisible(self.settings_mode and not self.isMaximized() and not self.isFullScreen())
         self.frame_edge.setGeometry(self.rect())
         self.blur_timer.start(0)
 
@@ -1488,7 +1553,9 @@ class InstallerWindow(OpaqueSurface):
             return
         region = QRegion()
         if self.settings_mode:
-            region = QRegion(self.sidebar.geometry())
+            path = QPainterPath()
+            path.addRoundedRect(QRectF(self.sidebar.geometry()), 18, 18)
+            region = QRegion(path.toFillPolygon().toPolygon())
             if not (self.isMaximized() or self.isFullScreen()):
                 region &= QRegion(self.frame_edge.outline().toFillPolygon().toPolygon())
         changed = region != self.blur_region
@@ -1506,14 +1573,12 @@ class InstallerWindow(OpaqueSurface):
 
     def refresh_sidebar_material(self):
         light = self.palette().window().color().lightnessF() > .5
-        colors = ("244, 250, 253", "223, 233, 241") if light else ("49, 58, 72", "32, 38, 51")
-        opacity = (203, 195) if self.backdrop_blurred else (238, 232) if light else (242, 238)
-        separator = "#e2e7ec" if light else "#3b4049"
-        top, bottom = (f"rgba({color}, {alpha})" for color, alpha in zip(colors, opacity))
+        channel = 236 if light else 51
+        alpha = 200 if self.backdrop_blurred else 246
         self.sidebar.setStyleSheet(f"""
             QFrame#settingsSidebar {{
-                background: qlineargradient(x1: 0, y1: 0, x2: .75, y2: 1, stop: 0 {top}, stop: 1 {bottom});
-                border-right: 1px solid {separator};
+                background: rgba({channel}, {channel}, {channel}, {alpha});
+                border: none; border-radius: 18px;
             }}
         """)
 
@@ -1781,7 +1846,7 @@ class InstallerWindow(OpaqueSurface):
         light = self.window().palette().window().color().lightnessF() > .5
         surface, footer = ("#f6f6f6", "#eeeeee") if light else ("#292929", "#242424")
         if self.settings_mode:
-            surface = "#fbfcfd" if light else "#25262c"
+            surface = "#fafafa" if light else "#292929"
         self.surface_color = QColor(surface)
         self.scroll.surface_color = QColor(surface)
         self.footer.surface_color = QColor(footer)
@@ -1818,6 +1883,9 @@ class InstallerWindow(OpaqueSurface):
         search_focus = "rgba(255, 255, 255, 168)" if light else "rgba(255, 255, 255, 32)"
         separator = "#e2e7ec" if light else "#3b4049"
         panel_surface = "#f0f3f6" if light else "#30343d"
+        if self.settings_mode:
+            panel_surface = "#f0f0f0" if light else "#333333"
+            separator = "#dddddd" if light else "#414141"
         self.close_button.setAccessibleName(self.t("Close"))
         self.close_button.setToolTip(self.t("Close"))
         self.refresh_window_controls()
@@ -1876,7 +1944,7 @@ class InstallerWindow(OpaqueSurface):
             }}
             QWidget[widgetPreferenceRow="true"] QCheckBox {{ padding: 3px 0; }}
             QWidget#settingsToolbar {{
-                background: {surface}; border-bottom: 1px solid {separator};
+                background: {surface}; border: none;
             }}
             QPushButton#settingsBack, QPushButton#settingsForward {{
                 color: {foreground}; background: transparent; border: 1px solid transparent;
