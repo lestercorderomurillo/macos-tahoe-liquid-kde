@@ -54,7 +54,7 @@ msgid "Collapse"
 msgstr "收起"
 
 msgid "Configure in Settings…"
-msgstr "Configure in Settings…"
+msgstr "在设置中配置…"
 
 msgid "Connect a battery to see its status."
 msgstr "连接电池以查看其状态。"

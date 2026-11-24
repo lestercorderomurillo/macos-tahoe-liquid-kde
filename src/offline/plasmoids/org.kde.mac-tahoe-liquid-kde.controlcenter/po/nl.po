@@ -51,7 +51,7 @@ msgid "Collapse"
 msgstr "Invouwen"
 
 msgid "Configure in Settings…"
-msgstr "Configure in instellingen…"
+msgstr "Via Instellingen configureren…"
 
 msgid "Connect a battery to see its status."
 msgstr "Verbind een batterij om de status te zien."

@@ -54,7 +54,7 @@ msgid "Collapse"
 msgstr "Zwiń"
 
 msgid "Configure in Settings…"
-msgstr "Konfiguracja w ustawieniach…"
+msgstr "Konfiguruj w ustawieniach…"
 
 msgid "Connect a battery to see its status."
 msgstr "Włącz baterię, aby zobaczyć jej stan."

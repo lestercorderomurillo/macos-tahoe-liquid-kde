@@ -177,7 +177,7 @@ msgid "Paste values"
 msgstr "Wartości pastowe"
 
 msgid "Plasma widget popups"
-msgstr "Plasma widget popups"
+msgstr "Okna podręczne elementów Plazmy"
 
 msgid "Popups"
 msgstr "Okno wysuwne"

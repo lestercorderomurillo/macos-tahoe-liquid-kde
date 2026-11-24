@@ -51,7 +51,7 @@ msgid "Collapse"
 msgstr "折りたたむ"
 
 msgid "Configure in Settings…"
-msgstr "設定で設定する…"
+msgstr "設定で構成…"
 
 msgid "Connect a battery to see its status."
 msgstr "バッテリーを接続して 状態を確認します"

@@ -51,7 +51,7 @@ msgid "Collapse"
 msgstr "اطوِ"
 
 msgid "Configure in Settings…"
-msgstr "إعدادات الإعداد…"
+msgstr "الضبط في الإعدادات…"
 
 msgid "Connect a battery to see its status."
 msgstr "قم بتوصيل البطارية لمعرفة حالتها"

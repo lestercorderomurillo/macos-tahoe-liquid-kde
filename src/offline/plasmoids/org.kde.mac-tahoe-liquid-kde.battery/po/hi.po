@@ -54,7 +54,7 @@ msgid "Collapse"
 msgstr "गिर जाना"
 
 msgid "Configure in Settings…"
-msgstr "सेटिंग्स में कॉन्फ़िगर करें…"
+msgstr "सेटिंग में कॉन्फ़िगर करें…"
 
 msgid "Connect a battery to see its status."
 msgstr "बैटरी को कनेक्ट करें उसकी स्थिति देखने के लिए।"

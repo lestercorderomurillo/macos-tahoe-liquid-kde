@@ -77,6 +77,7 @@ in rec {
   acrylic-glass = buildPlugin "acrylic-glass" (offline + "/kwin-effects/acrylic-glass") {
     postInstall = ''
       mkdir -p "$out/share/kwin/effects"
+      cp -r ${offline + "/kwin-effects/acrylic-glass/locale"} "$out/share/locale"
       cp -r ${offline + "/kwin-effects/controlcenter-transition"} "$out/share/kwin/effects/mttkde_controlcenter_transition"
     '';
   };

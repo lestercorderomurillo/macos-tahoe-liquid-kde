@@ -162,7 +162,7 @@ msgid "Match Mode"
 msgstr "Mode de correspondance"
 
 msgid "Menus / Shell"
-msgstr "Menus / Shell"
+msgstr "Menus et environnement de bureau"
 
 msgid "One window class or resource name per line."
 msgstr "Une classe de fenêtre ou un nom de ressource par ligne."

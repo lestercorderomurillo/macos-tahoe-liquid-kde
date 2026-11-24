@@ -51,7 +51,7 @@ msgid "Collapse"
 msgstr "Daralt"
 
 msgid "Configure in Settings…"
-msgstr "Ayarlar İçin Yapılandırma…"
+msgstr "Ayarlarda yapılandır…"
 
 msgid "Connect a battery to see its status."
 msgstr "Bataryayı bağla, durumunu gör."

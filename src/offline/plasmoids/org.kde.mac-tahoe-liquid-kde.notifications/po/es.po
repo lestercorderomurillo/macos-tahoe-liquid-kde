@@ -51,7 +51,7 @@ msgid "Collapse"
 msgstr "Contraer"
 
 msgid "Configure in Settings…"
-msgstr "Configure in Settings…"
+msgstr "Configurar en Ajustes…"
 
 msgid "Connect a battery to see its status."
 msgstr "Conecta una batería para ver su estado."
