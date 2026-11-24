@@ -1,31 +1,29 @@
 {
-  "version": "0.84.11",
+  "version": "0.84.12",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Settings uses Finder glass, sidebar rows and window borders, with new Top bar and Dock illustrations.",
+  "scope": "The menu bar reveals hidden status icons horizontally and opens each native control directly.",
   "checks": [
     {
-      "command": "Compared Finder and Settings in light and dark mode in isolated KDE neon Wayland guests with each edition\u2019s defaults. Captured the approved replacement artwork in Golden Gate Settings.",
-      "result": "passed"
-    },
-    {
-      "command": "Built the Acrylic Glass effect with KWin SDKs 6.6.5, 6.7.4 and 6.8.2. Loaded the candidate X11 module into a private KWin session and captured the Settings frame and its blur region.",
+      "command": "Golden Gate KDE neon Wayland VM: clicked the chevron, opened Clipboard from the expanded row, collapsed and reopened the row, and switched between light and dark appearances.",
       "result": "passed"
     }
   ],
-  "approval": "Maintainer approved the Settings candidate after the final artwork preview.",
+  "approval": "Maintainer approved the light/dark, closed/expanded Golden Gate preview for both editions.",
   "captures": [],
-  "preview_commit": "e699ba30",
+  "preview_commit": "236029227caac0d3296f5dd3ad4d0dd668c4b6f5",
   "preview_sha256": {
-    "golden-dark-finder.png": "7d2e292c49bef5523e69d80bc831226d1fb9866529832469e5a00c52c5fc564b",
-    "golden-dark-settings.png": "b3dbc3b88a51bfbc0ed2577093ce23c9009d43b42dcc86f44ca680b44a14ab08",
-    "golden-light-finder.png": "90e705ddaec5420106eaefa6680dbe9bef0062fe3a4a586b28d3ccd083031ff5",
-    "golden-light-settings.png": "726c3dbf227248cd99e231d5acf5436f9fc40dea53cda85a30c1517c0f354115",
-    "golden-settings-artwork.png": "9e87ded93b86f7f65af4ed7b667271552a7a6c9f68c4b3a00a6de3e3cefa7211",
-    "tahoe-dark-finder.png": "c5938407491a6fec8eb71f26596015b4b08422c82e7b999f0c49b40607b1bf29",
-    "tahoe-dark-settings.png": "4b08a1a241396914b624171612a7cbc079b8fdae199518f3f5c294eae452a7da",
-    "tahoe-light-finder.png": "7dbe3f19cc7d01598d1d8529d56fe509fe5f65fd06874c8da6b5bd251dad7fb1",
-    "tahoe-light-settings.png": "4066caea0cb0365d1456358900bec475bcef5fb8b0adaf4a6587df4307cf5025"
+    "light-closed.png": "0039e20840cad03739b89c3b56726903692fb02f98f747419c8305b4a4d2063b",
+    "light-expanded.png": "1688a23029b51ca73b266fa7f1b83f5399c4fc194550e01cff32fab8d4bd7b63",
+    "dark-closed.png": "c5df02718595834da54acd2e64e8d08ca1272e2b100ccb0dbcb616390ec8aa8f",
+    "dark-expanded.png": "edc72f44ce10f4ffdbda771b8695c969f71c8cad6d94983d1a5bea1c6d9a528f",
+    "dark-reopened.png": "df4733f2fa1413ac64963622cb755a45f910f8605d46250519013ae41a129547",
+    "horizontal-detail.png": "cfbe4f8aaadb8d7af5bbdc5b1d97257e6730a3191658f88ae811db11f419da88",
+    "hidden-bar.png": "1130a8de79127a4ad7f05a7307e8f43e3054060d7efee62a96871a394ae3ef9e"
   },
-  "coverage_limits": "Wayland comparison frames precede the artwork swap. The final artwork frame shows the dark Golden Gate Dock page. The isolated X11 capture covers Settings rendering. The integrated release preserves the separately shipped launcher shortcut editor.",
-  "source_sha256": "6ee77ffdeee5ebf54928810ccd84d877545aa901a5d7530cf4c662a2cdd35c8c"
+  "tested_qml_sha256": {
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/InlineTray.qml": "c2861464485cc601472ecf6e2aee64b19c69d87194a1e26b21b22b06bdf4b623",
+    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/StatusTrayStyle.qml": "95dc45c11d95c3ee8ed43bf90423bfdce278c6a793b4a0b0528b710c09cd2d5d"
+  },
+  "coverage_limits": "Focused visual validation used the shared QML in Golden Gate on Wayland. Tahoe appearance, X11 and automatic scheduling were not independently exercised for this preview.",
+  "source_sha256": "65317b61282e3897327bdf2181dc5d64102d17bf708c15340ec3191885ce1862"
 }
