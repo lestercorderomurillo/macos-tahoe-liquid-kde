@@ -100,10 +100,15 @@ def installer_themes(source: Path, output: Path, style: str, tint: str, *,
         if (path.suffix.lower() in (".svg", ".png") and path.is_file()
                 and path.stem not in SYSTEM_MENU_ICONS):
             entries[path.stem] = path
-    # The Downloads stack, secondary file managers and both trash states
-    # request place artwork directly from the active Dock theme.
+    # Files requests inode-directory for ordinary folders and distinct names
+    # for XDG user directories. Share their material with the Dock places.
     if style in ("glass", "clear"):
-        for name in ("folder-download", "folder-open", "user-trash", "user-trash-full"):
+        for name in (
+            "folder", "inode-directory", "folder-open", "user-desktop",
+            "folder-documents", "folder-download", "folder-music", "folder-pictures",
+            "folder-publicshare", "folder-templates", "folder-videos",
+            "user-trash", "user-trash-full",
+        ):
             path = source / BASE / "places/scalable" / (name + ".svg")
             if path.is_file():
                 entries[name] = path

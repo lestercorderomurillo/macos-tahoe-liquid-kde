@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.2**. Verified tinted Dock artwork and Downloads in both icon appearances across the eight installer colors. Empty and full Trash retain their neutral artwork. [Evidence and coverage](release-evidence.json).
+**v0.84.3**. Verified that ordinary and XDG user folders in Files use the selected icon tint. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
