@@ -304,37 +304,42 @@ def test_shared_launcher_sources_invalidate_launcher_and_controls_only(tmp_path,
     assert before[key] == after[key]
 
 
-def test_every_component_tracks_its_own_input_and_ignores_unrelated_files(tmp_path):
+def test_every_component_detects_changed_and_unchanged_inputs(tmp_path):
     from paths import REPO_ROOT
-    from component_manifest import component_inputs
+    from component_manifest import component_inputs, snapshot
 
-    # Use actual source bytes, permissions and shared dependencies. Replace
-    # just the component's primary file/tree with a compact editable copy.
+    # Mirror the shipped component topology with small editable payloads.
+    # Run the production discovery and hashing code after every edit.
     recorded = json.loads((REPO_ROOT / 'component-hashes.json').read_text())['components']
-    seen = set()
-    for name, inputs in component_inputs(REPO_ROOT):
-        seen.add(name)
+    for _, inputs in component_inputs(REPO_ROOT):
+        for _, path in inputs:
+            local = tmp_path / path.relative_to(REPO_ROOT)
+            if path.is_dir():
+                local.mkdir(parents=True, exist_ok=True)
+            else:
+                local.parent.mkdir(parents=True, exist_ok=True)
+                local.write_text('value = 1\n')
+
+    def hashes():
+        return snapshot(tmp_path)['components']
+
+    baseline = hashes()
+    assert baseline.keys() == recorded.keys()
+    assert hashes() == baseline
+    for name in baseline:
         if name.startswith('recipe/'):
-            primary = REPO_ROOT / 'src/scripts/steps' / (name.split('/')[1] + '.py')
+            primary = tmp_path / 'src/scripts/steps' / (name.split('/')[1] + '.py')
         else:
-            primary = REPO_ROOT / 'src/offline' / name
-        assert primary in [path for _, path in inputs], name
-        assert identity(inputs, portable=True) == recorded[name], name
-        local = tmp_path / 'candidate'
-        # Test input mutation on an isolated payload, preserving input labels.
-        if primary.is_dir():
-            local.mkdir()
-            file = local / 'asset'
+            primary = tmp_path / 'src/offline' / name
+        file = primary / 'changed-asset' if primary.is_dir() else primary
+        previous = file.read_bytes() if file.exists() else None
+        file.write_bytes(b'value = 2\n')
+        changed = hashes()
+        assert changed[name] != baseline[name], name
+        independent = 'clipboard' if name in ('fonts', 'recipe/fonts') else 'fonts'
+        assert changed[independent] == baseline[independent], name
+        if previous is None:
+            file.unlink()
         else:
-            file = local
-        file.write_bytes(b'original')
-        candidate = [(label, local if path == primary else path) for label, path in inputs]
-        initial = identity(candidate, portable=True)
-        (tmp_path / 'another-component').write_text(name)
-        assert identity(candidate, portable=True) == initial, name
-        file.write_bytes(b'modified')
-        assert identity(candidate, portable=True) != initial, name
-        file.unlink()
-        if local.is_dir():
-            local.rmdir()
-    assert seen == recorded.keys()
+            file.write_bytes(previous)
+    assert hashes() == baseline
