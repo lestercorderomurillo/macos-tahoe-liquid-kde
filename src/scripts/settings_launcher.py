@@ -47,13 +47,9 @@ def install(source):
                "Name[es]=Ajustes de Liquid KDE\nIcon=preferences-system\n"
                f'Exec="{quoted}"\nTryExec={binary}\nCategories=Settings;DesktopSettings;\n{DESKTOP_MARKER}\n')
     atomic_write(desktop, content.encode())
-    # Golden Gate normally prunes superseded snapshots. Keep the one still
-    # referenced by the installed launcher until it is updated or removed.
-    record = _installed_source_record()
-    if (source / ".golden-gate-ready").is_file():
-        atomic_write(record, os.fsencode(source) + b"\n")
-    else:
-        record.unlink(missing_ok=True)
+    # The panel can still open the installed edition if its shortcut disappears.
+    # Golden Gate also uses this record to protect its active staged checkout.
+    atomic_write(_installed_source_record(), os.fsencode(source) + b"\n")
 
 
 def uninstall():

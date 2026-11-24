@@ -11,7 +11,8 @@ import plasmoid_settings
 import system_menu_preferences
 
 
-def test_installed_settings_records_its_golden_gate_source(tmp_path, monkeypatch):
+@pytest.mark.parametrize("golden_gate", [False, True])
+def test_installed_settings_records_its_source(tmp_path, monkeypatch, golden_gate):
     import settings_launcher
 
     monkeypatch.setattr(Path, "home", lambda: tmp_path)
@@ -20,7 +21,8 @@ def test_installed_settings_records_its_golden_gate_source(tmp_path, monkeypatch
     source = tmp_path / "snapshot"
     source.mkdir()
     (source / "installer").write_text("")
-    (source / ".golden-gate-ready").write_text("local-development\n")
+    if golden_gate:
+        (source / ".golden-gate-ready").write_text("local-development\n")
     settings_launcher.install(source)
     record = tmp_path / "state/mac-tahoe-liquid-kde/settings-source"
     assert record.read_text().strip() == str(source)

@@ -24,7 +24,11 @@ PlasmaCore.Action {
     readonly property P5Support.DataSource launcher: P5Support.DataSource {
         engine: "executable"
         property bool available: false
-        readonly property string program: "sh -c 'exec \"$HOME/.local/bin/mac-tahoe-settings\" \"$@\"' settings "
+        readonly property string program: "sh -c 'launcher=\"$HOME/.local/bin/mac-tahoe-settings\"; "
+            + "if [ -x \"$launcher\" ] && \"$launcher\" --available; then exec \"$launcher\" \"$@\"; fi; "
+            + "IFS= read -r source < \"${XDG_STATE_HOME:-$HOME/.local/state}/mac-tahoe-liquid-kde/settings-source\" || exit 1; "
+            + "[ -x \"$source/installer\" ] || exit 1; [ \"$1\" != --available ] || exit 0; "
+            + "exec \"$source/installer\" --mode=settings \"$@\"' settings "
         readonly property string check: program + "--available"
         connectedSources: [check]
         onNewData: (source, data) => {
