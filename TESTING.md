@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.8**. Prevent an auto-hidden Dock from being painted on its previous monitor during a pointer handoff. [Evidence and coverage](release-evidence.json).
+**v0.84.9**. Update tray and calendar contrast from the active Plasma Activity on each monitor. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

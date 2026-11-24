@@ -1,14 +1,23 @@
 {
-  "version": "0.84.8",
+  "version": "0.84.9",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Prevent an auto-hidden Dock from being painted on its previous monitor during a pointer handoff.",
+  "scope": "Update tray and calendar contrast from the active Plasma Activity on each monitor.",
   "checks": [
     {
-      "command": "python -m pytest -q tests/test_dock_always_visible.py tests/test_dock_follows_screen_dwell.py (Tahoe shared implementation)",
+      "command": "python -m pytest -q tests/test_wallpaper_activity.py in the primary Arch SDK (Plasma 6.8.3), private Wayland session, two outputs and two Activities",
       "result": "passed"
     }
   ],
-  "captures": [],
-  "coverage_limits": "Script regression checks simulate two outputs. The updated effect was loaded on a two-monitor KDE Wayland desktop. Physical pointer motion was not independently observed.",
-  "source_sha256": "9458e0f4602f45fb018a0b6a40b018476ae702faa1b47e4a964de666b24ec181"
+  "captures": [
+    {
+      "path": "docs/evidence/activity-contrast/preview.png",
+      "sha256": "20e676b6a5463e31f87c93990545a228fe6ac5610f7db66724bf0bd9b1d2dd38",
+      "reviewed": true,
+      "source_commit": "1d032af7642b438620770e6174bc3b27d9b118e4",
+      "sampler_sha256": "2c003ff850e88842f49e8b1ca1a3c3d04088ddcf594f4b76ef06408f335f2e62",
+      "guest_module_sha256": "be23a4e0aeb203665770cafa20834d67efe1ba22eff1ff0fb6abe669f4741aac"
+    }
+  ],
+  "coverage_limits": "The approved preview shows one of two virtual outputs in a KDE neon guest running Plasma 6.8.1 on Wayland. The first and return frames matched byte for byte. Physical monitors and a separate Golden Gate desktop were not exercised.",
+  "source_sha256": "7fe4ffb695c11f5a5e353477c8cb885207995dbadf6e21efbe46031c43494850"
 }
