@@ -31,12 +31,23 @@ Item {
     }
 
     readonly property Item tray: findTray(applet("org.kde.plasma.systemtray"))
-    TrayStatusMenu {
-        grid: style.tray?.hiddenLayout ?? null
-        overview: !!style.tray && !style.tray.systemTrayState?.activeApplet
-        rows: style.delegates(grid)
+    readonly property Item trayLayout: tray?.visibleLayout.parent ?? null
+    property Item arrow
+    function updateArrow() {
+        arrow = trayLayout?.children.find(child => child.arrowAnimationDuration !== undefined) ?? null;
     }
-    readonly property Item arrow: tray?.visibleLayout.parent?.children.find(child => child.arrowAnimationDuration !== undefined) ?? null
+    onTrayLayoutChanged: Qt.callLater(updateArrow)
+    Connections {
+        target: style.trayLayout
+        function onChildrenChanged() { Qt.callLater(style.updateArrow); }
+    }
+    Loader {
+        active: style.wallpaperTint && !!style.arrow && !!style.tray?.hiddenLayout && !style.tray.vertical
+        sourceComponent: InlineTray {
+            tray: style.tray
+            stockArrow: style.arrow
+        }
+    }
     readonly property Item clock: applet("org.kde.plasma.digitalclock")
 
     Loader {
