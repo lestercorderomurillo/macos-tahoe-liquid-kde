@@ -1370,14 +1370,13 @@ def run_install(argv: list[str],
         return 0 if result else 1
 
     # Standalone --restart just kicks plasmashell. Combined with install
-    # flags it is implicit — the install already ends with restart_plasma.
+    # flags it is implicit in the activation phase.
     if (parsed.restart_only and not parsed.only_mode and not parsed.cli_overrides
             and not parsed.reset_wallpapers):
         banner(read_version())
         step('Restarting Plasma')
         note(tr('Restarts Plasma shell — no install, no config changes'))
-        run_phase("apply", "restart_plasma")
-        return 0
+        return 0 if run_phase("apply", "restart_plasma") else 1
 
     tracker = RunTracker("install", argv, str(feat.get("theme_mode", "auto")))
     tracker.start()
