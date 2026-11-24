@@ -18,11 +18,11 @@ def fingerprint(path: Path, *, portable: bool = False) -> str:
     def visit(item, relative):
         metadata = item.lstat()
         mode = stat.S_IMODE(metadata.st_mode)
-        if item.is_symlink():
+        if stat.S_ISLNK(metadata.st_mode):
             kind, data = 'link', os.readlink(item).encode()
-        elif item.is_dir():
+        elif stat.S_ISDIR(metadata.st_mode):
             kind, data = 'directory', b''
-        elif item.is_file():
+        elif stat.S_ISREG(metadata.st_mode):
             kind, data = 'file', b''
         else:
             raise ValueError(f'Unsupported component entry: {item}')
@@ -66,6 +66,9 @@ class Receipt:
     def current(self, outputs):
         try:
             record = json.loads(self.path.read_text())
+            if (not isinstance(record, dict) or record.get('schema') != 1
+                    or record.get('component') != self.component or record.get('key') != self.key):
+                return False
             paths = list(outputs)
             return bool(paths) and record == self.record(paths)
         except (OSError, ValueError, TypeError):

@@ -451,8 +451,9 @@ def _start_plasma(systemd: bool) -> bool:
 def restart_plasma() -> None:
 
     print(tr('  …  Restarting Plasma'), end="\r", flush=True)
-    # let panels created by the layout script fully initialise
-    time.sleep(6)
+    # Only newly created panels need time to save their initial state.
+    if feat_enabled("LAYOUT"):
+        time.sleep(6)
 
     restart_command = user_service_manager_command(
         "restart", "plasma-plasmashell")

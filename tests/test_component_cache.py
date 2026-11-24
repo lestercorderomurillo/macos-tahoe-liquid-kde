@@ -82,6 +82,8 @@ def test_icon_reinstall_skips_generation_but_changed_choices_and_damage_repair(m
                     ignore=shutil.ignore_patterns('__pycache__'))
     offline = source / 'src/offline/icons'
     offline.mkdir(parents=True)
+    for name in component_manifest.ICON_NOTICES:
+        (source / name).write_text(name)
     artwork = offline / 'base.svg'
     artwork.write_text('original artwork')
     monkeypatch.setattr(paths, 'REPO_ROOT', source)
@@ -120,6 +122,13 @@ def test_icon_reinstall_skips_generation_but_changed_choices_and_damage_repair(m
     generator.write_text(generator.read_text() + '\nRENDERER_REVISION = 2\n')
     icons.install()
     assert len(calls) == 6
+    switcher = scripts / 'theme_switch.py'
+    switcher.write_text(switcher.read_text() + '\n# scheduled login fix\n')
+    icons.install()
+    assert len(calls) == 6
+    (source / 'NOTICE').write_text('revised notice')
+    icons.install()
+    assert len(calls) == 7
 
 
 def test_icon_failure_never_marks_success(monkeypatch, tmp_path):
@@ -293,3 +302,39 @@ def test_shared_launcher_sources_invalidate_launcher_and_controls_only(tmp_path,
         assert before[key] != after[key]
     key = 'plasmoids/org.kde.mac-tahoe-liquid-kde.trashcan'
     assert before[key] == after[key]
+
+
+def test_every_component_tracks_its_own_input_and_ignores_unrelated_files(tmp_path):
+    from paths import REPO_ROOT
+    from component_manifest import component_inputs
+
+    # Use actual source bytes, permissions and shared dependencies. Replace
+    # just the component's primary file/tree with a compact editable copy.
+    recorded = json.loads((REPO_ROOT / 'component-hashes.json').read_text())['components']
+    seen = set()
+    for name, inputs in component_inputs(REPO_ROOT):
+        seen.add(name)
+        if name.startswith('recipe/'):
+            primary = REPO_ROOT / 'src/scripts/steps' / (name.split('/')[1] + '.py')
+        else:
+            primary = REPO_ROOT / 'src/offline' / name
+        assert primary in [path for _, path in inputs], name
+        assert identity(inputs, portable=True) == recorded[name], name
+        local = tmp_path / 'candidate'
+        # Test input mutation on an isolated payload, preserving input labels.
+        if primary.is_dir():
+            local.mkdir()
+            file = local / 'asset'
+        else:
+            file = local
+        file.write_bytes(b'original')
+        candidate = [(label, local if path == primary else path) for label, path in inputs]
+        initial = identity(candidate, portable=True)
+        (tmp_path / 'another-component').write_text(name)
+        assert identity(candidate, portable=True) == initial, name
+        file.write_bytes(b'modified')
+        assert identity(candidate, portable=True) != initial, name
+        file.unlink()
+        if local.is_dir():
+            local.rmdir()
+    assert seen == recorded.keys()

@@ -8,14 +8,10 @@ import os
 import re
 from pathlib import Path
 
+from accent_colors import COLORS
 from launcher_defaults import edition_name
 from theme_switch import WALLPAPER_PAIRS as WALLPAPERS
 
-COLORS = {
-    "blue": "#007aff", "purple": "#af52de", "pink": "#ff2d55",
-    "red": "#ff3b30", "orange": "#ff9500", "yellow": "#ffcc00",
-    "green": "#28cd41", "gray": "#8e8e93",
-}
 GLASS_PRESETS = json.loads((Path(__file__).resolve().parents[1] /
     "offline/kwin-effects/acrylic-glass/src/presets.json").read_text())
 ENUMS = {

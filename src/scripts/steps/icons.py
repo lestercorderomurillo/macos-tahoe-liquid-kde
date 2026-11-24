@@ -2,6 +2,7 @@
 MacTahoeLiquidKde-Icons.tar.zst into ~/.local/share/icons. The tarball is
 rebuilt offline via _assemble() (maintainer refresh workflow, see below)."""
 
+from accent_colors import COLORS
 from localization import tr
 from log import status
 
@@ -51,11 +52,8 @@ def install() -> None:
     from log import errors, warn
     from utils import check_cancelled
     options = selected()
-    scripts = REPO_ROOT / "src/scripts"
-    from component_manifest import dependencies
-    inputs = [("icons", OFFLINE_DIR)] + [
-        (str(path.relative_to(scripts)), path)
-        for path in dependencies(scripts / "steps/icons.py", scripts)]
+    from component_manifest import icon_recipe_inputs
+    inputs = [("icons", OFFLINE_DIR), *icon_recipe_inputs(REPO_ROOT)]
     receipt = None
     def outputs():
         names = list(_THEME_NAMES)
@@ -64,7 +62,7 @@ def install() -> None:
             names += [f"MacTahoeLiquidKde-Icons-{style}-{mode}" for mode in ("Light", "Dark")]
         return [DEST_DIR / name for name in names]
     try:
-        key = identity(inputs, {key: options.get(key) for key in ("icons", "color")})
+        key = identity(inputs, (options.get("icons"), COLORS[options["color"]] if options else None))
         receipt = Receipt("icons", key)
         if receipt.current(outputs()):
             check_cancelled()
@@ -111,7 +109,7 @@ def _install_payload() -> None:
         from interface_icons import apply_interface_icons
         apply_interface_icons(staging)
 
-        from installer_choices import selected, COLORS
+        from installer_choices import selected
         options = selected()
         if options:
             from icon_toolset import installer_themes

@@ -11,33 +11,62 @@ from component_cache import identity
 from paths import REPO_ROOT
 
 
-def dependencies(entry, scripts):
-    """Follow repository-local Python imports, including function-local imports."""
+def _imports(path, scripts):
+    result = set()
+    for node in ast.walk(ast.parse(path.read_text())):
+        if isinstance(node, ast.Import):
+            names = [alias.name for alias in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            names = [node.module] + [node.module + '.' + alias.name for alias in node.names]
+        else:
+            continue
+        for name in names:
+            candidate = scripts / (name.replace('.', '/') + '.py')
+            if candidate.is_file():
+                result.add(candidate)
+    return result
+
+
+def dependencies(entry, scripts, *, resolved_inputs=(), imports=None):
+    """Follow local imports. Reuse parsed modules only within one snapshot."""
+    if imports is None:
+        imports = {}
     pending, seen = [Path(entry)], set()
     while pending:
         path = pending.pop()
-        if path in seen or not path.is_file():
+        if path in seen or path in resolved_inputs or not path.is_file():
             continue
         seen.add(path)
-        for node in ast.walk(ast.parse(path.read_text())):
-            names = []
-            if isinstance(node, ast.Import):
-                names = [alias.name for alias in node.names]
-            elif isinstance(node, ast.ImportFrom) and node.module:
-                names = [node.module] + [node.module + '.' + alias.name for alias in node.names]
-            for name in names:
-                candidate = scripts / (name.replace('.', '/') + '.py')
-                if candidate.is_file():
-                    pending.append(candidate)
+        if path not in imports:
+            imports[path] = _imports(path, scripts)
+        pending.extend(imports[path] - seen)
     return sorted(seen)
 
 
-def snapshot(root=REPO_ROOT):
+ICON_NOTICES = ("NOTICE", "LICENSING.md", "THIRD_PARTY_NOTICES.md")
+
+
+def icon_recipe_inputs(root):
+    # The installer passes the resolved style and tint to the generator.
+    # Other wizard choices, including the scheduler, do not affect its output.
+    scripts = root / "src/scripts"
+    recipe = dependencies(scripts / "steps/icons.py", scripts,
+                          resolved_inputs=(scripts / "installer_choices.py",))
+    return [(str(path.relative_to(root)), path) for path in recipe] + [
+        (name, root / name) for name in ICON_NOTICES]
+
+
+def component_inputs(root):
     scripts = root / 'src/scripts'
     offline = root / 'src/offline'
-    components = {}
+    imports = {}
     mapping = {'aurorae': 'window_decorations', 'plasma-theme': 'plasma_theme',
                'look-and-feel': 'global_theme', 'layouts': 'layout',
+               'desktop-widgets': 'plasmoids', 'kwin-scripts': 'layout',
+               'mac-tahoe-liquid-kde-theme.service': 'theme_switch',
+               'mac-tahoe-liquid-kde-theme.timer': 'theme_switch',
+               'mac-tahoe-liquid-kde-oled.service': 'oled_care',
+               'mac-tahoe-liquid-kde-oled.timer': 'oled_care',
                'menu-style': 'kvantum', 'kvantum-engine': 'kvantum', 'plasma-env': 'globalmenu'}
     for path in sorted(offline.iterdir()):
         entries = sorted(path.iterdir()) if path.name in ('plasmoids', 'kwin-effects') else [path]
@@ -47,9 +76,13 @@ def snapshot(root=REPO_ROOT):
             if path.name == 'plasmoids':
                 step = 'globalmenu' if payload.name.endswith('globalmenu') else 'plasmoids'
             elif path.name == 'kwin-effects':
-                step = 'acrylic_glass'
-            recipe = dependencies(scripts / 'steps' / (step + '.py'), scripts)
-            inputs = [(name, payload)] + [(str(p.relative_to(root)), p) for p in recipe]
+                step = 'layout' if payload.name == 'dock-flush' else 'acrylic_glass'
+            inputs = [(name, payload)]
+            if path.name == 'icons':
+                inputs.extend(icon_recipe_inputs(root))
+            else:
+                recipe = dependencies(scripts / 'steps' / (step + '.py'), scripts, imports=imports)
+                inputs.extend((str(p.relative_to(root)), p) for p in recipe)
             if path.name == 'desktop-widgets':
                 for filename in ('desktop_widget_settings.py', 'weather_panel_settings.py'):
                     source = scripts / filename
@@ -80,14 +113,22 @@ def snapshot(root=REPO_ROOT):
             ):
                 inputs.append(('desktop-controls-native',
                                path / 'org.kde.mac.tahoe.liquid.taskmanager' / 'launcher'))
-            components[name] = identity(inputs, portable=True)
+            yield name, inputs
     # Components with no offline payload still have independently audited recipes.
     for entry in sorted((scripts / 'steps').glob('*.py')):
         if entry.name.startswith('_'):
             continue
-        components['recipe/' + entry.stem] = identity([
-            (str(p.relative_to(root)), p) for p in dependencies(entry, scripts)], portable=True)
-    return dict(schema=1, components=components)
+        if entry.stem == 'icons':
+            yield 'recipe/icons', icon_recipe_inputs(root)
+        else:
+            yield 'recipe/' + entry.stem, [
+                (str(p.relative_to(root)), p) for p in dependencies(entry, scripts, imports=imports)]
+
+
+def snapshot(root=REPO_ROOT):
+    return dict(schema=1, components={
+        name: identity(inputs, portable=True) for name, inputs in component_inputs(root)
+    })
 
 
 def main():
