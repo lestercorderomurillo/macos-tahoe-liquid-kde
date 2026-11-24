@@ -5,12 +5,12 @@ After=plasma-plasmashell.service graphical-session.target
 PartOf=graphical-session.target
 
 [Service]
-Type=oneshot
+Type=exec
 ExecStart=%h/.local/bin/mac-tahoe-theme-switch scheduled
 # Retry when the scheduled job is waiting for a display or clock sync.
 RestartForceExitStatus=75
 RestartSec=15s
-TimeoutStartSec=3min
+RuntimeMaxSec=3min
 
 [Install]
 WantedBy=plasma-plasmashell.service
