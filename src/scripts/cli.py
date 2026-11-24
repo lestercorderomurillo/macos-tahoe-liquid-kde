@@ -1024,7 +1024,7 @@ def _check_deps(feat: dict[str, object]) -> bool:
         if p not in missing:
             ok(p)
     if missing:
-        warn(tr('installing missing: {value1}', value1=', '.join(missing)))
+        note(tr('installing missing: {value1}', value1=', '.join(missing)))
         transaction_ok = pkg_sync_install(*missing)
         check_cancelled()
         if not transaction_ok:

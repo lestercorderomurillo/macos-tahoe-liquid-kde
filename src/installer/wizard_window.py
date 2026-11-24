@@ -1385,6 +1385,11 @@ class InstallerWindow(OpaqueSurface):
             dirs = [str(path) for path in (Path(config), self.appearance_state.parent) if path.is_dir()]
             self.config_watcher = QFileSystemWatcher(dirs, self)
             self.config_watcher.directoryChanged.connect(lambda _: self.config_timer.start())
+        self.transition_bus = None
+        self.transition_screens = {}
+        self.transition_dismissed = False
+        app.screenAdded.connect(self.cover_screen)
+        app.screenRemoved.connect(self.uncover_screen)
         bridge.runningChanged.connect(self.refresh_window_controls)
         bridge.finished.connect(self.finished)
         bridge.progressChanged.connect(self.refresh_progress)
@@ -3511,14 +3516,58 @@ class InstallerWindow(OpaqueSurface):
         self.remaining_label = self.label("")
         self.remaining_label.setObjectName("detail")
         self.body.addWidget(self.remaining_label)
+        if self.action == "install":
+            self.body.addWidget(self.label("Your screen may flicker briefly as your new desktop appearance is applied."))
         self.details()
         self._eta_timer.start()
         self.refresh_progress()
+
+    def cover_screen(self, screen):
+        if (screen in self.transition_screens or self.page != "progress"
+                or self.action != "install" or self.transition_dismissed
+                or self.bridge.summary.active not in ("install", "apply", "verify")):
+            return
+        if self.transition_bus is None:
+            # The screensaver releases this presentation inhibitor when its
+            # dedicated D-Bus connection closes, including on an installer crash.
+            from PyQt6.QtDBus import QDBusConnection, QDBusMessage
+            self.transition_bus = QDBusConnection.connectToBus(
+                QDBusConnection.BusType.SessionBus, "installer-desktop-transition")
+            inhibit = QDBusMessage.createMethodCall(
+                "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit")
+            inhibit.setArguments([self.edition, self.t("Applying appearance…")])
+            self.transition_bus.asyncCall(inhibit)
+        flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
+        cover = QWidget(None, flags)
+        cover.setScreen(screen)
+        cover.setGeometry(screen.geometry())
+        cover.setStyleSheet("background: black;")
+        cover.setCursor(Qt.CursorShape.BlankCursor)
+        escape = QShortcut(QKeySequence("Esc"), cover)
+        escape.activated.connect(self.dismiss_transition)
+        self.transition_screens[screen] = cover
+        cover.showFullScreen()
+
+    def uncover_screen(self, screen):
+        cover = self.transition_screens.pop(screen, None)
+        if cover is not None:
+            cover.hide()
+            cover.deleteLater()
+
+    def dismiss_transition(self):
+        self.transition_dismissed = True
+        for screen in list(self.transition_screens):
+            self.uncover_screen(screen)
+        if self.transition_bus is not None:
+            self.transition_bus.disconnectFromBus(self.transition_bus.name())
+            self.transition_bus = None
 
     def refresh_progress(self):
         if self.page != "progress" or not hasattr(self, "progress"):
             self._eta_timer.stop()
             return
+        for screen in QApplication.screens():
+            self.cover_screen(screen)
         fraction = max(0.0, min(1.0, self.bridge.progress))
         self.progress.setValue(round(fraction * 1000))
         self.progress.setAccessibleDescription(self.bridge.currentStep)
@@ -3642,6 +3691,7 @@ class InstallerWindow(OpaqueSurface):
             if self.page != "error":
                 self.action = "uninstall" if self.page == "uninstall" else "install"
             self.bridge.setChoices(validate(self.choices))
+            self.transition_dismissed = False
             self.bridge.summary = ProgressModel(self.action)
             self._operation_started = time.monotonic()
             self._details_expanded = False
@@ -3652,6 +3702,10 @@ class InstallerWindow(OpaqueSurface):
         self.render()
 
     def finished(self, code):
+        reveal_desktop = bool(self.transition_screens) and code == 0
+        if reveal_desktop:
+            self.showMinimized()
+        self.dismiss_transition()
         self._operation_code = code
         self._operation_elapsed = time.monotonic() - self._operation_started if self._operation_started is not None else 0
         self._eta_timer.stop()

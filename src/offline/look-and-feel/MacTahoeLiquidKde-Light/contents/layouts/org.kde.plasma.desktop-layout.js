@@ -111,7 +111,7 @@ dock.alignment = "center";
 dock.lengthMode = "fit";
 dock.floating = true;
 dock.opacity = "translucent";
-dock.hiding = "autohide";
+dock.hiding = "windowsgobelow";
 dock.height = 68;
 
 if (typeof userLauncherTypes !== "undefined") {

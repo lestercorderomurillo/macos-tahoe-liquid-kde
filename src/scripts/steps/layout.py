@@ -267,18 +267,23 @@ def configure_dock() -> None:
     mode = choices.get("dock_visibility", dock_visibility())
     script = """
     (function () {
+        let found = false;
         for (const panel of panels()) {
             if (panel.screen >= 0 && panel.screen < screenCount && panel.location === "bottom" && panel.widgets().some(
                     widget => widget.type === "org.kde.mac.tahoe.liquid.icontasks")) {
                 panel.hiding = MODE;
+                found = true;
             }
         }
+        if (REQUIRED && !found) throw new Error("Tahoe Dock is missing");
     })()
     """.replace("MODE", json.dumps(plasma_dock_hiding(mode)))
+    required = choices.get("reset_layout", False)
+    script = script.replace("REQUIRED", json.dumps(required))
     if (DATA_HOME / "plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.downloads/metadata.json").is_file():
         script += "\n" + offline("layouts/migrate-downloads.js").read_text()
     if not _evaluate_layout_script(script):
-        warn(tr("Dock preset update failed"))
+        (fail if required else warn)(tr("Dock preset update failed"))
         return
     if choices:
         preference = dock_visibility_preference()
