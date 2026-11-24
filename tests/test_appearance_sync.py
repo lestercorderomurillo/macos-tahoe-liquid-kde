@@ -1,6 +1,7 @@
 """Executable state transitions for native/manual/scheduled appearance changes."""
 import json
 from pathlib import Path
+from subprocess import CompletedProcess
 
 import pytest
 import theme_switch as ts
@@ -8,7 +9,6 @@ import theme_switch as ts
 
 @pytest.fixture
 def desktop(sandbox, monkeypatch):
-    monkeypatch.setenv('WAYLAND_DISPLAY', 'wayland-test')
     config = sandbox / '.config'
     monkeypatch.setenv('XDG_RUNTIME_DIR', str(sandbox))
     monkeypatch.setattr(ts, 'wait_for_clock_sync', lambda **_: True)
@@ -36,11 +36,21 @@ def test_login_catchup_retries_before_sampling_desktop(desktop, monkeypatch):
     before = ts._read_appearance_state()
     monkeypatch.setattr(ts, 'detect_mode_by_time', lambda: 'light')
     monkeypatch.delenv('DISPLAY', raising=False)
-    monkeypatch.delenv('WAYLAND_DISPLAY')
+    monkeypatch.delenv('WAYLAND_DISPLAY', raising=False)
     assert ts.main(['scheduled']) == 75
     assert ts._read_appearance_state() == before
     assert calls == ['dark']
     monkeypatch.setenv('WAYLAND_DISPLAY', 'wayland-test')
+    run_user = ts._run_user
+    owner = False
+    def bus_reply(cmd, **kwargs):
+        if cmd[-1] == 'string:org.kde.plasmashell':
+            return CompletedProcess(cmd, 0, stdout='boolean ' + str(owner).lower())
+        return run_user(cmd, **kwargs)
+    monkeypatch.setattr(ts, '_run_user', bus_reply)
+    assert ts.main(['scheduled']) == 75
+    assert ts._read_appearance_state() == before
+    owner = True
     assert ts.main(['scheduled']) == 0
     assert calls == ['dark', 'light']
     assert ts._read_appearance_state()['preference'] == 'auto'
@@ -48,6 +58,7 @@ def test_login_catchup_retries_before_sampling_desktop(desktop, monkeypatch):
 
 def test_native_manual_overrides_auto_and_stale_timer_cannot_revert(desktop, monkeypatch):
     native, calls, _ = desktop
+    monkeypatch.setattr(ts, '_scheduled_desktop_ready', lambda: True)
     monkeypatch.setattr(ts, 'detect_mode_by_time', lambda: 'light')
     assert ts.select_appearance('auto') == 0
     native('dark')

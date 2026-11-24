@@ -237,6 +237,21 @@ def _has_session_dbus() -> bool:
     return _HAS_DBUS
 
 
+def _scheduled_desktop_ready() -> bool:
+    if not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
+        return False
+    # A compositor socket can exist before plasmashell has initialized.
+    # Ask the bus for the owner without activating anything during login.
+    try:
+        reply = _run_user(
+            ["dbus-send", "--session", "--print-reply", "--dest=org.freedesktop.DBus",
+             "/org/freedesktop/DBus", "org.freedesktop.DBus.NameHasOwner",
+             "string:org.kde.plasmashell"], timeout=2, capture=True)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return reply.returncode == 0 and "boolean true" in reply.stdout
+
+
 def _sync_session_env_runtime_dir() -> None:
     """Recover the session bus/Wayland socket from the user runtime dir.
 
@@ -2334,7 +2349,7 @@ def main(argv: list[str]) -> int:
     if mode == "scheduled":
         # A persistent timer can catch up before Plasma imports its display
         # into the user manager. Leave the saved selection intact on retry.
-        if not (os.environ.get("DISPLAY") or os.environ.get("WAYLAND_DISPLAY")):
+        if not _scheduled_desktop_ready():
             return 75
         state = _read_appearance_state()
         if (state.get("preference") == "auto"
