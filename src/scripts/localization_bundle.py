@@ -8,7 +8,7 @@ def standalone_source(source: str) -> str:
     root = Path(__file__).parent
     catalogs = {
         code: json.loads((root / "locales" / f"{code}.json").read_text(encoding="utf-8"))
-        for code in ("pt_BR", "de", "fr", "it")
+        for code in ("pt_BR", "de", "fr", "it", "ru")
     }
     runtime = (root / "localization.py").read_text(encoding="utf-8")
     embedded = (

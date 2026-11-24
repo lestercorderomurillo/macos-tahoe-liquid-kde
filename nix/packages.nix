@@ -6,7 +6,8 @@ let
   offline = ../src/offline;
   locale = if lib.hasPrefix "pt_BR" language then "pt_BR"
     else if lib.hasPrefix "de" language then "de" else if lib.hasPrefix "fr" language then "fr"
-    else if builtins.match "it([_.@-].*)?" language != null then "it" else "en";
+    else if builtins.match "it([_.@-].*)?" language != null then "it"
+    else if builtins.match "ru([_.@-].*)?" language != null then "ru" else "en";
   passwordPrompt = if locale == "en" then "Password:"
     else (builtins.fromJSON (builtins.readFile (../src/scripts/locales + "/${locale}.json")))."Password:";
   meta = {

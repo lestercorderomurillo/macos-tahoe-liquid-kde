@@ -59,7 +59,7 @@ def test_uninstall_disables_before_unload_and_reconfigures_after_removal(
     assert len(removed) == 8
     assert plugin_dir / "kwin/effects/configs/kwin_liquidglass_config.so" in removed
     assert plugin_dir / "kwin-x11/effects/configs/kwin_liquidglass_config.so" in removed
-    assert {p.parts[-3] for p in removed if p.suffix == ".mo"} == {"pt_BR", "de", "fr", "it"}
+    assert {p.parts[-3] for p in removed if p.suffix == ".mo"} == {"pt_BR", "de", "fr", "it", "ru"}
     text = kwinrc.read_text()
     assert "[Effect-liquidglass]" not in text
     assert "[Windows]\nPlacement=Smart" in text

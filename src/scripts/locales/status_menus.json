@@ -86,5 +86,17 @@
     "Battery Settings…": "Impostazioni della batteria…",
     "Show hidden icons": "Mostra le icone nascoste",
     "Hide hidden icons": "Nascondi le icone aggiuntive"
+  },
+  "ru": {
+    "Known Networks": "Известные сети",
+    "Other Networks": "Другие сети",
+    "Wi-Fi Settings…": "Настройки Wi-Fi…",
+    "Low Power": "Энергосбережение",
+    "High Power": "Высокая производительность",
+    "Automatic": "Автоматически",
+    "Power Source: Power Adapter": "Источник питания: адаптер питания",
+    "Power Source: Battery": "Источник питания: аккумулятор",
+    "Energy Mode": "Режим энергопотребления",
+    "Battery Settings…": "Настройки аккумулятора…"
   }
 }

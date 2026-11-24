@@ -381,7 +381,7 @@ Una apariencia coordinada desde el inicio hasta el apagado, con desbloqueo integ
 - **Integración de aplicaciones:** Navegación al estilo Finder en Nautilus, integración de menús GTK y tema de Firefox con copias de seguridad de los perfiles.
 - **Información del sistema y arranque:** Ventana de información del sistema y pantalla de arranque opcional a juego con el tema.
 - **Instalación y recuperación:** Instalador gráfico con los recursos del tema, actualizaciones y copias de los ajustes que se pueden restaurar al desinstalar.
-- **Idiomas:** Instalador en inglés, español, chino simplificado, portugués de Brasil, alemán y francés. Los widgets de Plasma también están traducidos.
+- **Idiomas:** Instalador en inglés, español, chino simplificado, portugués de Brasil, alemán, francés, italiano y ruso. Los widgets de Plasma también están traducidos.
 - **Compatibilidad:** Plasma 6.6–6.8 en sistemas basados en Arch o Fedora, openSUSE, Debian y KDE neon.
 - **Funciones opcionales:** Protección de paneles OLED y compatibilidad experimental con NixOS y Home Manager.
 
@@ -414,9 +414,9 @@ Para liberar espacio en disco conservando tu copia de Git y el trabajo local:
 | 🇩🇪 Alemán | ![Disponible](https://img.shields.io/badge/Available-1A7F37) |
 | 🇫🇷 Francés | ![Disponible](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italiano | ![Disponible](https://img.shields.io/badge/Available-1A7F37) |
+| 🇷🇺 Ruso | ![Disponible](https://img.shields.io/badge/Available-1A7F37) |
 | 🇯🇵 Japonés | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
 | 🇰🇷 Coreano | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
-| 🇷🇺 Ruso | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
 | 🇸🇦 Árabe | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
 | 🇮🇳 Hindi | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
 | 🇳🇱 Neerlandés | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |

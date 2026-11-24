@@ -425,7 +425,7 @@ for row in _ROWS.splitlines():
         CATALOGS[code][source] = text
 
 
-for code in ("fr", "it"):
+for code in ("fr", "it", "ru"):
     CATALOGS[code] = {source: translate(source, code) for source in CATALOGS["de"]}
 
 def wizard_translate(message, language):

@@ -3414,7 +3414,7 @@ class InstallerWindow(OpaqueSurface):
     def operation_text(self, message):
         # Existing locales use the English diagnostic view.
         from localization import effective_language
-        return self.t(message) if effective_language(self.bridge.language) == "it" else message
+        return self.t(message) if effective_language(self.bridge.language) in ("it", "ru") else message
 
     def details(self):
         self.details_toggle = QPushButton(self.operation_text("Show details"))
