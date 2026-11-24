@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.10**. Settings now records Meta alone as the launcher activation shortcut. [Evidence and coverage](release-evidence.json).
+**v0.84.11**. Settings uses Finder glass, sidebar rows and window borders, with new Top bar and Dock illustrations. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

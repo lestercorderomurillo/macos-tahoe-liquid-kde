@@ -1,26 +1,31 @@
 {
-  "version": "0.84.10",
+  "version": "0.84.11",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Settings now records Meta alone as the launcher activation shortcut.",
+  "scope": "Settings uses Finder glass, sidebar rows and window borders, with new Top bar and Dock illustrations.",
   "checks": [
     {
-      "command": "python -m pytest -q tests/test_plasmoid_settings.py (12 passed)",
+      "command": "Compared Finder and Settings in light and dark mode in isolated KDE neon Wayland guests with each edition\u2019s defaults. Captured the approved replacement artwork in Golden Gate Settings.",
       "result": "passed"
     },
     {
-      "command": "QEMU guest keyboard input in KDE neon Plasma 6.8.1 Wayland: Settings saved Meta and Meta+F11, cleared the binding, and opened Launchpad with a tap of Meta. Verified the launcher widget action separately with Meta removed from the desktop-wide action.",
-      "result": "passed"
-    },
-    {
-      "command": "Qt offscreen primary SDK: Meta, Meta+F11 and clearing the same shortcut editor",
+      "command": "Built the Acrylic Glass effect with KWin SDKs 6.6.5, 6.7.4 and 6.8.2. Loaded the candidate X11 module into a private KWin session and captured the Settings frame and its blur region.",
       "result": "passed"
     }
   ],
+  "approval": "Maintainer approved the Settings candidate after the final artwork preview.",
   "captures": [],
-  "coverage_limits": "Guest keyboard and launcher activation were exercised on Wayland with the Golden Gate launcher layout. Other distributions and X11 were not independently exercised for keyboard activation.",
-  "source_sha256": "4edd51abf68c1a360d0eff3292a61b026d64b3df020474d816d14b33229234ec",
-  "tested_source": {
-    "commit": "cc148f95",
-    "wizard_window_sha256": "2770efac5b1870826c06c40e1dad4c6e34147889ce0028534d837c02e4b64f44"
-  }
+  "preview_commit": "e699ba30",
+  "preview_sha256": {
+    "golden-dark-finder.png": "7d2e292c49bef5523e69d80bc831226d1fb9866529832469e5a00c52c5fc564b",
+    "golden-dark-settings.png": "b3dbc3b88a51bfbc0ed2577093ce23c9009d43b42dcc86f44ca680b44a14ab08",
+    "golden-light-finder.png": "90e705ddaec5420106eaefa6680dbe9bef0062fe3a4a586b28d3ccd083031ff5",
+    "golden-light-settings.png": "726c3dbf227248cd99e231d5acf5436f9fc40dea53cda85a30c1517c0f354115",
+    "golden-settings-artwork.png": "9e87ded93b86f7f65af4ed7b667271552a7a6c9f68c4b3a00a6de3e3cefa7211",
+    "tahoe-dark-finder.png": "c5938407491a6fec8eb71f26596015b4b08422c82e7b999f0c49b40607b1bf29",
+    "tahoe-dark-settings.png": "4b08a1a241396914b624171612a7cbc079b8fdae199518f3f5c294eae452a7da",
+    "tahoe-light-finder.png": "7dbe3f19cc7d01598d1d8529d56fe509fe5f65fd06874c8da6b5bd251dad7fb1",
+    "tahoe-light-settings.png": "4066caea0cb0365d1456358900bec475bcef5fb8b0adaf4a6587df4307cf5025"
+  },
+  "coverage_limits": "Wayland comparison frames precede the artwork swap. The final artwork frame shows the dark Golden Gate Dock page. The isolated X11 capture covers Settings rendering. The integrated release preserves the separately shipped launcher shortcut editor.",
+  "source_sha256": "6ee77ffdeee5ebf54928810ccd84d877545aa901a5d7530cf4c662a2cdd35c8c"
 }
