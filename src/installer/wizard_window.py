@@ -1100,7 +1100,6 @@ class InstallerWindow(OpaqueSurface):
         self.layout.addLayout(self.main_row, 1)
         self.sidebar = QFrame()
         self.sidebar.setObjectName("settingsSidebar")
-        self.sidebar.setFixedWidth(166)
         self.sidebar_layout = QVBoxLayout(self.sidebar)
         self.sidebar_layout.setContentsMargins(0, 0, 1, 0)
         self.sidebar_layout.setSpacing(0)
@@ -1110,22 +1109,22 @@ class InstallerWindow(OpaqueSurface):
         sidebar.setSpacing(1)
         self.sidebar_layout.addWidget(navigation, 1)
         self.search = SettingsSearch()
-        self.search.setFont(relative_font(self, .8))
+        self.search.setFont(relative_font(self))
         self.search.textChanged.connect(self.filter_settings)
         self.search.returnPressed.connect(self.open_search_result)
         sidebar.addWidget(self.search)
         sidebar.addSpacing(8)
         self.section_list = QVBoxLayout()
-        self.section_list.setSpacing(1)
+        self.section_list.setSpacing(3)
         sidebar.addLayout(self.section_list)
         self.section_buttons = {}
         for page, (_, symbol, colors, _) in SETTINGS_PAGES.items():
             button = QPushButton()
             button.setObjectName("section-" + page)
             button.setProperty("navigation", "section")
-            button.setFont(relative_font(self, .81, QFont.Weight.Medium))
+            button.setFont(relative_font(self, 1, QFont.Weight.Medium))
             button.setIconSize(QSize(16, 16))
-            button.setMinimumHeight(25)
+            button.setMinimumHeight(32)
             button.setIcon(settings_icon(symbol, colors))
             button.setCheckable(True)
             button.clicked.connect(lambda _, target=page: self.navigate_settings(target))
@@ -1176,11 +1175,11 @@ class InstallerWindow(OpaqueSurface):
         self.settings_review = GlassButton()
         self.settings_review.setObjectName("settingsReview")
         self.settings_review.backed = True
-        self.settings_review.setFont(relative_font(self, .78, QFont.Weight.Medium))
+        self.settings_review.setFont(relative_font(self, 1, QFont.Weight.Medium))
         self.settings_review.clicked.connect(self.review_settings_changes)
         add_surface_shadow(self.settings_review, radius=15, offset=0, opacity=78)
         self.settings_title = self.label("")
-        self.settings_title.setFont(relative_font(self, .91, QFont.Weight.Medium))
+        self.settings_title.setFont(relative_font(self, 1, QFont.Weight.Medium))
         toolbar.addWidget(self.settings_title, 1)
         toolbar.addWidget(self.settings_review)
         content_column.addWidget(self.settings_toolbar)
@@ -1283,8 +1282,7 @@ class InstallerWindow(OpaqueSurface):
         self.settings_toolbar.setVisible(self.settings_mode)
         self.footer.setVisible(not self.settings_mode)
         font = QFont(self.settings_font)
-        if not self.settings_mode:
-            font.setPointSizeF(max(8.5, font.pointSizeF() * .96))
+        font.setPointSizeF(max(8.5, font.pointSizeF() * (1.18 if self.settings_mode else .96)))
         self.setFont(font)
         self.find_shortcut.setEnabled(self.settings_mode)
         for shortcut in self.history_shortcuts:
@@ -1293,8 +1291,9 @@ class InstallerWindow(OpaqueSurface):
             self.layout.removeWidget(self.header)
             self.sidebar_layout.insertWidget(0, self.header)
             self.header.show()
-            self.setMinimumSize(700, 425)
-            self.resize(790, 535)
+            available = self.screen().availableGeometry().size()
+            self.setMinimumSize(QSize(700, 425).boundedTo(available))
+            self.resize(QSize(1000, 620).boundedTo(available))
         else:
             self.sidebar_layout.removeWidget(self.header)
             self.layout.insertWidget(0, self.header)
@@ -1474,6 +1473,8 @@ class InstallerWindow(OpaqueSurface):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        if self.settings_mode:
+            self.sidebar.setFixedWidth(min(250, self.width() // 4))
         self.frame_edge.setGeometry(self.rect())
         self.blur_timer.start(0)
 
