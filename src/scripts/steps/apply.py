@@ -462,26 +462,20 @@ def restart_plasma() -> None:
     original_pids = _plasma_pids()
     stopped = not original_pids
 
-    # Ask Plasma to quit through its supported endpoint first so it can flush
-    # panel state. A broken QML teardown is bounded and falls through.
-    if not stopped and have("kquitapp6"):
+    # Let the session manager own the stop/start transaction. Quitting over
+    # D-Bus while systemd supervises the same process can race its automatic
+    # recovery if Qt crashes tearing down old panel windows.
+    restarted_via_systemd = False
+    if not stopped and restart_command is not None:
+        restarted_via_systemd = (
+            # A timed-out client can leave the submitted job running.
+            _run_quick(restart_command).returncode in (0, 124)
+            and _wait_for_old_plasma_exit(original_pids)
+        )
+    if not stopped and not restarted_via_systemd and have("kquitapp6"):
         quit_result = _run_quick(["kquitapp6", "plasmashell"])
         if quit_result.returncode == 0:
             stopped = _wait_for_old_plasma_exit(original_pids)
-
-    # systemd's restart is the second graceful path (SIGTERM + managed start).
-    restarted_via_systemd = False
-    if not stopped and systemd:
-        restart_accepted = (
-            restart_command is not None
-            and _run_quick(restart_command).returncode == 0
-        )
-        # A successful job submission is not proof the wedged old shell went
-        # away.  Require its PID to disappear before trusting the managed
-        # restart; otherwise continue to the bounded hard-stop fallback.
-        restarted_via_systemd = (
-            restart_accepted and _wait_for_old_plasma_exit(original_pids)
-        )
 
     # Keep the proven hard-stop behavior only as the final fallback. OpenRC
     # has no user service manager, so a failed kquitapp6 lands here directly.

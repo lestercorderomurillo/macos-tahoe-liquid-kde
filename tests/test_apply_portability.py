@@ -107,8 +107,8 @@ def _restart_env(monkeypatch, *, systemd=True):
     return calls
 
 
-def test_restart_prefers_kquitapp_and_never_hard_kills_on_success(monkeypatch):
-    calls = _restart_env(monkeypatch)
+def test_openrc_restart_uses_kquitapp_and_never_hard_kills_on_success(monkeypatch):
+    calls = _restart_env(monkeypatch, systemd=False)
     commands = []
     monkeypatch.setattr(
         apply, "_run_quick",
@@ -129,11 +129,12 @@ def test_restart_prefers_kquitapp_and_never_hard_kills_on_success(monkeypatch):
     apply.restart_plasma()
 
     assert commands == [["kquitapp6", "plasmashell"]]
-    assert starts == [True]
+    assert starts == [False]
     assert any(kind == "ok" for kind, _ in calls)
 
 
-def test_restart_uses_systemd_restart_when_kquitapp_fails(monkeypatch):
+@pytest.mark.parametrize("job_result", [0, 124])
+def test_restart_uses_one_managed_restart_when_available(monkeypatch, job_result):
     _restart_env(monkeypatch)
     commands = []
     monkeypatch.setattr(apply, "_wait_for_old_plasma_exit",
@@ -141,8 +142,7 @@ def test_restart_uses_systemd_restart_when_kquitapp_fails(monkeypatch):
 
     def run(command, **kwargs):
         commands.append(command)
-        rc = 1 if command[0] == "kquitapp6" else 0
-        return subprocess.CompletedProcess(command, rc)
+        return subprocess.CompletedProcess(command, job_result)
 
     monkeypatch.setattr(apply, "_run_quick", run)
     monkeypatch.setattr(
@@ -158,10 +158,7 @@ def test_restart_uses_systemd_restart_when_kquitapp_fails(monkeypatch):
 
     apply.restart_plasma()
 
-    assert commands == [
-        ["kquitapp6", "plasmashell"],
-        ["systemctl", "--user", "restart", "plasma-plasmashell"],
-    ]
+    assert commands == [["systemctl", "--user", "restart", "plasma-plasmashell"]]
 
 
 def test_restart_rejects_false_positive_systemd_restart(monkeypatch):
@@ -209,8 +206,8 @@ def test_restart_hard_kills_only_after_both_graceful_paths_fail(monkeypatch):
     apply.restart_plasma()
 
     assert commands[:2] == [
-        ["kquitapp6", "plasmashell"],
         ["systemctl", "--user", "restart", "plasma-plasmashell"],
+        ["kquitapp6", "plasmashell"],
     ]
     assert hard == [True]
     assert starts == [True]
