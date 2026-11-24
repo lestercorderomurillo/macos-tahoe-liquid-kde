@@ -90,7 +90,8 @@ inline QString classify(const QString &resource, const QString &caption, bool do
     if (applet && (name == QStringLiteral("plasmashell") || name == QStringLiteral("org.kde.plasmashell"))) return QStringLiteral("popups");
     if (popup || applet) return QStringLiteral("menus");
     if (name == QStringLiteral("dolphin") || name == QStringLiteral("org.kde.dolphin")
-        || name == QStringLiteral("nautilus") || name == QStringLiteral("org.gnome.nautilus")) return QStringLiteral("finder");
+        || name == QStringLiteral("nautilus") || name == QStringLiteral("org.gnome.nautilus")
+        || name == QStringLiteral("org.kde.mac-tahoe-liquid-kde.settings")) return QStringLiteral("finder");
     return QStringLiteral("general");
 }
 }
