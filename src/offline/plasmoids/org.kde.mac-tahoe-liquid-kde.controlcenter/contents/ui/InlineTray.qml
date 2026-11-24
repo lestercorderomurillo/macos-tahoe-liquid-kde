@@ -7,7 +7,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.mac.tahoe.launcher as Native
 
-RowLayout {
+Item {
     id: strip
     required property Item tray
     required property Item stockArrow
@@ -18,7 +18,8 @@ RowLayout {
     Layout.row: 0
     Layout.column: 1
     Layout.fillHeight: true
-    spacing: 0
+    implicitWidth: controls.implicitWidth
+    implicitHeight: controls.implicitHeight
     visible: icons.count > 0
     onVisibleChanged: if (!visible) revealed = false
 
@@ -44,20 +45,6 @@ RowLayout {
     Binding { target: strip.grid; property: "model"; value: emptyModel }
     Binding { target: strip.grid; property: "cellWidth"; value: strip.tray.visibleLayout.cellWidth }
     Binding { target: strip.grid; property: "cellHeight"; value: Math.max(1, strip.height) }
-    GridView {
-        id: icons
-        Kirigami.Theme.textColor: ink.foreground
-        visible: strip.revealed
-        Layout.fillHeight: true
-        Layout.preferredWidth: Math.min(count * cellWidth, strip.Screen.width / 3)
-        flow: GridView.TopToBottom
-        cellWidth: strip.grid.cellWidth
-        cellHeight: strip.grid.cellHeight
-        boundsBehavior: Flickable.StopAtBounds
-        clip: true
-        model: strip.tray.hiddenModel
-        delegate: strip.grid.delegate
-    }
     function glyphs(item: Item): list<Item> {
         if (item instanceof Kirigami.Icon) return [item];
         const matches = [];
@@ -89,23 +76,46 @@ RowLayout {
         }
     }
 
-    QQC.ToolButton {
-        id: toggle
-        Layout.preferredWidth: strip.stockArrow.implicitWidth
-        Layout.fillHeight: true
-        checkable: true
-        checked: strip.revealed
-        onClicked: strip.revealed = !strip.revealed
-        Accessible.name: strip.revealed ? i18n("Hide hidden icons") : i18n("Show hidden icons")
-        background: PanelCapsule { visible: toggle.hovered || toggle.visualFocus }
-        contentItem: Kirigami.Icon {
-            source: strip.revealed ? "arrow-right-symbolic" : "arrow-left-symbolic"
-            isMask: true
-            color: ink.foreground
-            implicitWidth: 16
-            implicitHeight: 16
+    // Panel Colorizer attaches a background to the strip. Only the icons
+    // and their toggle should occupy cells in the tray layout.
+    RowLayout {
+        id: controls
+        anchors.fill: parent
+        spacing: 0
+
+        GridView {
+            id: icons
+            Kirigami.Theme.textColor: ink.foreground
+            visible: strip.revealed
+            Layout.fillHeight: true
+            Layout.preferredWidth: Math.min(count * cellWidth, strip.Screen.width / 3)
+            flow: GridView.TopToBottom
+            cellWidth: strip.grid.cellWidth
+            cellHeight: strip.grid.cellHeight
+            boundsBehavior: Flickable.StopAtBounds
+            clip: true
+            model: strip.tray.hiddenModel
+            delegate: strip.grid.delegate
         }
-        padding: 2
-        Native.WallpaperInk { id: ink; item: toggle; base: toggle.Kirigami.Theme.textColor }
+
+        QQC.ToolButton {
+            id: toggle
+            Layout.preferredWidth: strip.stockArrow.implicitWidth
+            Layout.fillHeight: true
+            checkable: true
+            checked: strip.revealed
+            onClicked: strip.revealed = !strip.revealed
+            Accessible.name: strip.revealed ? i18n("Hide hidden icons") : i18n("Show hidden icons")
+            background: PanelCapsule { visible: toggle.hovered || toggle.visualFocus }
+            contentItem: Kirigami.Icon {
+                source: strip.revealed ? "arrow-right-symbolic" : "arrow-left-symbolic"
+                isMask: true
+                color: ink.foreground
+                implicitWidth: 16
+                implicitHeight: 16
+            }
+            padding: 2
+            Native.WallpaperInk { id: ink; item: toggle; base: toggle.Kirigami.Theme.textColor }
+        }
     }
 }
