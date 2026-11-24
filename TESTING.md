@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.14**. The scheduled appearance switch waits for Plasma at login and retries when the desktop becomes available. [Evidence and coverage](release-evidence.json).
+**v0.84.15**. The shared installer avoids duplicate native compilation and reuses verified icon assets across unrelated fixes. [Timings, evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

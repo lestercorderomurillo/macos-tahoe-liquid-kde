@@ -1,24 +1,90 @@
 {
-  "version": "0.84.14",
+  "version": "0.84.15",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "The scheduled appearance switch waits for Plasma at login and retries when the desktop becomes available.",
+  "scope": "The shared installer avoids duplicate native compilation and reuses verified icon assets across unrelated fixes.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_appearance_sync.py tests/test_clock_sync.py (42 passed)",
+      "command": "python3 src/scripts/component_manifest.py before building; tests/test_component_cache.py exercises unchanged and independently modified inputs across all 71 component keys, icon recipe isolation, output damage and failed installs.",
       "result": "passed"
     },
     {
-      "command": "KDE neon Wayland guest, scheduled service before Plasma at 09:00, inspect saved Auto and exit 75, start display manager, observe automatic retry at 09:00:15 and light desktop.",
+      "command": "python3 -m pytest -q tests/test_plasmoids_step.py tests/test_globalmenu_step.py tests/test_component_cache.py (30 passed); tests/test_storage_cleanup.py tests/test_icons_step.py tests/test_owned_assets.py tests/test_helpers_step.py tests/test_component_cache.py (45 passed).",
+      "result": "passed"
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_icon_toolset.py (52 passed). Generate both default icon overlays from the same bundled archive and compare the complete inventory, then compare generation metadata excluding generator hashes.",
+      "result": "passed"
+    },
+    {
+      "command": "Golden Gate ./install --prepare with explicit candidate source, compare staged defaults and component scripts, then python3 -m pytest -q tests/test_bootstrap.py tests/test_local_updates.py (101 passed).",
+      "result": "passed"
+    },
+    {
+      "command": "Run sudo -n env MTTKDE_NO_CONFIRM=1 MAC_TAHOE_NO_UPDATE_CHECK=true src/scripts/installer_backend.py install --wizard-options <recorded choices> after uninstalling the prepared image. Reinstall with reset_layout=false. Delete the installed launcher plugin and change the switcher source, then repeat and inspect installed outputs and icon reuse.",
       "result": "passed"
     }
   ],
-  "approval": "Maintainer requested release after reviewing the morning login fix.",
+  "approval": "Maintainer requested optimization of both installation and reinstallation. The performance changes preserve generated artwork.",
   "captures": [],
-  "preview_commit": "81d1c0c68fd1780a9b475f0cfa48a674a49dc7de",
-  "preview_sha256": {
-    "login-light.png": "a2d5bd26c49b88641b4bd36f4f94c453c1278c528639776dc7faf7a33a2685ee"
+  "baseline_commit": "1ff71089d673bf4e6f577159f3ccbbd363a1613d",
+  "qualified_commit": "8c7ff4777996ad7fee7e869008a0244916c1ead4",
+  "component_manifest_sha256": "78290331f9d9790543d3e9c0eb90a34312af7bb419ead6c772133a5adcc24f6a",
+  "icon_equivalence": {
+    "total": 13542,
+    "identical_entries": 13540,
+    "provenance_only": [
+      "MacTahoeLiquidKde-Icons-Regular-Dark/generation.json",
+      "MacTahoeLiquidKde-Icons-Regular-Light/generation.json"
+    ],
+    "seconds": [
+      42.21217647699996,
+      36.7312806230002
+    ]
   },
-  "installed_switcher_sha256": "39cea298363703b3f5f1e183f5dd4f6ab1ac911e413269a5e48dbff5ec1b3031",
-  "coverage_limits": "The morning login reproduction used the shared switcher with the Golden Gate wallpaper in KDE neon on Wayland. X11 and a separate Tahoe desktop were not exercised.",
-  "source_sha256": "037580b48b6210825f430565410acc4e137b6fae3d3f8706a04d0a8870f99b38"
+  "timing_seconds": {
+    "baseline": {
+      "install": 231.721,
+      "reinstall": 132.387
+    },
+    "candidate": {
+      "install": 205.354,
+      "reinstall": 133.553
+    }
+  },
+  "wizard_choices": {
+    "appearance": "auto",
+    "icons": "regular",
+    "icon_appearance": "auto",
+    "color": "blue",
+    "wallpaper": "golden",
+    "wallpaper_explicit": false,
+    "wallpaper_path": "",
+    "launcher": "golden",
+    "panel": true,
+    "dock": true,
+    "reset_layout": false,
+    "acrylic_glass": true,
+    "rounded_corners": true,
+    "shadows": "medium",
+    "fonts": true,
+    "firefox": true,
+    "window_controls": "glassy",
+    "button_position": "left",
+    "files": "nautilus",
+    "nautilus_bookmarks": true,
+    "plymouth": true,
+    "glass_style": "official",
+    "oled_care": false,
+    "oled_interval": 5,
+    "oled_max_shift": 8,
+    "desktop_widgets": true,
+    "dock_visibility": "autohide",
+    "dock_appearance": "auto",
+    "dock_apps": [],
+    "dock_apps_source": "native",
+    "dock_add_flathub": false
+  },
+  "initial_layout_reset": true,
+  "coverage_limits": "One wall-clock sample per operation and version in disposable KDE neon Wayland guests with four vCPUs, 8 GiB RAM and the Golden Gate defaults. The reported install and reinstall timings each ran with one guest active on the host. The kernel, SDK and prepared dependency set were the same, and ccache was absent. Timings exclude GUI interaction, release checks, wrapper staging and provisioning. Other distros and a separate Tahoe desktop were not timed.",
+  "source_sha256": "45400cc036218fbb04600c9e8e87b9bcd928a76b269393b43198166b72fe074a"
 }
