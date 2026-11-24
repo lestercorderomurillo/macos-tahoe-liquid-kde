@@ -3,7 +3,7 @@
   <img src="src/installer/assets/glass-tux-tahoe-d9301a4b323e.png" alt="Tahoe · Glass Tux" width="180" height="180">
 </p>
 
-<h1 align="center">L’apparence et l’expérience de macOS Tahoe sur KDE pour Linux</h1>
+<h1 align="center">Shell macOS Tahoe pour KDE sous Linux</h1>
 
 <p align="center">
   <a href="README.md" lang="en" hreflang="en">🇺🇸 English</a> ·
@@ -128,7 +128,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 ![Fonctionnalités et captures](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Tahoe Finder (Alpha)
+### Finder (Alpha)
 
 Navigation de fichiers de style Finder avec le verre Tahoe.
 
@@ -150,7 +150,7 @@ Navigation de fichiers de style Finder avec le verre Tahoe.
 
 <br>
 
-### Tahoe Launchpad (Alpha)
+### Launchpad (Alpha)
 
 Trouvez des applications, parcourez les catégories et gardez vos favoris à portée de main.
 
@@ -161,7 +161,7 @@ Trouvez des applications, parcourez les catégories et gardez vos favoris à por
 
 <br>
 
-### Tahoe Dock (Alpha)
+### Dock (Alpha)
 
 Réfraction du verre, agrandissement au survol, bulles rouges de comptage des notifications et masquage automatique.
 
@@ -267,7 +267,7 @@ Réfraction du verre, agrandissement au survol, bulles rouges de comptage des no
 
 <br>
 
-### Tahoe Shell (Alpha)
+### Shell (Alpha)
 
 Les menus de l’application suivent la fenêtre active. Le menu système donne accès aux réglages et aux commandes de session.
 
@@ -278,7 +278,7 @@ Les menus de l’application suivent la fenêtre active. Le menu système donne 
 
 <br>
 
-### Tahoe Calendrier (Alpha)
+### Calendrier (Alpha)
 
 Ouvrez l’horloge du panneau pour afficher le mois sur fond de verre. Utilisez la molette ou les flèches pour changer de mois et la touche Début pour revenir au mois en cours.
 
@@ -289,7 +289,7 @@ Ouvrez l’horloge du panneau pour afficher le mois sur fond de verre. Utilisez 
 
 <br>
 
-### Tahoe Centre de contrôle (Alpha)
+### Centre de contrôle (Alpha)
 
 Wi-Fi, son, luminosité et notifications dans un menu en verre. Le bouton d’apparence affiche un soleil en mode clair, une lune en mode sombre et un cercle bicolore en mode automatique.
 
@@ -312,7 +312,7 @@ Wi-Fi, son, luminosité et notifications dans un menu en verre. Le bouton d’ap
 
 <br>
 
-### Tahoe Notifications (Alpha)
+### Notifications (Alpha)
 
 Bannières en verre et historique groupé avec actions des applications et réponses directes.
 
@@ -325,7 +325,7 @@ Bannières en verre et historique groupé avec actions des applications et répo
 
 <br>
 
-### Tahoe Historique du presse-papiers (Alpha)
+### Historique du presse-papiers (Alpha)
 
 Retrouvez et réutilisez le texte et les images copiés directement depuis Launchpad.
 
@@ -336,7 +336,7 @@ Retrouvez et réutilisez le texte et les images copiés directement depuis Launc
 
 <br>
 
-### Tahoe Informations système (Alpha)
+### Informations système (Alpha)
 
 Informations sur le matériel, les logiciels et le thème avec une teinte de texte adaptative.
 
@@ -347,7 +347,7 @@ Informations sur le matériel, les logiciels et le thème avec une teinte de tex
 
 <br>
 
-### Tahoe Thème Plasma (Alpha)
+### Thème Plasma (Alpha)
 
 Menus et fenêtres contextuelles translucides avec des couleurs claires et sombres coordonnées.
 
@@ -358,7 +358,7 @@ Menus et fenêtres contextuelles translucides avec des couleurs claires et sombr
 
 <br>
 
-### Tahoe Écran de démarrage (Alpha)
+### Écran de démarrage (Alpha)
 
 Une apparence assortie du démarrage à l’arrêt, avec déverrouillage intégré des disques chiffrés LUKS2.
 

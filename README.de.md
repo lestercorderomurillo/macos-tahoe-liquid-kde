@@ -3,7 +3,7 @@
   <img src="src/installer/assets/glass-tux-tahoe-d9301a4b323e.png" alt="Tahoe · Glass Tux" width="180" height="180">
 </p>
 
-<h1 align="center">macOS Tahoe: Optik und Bediengefühl für KDE unter Linux</h1>
+<h1 align="center">macOS Tahoe Shell für KDE unter Linux</h1>
 
 <p align="center">
   <a href="README.md" lang="en" hreflang="en">🇺🇸 English</a> ·
@@ -128,7 +128,7 @@ Code-Mitwirkende und Personen, die Fehler in Tahoe und Golden Gate melden:
 
 ![Funktionen und Bildschirmfotos](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Tahoe Finder (Alpha)
+### Finder (Alpha)
 
 Dateiverwaltung im Finder-Stil mit Tahoe-Glas.
 
@@ -150,7 +150,7 @@ Dateiverwaltung im Finder-Stil mit Tahoe-Glas.
 
 <br>
 
-### Tahoe Launchpad (Alpha)
+### Launchpad (Alpha)
 
 Anwendungen finden, Kategorien durchsuchen und Favoriten griffbereit halten.
 
@@ -161,7 +161,7 @@ Anwendungen finden, Kategorien durchsuchen und Favoriten griffbereit halten.
 
 <br>
 
-### Tahoe Dock (Alpha)
+### Dock (Alpha)
 
 Glasbrechung, Vergrößerung beim Überfahren, rote Benachrichtigungszähler und automatisches Ausblenden.
 
@@ -267,7 +267,7 @@ Glasbrechung, Vergrößerung beim Überfahren, rote Benachrichtigungszähler und
 
 <br>
 
-### Tahoe Shell (Alpha)
+### Shell (Alpha)
 
 Die Anwendungsmenüs folgen dem aktiven Fenster. Das Systemmenü öffnet Einstellungen und Sitzungsaktionen.
 
@@ -278,7 +278,7 @@ Die Anwendungsmenüs folgen dem aktiven Fenster. Das Systemmenü öffnet Einstel
 
 <br>
 
-### Tahoe Kalender (Alpha)
+### Kalender (Alpha)
 
 Öffne die Uhr in der Kontrollleiste, um den Monat auf Glas anzuzeigen. Wechsle mit dem Mausrad oder den Pfeiltasten den Monat. Mit Pos1 gelangst du zum aktuellen Monat.
 
@@ -289,7 +289,7 @@ Die Anwendungsmenüs folgen dem aktiven Fenster. Das Systemmenü öffnet Einstel
 
 <br>
 
-### Tahoe Kontrollzentrum (Alpha)
+### Kontrollzentrum (Alpha)
 
 WLAN, Klang, Helligkeit und Benachrichtigungen in einem Glasmenü. Die Schaltfläche für das Erscheinungsbild zeigt eine Sonne im hellen Modus, einen Mond im dunklen Modus und einen zweifarbigen Kreis im Automatikmodus.
 
@@ -312,7 +312,7 @@ WLAN, Klang, Helligkeit und Benachrichtigungen in einem Glasmenü. Die Schaltfl�
 
 <br>
 
-### Tahoe Benachrichtigungen (Alpha)
+### Benachrichtigungen (Alpha)
 
 Gläserne Banner und ein gruppierter Verlauf unterstützen App-Aktionen und direkte Antworten.
 
@@ -325,7 +325,7 @@ Gläserne Banner und ein gruppierter Verlauf unterstützen App-Aktionen und dire
 
 <br>
 
-### Tahoe Zwischenablageverlauf (Alpha)
+### Zwischenablageverlauf (Alpha)
 
 Kopierte Texte und Bilder direkt im Launchpad finden und wiederverwenden.
 
@@ -336,7 +336,7 @@ Kopierte Texte und Bilder direkt im Launchpad finden und wiederverwenden.
 
 <br>
 
-### Tahoe Systeminformationen (Alpha)
+### Systeminformationen (Alpha)
 
 Hardware-, Software- und Designdetails mit dynamischer Textfarbe.
 
@@ -347,7 +347,7 @@ Hardware-, Software- und Designdetails mit dynamischer Textfarbe.
 
 <br>
 
-### Tahoe Plasma-Design (Alpha)
+### Plasma-Design (Alpha)
 
 Durchscheinende Menüs und Popups mit abgestimmten hellen und dunklen Farben.
 
@@ -358,7 +358,7 @@ Durchscheinende Menüs und Popups mit abgestimmten hellen und dunklen Farben.
 
 <br>
 
-### Tahoe Startbildschirm (Alpha)
+### Startbildschirm (Alpha)
 
 Ein abgestimmtes Erscheinungsbild vom Start bis zum Herunterfahren mit integrierter Entsperrung LUKS2-verschlüsselter Laufwerke.
 

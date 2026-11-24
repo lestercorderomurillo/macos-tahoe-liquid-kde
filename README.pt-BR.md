@@ -3,7 +3,7 @@
   <img src="src/installer/assets/glass-tux-tahoe-d9301a4b323e.png" alt="Tahoe · Glass Tux" width="180" height="180">
 </p>
 
-<h1 align="center">O visual e a experiência do macOS Tahoe no KDE para Linux</h1>
+<h1 align="center">Shell do macOS Tahoe para KDE no Linux</h1>
 
 <p align="center">
   <a href="README.md" lang="en" hreflang="en">🇺🇸 English</a> ·
@@ -128,7 +128,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ![Recursos e capturas](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Tahoe Finder (Alpha)
+### Finder (Alpha)
 
 Navegação de arquivos no estilo Finder com o vidro Tahoe.
 
@@ -150,7 +150,7 @@ Navegação de arquivos no estilo Finder com o vidro Tahoe.
 
 <br>
 
-### Tahoe Launchpad (Alpha)
+### Launchpad (Alpha)
 
 Encontre aplicativos, explore categorias e mantenha seus favoritos ao alcance.
 
@@ -161,7 +161,7 @@ Encontre aplicativos, explore categorias e mantenha seus favoritos ao alcance.
 
 <br>
 
-### Tahoe Dock (Alpha)
+### Dock (Alpha)
 
 Refração do vidro, ampliação ao passar o cursor, bolhas vermelhas com contagem de notificações e ocultação automática.
 
@@ -267,7 +267,7 @@ Refração do vidro, ampliação ao passar o cursor, bolhas vermelhas com contag
 
 <br>
 
-### Tahoe Shell (Alpha)
+### Shell (Alpha)
 
 Os menus do aplicativo acompanham a janela ativa. O menu do sistema dá acesso às configurações e aos controles de sessão.
 
@@ -278,7 +278,7 @@ Os menus do aplicativo acompanham a janela ativa. O menu do sistema dá acesso �
 
 <br>
 
-### Tahoe Calendário (Alpha)
+### Calendário (Alpha)
 
 Abra o relógio do painel para ver o mês sobre vidro. Use a roda do mouse ou as setas para mudar de mês e pressione Home para voltar ao mês atual.
 
@@ -289,7 +289,7 @@ Abra o relógio do painel para ver o mês sobre vidro. Use a roda do mouse ou as
 
 <br>
 
-### Tahoe Central de Controle (Alpha)
+### Central de Controle (Alpha)
 
 Wi-Fi, som, brilho e notificações em um menu de vidro. O botão de aparência mostra um sol no modo claro, uma lua no escuro e um círculo bicolor no automático.
 
@@ -312,7 +312,7 @@ Wi-Fi, som, brilho e notificações em um menu de vidro. O botão de aparência 
 
 <br>
 
-### Tahoe Notificações (Alpha)
+### Notificações (Alpha)
 
 Banners de vidro e histórico agrupado com ações dos aplicativos e respostas diretas.
 
@@ -325,7 +325,7 @@ Banners de vidro e histórico agrupado com ações dos aplicativos e respostas d
 
 <br>
 
-### Tahoe Histórico da área de transferência (Alpha)
+### Histórico da área de transferência (Alpha)
 
 Encontre e reutilize textos e imagens copiados diretamente pelo Launchpad.
 
@@ -336,7 +336,7 @@ Encontre e reutilize textos e imagens copiados diretamente pelo Launchpad.
 
 <br>
 
-### Tahoe Informações do sistema (Alpha)
+### Informações do sistema (Alpha)
 
 Detalhes de hardware, software e tema com cor de texto adaptativa.
 
@@ -347,7 +347,7 @@ Detalhes de hardware, software e tema com cor de texto adaptativa.
 
 <br>
 
-### Tahoe Tema Plasma (Alpha)
+### Tema Plasma (Alpha)
 
 Menus e janelas pop-up translúcidos com cores claras e escuras coordenadas.
 
@@ -358,7 +358,7 @@ Menus e janelas pop-up translúcidos com cores claras e escuras coordenadas.
 
 <br>
 
-### Tahoe Tela de inicialização (Alpha)
+### Tela de inicialização (Alpha)
 
 Uma aparência coordenada da inicialização ao desligamento, com desbloqueio integrado de unidades criptografadas com LUKS2.
 

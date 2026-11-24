@@ -3,7 +3,7 @@
   <img src="src/installer/assets/glass-tux-tahoe-d9301a4b323e.png" alt="Tahoe · Glass Tux" width="180" height="180">
 </p>
 
-<h1 align="center">macOS Tahoe Look &amp; Feel for KDE Linux</h1>
+<h1 align="center">macOS Tahoe Shell for KDE Linux</h1>
 
 <p align="center">
   <a href="README.md" lang="en" hreflang="en" aria-current="page">🇺🇸 English</a> ·
@@ -136,7 +136,7 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Tahoe Dock with Multicolor Support (Alpha)
+### Dock with Multicolor Support (Alpha)
 
 Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
@@ -146,7 +146,7 @@ Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 
 <br>
 
-### Tahoe Shell (Alpha)
+### Shell (Alpha)
 
 File, Edit and the other application menus follow the active window. Open the system menu for settings and session controls.
 
@@ -167,7 +167,7 @@ the theme color.
 
 <br>
 
-### Tahoe Launchpad (Alpha)
+### Launchpad (Alpha)
 
 Find apps, browse categories and keep your favorites within reach.
 
@@ -178,7 +178,7 @@ Find apps, browse categories and keep your favorites within reach.
 
 <br>
 
-### Tahoe Control Center (Alpha)
+### Control Center (Alpha)
 
 Wi-Fi, Bluetooth, sound, brightness and notifications in one glass menu. The appearance button shows a sun for Light, a moon for Dark and a split circle for Automatic.
 
@@ -189,7 +189,7 @@ Wi-Fi, Bluetooth, sound, brightness and notifications in one glass menu. The app
 
 <br>
 
-### Tahoe Notifications (Alpha)
+### Notifications (Alpha)
 
 Glass notification banners and grouped history with app actions and reply support.
 
@@ -205,7 +205,7 @@ Glass notification banners and grouped history with app actions and reply suppor
 
 <br>
 
-### Tahoe Finder (Alpha)
+### Finder (Alpha)
 
 Finder-style file browsing with Tahoe glass.
 
@@ -216,7 +216,7 @@ Finder-style file browsing with Tahoe glass.
 
 <br>
 
-### Tahoe Calendar (Alpha)
+### Calendar (Alpha)
 
 Open the panel clock to see the month on glass. Scroll or use the arrow keys to browse months. Press Home to return to the current month.
 
@@ -227,7 +227,7 @@ Open the panel clock to see the month on glass. Scroll or use the arrow keys to 
 
 <br>
 
-### Tahoe Bluetooth (Alpha)
+### Bluetooth (Alpha)
 
 Connect paired devices and check their battery level from the menu bar.
 
@@ -236,7 +236,7 @@ Connect paired devices and check their battery level from the menu bar.
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
 </p>
 
-### Tahoe Wi-Fi (Alpha)
+### Wi-Fi (Alpha)
 
 Open the Wi-Fi menu to see available wireless networks. Without a Wi-Fi adapter, or with Wi-Fi off, the menu lists your wired connections followed by a single divider and the Wi-Fi settings link.
 
@@ -247,7 +247,7 @@ Open the Wi-Fi menu to see available wireless networks. Without a Wi-Fi adapter,
 
 <br>
 
-### Tahoe Battery (Alpha)
+### Battery (Alpha)
 
 Open the battery menu to check the charge level and power status.
 
@@ -258,7 +258,7 @@ Open the battery menu to check the charge level and power status.
 
 <br>
 
-### Tahoe Clipboard History (Alpha)
+### Clipboard History (Alpha)
 
 Find and reuse copied text and images directly from Launchpad.
 
@@ -269,7 +269,7 @@ Find and reuse copied text and images directly from Launchpad.
 
 <br>
 
-### Tahoe System Information (Alpha)
+### System Information (Alpha)
 
 Hardware, software and theme details with Adaptive Contrast.
 
@@ -280,7 +280,7 @@ Hardware, software and theme details with Adaptive Contrast.
 
 <br>
 
-### Tahoe Plasma Theme (Alpha)
+### Plasma Theme (Alpha)
 
 Translucent menus and popups with matching light and dark colors.
 
@@ -291,7 +291,7 @@ Translucent menus and popups with matching light and dark colors.
 
 <br>
 
-### Tahoe Boot Splash (Alpha)
+### Boot Splash (Alpha)
 
 A matching look from startup to shutdown, with built-in unlocking for LUKS2-encrypted drives.
 
