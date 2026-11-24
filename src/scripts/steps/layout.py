@@ -327,7 +327,13 @@ def migrate_dock_preset() -> None:
 def _evaluate_layout_with_launchers(
         script_path: Path, pins: list[str], widget_type: str) -> bool:
     script = _layout_script_with_launchers(script_path, pins, widget_type)
-    return script is not None and _evaluate_layout_script(script)
+    if script is None:
+        return False
+    # Capture the outgoing panel appearance immediately before the live edit.
+    # KWin owns the short crossfade and respects disabled desktop animations.
+    qdbus_call("org.kde.KWin", "/org/kde/KWin/BlendChanges",
+               "org.kde.KWin.BlendChanges.start", "120")
+    return _evaluate_layout_script(script)
 
 
 def _restore_pins(pins: list[str], widget_type: str) -> bool:
