@@ -3,6 +3,7 @@
 #include "glassink.h"
 #include "glasssettings.h"
 
+#include <PlasmaActivities/Consumer>
 #include <Plasma/Containment>
 #include <Plasma/Corona>
 #include <QQmlProperty>
@@ -163,6 +164,7 @@ public:
             if (!m_settings.dynamicTinting()) clearSamples();
             schedule();
         });
+        connect(&m_activities, &KActivities::Consumer::currentActivityChanged, this, &PanelInk::schedule);
         connect(panel, &Plasma::Containment::screenChanged, this, &PanelInk::schedule);
         connect(panel->corona(), &Plasma::Corona::screenOwnerChanged, this, &PanelInk::schedule);
         connect(panel->corona(), &Plasma::Corona::containmentAdded, this, &PanelInk::schedule);
@@ -218,8 +220,10 @@ private:
     {
         if (!m_settings.dynamicTinting() || !m_panel || !m_window->screen() || m_window->size().isEmpty()) return;
         Plasma::Containment *desktop = nullptr;
+        const auto currentActivity = m_activities.currentActivity();
         for (auto *containment : m_panel->corona()->containments()) {
             if (containment->containmentType() == Plasma::Containment::Desktop
+                && (containment->activity().isEmpty() || containment->activity() == currentActivity)
                 && int(m_panel->screen()) >= 0 && containment->screen() == m_panel->screen()) {
                 desktop = containment;
                 break;
@@ -284,6 +288,7 @@ private:
     QQuickWindow *m_window;
     QPointer<Plasma::Containment> m_panel, m_desktop;
     QPointer<QObject> m_wallpaper, m_config;
+    KActivities::Consumer m_activities;
     GlassSettings m_settings;
     QTimer m_refresh;
     std::optional<WallpaperSpec> m_requested;
