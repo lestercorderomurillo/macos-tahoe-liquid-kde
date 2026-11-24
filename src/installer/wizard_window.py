@@ -13,11 +13,11 @@ import subprocess
 import time
 
 from PyQt6 import sip
-from PyQt6.QtCore import Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
+from PyQt6.QtCore import Qt, QAbstractAnimation, QEasingCurve, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QPropertyAnimation, QRectF, QSize, QTimer, QUrl
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
-    QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
+    QGraphicsDropShadowEffect, QGraphicsOpacityEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
     QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QStyle, QStyleOptionSpinBox, QTabWidget, QToolButton,
     QVBoxLayout, QWidget,
 )
@@ -1145,9 +1145,8 @@ class ApplyScreen(QWidget):
             QWidget#applyScreen { background: black; }
             QProgressBar { background: #323232; border: 0; border-radius: 3px; }
             QProgressBar::chunk { background: white; border-radius: 3px; }
-            QPushButton { background: black; color: #bdbdbd; padding: 6px 12px;
-                          border: 1px solid #474747; border-radius: 5px; }
-            QPushButton:hover, QPushButton:focus { color: white; border-color: white; }
+            QPushButton { background: transparent; color: #bdbdbd; padding: 6px 12px; border: none; outline: none; }
+            QPushButton:hover, QPushButton:focus { color: white; }
             QPlainTextEdit { background: #101010; color: white; border: 1px solid #424242; }
         """)
         self.bar = QProgressBar()
@@ -1169,7 +1168,26 @@ class ApplyScreen(QWidget):
         layout.setRowStretch(2, 1)
         layout.addWidget(self.bar, 1, 0, Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.log, 0, 0, 3, 1)
-        layout.addWidget(self.toggle, 3, 0, Qt.AlignmentFlag.AlignRight)
+        layout.addWidget(self.toggle, 3, 0, Qt.AlignmentFlag.AlignHCenter)
+
+        opacity = QGraphicsOpacityEffect(self.toggle)
+        opacity.setOpacity(0)
+        self.toggle.setGraphicsEffect(opacity)
+        self.toggle.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
+        self.fade = QPropertyAnimation(opacity, b"opacity", self)
+        self.fade.setDuration(320)
+        self.fade.setStartValue(0.0)
+        self.fade.setEndValue(1.0)
+        self.fade.setEasingCurve(QEasingCurve.Type.InOutSine)
+        self.fade.finished.connect(lambda: self.toggle.setAttribute(
+            Qt.WidgetAttribute.WA_TransparentForMouseEvents, opacity.opacity() == 0))
+        self.idle = QTimer(self)
+        self.idle.setSingleShot(True)
+        self.idle.setInterval(2000)
+        self.idle.timeout.connect(lambda: self.fade_toggle(False))
+        for widget in [self, *self.findChildren(QWidget)]:
+            widget.setMouseTracking(True)
+            widget.installEventFilter(self)
 
         def show_logs(opened):
             self.toggle.setText(wizard.t("Hide logs" if opened else "View logs"))
@@ -1182,6 +1200,27 @@ class ApplyScreen(QWidget):
         self.toggle.toggled.connect(show_logs)
         escape = QShortcut(QKeySequence("Esc"), self)
         escape.activated.connect(lambda: self.toggle.setChecked(False))
+
+    def fade_toggle(self, visible):
+        direction = QAbstractAnimation.Direction.Forward if visible else QAbstractAnimation.Direction.Backward
+        if visible:
+            self.toggle.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)
+        self.fade.setDirection(direction)
+        if (self.fade.state() != QAbstractAnimation.State.Running
+                and self.toggle.graphicsEffect().opacity() != float(visible)):
+            self.fade.start()
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.MouseMove:
+            self.fade_toggle(True)
+            self.idle.start()
+        elif (watched is self.toggle and event.type() == QEvent.Type.FocusIn
+              and event.reason() in (Qt.FocusReason.TabFocusReason, Qt.FocusReason.BacktabFocusReason)):
+            self.idle.stop()
+            self.fade_toggle(True)
+        elif watched is self.toggle and event.type() == QEvent.Type.FocusOut:
+            self.idle.start()
+        return super().eventFilter(watched, event)
 
     def closeEvent(self, event):
         event.ignore()
