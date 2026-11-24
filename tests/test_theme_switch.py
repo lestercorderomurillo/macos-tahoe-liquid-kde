@@ -1830,7 +1830,7 @@ def test_switch_step_does_not_touch_live_user_systemd(sandbox, tmp_path):
 
 
 def test_switch_step_removes_old_watcher_before_replacing_binary(
-        monkeypatch, tmp_path):
+        sandbox, monkeypatch, tmp_path):
     """An upgrade must stop the old process and remove its autostart before
     copying the new switcher."""
     import steps.theme_switch as step
@@ -1868,7 +1868,7 @@ def test_switch_step_removes_old_watcher_before_replacing_binary(
 
 
 def test_pinned_switch_mode_neutralizes_binary_when_cron_cleanup_fails(
-        monkeypatch, tmp_path):
+        sandbox, monkeypatch, tmp_path):
     import steps.theme_switch as step
 
     source = tmp_path / "theme_switch.py"

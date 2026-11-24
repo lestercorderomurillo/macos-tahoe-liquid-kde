@@ -85,10 +85,11 @@ def test_sonoma_keeps_its_pair_for_legacy_wallpaper_state(repo, tmp_path, monkey
     assert theme_switch._wallpaper_path("dark") == offline / "wallpapers/MacHeritage-Sonoma"
 
 
-def test_installed_default_survives_without_checkout(tmp_path, monkeypatch):
+def test_installed_default_survives_without_checkout(sandbox, tmp_path, monkeypatch):
     destination = tmp_path / "bin/mac-tahoe-theme-switch"
     monkeypatch.setattr(step, "BIN_DEST", destination)
     monkeypatch.setattr(step, "SVC_DIR", tmp_path / "systemd")
+    monkeypatch.setattr(step, "AUTOSTART_DIR", sandbox / ".config/autostart")
     monkeypatch.setattr(step, "default_wallpaper", lambda: "MacGoldenGate")
     monkeypatch.setattr(step, "stop_gtk_sync_watcher", lambda: None)
     monkeypatch.setattr(step, "_watcher_pids", lambda: [])
