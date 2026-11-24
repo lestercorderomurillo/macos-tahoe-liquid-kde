@@ -1,18 +1,18 @@
 {
-  "version": "0.84.6",
+  "version": "0.84.7",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Group Acrylic Glass, Dock Motion and Transitions under macOS Liquid KDE in Desktop Effects.",
-  "approval": "Maintainer requested publication after reviewing the Desktop Effects preview.",
+  "scope": "Match installed Settings size, navigation controls, panel groups and sidebar tint to Files.",
+  "approval": "Maintainer requested release after the installed Golden Gate Settings preview.",
   "checks": [
     {
-      "command": "Build the native liquidglass plugin and search for macOS Liquid KDE in KDE Desktop Effects with the three candidate effects available.",
+      "command": "Open installed Golden Gate Settings at the saved Nautilus size of 1743 \u00d7 847 logical pixels and drag its right border to resize to 1415 \u00d7 847.",
       "result": "passed"
     }
   ],
   "captures": [],
-  "approved_tahoe_preview_sha256": {
-    "effects.png": "a2f657091d115e3e7099ccd41f08da29f25ef7aec968779b3303451b219c5b4b"
+  "approved_golden_gate_preview_sha256": {
+    "ventanas.png": "898c311b476c4821d9b82394a98bbe33e6579afcc70bd7ba85d320026be096e3"
   },
-  "coverage_limits": "The preview covers English effect names and descriptions. Golden Gate consumes the same shared metadata.",
-  "source_sha256": "0b027e434c53d638ab28e85c7e1bb126bb824faae37efa8f2414f1a4257f8253"
+  "coverage_limits": "Golden Gate was captured in dark mode under KWin on X11. Tahoe shares the same Settings implementation.",
+  "source_sha256": "6be7ee6d71a69a343b0afe7a0432b5bb68e099f79c4ada3d6ff20b5ae8c11e76"
 }
