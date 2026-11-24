@@ -1,31 +1,18 @@
 {
-  "version": "0.84.2",
+  "version": "0.84.3",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Honor the selected icon material for Dock roles, Downloads and secondary file managers.",
-  "approval": "Maintainer requested publication for every color after reviewing the red Dock previews.",
+  "scope": "Use the selected icon material for ordinary folders and XDG user directories in Files.",
+  "approval": "Maintainer requested release after the dark Files preview was presented.",
   "checks": [
     {
-      "command": "Generated all 6,359 icon names for red in both appearances and checked their aliases, image dimensions and tint coverage.",
-      "result": "passed"
-    },
-    {
-      "command": "Compared alpha coverage of 1,394 unique sources with both generated red variants.",
-      "result": "passed"
-    },
-    {
-      "command": "Rendered 24 representative Dock icons for all eight installer accent presets in both appearances. Verified that only empty and full Trash remain identical across accents.",
-      "result": "passed"
-    },
-    {
-      "command": "Captured and reviewed the tinted Dock in both icon appearances in an isolated KDE neon Wayland guest with macOS Dock role artwork enabled.",
+      "command": "Open the Home grid in Nautilus with generated orange Glass icons and inspect generic and XDG folder artwork.",
       "result": "passed"
     }
   ],
   "captures": [],
   "approved_tahoe_preview_sha256": {
-    "Dark.png": "687109d1297a5989552bed1cb3a2321084d080915a349c69393f29c35735a52f",
-    "Light.png": "09c5ff04eaa71add928d12d2871c82636806eac024a2f7ca2ee9e73682776c45"
+    "Dark.png": "5bb103e408fe74121d5e3e5615b38f394b047ea48a0a10d39e9c7dfca051c9da"
   },
-  "coverage_limits": "The desktop captures show the red preset on KDE neon. Other accents were checked against generated artwork. Golden Gate consumes the same pinned implementation.",
-  "source_sha256": "ab87a91c713e11a23bd2ce2ffcd30bc1a40fafceb159fc436cc4b1e011b1f401"
+  "coverage_limits": "The approved preview shows the orange Glass material in a local isolated Nautilus session. Golden Gate uses the pinned shared implementation.",
+  "source_sha256": "43a2012fb5aa95eb6a171c70de2d626702b50d3eda66861f39aa3906d37f8529"
 }
