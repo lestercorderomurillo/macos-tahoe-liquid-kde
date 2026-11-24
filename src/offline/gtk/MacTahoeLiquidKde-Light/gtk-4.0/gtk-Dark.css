@@ -8129,6 +8129,37 @@ statuspage.compact > scrolledwindow > viewport > box > clamp > box > .title {
   font-size: 18pt;
 }
 
+/* Finder content placeholders keep the file list's text scale. */
+.nautilus-window placesview statuspage > scrolledwindow > viewport > box,
+.nautilus-window statuspage.view > scrolledwindow > viewport > box {
+  margin: 18px 12px;
+  border-spacing: 12px;
+}
+
+.nautilus-window placesview statuspage > scrolledwindow > viewport > box > clamp > box,
+.nautilus-window statuspage.view > scrolledwindow > viewport > box > clamp > box {
+  border-spacing: 6px;
+}
+
+.nautilus-window placesview statuspage > scrolledwindow > viewport > box > clamp > box > .icon:not(:last-child),
+.nautilus-window statuspage.view > scrolledwindow > viewport > box > clamp > box > .icon:not(:last-child) {
+  -gtk-icon-size: 32px;
+  margin-bottom: 2px;
+  color: alpha(currentColor,0.48);
+}
+
+.nautilus-window placesview statuspage > scrolledwindow > viewport > box > clamp > box > .title,
+.nautilus-window statuspage.view > scrolledwindow > viewport > box > clamp > box > .title {
+  font-size: 1em;
+  font-weight: 500;
+  color: alpha(currentColor,0.72);
+}
+
+.nautilus-window placesview statuspage > scrolledwindow > viewport > box > clamp > box > .description,
+.nautilus-window statuspage.view > scrolledwindow > viewport > box > clamp > box > .description {
+  font-size: 0.95em;
+}
+
 .osd .card, .card.osd {
   background-color: alpha(currentColor,0.1);
   color: inherit;
