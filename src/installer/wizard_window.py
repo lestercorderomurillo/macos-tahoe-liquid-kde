@@ -535,6 +535,93 @@ class WindowHeader(QWidget):
             super().mousePressEvent(event)
 
 
+class LauncherShortcutEdit(QKeySequenceEdit):
+    """Qt ignores a modifier pressed on its own. Plasma accepts Meta as a key."""
+
+    _meta_only = False
+    _recorder = None
+
+    def _start_recording(self):
+        if not hasattr(self, "_engine"):
+            # Use the same window-scoped shortcut inhibition as Plasma's editor.
+            # Minimal PyQt installations can still record an unassigned Meta.
+            self._engine = None
+            try:
+                from PyQt6.QtQml import QQmlComponent, QQmlEngine
+            except ImportError:
+                return
+            self._engine = QQmlEngine(self)
+            component = QQmlComponent(self._engine)
+            component.setData(b"""
+                import org.kde.private.kquickcontrols 2.0
+                KeySequenceHelper {
+                    modifierOnlyAllowed: true
+                    modifierlessAllowed: true
+                    multiKeyShortcutsAllowed: true
+                }
+            """, QUrl())
+            if component.isReady():
+                self._recorder = component.create()
+            if self._recorder is not None:
+                self._recorder.setParent(self)
+                self._recorder.gotKeySequence.connect(self._recorded)
+        if self._recorder and not self._recorder.property("isRecording"):
+            window = self.window().windowHandle()
+            self._recorder.setProperty("window", window)
+            window.installEventFilter(self)
+            self._recorder.setProperty("currentKeySequence", self.keySequence())
+            self._recorder.startRecording()
+
+    def _recorded(self, sequence):
+        self.setKeySequence(sequence)
+        self.editingFinished.emit()
+
+    def _finish_recording(self):
+        if self._recorder and self._recorder.property("isRecording"):
+            # Save may be clicked during KDE's wait for a second keystroke.
+            draft = self._recorder.property("currentKeySequence")
+            self._recorder.cancelRecording()
+            if not draft.isEmpty() and draft[draft.count() - 1].key():
+                self.setKeySequence(draft)
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.MouseButtonPress and event.button() == Qt.MouseButton.LeftButton:
+            if isinstance(watched, QLineEdit):
+                self._start_recording()
+        elif (event.type() == QEvent.Type.KeyPress and self._recorder
+              and self._recorder.property("isRecording")
+              and event.keyCombination() in self.finishingKeyCombinations()):
+            # Leave Tab/Backtab to the settings form, as QKeySequenceEdit does.
+            self._finish_recording()
+        return super().eventFilter(watched, event)
+
+    def focusInEvent(self, event):
+        super().focusInEvent(event)
+        if event.reason() in (Qt.FocusReason.MouseFocusReason, Qt.FocusReason.ShortcutFocusReason,
+                              Qt.FocusReason.TabFocusReason, Qt.FocusReason.BacktabFocusReason):
+            self._start_recording()
+
+    def keyPressEvent(self, event):
+        if not event.isAutoRepeat():
+            self._meta_only = (event.key() == Qt.Key.Key_Meta and
+                               not (event.modifiers() & ~Qt.KeyboardModifier.MetaModifier))
+        super().keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        if self._meta_only and event.key() == Qt.Key.Key_Meta and not event.isAutoRepeat():
+            self._meta_only = False
+            self.setKeySequence(QKeySequence(Qt.Key.Key_Meta))
+            self.editingFinished.emit()
+            event.accept()
+            return
+        super().keyReleaseEvent(event)
+
+    def focusOutEvent(self, event):
+        self._finish_recording()
+        self._meta_only = False
+        super().focusOutEvent(event)
+
+
 class SettingsSearch(QLineEdit):
     def __init__(self):
         super().__init__()
@@ -2504,7 +2591,7 @@ class InstallerWindow(OpaqueSurface):
                 buttons.addStretch()
                 buttons.addWidget(save)
             if kind in SHORTCUT_WIDGETS:
-                shortcut = QKeySequenceEdit()
+                shortcut = LauncherShortcutEdit() if kind == "launcher" else QKeySequenceEdit()
                 shortcut.setObjectName("activationShortcut")
                 shortcut.setClearButtonEnabled(True)
                 shortcut.setAccessibleName(self.t("Activation shortcut"))
