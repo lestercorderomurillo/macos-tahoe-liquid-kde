@@ -3324,5 +3324,69 @@
       835
     ],
     "generated_sha256": "dda525a7efc58cd3f5973f919182689b3193cff5015f484cd7da1053aaeb9905"
+  },
+  "launcher-tahoe-light.jpg": {
+    "file": "launcher-tahoe-light-fe7ce4a14d40.jpg",
+    "source": "src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp",
+    "source_sha256": "e9e005b8c0a7d9da0b207253ea4b14c1b88ee4be80e32189d97f27e46adc2f47",
+    "crop": [
+      666,
+      266,
+      716,
+      619
+    ],
+    "sha256": "fe7ce4a14d405b32a77d9e6e917c359144e71a5473582f2510bb72ea9006e86e",
+    "edition": "tahoe",
+    "kind": "launcher-preview",
+    "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
+  },
+  "launcher-tahoe-dark.jpg": {
+    "file": "launcher-tahoe-dark-2e4bb5300286.jpg",
+    "source": "src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp",
+    "source_sha256": "48f5a12fe6a957e3c7539d45522da30921f56af0e3c0514241b394403f04e6d5",
+    "crop": [
+      666,
+      266,
+      716,
+      619
+    ],
+    "sha256": "2e4bb5300286d91d8ab47692aa474a7ab8c33cf01eb7325ce8f330e59b6d9e72",
+    "edition": "tahoe",
+    "kind": "launcher-preview",
+    "source_commit": "2368236ece9096533e702685722f518aa379bc07",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
+  },
+  "launcher-golden-light.jpg": {
+    "file": "launcher-golden-light-ed556f939dc8.jpg",
+    "source": "src/screenshots/previews/readme-golden-gate-light-launcher-7313220bc2be.webp",
+    "source_sha256": "7313220bc2bedffcb446d87104344bcfe858aa336871cc775a3e3be22011b8bd",
+    "crop": [
+      457,
+      157,
+      1134,
+      837
+    ],
+    "sha256": "ed556f939dc810d8cee207e2c2b14c899d2ee2cb38f85ba9df588743eaf3f0ab",
+    "edition": "golden-gate",
+    "kind": "launcher-preview",
+    "source_commit": "ba278ea28a29cbd25ee35293fda6e02b3efe868a",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
+  },
+  "launcher-golden-dark.jpg": {
+    "file": "launcher-golden-dark-63aff75bf4b4.jpg",
+    "source": "src/screenshots/previews/readme-golden-gate-dark-launcher-1e3a163fc520.webp",
+    "source_sha256": "1e3a163fc520fe270ad8d9c82215954f4d0f59ab95824934c4ebbc1c4eece962",
+    "crop": [
+      457,
+      157,
+      1134,
+      837
+    ],
+    "sha256": "63aff75bf4b4853d192c93a9efe368ff7f06272673258f51ba3fc4176cbe2c6c",
+    "edition": "golden-gate",
+    "kind": "launcher-preview",
+    "source_commit": "ba278ea28a29cbd25ee35293fda6e02b3efe868a",
+    "vm_image_sha256": "74004cc15d7180e9b23c93a2c097824853375651b0984f68d9e940c45d461703"
   }
 }

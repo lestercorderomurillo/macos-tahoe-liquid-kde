@@ -838,17 +838,23 @@ os.environ['PATH'] = str(switcher.parent) + ':' + os.environ['PATH']
 window.refresh_settings_appearance()
 assert window.choices['appearance'] == 'light'
 window.select('appearance', 'dark')
+assert window.appearance_process is None and window.choices['appearance'] == 'light'
+assert window.settings_review.text() == window.t('Save')
+window.settings_review.click()
 for _ in range(100):
     if window.appearance_process is None:
         break
     QTest.qWait(10)
 assert window.choices['appearance'] == 'dark' and not window.appearance_error
 window.select('appearance', 'light')
+window.settings_review.click()
 for _ in range(100):
     if window.appearance_process is None:
         break
     QTest.qWait(10)
 assert window.choices['appearance'] == 'dark' and window.appearance_error
+assert window.settings_review.text() == window.t('Save')
+window.select('appearance', 'dark')
 window.navigate_settings('startup')
 assert set(window.panel_frames) == {'boot'}
 window.search.setText('pantalla')

@@ -1,5 +1,6 @@
 {
   "Widgets to install": "Widget da installare",
+  "Screen Configuration": "Configurazione dello schermo",
   "Errors: {count}": "Errori: {count}",
   "Version {current} is up to date.": "La versione {current} è aggiornata.",
   "Kvantum Qt 6 engine v{version}": "Motore Kvantum per Qt 6 (versione {version})",

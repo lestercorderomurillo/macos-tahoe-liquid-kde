@@ -124,9 +124,6 @@ class DesktopWidgetEditor(QWidget):
         heading = QLabel(self.t("Widget settings"))
         heading.setFont(relative_font(parent, .85, QFont.Weight.DemiBold))
         header.addWidget(heading, 1)
-        self.save = GlassButton(self.t("Save"))
-        self.save.clicked.connect(self.save_settings)
-        header.addWidget(self.save)
         layout.addLayout(header)
         self.picker = GlassComboBox()
         self.picker.setAccessibleName(self.t("Widget instance"))
@@ -146,7 +143,7 @@ class DesktopWidgetEditor(QWidget):
         self.tabs.setObjectName("widgetPreferenceTabs")
         layout.addWidget(self.tabs)
         self.status = QLabel()
-        self.status.setObjectName("detail")
+        self.status.setObjectName("saveStatus")
         self.status.setWordWrap(True)
         self.status.hide()
         layout.addWidget(self.status)
@@ -391,12 +388,23 @@ class DesktopWidgetEditor(QWidget):
         self.set_values(values)
         self.message("Style applied. Press Save to keep it.")
 
-    def save_settings(self):
+    def changes(self):
         changes = {key: value for key, value in self.values().items()
                    if value is not None and value != self.baseline[key]}
         shortcut = self.shortcut.keySequence().toString()
         if shortcut != self.shortcut_baseline:
             changes["activationShortcut"] = shortcut
+        return changes
+
+    def has_changes(self):
+        return bool(self.changes()) or any(
+            page.calendar_changed or page.rootObject().property("unsavedChanges")
+            for key, page in self.calendar_providers.items()
+            if key in self.fields["enabledCalendarPlugins"].value())
+
+    def save_settings(self):
+        changes = self.changes()
+        shortcut = self.shortcut.keySequence().toString()
         identifier = self.picker.currentData()
         try:
             if changes:
