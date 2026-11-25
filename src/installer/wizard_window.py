@@ -3419,7 +3419,7 @@ class InstallerWindow(OpaqueSurface):
             (level, label, "", picture(f"window-shadows-{level}-{self.mode}.png", 362, height, crop=crop))
             for level, label in (("none", "None"), ("soft", "Soft"),
                                  ("medium", "Medium"), ("hard", "Hard"))
-        ], columns=4 if compact else 2, compact=True, preview_height_limit=46 if compact else None)
+        ], columns=4 if self.settings_mode or compact else 2, compact=True, preview_height_limit=46 if compact else None)
 
     def page_fonts(self):
         row = QHBoxLayout()
