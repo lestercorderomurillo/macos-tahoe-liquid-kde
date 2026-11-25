@@ -768,6 +768,10 @@ class CheckOption(QCheckBox):
         painter.translate(self.content_margin, 0)
         accent = QColor(self.window().accent)
         y = (self.height()-16)/2
+        trailing = getattr(self.window(), "settings_mode", False) and not self.content_margin
+        painter.save()
+        if trailing:
+            painter.translate(self.width() - 18, 0)
         box = QRectF(1, y, 16, 16)
         painter.setPen(QPen(accent if self.isChecked() or self.hasFocus() else QColor(self.window().line), 1))
         painter.setBrush(accent if self.isChecked() else self.palette().base())
@@ -777,8 +781,9 @@ class CheckOption(QCheckBox):
                                 Qt.PenCapStyle.RoundCap, Qt.PenJoinStyle.RoundJoin))
             path = QPainterPath(QPointF(5, y+8)); path.lineTo(8, y+11); path.lineTo(13, y+5)
             painter.drawPath(path)
+        painter.restore()
         painter.setPen(self.palette().text().color())
-        painter.drawText(QRectF(26, 0, self.width()-26-2*self.content_margin, self.height()),
+        painter.drawText(QRectF(0 if trailing else 26, 0, self.width()-26-2*self.content_margin, self.height()),
                          Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.text())
 
 
@@ -798,6 +803,24 @@ class GlassCheckOption(CheckOption):
     def leaveEvent(self, event):
         super().leaveEvent(event)
         self.update()
+
+
+class SettingsChoices(QWidget):
+    """Keep choices together on the right, stacking only when space is tight."""
+    def __init__(self):
+        super().__init__()
+        self.row = QHBoxLayout(self)
+        self.row.setContentsMargins(0, 0, 0, 0)
+        self.row.setSpacing(12)
+        self.row.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.setSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        buttons = [self.row.itemAt(i).widget() for i in range(self.row.count())]
+        width = sum(button.sizeHint().width() for button in buttons)
+        fits = width + self.row.spacing() * (len(buttons) - 1) <= self.width()
+        self.row.setDirection(QHBoxLayout.Direction.LeftToRight if fits else QHBoxLayout.Direction.TopToBottom)
 
 
 class RadioOption(QRadioButton):
@@ -1864,7 +1887,7 @@ class InstallerWindow(OpaqueSurface):
 
     def label(self, text, *, heading=False):
         widget = QLabel(self.t(text))
-        widget.setFont(self.font())
+        widget.setFont(relative_font(self, .78, QFont.Weight.Medium) if self.settings_mode else self.font())
         widget.setWordWrap(True)
         widget.setTextFormat(Qt.TextFormat.PlainText)
         if heading:
@@ -1962,12 +1985,17 @@ class InstallerWindow(OpaqueSurface):
             self.groups.append(group)
             if default_first:
                 items = sorted(items, key=lambda item: item[0] != self.defaults[key])
+        compact_settings = self.settings_mode and layout is None and key != "appearance"
+        if compact_settings:
+            layout = QHBoxLayout()
+            layout.addStretch()
+            self.body.addLayout(layout)
         row_cards = []
         for i, (value, title, detail, pixmap) in enumerate(items):
             choice_key = value if independent else key
             checked = self.choices[choice_key] if independent else self.choices[key] == value
             card = ChoiceCard(self.t(title), self.t(detail), pixmap, checked, self.content,
-                              independent=independent, compact=compact,
+                              independent=independent, compact=compact or compact_settings,
                               image_only=key == "wallpaper", preview_height_limit=preview_height_limit)
             if key == "wallpaper" and card.photo is not None:
                 card.photo.cover = True
@@ -1983,32 +2011,41 @@ class InstallerWindow(OpaqueSurface):
                 row_cards = []
             row_cards.append(card)
             card.row_cards = row_cards
+            if compact_settings:
+                card.setMaximumWidth(154)
             if fixed_width is not None:
                 card.setFixedWidth(fixed_width)
         (self.body if layout is None else layout).addLayout(grid)
+        if compact_settings:
+            layout.setStretch(1, 1)
         return group
 
     def radio(self, key, values, *, inline=False, font_scale=.93, option_layout=None):
         group = QButtonGroup(self.content)
         self.groups.append(group)
         row = option_layout if option_layout is not None else QHBoxLayout() if inline else self.body
-        if inline and option_layout is None:
+        settings_row = self.settings_mode and option_layout is None
+        if settings_row:
+            choices = SettingsChoices()
+            self.body.addWidget(choices)
+            row = choices.row
+        elif inline and option_layout is None:
             row.setSpacing(22)
         for value, label in sorted(values, key=lambda item: item[0] != self.defaults[key]):
             button = RadioOption(self.t(label))
-            button.setFont(relative_font(self, font_scale))
+            button.setFont(relative_font(self, .76 if self.settings_mode else font_scale))
             button.setObjectName(f"choice-{key}-{value}")
             self.bind_choice(key, value, button)
             button.setChecked(self.choices[key] == value)
             group.addButton(button)
             button.clicked.connect(lambda _, k=key, v=value: self.select(k, v))
             row.addWidget(button, 1 if inline else 0)
-        if inline and option_layout is None:
+        if inline and option_layout is None and not settings_row:
             self.body.addLayout(row)
 
     def checkbox(self, key, text):
         button = CheckOption(self.t(text))
-        button.setFont(relative_font(self, .93))
+        button.setFont(relative_font(self, .78, QFont.Weight.Medium) if self.settings_mode else relative_font(self, .93))
         button.setObjectName(f"choice-{key}")
         button.setChecked(self.choices[key])
         button.toggled.connect(lambda value: self.update_choice(key, value))
@@ -2098,7 +2135,7 @@ class InstallerWindow(OpaqueSurface):
         self.close_button.setToolTip(self.t("Close"))
         self.refresh_window_controls()
         stylesheet = f"""
-            QFrame#settingsPanel {{ background: {panel_surface}; border-radius: 10px; }}
+            QFrame#settingsPanel {{ background: {panel_surface}; border: none; border-radius: 10px; }}
             QScrollArea#pageScroll > QScrollBar:vertical,
             QScrollArea#pageScroll QScrollBar:vertical {{ background: transparent; width: 8px; margin: 5px 1px; }}
             QScrollArea#pageScroll QScrollBar::handle:vertical {{
@@ -2123,7 +2160,7 @@ class InstallerWindow(OpaqueSurface):
                 background: {panel_surface}; border: 1px solid {separator}; border-radius: 10px;
             }}
             QFrame#settingsOptionPanel {{
-                background: {panel_surface}; border: 1px solid {separator}; border-radius: 8px;
+                background: {panel_surface}; border: none; border-radius: 8px;
             }}
             QTabWidget#widgetPreferenceTabs::pane, QWidget#acrylicGlassEditor QTabWidget::pane {{ border: 0; }}
             QTabWidget#widgetPreferenceTabs QTabBar::tab, QWidget#acrylicGlassEditor QTabBar::tab {{
@@ -2218,7 +2255,7 @@ class InstallerWindow(OpaqueSurface):
         self.content.surface_color = QColor(surface)
         self.content.setObjectName("wizardContent")
         self.content.setPalette(self.palette())
-        self.content.setFont(self.font())
+        self.content.setFont(relative_font(self, .76) if self.settings_mode else self.font())
         self.body = QVBoxLayout(self.content)
         self.body.setContentsMargins(*((18, 16, 18, 18) if self.settings_mode else (38, 28, 38, 22)))
         self.body.setSpacing(9 if self.settings_mode else 12)
@@ -2399,7 +2436,7 @@ class InstallerWindow(OpaqueSurface):
         column.setContentsMargins(12, 10, 12, 10)
         header = QHBoxLayout()
         heading = self.label("Weather (Panel)")
-        heading.setFont(relative_font(self, .85, QFont.Weight.DemiBold))
+        heading.setFont(relative_font(self, .78, QFont.Weight.Medium))
         header.addWidget(heading, 1)
         save = GlassButton(self.t("Save"))
         header.addWidget(save)
@@ -2411,7 +2448,7 @@ class InstallerWindow(OpaqueSurface):
         picker.setCurrentIndex(max(0, selected))
         picker.setVisible(len(widgets) > 1)
         picker.setAccessibleName(self.t("Widget instance"))
-        column.addWidget(picker)
+        column.addWidget(picker, alignment=Qt.AlignmentFlag.AlignRight)
         shortcut_row = QHBoxLayout()
         shortcut_row.addWidget(self.label("Activation shortcut"), 1)
         shortcut = QKeySequenceEdit()
@@ -2473,7 +2510,7 @@ class InstallerWindow(OpaqueSurface):
         if self.acrylic_glass_editor is None:
             layout.addWidget(self.label("Install Acrylic Glass to edit its materials."))
         else:
-            self.acrylic_glass_editor.setFont(relative_font(self, .90))
+            self.acrylic_glass_editor.setFont(relative_font(self, .76))
             layout.addWidget(self.acrylic_glass_editor)
             self.acrylic_glass_editor.show()
 
@@ -2507,7 +2544,7 @@ class InstallerWindow(OpaqueSurface):
             column = QVBoxLayout(panel)
             column.setContentsMargins(12, 10, 12, 10)
             heading = self.label(title)
-            heading.setFont(relative_font(self, .85, QFont.Weight.DemiBold))
+            heading.setFont(relative_font(self, .78, QFont.Weight.Medium))
             header = QHBoxLayout()
             header.addWidget(heading, 1)
             column.addLayout(header)
@@ -2532,7 +2569,7 @@ class InstallerWindow(OpaqueSurface):
                 self.widget_settings_target = panel
             picker.setAccessibleName(self.t("Widget instance"))
             picker.setVisible(len(widgets) > 1 or kind == "bar_shortcuts")
-            column.addWidget(picker)
+            column.addWidget(picker, alignment=Qt.AlignmentFlag.AlignRight)
             controls = {}
             rows = {}
             displayed = {}
@@ -2540,7 +2577,7 @@ class InstallerWindow(OpaqueSurface):
             if typed is not None:
                 tabs = QTabWidget()
                 tabs.setObjectName("widgetPreferenceTabs")
-                tabs.setFont(relative_font(self, .9))
+                tabs.setFont(relative_font(self, .76))
                 pages = ({"Appearance": dock_preferences.APPEARANCE, "Behavior": dock_preferences.BEHAVIOR}
                          if kind == "dock" else typed.FORMS)
                 for label, labels in pages.items():
@@ -2879,27 +2916,36 @@ class InstallerWindow(OpaqueSurface):
         process.start(picker, ["--geticon", "Desktop", "--title", self.t("Choose an icon")])
 
     def page_general(self):
+        label_font = relative_font(self, .78, QFont.Weight.Medium)
+        control_font = relative_font(self, .76)
         panel = QFrame()
         panel.setObjectName("settingsPanel")
         row = QHBoxLayout(panel)
         row.setContentsMargins(12, 9, 12, 9)
         label = self.label("Language")
+        label.setFont(label_font)
         selector = self.language_selector()
+        selector.setFont(control_font)
         selector.setAccessibleName(self.t("Language"))
         row.addWidget(label)
         row.addStretch()
         row.addWidget(selector)
         self.body.addWidget(panel)
 
-        restoration = self.option_card()
+        restoration = QFrame()
+        restoration.setObjectName("settingsPanel")
         actions = QHBoxLayout(restoration)
         actions.setContentsMargins(12, 9, 12, 9)
-        actions.addWidget(self.label("Restoration"), 1)
+        restoration_label = self.label("Restoration")
+        restoration_label.setFont(label_font)
+        actions.addWidget(restoration_label, 1)
         reinstall = GlassButton(self.t("Reinstall"))
+        reinstall.setFont(control_font)
         reinstall.setObjectName("settingsReinstall")
         reinstall.clicked.connect(lambda: self.open_settings_operation("summary", reinstall=True))
         actions.addWidget(reinstall)
         uninstall = GlassButton(self.t("Uninstall"))
+        uninstall.setFont(control_font)
         uninstall.setObjectName("settingsUninstall")
         uninstall.clicked.connect(lambda: self.open_settings_operation("uninstall"))
         actions.addWidget(uninstall)
@@ -2909,12 +2955,18 @@ class InstallerWindow(OpaqueSurface):
         if self.page not in SECTIONS and self.page not in INSTALL_SECTIONS:
             self.body.addSpacing(10)
         stem = f"desktop-{self.asset_edition}-"
+        layout = self.body
+        if self.settings_mode:
+            layout = QHBoxLayout()
+            layout.addStretch()
+            self.body.addLayout(layout)
         group = self.cards("appearance", [
             ("auto", "Auto", "", picture(stem+"light.jpg", 232, 131, stem+"dark.jpg")),
             ("light", "Light", "", picture(stem+"light.jpg", 232, 131)),
             ("dark", "Dark", "", picture(stem+"dark.jpg", 232, 131)),
-        ], columns=3, compact=True, default_first=False)
+        ], columns=3, compact=True, default_first=False, layout=layout)
         if self.settings_mode:
+            layout.setStretch(1, 1)
             for button in group.buttons():
                 button.setMaximumWidth(154)
             if self.appearance_process:
@@ -2965,10 +3017,12 @@ class InstallerWindow(OpaqueSurface):
             styles.addWidget(button)
             if value == "glass":
                 self.glass_preview = button
-        rows.addLayout(styles, 0, 1, 1, 2)
+        right = Qt.AlignmentFlag.AlignRight if self.settings_mode else Qt.AlignmentFlag(0)
+        rows.addLayout(styles, 0, 1, 1, 2, right)
 
-        source = QVBoxLayout()
-        source.setSpacing(0)
+        option_layout = QHBoxLayout if self.settings_mode else QVBoxLayout
+        source = option_layout()
+        source.setSpacing(12 if self.settings_mode else 0)
         sources = QButtonGroup(self.content)
         self.groups.append(sources)
         self.keep_icons = RadioOption(self.t("Keep my icons"))
@@ -2980,23 +3034,24 @@ class InstallerWindow(OpaqueSurface):
             source.addWidget(button)
         self.keep_icons.clicked.connect(lambda _: self.select("icons", "keep"))
         self.use_theme_icons.clicked.connect(lambda _: self.select("icons", self.theme_icon_style))
-        rows.addLayout(source, 1, 2)
+        rows.addLayout(source, 1, 2, right)
 
         self.icon_appearance_options = QWidget()
-        appearance = QVBoxLayout(self.icon_appearance_options)
+        appearance = option_layout(self.icon_appearance_options)
         appearance.setContentsMargins(0, 0, 0, 0)
-        appearance.setSpacing(0)
+        appearance.setSpacing(12 if self.settings_mode else 0)
         self.radio("icon_appearance", [("auto", "Automatic"), ("light", "Light"), ("dark", "Dark")],
                    font_scale=.76, option_layout=appearance)
         appearance_label.setMinimumHeight(appearance.itemAt(0).widget().sizeHint().height())
-        rows.addWidget(appearance_label, 2, 0, alignment=Qt.AlignmentFlag.AlignTop)
-        rows.addWidget(self.icon_appearance_options, 2, 2)
+        label_alignment = Qt.AlignmentFlag.AlignVCenter if self.settings_mode else Qt.AlignmentFlag.AlignTop
+        rows.addWidget(appearance_label, 2, 0, alignment=label_alignment)
+        rows.addWidget(self.icon_appearance_options, 2, 2, right)
 
         colors = QHBoxLayout()
         colors.setSpacing(3)
         self.color_buttons = {}
         for name, color in COLORS.items():
-            if self.color_buttons:
+            if self.color_buttons and not self.settings_mode:
                 colors.addStretch()
             button = ColorSwatch(color)
             button.setObjectName("color-"+name)
@@ -3007,7 +3062,7 @@ class InstallerWindow(OpaqueSurface):
             self.color_buttons[name] = button
             button.clicked.connect(lambda _, value=name: self.select("color", value))
             colors.addWidget(button)
-        rows.addLayout(colors, 3, 1, 1, 2)
+        rows.addLayout(colors, 3, 1, 1, 2, right)
         self.body.addLayout(rows)
         self.refresh_icon_controls()
 
@@ -3030,11 +3085,16 @@ class InstallerWindow(OpaqueSurface):
         self.groups.append(sources)
         self.keep_wallpaper = RadioOption(self.t("Keep my wallpaper"))
         self.use_theme_wallpaper = RadioOption(self.t("Use the theme wallpaper"))
+        source = self.body
+        if self.settings_mode:
+            choices = SettingsChoices()
+            self.body.addWidget(choices)
+            source = choices.row
         for button, value in ((self.keep_wallpaper, "keep"), (self.use_theme_wallpaper, "theme")):
             button.setObjectName(f"choice-wallpaper-{value}")
             button.setFont(relative_font(self, .76))
             sources.addButton(button)
-            self.body.addWidget(button)
+            source.addWidget(button)
         self.keep_wallpaper.clicked.connect(lambda _: self.select("wallpaper", "keep"))
         self.use_theme_wallpaper.clicked.connect(lambda _: self.select("wallpaper", self.theme_wallpaper))
 
@@ -3156,7 +3216,7 @@ class InstallerWindow(OpaqueSurface):
         visibility = GlassComboBox()
         visibility.setObjectName("dock-visibility")
         visibility.setAccessibleName(label.text())
-        visibility.setFont(relative_font(self, .86))
+        visibility.setFont(relative_font(self, .76 if self.settings_mode else .86))
         for value, text in (("autohide", "Auto-hide"),
                             ("none", "Show outside full screen"),
                             ("dodgewindows", "Hide on overlap")):
@@ -3405,7 +3465,7 @@ class InstallerWindow(OpaqueSurface):
             spin = GlassSpinBox()
             spin.setObjectName(key)
             spin.setAccessibleName(label.text())
-            spin.setFont(relative_font(self, .85))
+            spin.setFont(relative_font(self, .76 if self.settings_mode else .85))
             spin.setRange(1, maximum)
             spin.setValue(self.choices[key])
             spin.setEnabled(self.choices["oled_care"])
