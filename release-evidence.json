@@ -1,25 +1,32 @@
 {
-  "version": "0.85.1",
-  "scope": "Settings has one desktop widget switch and a widget checklist. Calendar, Analog Clock and Photos are selected by default.",
+  "version": "0.85.2",
+  "scope": "Settings shares one Save or Review changes action across pages. Acrylic Glass uses the Settings controls and a gradient color palette.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "checks": [
     {
-      "command": "pytest tests/test_desktop_widgets.py tests/test_plasmoids_step.py tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion (17 passed)",
+      "command": "pytest tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion tests/test_desktop_widgets.py tests/test_localization.py (20 passed on the integrated source)",
       "result": "passed"
     },
     {
-      "command": "pytest tests/test_localization.py (10 passed)",
-      "result": "passed"
-    },
-    {
-      "command": "KDE neon disposable VM, Golden Gate defaults: opened Settings > Widgets. Installed the selected bundled packages into an isolated guest data directory, changed the selection, reinstalled it, then removed the managed packages.",
+      "command": "Golden Gate disposable KDE neon VM, light and dark: verified Save across Settings pages, mixed Review without immediate writes, material component switching, preset and custom gradient colors, and saved values after reopening the editor.",
       "result": "passed"
     }
   ],
-  "settings_source_sha256": "ef8f98d7c7b9a4cccadd34bddf88ebfef79bc05e295c729d75e29cf82f000385",
-  "widget_step_sha256": "8c22b91c0eeb24b643d5e71ae185b2aeab3132e5fe2bcb32e4cabc304a8612fb",
-  "approved_preview_sha256": "b90b8664ab432328f48deabe14220f791d4f4befb08854ad0945ebb3bec32f96",
-  "qualified_preview_sha256": "b90b8664ab432328f48deabe14220f791d4f4befb08854ad0945ebb3bec32f96",
-  "coverage_limits": "Golden Gate supplied the VM capture. Both editions exercised wizard navigation offscreen. Guest package lifecycle ran against the bundled archive in an isolated directory. Desktop applet placement was not exercised in this lifecycle check.",
-  "source_sha256": "65b2c8c1aef5694507b8088f579e1fecdafdbdc38206ee7cf15269055537cc42"
+  "approved_candidate_patch_sha256": "75772ece1596f5f87009699b6626110fb08de91a804ac1a239400e5d96c26dba",
+  "approved_preview_sha256": {
+    "gradiente.png": "e9a20f49fc3c79074d31fef88f95da42930196f8a9e130dc1d56a1a049dd39d8",
+    "guardar.png": "e998f210abfb00cb31993bf08c131e7c5678473f35a2d6f2d545ce9fc6921c16",
+    "material-claro.png": "03d9d2dd9f9833a47c0fa6e66ba11f00b13831db0929789a3e5a7a614d1f21f9",
+    "material.png": "fd35e66048a76165763112e71b0ba1f32640aba50cb514a831971f26bd99e184",
+    "paleta-claro.png": "3d9f2ef520c4878ab2fbff7db882753d2c2b2eba71ecc62dc651db8e331c4277",
+    "paleta.png": "3b8ad50f6e009acba7f1f93aed24f521afe083825cb47b0a28d0cd19fa5ba42e",
+    "revisar.png": "772427443adfb27d135663c707aed4fe95fabff48e38a3635a4b4b8bd1df483f"
+  },
+  "integrated_settings_sha256": {
+    "wizard_window.py": "d83423fc7f17ed920f3d4eb2653f21ab990f2e92362b70cd22af7012829dd537",
+    "desktop_widget_editor.py": "39554f0ee8f53a760d7d8f33a21abb9d04e6a5980b002d0e3f473da73e3452e7",
+    "acrylic_glass_editor.py": "6cbdafc09f3b3bb0dbcd40196ecbfc622b39972b49f03f3bb28ce600360d2e95"
+  },
+  "coverage_limits": "Golden Gate provided the VM previews. Both editions exercised wizard navigation offscreen. Integration retains the v0.85.1 desktop widget selection page; the reviewed Acrylic and Save implementations are unchanged.",
+  "source_sha256": "6b16a89d79d11a491eb469b912ae7b2a74f05ff47010be56445b7870716d8370"
 }
