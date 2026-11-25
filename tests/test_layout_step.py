@@ -517,3 +517,20 @@ def test_finish_reset_only_removes_panels_retired_by_this_install(monkeypatch, t
     monkeypatch.setattr(layout, "_evaluate_layout_script", evaluate)
     layout.finish_reset()
     assert not layout._retired_panel_ids
+
+
+def test_live_dock_verification_fails_when_plasma_keeps_adaptive(monkeypatch):
+    import installer_choices
+
+    observed = []
+    failures = []
+    monkeypatch.setattr(installer_choices, "selected", lambda: {"dock": True, "reset_layout": True})
+    def transaction(script):
+        observed.append(script)
+        return 'p.opacity = "translucent"' in script
+
+    monkeypatch.setattr(layout, "evaluate_panel_transaction", transaction)
+    monkeypatch.setattr(layout.time, "sleep", lambda _: None)
+    monkeypatch.setattr(layout, "fail", failures.append)
+    layout.verify_dock_glass()
+    assert len(observed) == 8 and len(failures) == 1
