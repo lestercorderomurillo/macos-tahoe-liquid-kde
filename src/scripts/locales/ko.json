@@ -1,4 +1,6 @@
 {
+  "Preferences": "환경 설정",
+  "Widgets": "위젯",
   "\n  Aborted.": "\n  낙태",
   "\u001b[0;32m\u001b[1m  ── Done\u001b[0m": "\u001b[0;32m\u001b[1m  ── 완료\u001b[0m",
   "  \u001b[0;31m  Run from repo root.\u001b[0m": "  \u001b[0;31m  리포 루트에서 실행하세요.\u001b[0m",

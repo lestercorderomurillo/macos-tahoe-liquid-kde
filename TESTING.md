@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.28**. Restore the v0.84.26 installer and desktop implementation. [Evidence and coverage](release-evidence.json).
+**v0.84.30**. Verified Settings navigation and translations, and reviewed the Tahoe layout in KDE neon. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

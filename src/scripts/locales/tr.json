@@ -1,4 +1,6 @@
 {
+  "Preferences": "Tercihler",
+  "Widgets": "Gereçler",
   "\n  Aborted.": "\n  - İhtiyacım yok.",
   "\u001b[0;32m\u001b[1m  ── Done\u001b[0m": "\u001b[0;32m\u001b[1m  ── Tamamlandı\u001b[0m",
   "  \u001b[0;31m  Run from repo root.\u001b[0m": "  \u001b[0;31m  repo kökü ile çalıştır.\u001b[0m",
