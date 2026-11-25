@@ -777,25 +777,29 @@ window.navigate_settings('applications')
 QTest.qWait(50)
 assert set(window.panel_frames) == {'launcher', 'files', 'firefox'}
 assert window.content.findChild(QPushButton, 'optionPanelTitle') is None
+window.navigate_settings('theme')
+QTest.qWait(50)
+assert {'effects', 'glass_style', 'acrylic_glass_editor'} <= set(window.panel_frames)
 bar = window.scroll.verticalScrollBar()
 assert bar.maximum() > 0
 assert window.scroll.horizontalScrollBar().maximum() == 0
 offset = min(170, bar.maximum())
 bar.setValue(offset)
-window.section_buttons['applications'].click()
-assert window.section_buttons['applications'].isChecked() and bar.value() == offset
+window.section_buttons['theme'].click()
+assert window.section_buttons['theme'].isChecked() and bar.value() == offset
 window.navigate_settings('general')
 QTest.qWait(50)
 QTest.keyClick(window, Qt.Key.Key_Left, Qt.KeyboardModifier.AltModifier)
 QTest.qWait(50)
-assert window.page == 'applications' and bar.value() == offset
+assert window.page == 'theme' and bar.value() == offset
 QTest.keyClick(window, Qt.Key.Key_Right, Qt.KeyboardModifier.AltModifier)
 QTest.qWait(50)
 assert window.page == 'general'
 window.settings_back.click()
 QTest.qWait(50)
-assert window.page == 'applications' and bar.value() == offset
+assert window.page == 'theme' and bar.value() == offset
 window.navigate_settings('windows')
+assert set(window.panel_frames) == {'window_controls', 'button_position', 'shadows'}
 assert not window.settings_forward.isEnabled()
 window.search.setText('zzzzz')
 assert window.no_results.isVisible()
