@@ -1774,5 +1774,6 @@
   "Show full text": "Visualizza il testo completo",
   "Text and images you copy will appear here.": "Il testo e le immagini che copierai appaiono qui.",
   "mac-tahoe-clipd isn’t running.": "mac-tahoe-clipd non è’Non correre.",
-  "{count} selected": "Selezionato: {count}"
+  "{count} selected": "Selezionato: {count}",
+  "Full log storage is unavailable. Only the latest output is retained.": "Impossibile salvare il registro completo. Viene conservato solo l’output più recente."
 }
