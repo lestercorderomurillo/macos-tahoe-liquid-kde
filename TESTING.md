@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.26**. The graphical installer keeps routine Qt font matching messages out of terminal output. [Evidence and coverage](release-evidence.json).
+**v0.84.27**. The fullscreen installer verifies selected components before desktop changes and the uninstaller preserves damaged recovery records. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
