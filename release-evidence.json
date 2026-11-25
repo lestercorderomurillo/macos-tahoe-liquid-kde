@@ -1,32 +1,31 @@
 {
-  "version": "0.84.23",
+  "version": "0.84.24",
+  "scope": "The installer repairs duplicate Docks and top bars and restores transparent menu bars on existing two-monitor layouts.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "The installer uses KWin's registered Rounded Corners setting, rechecks delayed activation and records effect-specific diagnostics when activation is unconfirmed.",
+  "qualified_commit": "c9d1957fdbb875b705dcd03b52d9ed5b0218ff85",
   "checks": [
     {
-      "command": "In an isolated user environment and private D-Bus session, python3 -m pytest -q tests/test_rounded_corners_step.py tests/test_kconf_update.py tests/test_theme_switch.py. 176 passed and the opt-in standalone native build was skipped.",
+      "command": "Golden Gate installer_backend.py install with layout reset, then install with reset_layout=false starting from four top bars and three Docks. Both installer processes exited 0.",
       "result": "passed"
     },
     {
-      "command": "Install Golden Gate on a disposable KDE neon 6.8.1 Wayland guest. With the effect loaded, notify the legacy short setting false, then the registered setting false, then the short setting true. Observe D-Bus loadedEffects after each write. Reinstall, verify the registered setting and the loaded plugin.",
-      "result": "passed",
-      "observed": [
-        "Legacy false left the effect loaded",
-        "Registered false unloaded it",
-        "Legacy true left it absent",
-        "Reinstallation enabled and loaded it"
-      ]
+      "command": "After VM reboot, read active containments: one shared Dock, two transparent top bars, original IDs and ten original pins retained. Compared the two-monitor captures.",
+      "result": "passed"
+    },
+    {
+      "command": "Isolated pytest test_finish_reset_only_removes_panels_retired_by_this_install and test_wizard_update_preserves_layout_and_respects_file_manager (10 passed).",
+      "result": "passed"
     }
   ],
-  "qualified_commit": "9f1a0c6b3866c2dba5828d1a1e025148de29c5f1",
-  "installed_source_sha256": {
-    "src/scripts/steps/rounded_corners.py": "3a5e2c3a8fde349c8c8c29bedb8a0ba1edb6dd57d97c39619a7429bb86e0ebd2",
-    "src/scripts/theme_switch.py": "d40444b5496accb162e9645aa9fd42e18145edc2b22a45eaebf98ba348aa9a5a",
-    "src/scripts/steps/apply.py": "2429a6d4193656cfb0d8d082dac5b1fbb76004004f3383334738dc930a94e064",
-    "src/scripts/cli.py": "800aac5c4a49453365c340c2b9c441cbb1a4395fbe78462e50f8809f2aecdd00",
-    "component-hashes.json": "682f371697b87eaec40447b9cf1f2c0b1e4c25fcaab2656b01255d9f4a0eac26"
-  },
-  "coverage_limits": "No native code or shaders changed. The original 6.8.3 log does not contain KWin loader output. The reproducible setting mismatch and delayed-query regression do not identify the historical machine's loader state. No separate X11 or Tahoe desktop was exercised.",
-  "captures": [],
-  "source_sha256": "82faee8ab5d4957bf9ce3fcd2624a123815daa7ee3894be258917104e843d885"
+  "captures": [
+    {
+      "path": "docs/evidence/golden-gate-panel-recovery-4dbac9b241eb.png",
+      "sha256": "4dbac9b241eb84261004be9e9ccb869a03f83c0f23e32cf4898eea5996bf61f6",
+      "reviewed": true,
+      "source_commit": "bac0e7f73dace7dd7b5b65e1c1b892652321624d",
+      "environment": "KDE neon, Plasma 6.8.1, Wayland, two outputs, Golden Gate"
+    }
+  ],
+  "coverage_limits": "Golden Gate VM exercised the shared panel code. Tahoe was not separately booted. The live scripting API retained the previous widget width until reboot. Captures show it hidden right after reinstall. The post-boot width was zero.",
+  "source_sha256": "61527e6fe1b29cb1ceb2440205c4f366f03063a3998b4840ade7c9039e7bd986"
 }
