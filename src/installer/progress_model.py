@@ -9,7 +9,7 @@ PHASES = (
 COMPONENTS = {
     'kvantum': 'Menu style', 'plasmoids': 'Launcher and Dock',
     'globalmenu': 'Global menu', 'acrylic_glass': 'Acrylic Glass',
-    'rounded_corners': 'Rounded Corners',
+    'rounded_corners': 'Rounded Corners', 'clipboard': 'Clipboard',
 }
 
 
@@ -45,6 +45,19 @@ class ProgressModel:
                 self.active = key
         elif kind == 'build' and key in COMPONENTS:
             self.tasks[key] = {'label': COMPONENTS[key], 'state': state}
+
+    @property
+    def preparation_fraction(self):
+        preparing = ("system", "dependencies", "downloads", "build")
+        finished = {"done", "unchanged", "skipped"}
+        completed = sum(self.phases[key]["state"] in finished for key in preparing)
+        if self.phases["build"]["state"] == "running" and self.tasks:
+            completed += sum(task["state"] in finished for task in self.tasks.values()) / len(self.tasks)
+        return completed / len(preparing)
+
+    @property
+    def application_started(self):
+        return self.active in ("install", "apply", "verify") and "install" in self.phases
 
     def finish(self, code):
         if self.terminal:

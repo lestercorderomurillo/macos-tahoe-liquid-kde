@@ -5,7 +5,8 @@ from localization import tr
 import importlib
 from types import ModuleType
 
-from log import errors
+from log import errors, fail, warnings
+from state import record_component
 from utils import check_cancelled
 
 
@@ -16,8 +17,10 @@ def step_module(feature: str) -> ModuleType | None:
     name = feature.replace("-", "_")
     try:
         return importlib.import_module(f"steps.{name}")
-    except ModuleNotFoundError:
-        return None
+    except ModuleNotFoundError as exc:
+        if exc.name == f"steps.{name}":
+            return None
+        raise
 
 
 def step_exists(feature: str) -> bool:
@@ -45,15 +48,27 @@ def step_deps(feature: str) -> list[tuple[str, str]]:
 
 def run_phase(feature: str, phase: str) -> bool:
     check_cancelled()
-    mod = step_module(feature)
-    if mod is None or not callable(getattr(mod, phase, None)):
-        return True
+    record_component(feature, phase, "running")
     before = len(errors)
+    warning_count = len(warnings)
+    code = 0
     try:
-        getattr(mod, phase)()
+        module = step_module(feature)
+        operation = getattr(module, phase, None)
+        if not callable(operation):
+            raise AttributeError(f"steps.{feature}.{phase}")
+        result = operation()
+        code = int(result is False) if type(result) is not int else result
+        if code and len(errors) == before:
+            fail(f"{feature}.{phase}: {result}")
+        check_cancelled()
+    except KeyboardInterrupt:
+        record_component(feature, phase, "aborted", 130)
+        raise
     except Exception as exc:
-        from log import fail
         fail(tr('{feature}: {phase} raised {value3}: {exc}', feature=feature, phase=phase, value3=type(exc).__name__, exc=exc))
-        return False
-    check_cancelled()
-    return len(errors) == before
+    failed = len(errors) > before
+    messages = warnings[warning_count:] + errors[before:]
+    status = "failed" if failed else "warning" if messages else "completed"
+    record_component(feature, phase, status, code or int(failed), messages)
+    return not failed

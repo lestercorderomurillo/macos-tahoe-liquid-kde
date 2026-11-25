@@ -346,7 +346,7 @@ QML plasmoids; C++ Qt6 plasmoids (Global Menu, Dock Task Manager) and
 KWin effects compiled at install time against the host's Qt6 / KDE
 Frameworks 6. Theme assets are bundled offline in `src/offline/`, with
 one explicit online exception: the pinned KDE Rounded Corners source
-release is downloaded, checksum-verified, and built best-effort.
+release must be downloaded or available in the verified cache when selected.
 
 ## Naming Convention
 
@@ -614,9 +614,8 @@ links/special nodes/path traversal, then compiles against the host KWin
 SDK. The verified archive is cached under
 `build/online/kde-rounded-corners/`; it is never copied into
 `src/offline/`. Network, checksum, extraction, or other download-phase
-failure is soft: `cli.py` disables `rounded_corners` for that invocation,
-clears only that optional phase's errors, warns, and continues installing
-the bundled theme. A successful download makes later build/install failure
+failure stops installation before the build and desktop changes. Users can
+retry with the verified archive or deselect Rounded Corners. A successful download makes later build/install failure
 critical, because replacing only half of a compiled KWin effect is unsafe.
 The effect and its KCM are installed and enabled, but their radius settings
 stay independent from GTK, Plasma SVG, Aurorae, and Acrylic geometry. Before
@@ -1219,7 +1218,7 @@ a genuine missing package and fails CI.
 | `plasma_theme.py`             | Translucent panels and dock SVGs. |
 | `plasmoids.py`                | QML plasmoids: Menu, Launcher, Trashcan, IconTasks. |
 | `plymouth.py`                 | Boot splash. GRUB patch behind `_grub_is_active_bootloader()`; `--no-grub-modify` opt-out exists. |
-| `rounded_corners.py`          | Best-effort verified download of KDE Rounded Corners v0.11.0; compile/install and enable the effect, KCM, shaders, locales, and license without synchronizing other theme geometry. |
+| `rounded_corners.py`          | Verified download of selected KDE Rounded Corners v0.11.0; compile/install and enable the effect, KCM, shaders, locales, and license without synchronizing other theme geometry. |
 | `portals.py`                  | Route xdg-portal FileChooser / AppChooser to KDE (fixes stale dialog colors). |
 | `sddm.py`                     | Login screen theme. |
 | `sounds.py`                   | Notification and event sounds. |
@@ -1474,7 +1473,7 @@ Highlights:
   verifies the D-Bus owner PID before changing effects. Usage is in
   `CONTRIBUTING.md`.
 - `tests/test_rounded_corners_step.py` — immutable upstream pin, checksum
-  and traversal rejection, best-effort orchestration, enabled state,
+  and traversal rejection, selected-component preflight, enabled state,
   v0.38 preset cleanup without effect-state changes, and lifecycle.
 - `tests/containers/run_matrix.sh` — full per-distro probe.
 

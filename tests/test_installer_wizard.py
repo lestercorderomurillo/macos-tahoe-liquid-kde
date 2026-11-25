@@ -474,6 +474,27 @@ assert 'Verifiche di sistema' in bridge.summary.text(window.t)
 bridge._language = 'de'; bridge._progress = .5; window.refresh_progress()
 assert window.remaining_label.text() == 'Verstrichene Zeit: 10 Min. 00 Sek.'
 bridge._language = 'es'
+for phase in ('system', 'dependencies', 'downloads', 'build'):
+    bridge.summary.accept(dict(kind='phase', id=phase, state='running'))
+    bridge.summary.accept(dict(kind='phase', id=phase, state='done'))
+window.refresh_progress()
+assert window.progress.value() == 1000 and not window.transition_screens
+bridge.summary.accept(dict(kind='phase', id='install', state='running'))
+window.refresh_progress(); app.processEvents()
+cover, = window.transition_screens.values()
+assert cover.isVisible() and cover.bar.value() == 0 and not window.next.isEnabled()
+bridge._progress = .75
+window.refresh_progress()
+assert cover.bar.value() == 500
+cover.toggle.click(); app.processEvents()
+bridge.logAppended.emit('applying layout')
+assert cover.log.isVisible() and 'applying layout' in cover.log.toPlainText()
+QTest.keyClick(cover.toggle, Qt.Key.Key_Escape); app.processEvents()
+assert cover.isVisible()
+cover.toggle.setChecked(False)
+assert cover.bar.isVisible() and not cover.log.isVisible()
+window.advance(); window.close(); bridge.cancel()
+assert not bridge.cancelRequested and not window.close_pending
 
 bridge._running = False; bridge.finished.emit(0)
 assert window.page == 'done'
@@ -988,7 +1009,7 @@ def test_accent_preserves_brightness_and_only_overrides_gray_selection_text():
 def test_dock_visibility_from_legacy_panel_and_saved_choice(tmp_path, monkeypatch, native, mode):
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
     monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
-    assert choices.defaults()["dock_visibility"] == "autohide"
+    assert choices.defaults()["dock_visibility"] == "none"
     (tmp_path / "plasma-org.kde.plasma.desktop-appletsrc").write_text(
         "[Containments][42][Applets][51]\nplugin=org.kde.mac.tahoe.liquid.icontasks\n")
     (tmp_path / "plasmashellrc").write_text(

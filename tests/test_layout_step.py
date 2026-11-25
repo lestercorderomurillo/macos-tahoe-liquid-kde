@@ -149,12 +149,12 @@ def test_mac_layout_keeps_native_panel_surfaces():
     "look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/"
     "org.kde.plasma.desktop-layout.js",
 ])
-def test_bundled_layouts_autohide_dock_and_keep_top_bar_visible(
+def test_bundled_layouts_keep_dock_and_top_bar_visible(
         offline, relative_path):
     script = (offline / relative_path).read_text()
 
     # Issue #87: dodge can leave the Dock stuck over maximized windows.
-    assert 'dock.hiding = "autohide";' in script
+    assert 'dock.hiding = "windowsgobelow";' in script
     assert 'bar.hiding = "none";' in script
     assert '"dodgewindows"' not in script
 
@@ -356,7 +356,7 @@ def test_reinstall_applies_default_visibility_with_preserved_pins(monkeypatch, t
     layout.install()
 
     script = captured["script"]
-    assert 'dock.hiding = "autohide";' in script
+    assert 'dock.hiding = "windowsgobelow";' in script
     assert 'bar.hiding = "none";' in script
     expected = json.dumps(["preferred://filemanager", "applications:steam.desktop", "preferred://browser"])
     assert f"writeConfig('launchers', {expected})" in script
@@ -517,3 +517,20 @@ def test_finish_reset_only_removes_panels_retired_by_this_install(monkeypatch, t
     monkeypatch.setattr(layout, "_evaluate_layout_script", evaluate)
     layout.finish_reset()
     assert not layout._retired_panel_ids
+
+
+def test_live_dock_verification_fails_when_plasma_keeps_adaptive(monkeypatch):
+    import installer_choices
+
+    observed = []
+    failures = []
+    monkeypatch.setattr(installer_choices, "selected", lambda: {"dock": True, "reset_layout": True})
+    def transaction(script):
+        observed.append(script)
+        return 'p.opacity = "translucent"' in script
+
+    monkeypatch.setattr(layout, "evaluate_panel_transaction", transaction)
+    monkeypatch.setattr(layout.time, "sleep", lambda _: None)
+    monkeypatch.setattr(layout, "fail", failures.append)
+    layout.verify_dock_glass()
+    assert len(observed) == 8 and len(failures) == 1
