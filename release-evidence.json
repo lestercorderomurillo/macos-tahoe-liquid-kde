@@ -1,28 +1,27 @@
 {
-  "version": "0.84.20",
+  "version": "0.84.21",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Russian installer support, seven preview languages, and fixes for mixed-language installer and clipboard controls.",
-  "qualified_commit": "c81c8425563986d0291217bf0e0c637c5494b649",
+  "scope": "Hide Panel Colorizer beside the system menu on secondary monitors and migrate the saved visibility setting on existing Liquid panels.",
+  "qualified_commit": "3f8bf62030eca4cf40c7188bfa3f186d1fe39f40",
   "checks": [
     {
-      "command": "Isolated pytest against b8a9ccbc, including localization, multilingual completeness, installer navigation under both edition defaults, clipboard, uninstall and component hashes (254 passed).",
+      "command": "Golden Gate installer_backend.py install with reset_layout on two outputs, followed by reinstall in the same disposable KDE neon Plasma 6.8.1 Wayland guest.",
       "result": "passed"
     },
     {
-      "command": "Isolated pytest on merged sources: tests/test_installer_progress.py, test_native_wizard_navigation_preserves_choices_and_waits_for_completion and test_every_python_message_has_a_complete_catalog.",
+      "command": "Ran steps.plasmoids.migrate_settings_context() with the legacy hide flag on monitor 2 and captured both panels with spectacle. The approved monitor 2 capture shows the system menu first.",
       "result": "passed"
     }
   ],
   "captures": [
     {
-      "path": "docs/evidence/tahoe-ru-5474b866051a.png",
-      "sha256": "5474b866051a619e5a274542056ee3ba96fcc757bba3ec90fbe914929b97c6f3",
+      "path": "docs/evidence/golden-gate-monitor2-menu-14b302534db2.png",
+      "sha256": "14b302534db2c38928d9895f797a6e339053e38348898f1fd1c95fb806d022f7",
       "reviewed": true,
-      "source_commit": "45c28b35d94a903c0f6ecc3caa15412977f4bee0",
-      "source_archive_sha256": "cf2d87225f141eebde4572a6a1a54da38bc773d9e09d54406f196a0612f50d50",
-      "environment": "Disposable KDE neon Plasma 6.8.1 VM. Actual installer welcome windows. Golden Gate defaults applied using bootstrap.apply_defaults."
+      "source_commit": "6b5c3189f90cde8fe27c6166cf82606fc79dcbdd",
+      "environment": "Golden Gate, KDE neon Plasma 6.8.1 Wayland, Virtual-2 at scale 1. Approved in chat on 2026-11-24."
     }
   ],
-  "coverage_limits": "The approved captures exercise the welcome screen. Seven new languages are machine-assisted previews pending native-speaker review.",
-  "source_sha256": "218944d17398bc175d5dd0af583b28709cd7f5e349191e08fb8898f3a6fb0364"
+  "coverage_limits": "The VM exercised Golden Gate with two virtual displays. Tahoe shares the same layout and migration scripts. Their contents match the approved capture candidate.",
+  "source_sha256": "21b1c275e1a486dc63a439712ceaaeeaf66522c9166482402b0c4e767d355ac8"
 }
