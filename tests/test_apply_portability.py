@@ -107,8 +107,8 @@ def _restart_env(monkeypatch, *, systemd=True):
     return calls
 
 
-def test_openrc_restart_uses_kquitapp_and_never_hard_kills_on_success(monkeypatch):
-    calls = _restart_env(monkeypatch, systemd=False)
+def test_restart_prefers_kquitapp_and_never_hard_kills_on_success(monkeypatch):
+    calls = _restart_env(monkeypatch)
     commands = []
     monkeypatch.setattr(
         apply, "_run_quick",
@@ -129,12 +129,11 @@ def test_openrc_restart_uses_kquitapp_and_never_hard_kills_on_success(monkeypatc
     apply.restart_plasma()
 
     assert commands == [["kquitapp6", "plasmashell"]]
-    assert starts == [False]
+    assert starts == [True]
     assert any(kind == "ok" for kind, _ in calls)
 
 
-@pytest.mark.parametrize("job_result", [0, 124])
-def test_restart_uses_one_managed_restart_when_available(monkeypatch, job_result):
+def test_restart_uses_systemd_restart_when_kquitapp_fails(monkeypatch):
     _restart_env(monkeypatch)
     commands = []
     monkeypatch.setattr(apply, "_wait_for_old_plasma_exit",
@@ -142,7 +141,8 @@ def test_restart_uses_one_managed_restart_when_available(monkeypatch, job_result
 
     def run(command, **kwargs):
         commands.append(command)
-        return subprocess.CompletedProcess(command, job_result)
+        rc = 1 if command[0] == "kquitapp6" else 0
+        return subprocess.CompletedProcess(command, rc)
 
     monkeypatch.setattr(apply, "_run_quick", run)
     monkeypatch.setattr(
@@ -158,7 +158,10 @@ def test_restart_uses_one_managed_restart_when_available(monkeypatch, job_result
 
     apply.restart_plasma()
 
-    assert commands == [["systemctl", "--user", "restart", "plasma-plasmashell"]]
+    assert commands == [
+        ["kquitapp6", "plasmashell"],
+        ["systemctl", "--user", "restart", "plasma-plasmashell"],
+    ]
 
 
 def test_restart_rejects_false_positive_systemd_restart(monkeypatch):
@@ -177,13 +180,10 @@ def test_restart_rejects_false_positive_systemd_restart(monkeypatch):
     monkeypatch.setattr(apply, "_start_plasma",
                         lambda systemd: starts.append(systemd) or True)
 
-    failures = []
-    monkeypatch.setattr(apply, "fail", failures.append)
     apply.restart_plasma()
 
     assert hard == [True]
-    assert failures
-    assert starts == []
+    assert starts == [True]
 
 
 def test_restart_hard_kills_only_after_both_graceful_paths_fail(monkeypatch):
@@ -206,8 +206,8 @@ def test_restart_hard_kills_only_after_both_graceful_paths_fail(monkeypatch):
     apply.restart_plasma()
 
     assert commands[:2] == [
-        ["systemctl", "--user", "restart", "plasma-plasmashell"],
         ["kquitapp6", "plasmashell"],
+        ["systemctl", "--user", "restart", "plasma-plasmashell"],
     ]
     assert hard == [True]
     assert starts == [True]

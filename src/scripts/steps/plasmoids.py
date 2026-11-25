@@ -7,7 +7,6 @@ import tempfile
 from pathlib import Path
 
 from distro import qt6_plugins_dir, qt6_qml_dir
-from glass_surface_settings import atomic_write
 from installer_choices import selected
 from utils import qdbus_cmd, run_user
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
@@ -452,7 +451,7 @@ def place_desktop_widgets() -> None:
     """.replace("NAMES", json.dumps(DESKTOP_STARTERS))
     placed = _run_widget_script(script)
     placement.parent.mkdir(parents=True, exist_ok=True)
-    atomic_write(placement, json.dumps(placed).encode("utf-8"))
+    placement.write_text(json.dumps(placed), encoding="utf-8")
 
 
 def _remove_placed_desktop_widgets() -> None:
@@ -460,18 +459,6 @@ def _remove_placed_desktop_widgets() -> None:
     try:
         placed = json.loads(placement.read_text(encoding="utf-8"))
     except FileNotFoundError:
-        return
-    except (ValueError, UnicodeError):
-        placed = None
-    if not isinstance(placed, dict) or any(
-        not key.isdecimal() or value not in DESKTOP_STARTERS for key, value in placed.items()
-    ):
-        # A damaged record cannot authorize deleting live desktop applets.
-        with tempfile.NamedTemporaryFile(dir=placement.parent, prefix=placement.name + ".invalid-",
-                                         delete=False) as backup:
-            backup_path = Path(backup.name)
-        placement.replace(backup_path)
-        warn(f"{placement.name}: {backup_path}")
         return
     if placed:
         _run_widget_script("""

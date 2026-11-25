@@ -84,16 +84,14 @@ def _profile_id(profile: Path) -> str:
     return f"{safe_name or 'profile'}-{digest}"
 
 
-def read_manifest() -> dict[str, object]:
+def _load_manifest() -> dict[str, object]:
     path = _manifest_path()
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
-    except FileNotFoundError:
+    except (OSError, json.JSONDecodeError):
         return {"version": STATE_VERSION, "profiles": {}}
-    except (ValueError, UnicodeError) as exc:
-        raise ValueError(f"{path}: {exc}") from exc
     if not isinstance(data, dict) or not isinstance(data.get("profiles"), dict):
-        raise ValueError(f"{path}: profiles")
+        return {"version": STATE_VERSION, "profiles": {}}
     return data
 
 
@@ -191,13 +189,8 @@ def _profiles_from_ini(root: Path) -> list[Path]:
         raw = parser.get(section, "Path", fallback="").strip()
         if not raw or "\x00" in raw:
             continue
-        try:
-            candidate = Path(raw).expanduser()
-            relative = parser.getboolean(section, "IsRelative", fallback=True)
-        except (RuntimeError, ValueError):
-            warn(tr('Firefox: could not parse {ini}', ini=ini))
-            continue
-        if relative:
+        candidate = Path(raw).expanduser()
+        if parser.getboolean(section, "IsRelative", fallback=True):
             candidate = root / candidate
         profiles.append(candidate)
     return profiles
@@ -597,11 +590,11 @@ def _uninstall_profile(profile: Path, record: dict[str, object] | None) -> bool:
 
 def install() -> None:
     profiles = discover_profiles()
-    manifest = read_manifest()
+    manifest = _load_manifest()
     _retire_profiles(manifest, set(profiles))
     if not profiles:
-        warn(tr('Firefox theme skipped. Open Firefox to create a profile, then run the installer again.'))
-        info(tr('Firefox profiles modified: 0'))
+        warn(tr('No initialized Firefox profiles found — run Firefox once, then reinstall'))
+        info(tr('Firefox theme: 0 profiles changed'))
         return
     changed = sum(_install_profile(profile, manifest) for profile in profiles)
     _save_manifest(manifest)
@@ -661,7 +654,7 @@ def _retire_profiles(manifest: dict[str, object], supported: set[Path]) -> None:
 
 
 def uninstall() -> None:
-    manifest = read_manifest()
+    manifest = _load_manifest()
     profiles = discover_profiles()
     _retire_profiles(manifest, set(profiles))
     saved = manifest.get("profiles", {})

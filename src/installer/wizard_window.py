@@ -13,11 +13,11 @@ import subprocess
 import time
 
 from PyQt6 import sip
-from PyQt6.QtCore import QAbstractAnimation, QEasingCurve, QPropertyAnimation, QLibraryInfo, QLocale, QTranslator, Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
+from PyQt6.QtCore import QLibraryInfo, QLocale, QTranslator, Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
-    QGraphicsDropShadowEffect, QGraphicsOpacityEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
+    QGraphicsDropShadowEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
     QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QStyle, QStyleOptionSpinBox, QTabWidget, QToolButton,
     QVBoxLayout, QWidget,
 )
@@ -1135,122 +1135,6 @@ def installer_palette(dark):
     return palette
 
 
-class ApplyScreen(QWidget):
-    def __init__(self, wizard, screen):
-        flags = Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.Tool
-        super().__init__(None, flags)
-        self.setScreen(screen)
-        self.setGeometry(screen.geometry())
-        self.setObjectName("applyScreen")
-        self.setStyleSheet("""
-            QWidget#applyScreen { background: black; }
-            QProgressBar { background: #323232; border: 0; border-radius: 3px; }
-            QProgressBar::chunk { background: white; border-radius: 3px; }
-            QPushButton { background: transparent; color: #bdbdbd; padding: 6px 12px; border: none; outline: none; }
-            QPushButton:hover, QPushButton:focus { color: white; }
-            QPushButton#exitInstaller { color: #ff6961; }
-            QPushButton#exitInstaller:hover, QPushButton#exitInstaller:focus { color: #ff948e; }
-            QPlainTextEdit { background: #101010; color: white; border: 1px solid #424242; }
-        """)
-        self.bar = QProgressBar()
-        self.bar.setRange(0, 1000)
-        self.bar.setTextVisible(False)
-        self.bar.setAccessibleName(wizard.t("Applying appearance…"))
-        self.bar.setFixedSize(min(300, max(80, screen.geometry().width() - 64)), 6)
-        self.log = QPlainTextEdit()
-        self.log.setReadOnly(True)
-        self.log.setFont(wizard._log_font)
-        self.log.setMaximumBlockCount(2000)
-        self.log.setAccessibleName(wizard.t("Installation details"))
-        self.log.hide()
-        self.toggle = QPushButton(wizard.t("View logs"))
-        self.toggle.setCheckable(True)
-        layout = QGridLayout(self)
-        layout.setContentsMargins(24, 20, 24, 20)
-        layout.setRowStretch(0, 1)
-        layout.setRowStretch(2, 1)
-        layout.addWidget(self.bar, 1, 0, Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(self.log, 0, 0, 3, 1)
-        self.exit_button = QPushButton(wizard.t("Exit"))
-        self.exit_button.setObjectName("exitInstaller")
-        self.exit_button.clicked.connect(wizard.close)
-        self.exit_button.hide()
-        actions = QHBoxLayout()
-        actions.setSpacing(12)
-        actions.addWidget(self.toggle)
-        actions.addWidget(self.exit_button)
-        layout.addLayout(actions, 3, 0, Qt.AlignmentFlag.AlignHCenter)
-
-        opacity = QGraphicsOpacityEffect(self.toggle)
-        opacity.setOpacity(0)
-        self.toggle.setGraphicsEffect(opacity)
-        self.toggle.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents)
-        self.fade = QPropertyAnimation(opacity, b"opacity", self)
-        self.fade.setDuration(320)
-        self.fade.setStartValue(0.0)
-        self.fade.setEndValue(1.0)
-        self.fade.setEasingCurve(QEasingCurve.Type.InOutSine)
-        self.fade.finished.connect(lambda: self.toggle.setAttribute(
-            Qt.WidgetAttribute.WA_TransparentForMouseEvents, opacity.opacity() == 0))
-        self.idle = QTimer(self)
-        self.idle.setSingleShot(True)
-        self.idle.setInterval(2000)
-        self.idle.timeout.connect(lambda: self.fade_toggle(False))
-        for widget in [self, *self.findChildren(QWidget)]:
-            widget.setMouseTracking(True)
-            widget.installEventFilter(self)
-
-        def show_logs(opened):
-            self.toggle.setText(wizard.t("Hide logs" if opened else "View logs"))
-            self.idle.stop()
-            self.fade_toggle(True)
-            if not self.controls_pinned():
-                self.idle.start()
-            self.bar.setVisible(not opened)
-            self.log.setVisible(opened)
-            if opened:
-                self.log.setPlainText(wizard.bridge.logTail())
-                self.log.verticalScrollBar().setValue(self.log.verticalScrollBar().maximum())
-
-        self.toggle.toggled.connect(show_logs)
-        escape = QShortcut(QKeySequence("Esc"), self)
-        escape.activated.connect(lambda: self.toggle.setChecked(False))
-
-    def controls_pinned(self):
-        return self.toggle.isChecked() or not self.exit_button.isHidden()
-
-    def show_failure(self):
-        self.exit_button.show()
-        self.idle.stop()
-        self.fade_toggle(True)
-
-    def fade_toggle(self, visible):
-        direction = QAbstractAnimation.Direction.Forward if visible else QAbstractAnimation.Direction.Backward
-        if visible:
-            self.toggle.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, False)
-        self.fade.setDirection(direction)
-        if (self.fade.state() != QAbstractAnimation.State.Running
-                and self.toggle.graphicsEffect().opacity() != float(visible)):
-            self.fade.start()
-
-    def eventFilter(self, watched, event):
-        if self.controls_pinned():
-            return super().eventFilter(watched, event)
-        if event.type() == QEvent.Type.MouseMove:
-            self.fade_toggle(True)
-            self.idle.start()
-        elif (watched is self.toggle and event.type() == QEvent.Type.FocusIn
-              and event.reason() in (Qt.FocusReason.TabFocusReason, Qt.FocusReason.BacktabFocusReason)):
-            self.idle.stop()
-            self.fade_toggle(True)
-        elif watched is self.toggle and event.type() == QEvent.Type.FocusOut:
-            self.idle.start()
-        return super().eventFilter(watched, event)
-
-    def closeEvent(self, event):
-        event.ignore()
-
-
 class InstallerWindow(OpaqueSurface):
     def __init__(self, bridge, *, uninstall=False, mode="install", section="appearance", widget=None):
         # Fusion ships with Qt. Use it only in this installer process so native
@@ -1272,7 +1156,7 @@ class InstallerWindow(OpaqueSurface):
         self._qt_language = None
         self._qt_translator = QTranslator(self)
         self._display_family = display_family
-        self._log_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
+        self._log_font = QFont(ui_font)
         self._operation_started = None
         self._details_expanded = False
         self._eta_timer = QTimer(self)
@@ -1505,12 +1389,6 @@ class InstallerWindow(OpaqueSurface):
             dirs = [str(path) for path in (Path(config), self.appearance_state.parent) if path.is_dir()]
             self.config_watcher = QFileSystemWatcher(dirs, self)
             self.config_watcher.directoryChanged.connect(lambda _: self.config_timer.start())
-        self.transition_bus = None
-        self.apply_start_progress = None
-        self.transition_screens = {}
-        self.transition_dismissed = False
-        app.screenAdded.connect(self.cover_screen)
-        app.screenRemoved.connect(self.uncover_screen)
         bridge.runningChanged.connect(self.refresh_window_controls)
         bridge.finished.connect(self.finished)
         bridge.progressChanged.connect(self.refresh_progress)
@@ -3625,72 +3503,16 @@ class InstallerWindow(OpaqueSurface):
         self.remaining_label = self.label("")
         self.remaining_label.setObjectName("detail")
         self.body.addWidget(self.remaining_label)
-        if self.action == "install":
-            self.body.addWidget(self.label("Once the components are built, the screen will go black while your desktop is updated."))
         self.details()
         self._eta_timer.start()
         self.refresh_progress()
-
-    def cover_screen(self, screen):
-        if (screen in self.transition_screens or self.page not in ("progress", "error")
-                or self.action != "install" or self.transition_dismissed
-                or self.bridge.summary.active not in ("install", "apply", "verify")):
-            return
-        if self.transition_bus is None and self.page == "progress":
-            # The screensaver releases this presentation inhibitor when its
-            # dedicated D-Bus connection closes, including on an installer crash.
-            from PyQt6.QtDBus import QDBusConnection, QDBusMessage
-            self.transition_bus = QDBusConnection.connectToBus(
-                QDBusConnection.BusType.SessionBus, "installer-desktop-transition")
-            inhibit = QDBusMessage.createMethodCall(
-                "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit")
-            inhibit.setArguments([self.edition, self.t("Applying appearance…")])
-            self.transition_bus.asyncCall(inhibit)
-        cover = ApplyScreen(self, screen)
-        self.transition_screens[screen] = cover
-        if self.page == "error":
-            cover.bar.setValue(self.failed_apply_progress)
-            cover.show_failure()
-        cover.showFullScreen()
-
-    def uncover_screen(self, screen):
-        cover = self.transition_screens.pop(screen, None)
-        if cover is not None:
-            cover.hide()
-            cover.deleteLater()
-
-    def dismiss_transition(self):
-        self.transition_dismissed = True
-        for screen in list(self.transition_screens):
-            self.uncover_screen(screen)
-        self.release_transition_inhibitor()
-
-    def release_transition_inhibitor(self):
-        if self.transition_bus is not None:
-            self.transition_bus.disconnectFromBus(self.transition_bus.name())
-            self.transition_bus = None
 
     def refresh_progress(self):
         if self.page != "progress" or not hasattr(self, "progress"):
             self._eta_timer.stop()
             return
         fraction = max(0.0, min(1.0, self.bridge.progress))
-        summary = self.bridge.summary
-        if self.action == "install" and summary.active is not None:
-            self.progress.setValue(round(1000 * summary.preparation_fraction))
-            if summary.application_started:
-                self.next.setEnabled(False)
-                if self.apply_start_progress is None:
-                    self.apply_start_progress = fraction
-                    self.progress.setValue(1000)
-                    self.progress.repaint()
-                for screen in QApplication.screens():
-                    self.cover_screen(screen)
-                applied = max(0, fraction - self.apply_start_progress) / max(.01, 1 - self.apply_start_progress)
-                for cover in self.transition_screens.values():
-                    cover.bar.setValue(round(1000 * applied))
-        else:
-            self.progress.setValue(round(fraction * 1000))
+        self.progress.setValue(round(fraction * 1000))
         self.progress.setAccessibleDescription(self.bridge.currentStep)
         elapsed = time.monotonic() - self._operation_started if self._operation_started is not None else 0
         self.remaining_label.setText(self.t("Elapsed {duration}").format(duration=elapsed_text(elapsed, self.t)))
@@ -3721,9 +3543,6 @@ class InstallerWindow(OpaqueSurface):
             bar.setValue(position)
 
     def append_log(self, text):
-        for cover in self.transition_screens.values():
-            if cover.toggle.isChecked():
-                cover.log.appendPlainText(text)
         if self.page in ("progress", "error", "done", "removed") and hasattr(self, "log") and self.full_output_toggle.isChecked():
             bar = self.log.verticalScrollBar()
             following = bar.value() == bar.maximum()
@@ -3811,15 +3630,11 @@ class InstallerWindow(OpaqueSurface):
         elif self.page in ("done", "removed"):
             self.close(); return
         elif self.page == "progress":
-            if self.bridge.summary.application_started:
-                return
             self.bridge.cancel(); self.next.setEnabled(False); return
         elif self.page in ("summary", "uninstall", "error"):
             if self.page != "error":
                 self.action = "uninstall" if self.page == "uninstall" else "install"
             self.bridge.setChoices(validate(self.choices))
-            self.apply_start_progress = None
-            self.transition_dismissed = False
             self.bridge.summary = ProgressModel(self.action)
             self._operation_started = time.monotonic()
             self._details_expanded = False
@@ -3830,16 +3645,6 @@ class InstallerWindow(OpaqueSurface):
         self.render()
 
     def finished(self, code):
-        reveal_desktop = bool(self.transition_screens) and code == 0
-        if reveal_desktop:
-            self.showMinimized()
-        if self.transition_screens and code not in (0, 130) and not self.close_pending:
-            self.failed_apply_progress = next(iter(self.transition_screens.values())).bar.value()
-            self.release_transition_inhibitor()
-            for cover in self.transition_screens.values():
-                cover.show_failure()
-        else:
-            self.dismiss_transition()
         self._operation_code = code
         self._operation_elapsed = time.monotonic() - self._operation_started if self._operation_started is not None else 0
         self._eta_timer.stop()
@@ -3852,10 +3657,7 @@ class InstallerWindow(OpaqueSurface):
     def closeEvent(self, event):
         if self.appearance_process is not None:
             event.ignore()
-        elif self.bridge.running and self.bridge.summary.application_started:
-            event.ignore()
         elif self.bridge.running:
             self.close_pending = True; self.bridge.cancel(); event.ignore()
         else:
-            self.dismiss_transition()
             event.accept()

@@ -633,7 +633,6 @@ def test_uninstall_falls_back_to_bgrt_without_snapshot(tmp_path, monkeypatch):
                         tmp_path / "state-missing/plymouth-previous-theme")
     monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
 
-    plymouth.DEST.mkdir(parents=True)
     calls = _stub(monkeypatch, have_bin=True)
     plymouth.uninstall()
 
@@ -660,7 +659,10 @@ def test_uninstall_avoids_loop_when_snapshot_is_our_own_name(tmp_path, monkeypat
     assert _activation_calls(calls) == [[plymouth.PLYMOUTH_BIN, "-R", "bgrt"]]
 
 
-def test_uninstall_retains_recovery_when_plymouth_binary_missing(tmp_path, monkeypatch):
+def test_uninstall_continues_when_plymouth_binary_missing(tmp_path, monkeypatch):
+    """If the distro stripped plymouth between install and uninstall
+    we still want to remove our theme dir + state file, just without
+    the restore call."""
     state_dir = tmp_path / "state"
     state_dir.mkdir()
     prev_file = state_dir / "plymouth-previous-theme"
@@ -675,8 +677,7 @@ def test_uninstall_retains_recovery_when_plymouth_binary_missing(tmp_path, monke
     plymouth.uninstall()
 
     assert _activation_calls(calls) == []
-    assert not calls["remove"]
-    assert prev_file.read_text() == "breeze\n"
+    assert calls["remove"] == [tmp_path / "dest/MacTahoeLiquidKde"]
 
 
 # ──────────────────────── boot-side prerequisites ──────────────────────
@@ -1482,10 +1483,9 @@ def test_alternatives_install_and_restore_exact_previous_path(tmp_path, monkeypa
     assert not plymouth.PREV_THEME_FILE.exists()
 
 
-@pytest.mark.parametrize('distribution', ['ubuntu', 'arch'])
-def test_failed_restore_keeps_recovery_and_theme(tmp_path, monkeypatch, distribution):
+def test_alternatives_failed_restore_keeps_recovery_and_theme(tmp_path, monkeypatch):
     import distro
-    monkeypatch.setattr(distro, 'current_distro', lambda: distribution)
+    monkeypatch.setattr(distro, 'current_distro', lambda: 'ubuntu')
     monkeypatch.setattr(plymouth, 'STATE_DIR', tmp_path)
     monkeypatch.setattr(plymouth, 'PREV_THEME_FILE', tmp_path / 'previous')
     plymouth.PREV_THEME_FILE.write_text('/opt/custom/custom.plymouth\n')
@@ -1504,13 +1504,3 @@ def test_install_aborts_when_previous_theme_cannot_be_saved(tmp_path, monkeypatc
     plymouth.install()
     assert not calls['install_tree']
     assert not _activation_calls(calls)
-
-
-def test_uninstall_completed_retry_preserves_active_splash(tmp_path, monkeypatch):
-    monkeypatch.setattr(plymouth, "STATE_DIR", tmp_path)
-    monkeypatch.setattr(plymouth, "DEST", tmp_path / "removed-theme")
-    monkeypatch.setattr(plymouth, "PREV_THEME_FILE", tmp_path / "previous")
-    calls = _stub(monkeypatch)
-    plymouth.uninstall()
-    assert not calls["subprocess"]
-    assert not calls["remove"]

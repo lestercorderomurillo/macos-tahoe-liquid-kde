@@ -638,8 +638,7 @@ PlasmaCore.ToolTipArea {
             // mirroring the busy spinner it sits alongside above.
             SequentialAnimation {
                 running: task.model.IsStartup
-                // A background launch can keep its startup token until timeout.
-                loops: 3
+                loops: Animation.Infinite
                 onRunningChanged: if (!running) bounceTransform.y = 0
 
                 NumberAnimation {

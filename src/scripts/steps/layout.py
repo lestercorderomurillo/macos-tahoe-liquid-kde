@@ -267,23 +267,18 @@ def configure_dock() -> None:
     mode = choices.get("dock_visibility", dock_visibility())
     script = """
     (function () {
-        let found = false;
         for (const panel of panels()) {
             if (panel.screen >= 0 && panel.screen < screenCount && panel.location === "bottom" && panel.widgets().some(
                     widget => widget.type === "org.kde.mac.tahoe.liquid.icontasks")) {
                 panel.hiding = MODE;
-                found = true;
             }
         }
-        if (REQUIRED && !found) throw new Error("Tahoe Dock is missing");
     })()
     """.replace("MODE", json.dumps(plasma_dock_hiding(mode)))
-    required = choices.get("reset_layout", False)
-    script = script.replace("REQUIRED", json.dumps(required))
     if (DATA_HOME / "plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.downloads/metadata.json").is_file():
         script += "\n" + offline("layouts/migrate-downloads.js").read_text()
     if not _evaluate_layout_script(script):
-        (fail if required else warn)(tr("Dock preset update failed"))
+        warn(tr("Dock preset update failed"))
         return
     if choices:
         preference = dock_visibility_preference()
@@ -334,10 +329,6 @@ def _evaluate_layout_with_launchers(
     script = _layout_script_with_launchers(script_path, pins, widget_type)
     if script is None:
         return False
-    # Capture the outgoing panel appearance immediately before the live edit.
-    # KWin owns the short crossfade and respects disabled desktop animations.
-    qdbus_call("org.kde.KWin", "/org/kde/KWin/BlendChanges",
-               "org.kde.KWin.BlendChanges.start", "120")
     # A client timeout does not cancel evaluateScript in Plasma. Submitting a
     # second panel rebuild can leave multiple live copies on slower desktops.
     return evaluate_panel_transaction(script)

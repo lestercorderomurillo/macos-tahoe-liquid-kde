@@ -149,12 +149,12 @@ def test_mac_layout_keeps_native_panel_surfaces():
     "look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/"
     "org.kde.plasma.desktop-layout.js",
 ])
-def test_bundled_layouts_keep_dock_and_top_bar_visible(
+def test_bundled_layouts_autohide_dock_and_keep_top_bar_visible(
         offline, relative_path):
     script = (offline / relative_path).read_text()
 
     # Issue #87: dodge can leave the Dock stuck over maximized windows.
-    assert 'dock.hiding = "windowsgobelow";' in script
+    assert 'dock.hiding = "autohide";' in script
     assert 'bar.hiding = "none";' in script
     assert '"dodgewindows"' not in script
 
@@ -356,7 +356,7 @@ def test_reinstall_applies_default_visibility_with_preserved_pins(monkeypatch, t
     layout.install()
 
     script = captured["script"]
-    assert 'dock.hiding = "windowsgobelow";' in script
+    assert 'dock.hiding = "autohide";' in script
     assert 'bar.hiding = "none";' in script
     expected = json.dumps(["preferred://filemanager", "applications:steam.desktop", "preferred://browser"])
     assert f"writeConfig('launchers', {expected})" in script

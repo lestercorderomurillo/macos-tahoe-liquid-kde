@@ -88,7 +88,7 @@ def install() -> None:
             check=False,
             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
         )
-    info(tr('GTK themes installed or reinstalled: {n}', n=n))
+    info(tr('{n} GTK themes installed/reinstalled', n=n))
 
 
 def uninstall() -> None:

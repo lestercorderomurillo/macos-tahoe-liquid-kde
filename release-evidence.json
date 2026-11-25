@@ -1,34 +1,14 @@
 {
-  "version": "0.84.27",
-  "scope": "The fullscreen installer verifies selected components before desktop changes and the uninstaller preserves damaged recovery records.",
+  "version": "0.84.28",
+  "scope": "Restore the v0.84.26 installer and desktop implementation.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_commit": "7e31f1141b1a28f9168eac06cfd22fe6c9b66f74",
+  "qualified_commit": "8c1904ca43f250ad3ac473212b234a5bae62b61d",
   "checks": [
     {
-      "command": "KDE neon / Plasma Wayland, staged Golden Gate source cf9b6ce6817625bda3a7dfa3ae9a5fcb59d983f0. installer_backend.py install with an unreachable selected download or missing bundled icon archive returned 1 before activation. Restored inputs and installed with no Firefox profile. Decoded 6,355 PNGs in each regular light and dark theme and matched the manifests. Verified installed asset fingerprints.",
-      "result": "passed"
-    },
-    {
-      "command": "KDE neon, same installation. Emptied the widget placement record and ran installer_backend.py uninstall twice. Both returned 0. Verified the empty record was preserved, icons removed and the same distro splash remained selected.",
-      "result": "passed"
-    },
-    {
-      "command": "KDE neon, final Firefox stylesheet and component manifest from 00d2138b9f9f92d8ad8d03645bddc955112f1b9a. Installed after complete uninstall, then reinstalled. Both backend runs succeeded with no Firefox profile.",
-      "result": "passed"
-    },
-    {
-      "command": "KDE neon final shared Plymouth code from 7e31f1141b1a28f9168eac06cfd22fe6c9b66f74. With missing splash tooling simulated on installed assets, preserved the active theme directory and original recovery snapshot. Full uninstall with working tools restored Breeze. The Firefox step also skipped cleanly with no browser executable on PATH and no profiles. 70 Plymouth unit tests passed including Ubuntu and Arch restore failures.",
-      "result": "passed"
-    },
-    {
-      "command": "Focused Tahoe pytest batches covering the wizard, backend, localization, package mappings, Firefox, icon assets and restoration: 1090 passed in the main batch, 260 passed and one skipped in the supplementary batch. After restoring the released Firefox toolbar stylesheet, 48 Firefox tests passed.",
-      "result": "passed"
-    },
-    {
-      "command": "Golden Gate wrapper pytest: 137 passed. Reviewed fullscreen install and live log screens previously captured on Debian Wayland from 6eef938d28b2fa2649aca7f6f9f0ef67b6ce3776. The fullscreen widget implementation is unchanged.",
+      "command": "QT_QPA_PLATFORM=offscreen MAC_TAHOE_NO_UPDATE_CHECK=true: launched _launch_preview_pyqt using shared Tahoe source and Golden Gate --prepare output. Checked the visible language selector, Hindi glyph run in Noto Sans Devanagari, disabled qt.text.font.db info and enabled category warnings and unrelated info.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Installed desktop lifecycle exercised on KDE neon Wayland. Earlier graphical coverage included Debian Wayland. The package mapping checks use fixtures. Other distributions, display servers, hardware and user configurations were not individually booted in this qualification.",
-  "source_sha256": "a4f2a695d288971a7209a654920f218bc45a184279468f75a6507560300d0e2f"
+  "coverage_limits": "Qt 6.11.2 on CachyOS. The original informational message did not recur during baseline runs. Checked its logging level and actual glyph shaping. No backend installation was run.",
+  "source_sha256": "a9367560de23d1d0032ff0850bfc438a574c083f02ef65fd6ea34b9589112235"
 }

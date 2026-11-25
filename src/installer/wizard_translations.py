@@ -14,10 +14,6 @@ Enable clipboard history?|¿Activar el historial del portapapeles?|启用剪贴�
 Enable clipboard history|Activar el historial del portapapeles|启用剪贴板历史记录|Ativar o histórico da área de transferência|Zwischenablageverlauf aktivieren
 Clipboard history|Historial del portapapeles|剪贴板历史记录|Histórico da área de transferência|Zwischenablageverlauf
 Copied text and images are saved unencrypted on this computer. Uninstall deletes this history.|El texto y las imágenes copiados se guardan sin cifrar en este equipo. La desinstalación elimina este historial.|复制的文本和图像将以未加密形式保存在此计算机上。卸载会删除此历史记录。|O texto e as imagens copiados são salvos sem criptografia neste computador. A desinstalação apaga esse histórico.|Kopierte Texte und Bilder werden unverschlüsselt auf diesem Computer gespeichert. Die Deinstallation löscht diesen Verlauf.
-Once the components are built, the screen will go black while your desktop is updated.|Cuando termine la compilación, la pantalla se pondrá negra mientras se actualiza el escritorio.|组件构建完成后，屏幕将变黑，直到桌面更新完成。|Após a compilação, a tela ficará preta enquanto a área de trabalho é atualizada.|Nach dem Kompilieren wird der Bildschirm schwarz, während der Desktop aktualisiert wird.
-Exit|Salir|退出|Sair|Beenden
-View logs|Ver registros|查看日志|Ver registros|Protokoll anzeigen
-Hide logs|Ocultar registros|隐藏日志|Ocultar registros|Protokoll ausblenden
 Estimating time remaining…|Calculando el tiempo restante…|正在估算剩余时间…|Calculando o tempo restante…|Verbleibende Zeit wird geschätzt…
 About {minutes} minutes remaining|Faltan unos {minutes} minutos|大约还剩 {minutes} 分钟|Faltam cerca de {minutes} minutos|Noch etwa {minutes} Minuten
 About a minute remaining|Falta aproximadamente un minuto|大约还剩 1 分钟|Falta cerca de um minuto|Noch etwa eine Minute

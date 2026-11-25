@@ -482,40 +482,40 @@ def run_preflight(op: str = "install") -> bool:
     total = 9 if op == "install" else 8
     n = 0
 
-    n += 1; print(f"  {n}/{total}  {tr('Administrative privileges')}")
+    n += 1; print(tr('  ── {n}/{total} sudo escalation hop ───', n=n, total=total))
     sudo_ok = _check_sudo_escalation()
     print()
 
-    n += 1; print(f"  {n}/{total}  {tr('Installation paths')}")
+    n += 1; print(tr('  ── {n}/{total} destination paths ─────', n=n, total=total))
     paths_ok = _check_paths()
     print()
 
-    n += 1; print(f"  {n}/{total}  {tr('Qt 6 plugin paths')}")
+    n += 1; print(tr('  ── {n}/{total} Qt6 plugin search ─────', n=n, total=total))
     qt_ok = _check_qt_paths()
     print()
 
-    n += 1; print(f"  {n}/{total}  {tr('KDE Plasma version')}")
+    n += 1; print(tr('  ── {n}/{total} KDE Plasma version ────', n=n, total=total))
     plasma_ok = _check_plasma_version()
     print()
 
-    n += 1; print(f"  {n}/{total}  {tr('KDE configuration tools')}")
+    n += 1; print(tr('  ── {n}/{total} KDE config tools ──────', n=n, total=total))
     kde_tools_ok = _check_kde_config_tools()
     print()
 
-    n += 1; print(f"  {n}/{total}  {tr('D-Bus session')}")
+    n += 1; print(tr('  ── {n}/{total} DBus session bus ──────', n=n, total=total))
     dbus_ok = _check_dbus_session()
     print()
 
-    n += 1; print(f"  {n}/{total}  {tr('kded6 service (optional)')}")
+    n += 1; print(tr('  ── {n}/{total} kded6 health (soft) ───', n=n, total=total))
     _check_kded_running()  # soft — never blocks install
     print()
 
-    n += 1; print(f"  {n}/{total}  {tr('Available disk space')}")
+    n += 1; print(tr('  ── {n}/{total} disk space ────────────', n=n, total=total))
     disk_ok = _check_disk_space()
     print()
 
     if op == "install":
-        n += 1; print(f"  {n}/{total}  {tr('Plasma widget identifiers')}")
+        n += 1; print(tr('  ── {n}/{total} plasmoid ID consistency ─', n=n, total=total))
         ids_ok = _check_plasmoid_ids()
     else:
         ids_ok = True

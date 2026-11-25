@@ -145,7 +145,7 @@ for (var screen = 0; screen < screenCount; screen++) {
     dock.lengthMode = "fit";
     dock.floating = true;
     dock.opacity = "translucent";
-    dock.hiding = "windowsgobelow";
+    dock.hiding = "autohide";
     dock.height = 68;
 
     if (typeof userLauncherTypes !== "undefined") {

@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.27**. The fullscreen installer verifies selected components before desktop changes and the uninstaller preserves damaged recovery records. [Evidence and coverage](release-evidence.json).
+**v0.84.28**. Restore the v0.84.26 installer and desktop implementation. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

@@ -19,7 +19,7 @@ from paths import (
     read_version,
 )
 from log import (
-    banner, errors, fail, info, note, ok, progress_done, progress_reset, progress_event, step, warn,
+    banner, errors, fail, note, ok, progress_done, progress_reset, progress_event, step, warn,
 )
 from launcher_defaults import edition_name
 from preflight import run_preflight
@@ -415,7 +415,8 @@ def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
             time.sleep(_VERSION_CHECK_READ_PAUSE)
         return True
     if verbose or inline:
-        ok(tr('Version {current} is up to date.', current=current))
+        # Match ok() formatting exactly.
+        print(tr('  \x1b[0;32m✓\x1b[0m  On the latest version ({current})', current=current))
     if inline:
         time.sleep(_VERSION_CHECK_READ_PAUSE)
     return False
@@ -872,16 +873,23 @@ def _download_features(feat: dict[str, object]) -> list[str]:
     ]
 
 
-def _prepare_downloads(feat: dict[str, object]) -> bool:
-    """Require verified sources for every selected online component before building."""
+def _run_optional_downloads(feat: dict[str, object]) -> bool:
+    """Run optional online phases.
+
+    Network availability must never block the core, fully bundled theme. Any
+    error emitted by an online step is downgraded to a warning and that one
+    feature is disabled for the current invocation.
+    """
     downloads = _download_features(feat)
     if not downloads:
         ok(tr('no online components selected — skipping download phase'))
         return True
-    for feature in downloads:
+    for i, feature in enumerate(downloads):
         check_cancelled()
+        if i:
+            print()
         label = feature_label(feature)
-        info(tr('Downloading {label}', label=label))
+        print(tr('  \x1b[1mDownloading {label}\x1b[0m', label=label))
         before = len(errors)
         phase_ok = run_phase(feature, "download")
         mod = step_module(feature)
@@ -889,9 +897,12 @@ def _prepare_downloads(feat: dict[str, object]) -> bool:
         ready = phase_ok and (not callable(ready_probe) or ready_probe())
         if ready:
             continue
-        if len(errors) == before:
-            fail(f"{label}: {tr('Downloading Online Components')}")
-        return False
+        # run_phase() records fail() output globally. This online component is
+        # explicitly best-effort, so remove only errors created by its phase.
+        del errors[before:]
+        feat[feature] = False
+        os.environ[f"FEAT_{feature.upper()}"] = "false"
+        warn(tr('{label} unavailable — skipping it; bundled theme install continues', label=label))
     return True
 
 
@@ -920,10 +931,13 @@ def _run_builds_or_abort(feat: dict[str, object]) -> bool:
         return True
 
     failed: list[str] = []
-    for feature in builds:
+    for i, feature in enumerate(builds):
         check_cancelled()
         label = feature_label(feature)
-        info(tr('Building {label}', label=label))
+        # note() already trails a blank line; skip the first leading blank.
+        if i:
+            print()
+        print(tr('  \x1b[1mBuilding {label}\x1b[0m', label=label))
         progress_event("build", id=feature, state="running")
         if not run_phase(feature, "build"):
             progress_event("build", id=feature, state="failed")
@@ -958,29 +972,6 @@ _BASE_DEPS = [
     # Keeps the launcher/taskbar app list fresh after a theme switch.
     ("update-desktop-database", "desktop-file-utils"),
 ]
-
-
-def _check_selected_inputs(feat: dict[str, object], operation: str) -> bool:
-    """Check source modules and recovery information before changing the session."""
-    for feature in dict.fromkeys((*INSTALL_ORDER, "apply", "theme_switch", "oled_care")):
-        if feature not in ("apply", "theme_switch", "oled_care") and not should_process(feature, feat):
-            continue
-        try:
-            module = step_module(feature)
-            if not callable(getattr(module, operation, None)):
-                raise ImportError(f"steps.{feature}.{operation}")
-            if feature == "firefox":
-                module.read_manifest()
-            if feature == "icons" and operation == "install":
-                archive = module.OFFLINE_DIR / "MacTahoeLiquidKde-Icons.tar.zst"
-                if not archive.is_file() or not archive.stat().st_size:
-                    fail(tr('offline tarball missing: {tarball}', tarball=archive))
-                    return False
-        except (ImportError, OSError, ValueError) as exc:
-            fail(tr('{feature}: {phase} raised {value3}: {exc}', feature=feature,
-                    phase=operation, value3=type(exc).__name__, exc=exc))
-            return False
-    return True
 
 
 def _check_deps(feat: dict[str, object]) -> bool:
@@ -1033,16 +1024,14 @@ def _check_deps(feat: dict[str, object]) -> bool:
         if p not in missing:
             ok(p)
     if missing:
-        note(tr('Installing required packages: {value1}', value1=', '.join(missing)))
+        warn(tr('installing missing: {value1}', value1=', '.join(missing)))
         transaction_ok = pkg_sync_install(*missing)
         check_cancelled()
-        remaining = [pkg for pkg in missing if not package_installed(pkg)] if transaction_ok else missing
-        if remaining:
-            note(", ".join(remaining))
-            fail(tr('Installation stopped. The package manager could not install the required dependencies.'))
+        if not transaction_ok:
+            fail(tr('dependency package transaction failed — refusing to continue'))
             return False
     else:
-        ok(tr('All required packages are installed'))
+        ok(tr('all dependencies present'))
     return True
 
 
@@ -1060,6 +1049,7 @@ def _flush_icon_cache_signal() -> None:
 
 def _print_done(verb: str) -> None:
     print()
+    print(tr('\x1b[0;32m\x1b[1m  ── Done\x1b[0m'))
     if not errors:
         ok(tr('MacTahoe Liquid KDE {verb} successfully', verb=tr(verb)).replace("MacTahoe", edition_name()))
         print(tr('  \x1b[0;90mReport bugs at: https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new\x1b[0m'))
@@ -1068,9 +1058,9 @@ def _print_done(verb: str) -> None:
     # Snapshot: fail() appends to errors, so iterating the live list while
     # calling fail() loops forever.
     issues = list(errors)
-    info(tr('Errors: {count}', count=len(issues)))
+    warn(tr('{value1} issue(s):', value1=len(issues)))
     for e in issues:
-        print(f"  [{tr('Error')}] {e}", file=sys.stderr)
+        print(f"  \033[0;31m✗\033[0m  {e}", file=sys.stderr)
     print(tr('  \x1b[0;90mReport bugs at: https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new\x1b[0m'))
     print()
 
@@ -1097,8 +1087,8 @@ def _run_install_steps(feat: dict[str, object]) -> int:
     check_cancelled()
     preflight_ok = run_preflight("install")
     check_cancelled()
-    if not preflight_ok or not _check_selected_inputs(feat, "install"):
-        fail(tr('Installation stopped. A system check failed.'))
+    if not preflight_ok:
+        fail(tr('preflight failed — refusing to install'))
         return 1
 
     step('Verification')
@@ -1122,9 +1112,7 @@ def _run_install_steps(feat: dict[str, object]) -> int:
     step('Downloading Online Components')
     note(tr('Fetches the pinned KDE Rounded Corners source and verifies SHA-256'))
     selected_downloads = _download_features(feat)
-    if not _prepare_downloads(feat):
-        progress_event("phase", id="downloads", state="failed")
-        return 1
+    _run_optional_downloads(feat)
     check_cancelled()
 
     progress_event('phase', id='downloads', state='done' if any(feat.get(f, True) for f in selected_downloads) else 'skipped')
@@ -1174,29 +1162,21 @@ def _run_install_steps(feat: dict[str, object]) -> int:
     note(tr('Opt-in pixel shift that guards OLED panels against burn-in'))
     run_phase("oled_care", "install")
 
-    if errors:
-        progress_event('phase', id='install', state='failed')
-        return 1
-    progress_event('phase', id='install', state='done')
+    progress_event('phase', id='install', state='failed' if errors else 'done')
     if feat.get("apply_theme", True):
         progress_event('phase', id='apply', state='running')
         step('Applying Changes')
         note(tr('Applies settings, flushes caches, restarts KWin'))
         run_phase("apply", "install")
 
-        # Replace the shell before any layout script creates applets. A shell
-        # still mapping the previous native plugins can crash during teardown.
-        _flush_icon_cache_signal()
-        step('Restarting Plasma')
-        note(tr('Restarts Plasma shell to load all changes'))
-        if not run_phase("apply", "restart_plasma"):
-            progress_event("phase", id="apply", state="failed")
-            return 1
-
+        # Layout runs after apply — the Plasma JS scripting API can't
+        # find the custom plasmoids by ID until their packages are on disk.
         if feat.get("layout", True) and step_exists("layout"):
             step('Installing Layout')
             note(tr(FEATURE_DESC["layout"]))
             run_phase("layout", "install")
+
+        _flush_icon_cache_signal()
 
         progress_event('phase', id='apply', state='failed' if errors else 'done')
         progress_event('phase', id='verify', state='running')
@@ -1206,6 +1186,10 @@ def _run_install_steps(feat: dict[str, object]) -> int:
 
         if not keep_layout and step_exists("layout"):
             run_phase("layout", "migrate_status_controls")
+
+        step('Restarting Plasma')
+        note(tr('Restarts Plasma shell to load all changes'))
+        run_phase("apply", "restart_plasma")
 
         if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
             step('Retrying Layout')
@@ -1250,8 +1234,8 @@ def _run_uninstall_steps(feat: dict[str, object]) -> int:
     progress_event("phase", id="system", state="running")
     preflight_ok = run_preflight("uninstall")
     check_cancelled()
-    if not preflight_ok or not _check_selected_inputs(feat, "uninstall"):
-        fail(tr('Removal stopped. A system check failed.'))
+    if not preflight_ok:
+        fail(tr('preflight failed — refusing to uninstall'))
         return 1
 
     step('Verification')
@@ -1382,16 +1366,17 @@ def run_install(argv: list[str],
         banner(read_version())
         result = run_preflight("install")
         check_cancelled()
-        return 0 if result and _check_selected_inputs(feat, "install") else 1
+        return 0 if result else 1
 
     # Standalone --restart just kicks plasmashell. Combined with install
-    # flags it is implicit in the activation phase.
+    # flags it is implicit — the install already ends with restart_plasma.
     if (parsed.restart_only and not parsed.only_mode and not parsed.cli_overrides
             and not parsed.reset_wallpapers):
         banner(read_version())
         step('Restarting Plasma')
         note(tr('Restarts Plasma shell — no install, no config changes'))
-        return 0 if run_phase("apply", "restart_plasma") else 1
+        run_phase("apply", "restart_plasma")
+        return 0
 
     tracker = RunTracker("install", argv, str(feat.get("theme_mode", "auto")))
     tracker.start()

@@ -243,18 +243,3 @@ def test_dock_builds_shared_launcher_only_without_globalmenu(monkeypatch):
         plasmoids.build()
         assert (launcher in plasmoids.build_artifacts()) != enabled
     assert calls == [("org.kde.mac.tahoe.liquid.taskmanager",), ()]
-
-
-def test_corrupt_widget_record_retained_without_removing_live_applets(tmp_path, monkeypatch):
-    from steps import plasmoids
-    state = tmp_path / "desktop-widgets.list"
-    placement = state.with_suffix(".placed.json")
-    monkeypatch.setattr(plasmoids, "WIDGETS_STATE", state)
-    def unexpected(*args):
-        raise AssertionError("unverified live widget removed")
-    monkeypatch.setattr(plasmoids, "_run_widget_script", unexpected)
-    for contents in (b"", b"{incomplete", b'{"2":"unowned.widget"}'):
-        placement.write_bytes(contents)
-        plasmoids._remove_placed_desktop_widgets()
-        assert not placement.exists()
-        assert contents in [p.read_bytes() for p in tmp_path.glob("*.invalid-*")]
