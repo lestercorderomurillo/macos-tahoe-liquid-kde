@@ -143,9 +143,9 @@ Refracción de vidrio, zoom de desplazamiento, burbujas rojas de cuenta de notif
 
 <br>
 
-### Coherencia de la superficie
+### Shell (Alpha)
 
-Archivos, Editar y otros menús de aplicación siguen la ventana activa. Abre el menú del sistema para configuraciones y controles de sesión.
+File, Edit y los otros menús de aplicaciones siguen la ventana activa. Abre el menú del sistema para configuraciones y controles de sesión.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menú de archivos con un documento abierto en Kate" width="830">
@@ -156,11 +156,11 @@ Archivos, Editar y otros menús de aplicación siguen la ventana activa. Abre el
 
 ### Vidrio acrílico 2.0 con contraste adaptativo
 
-Contraste adaptativo muestra el fondo detrás de cada etiqueta. mantiene el color del tema cuando la diferencia es de al menos 33 puntos de ligereza perceptiva.
+El contraste adaptativo muestra el fondo detrás de cada etiqueta. Se mantiene el color del tema cuando la diferencia es de al menos 33 puntos de ligereza perceptiva. Por debajo de ese objetivo, aplica la corrección más pequeña que pueda, hasta el 40% de la escala RGB, manteniendo el texto claro claro y el texto oscuro oscuro. Apagarlo utiliza el color del tema.
 
 <br>
 
-### La plataforma de lanzamiento (Alfa)
+### Launchpad (Alpha)
 
 Encuentra aplicaciones, busca categorías y mantén tus favoritos al alcance.
 
@@ -198,7 +198,7 @@ Banner de notificación de vidrio y historial agrupado con acciones de la aplica
 
 <br>
 
-### Finder (Alfa)
+### Finder (Alpha)
 
 Browsing de archivos en estilo de buscador con vidrio Tahoe.
 
@@ -211,7 +211,7 @@ Browsing de archivos en estilo de buscador con vidrio Tahoe.
 
 ### Calendario (Alfa)
 
-Abra el reloj del panel para ver el mes en vidrio. Desglose o use las teclas de flecha para navegar meses. Presione Inicio para volver al mes actual.
+Abre el reloj para ver el mes en vidrio. Despliegue o use las teclas de flecha para navegar meses. Presione Home para volver al mes actual.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Luz" width="328">
@@ -220,7 +220,7 @@ Abra el reloj del panel para ver el mes en vidrio. Desglose o use las teclas de 
 
 <br>
 
-### Bluetooth (alfa)
+### Bluetooth (Alpha)
 
 Conecte los dispositivos emparejados y compruebe el nivel de batería desde la barra de menú.
 
@@ -229,9 +229,9 @@ Conecte los dispositivos emparejados y compruebe el nivel de batería desde la b
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menú Bluetooth oscuro con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
 </p>
 
-### Wi-Fi (Alfa)
+### Wi-Fi (Alpha)
 
-Abre el menú Wi-Fi para ver las redes inalámbricas disponibles. Sin un adaptador Wi-Fi o con Wi-Fi apagado, el menú enumera las conexiones con cable seguidas de un único divisor y el enlace de configuración Wi-Fi.
+Abre el menú Wi-Fi para ver las redes inalámbricas disponibles. Sin un adaptador Wi-Fi, o con Wi-Fi apagado, el menú enumera sus conexiones por cable seguidas de un único divisor y el enlace de configuración Wi-Fi.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menú Wi-Fi ligero conectado a Harbor Studio, con Garden Guest y Workshop disponibles" width="48%">
@@ -251,7 +251,7 @@ Abre el menú de la batería para comprobar el nivel de carga y el estado de pot
 
 <br>
 
-### Historia de la cinta (Alfa)
+### Historial del portapapeles (Alpha)
 
 Encuentra y reutilice texto e imágenes copiados directamente desde Launchpad.
 
@@ -273,7 +273,7 @@ Detalles de hardware, software y tema con contraste adaptativo.
 
 <br>
 
-### Tema de plasma (alfa)
+### Tema Plasma (Alpha)
 
 Menús y popups translúcidos con colores claros y oscuros iguales.
 
@@ -284,7 +284,7 @@ Menús y popups translúcidos con colores claros y oscuros iguales.
 
 <br>
 
-### El botín de la espalla (Alfa)
+### Pantalla de inicio (Alpha)
 
 Un aspecto parecido desde el inicio hasta el cierre, con desbloqueo incorporado para unidades encriptadas LUKS2.
 

@@ -24,11 +24,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="serbest bırakılmak"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="Sürüm"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="Testler"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plazma"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="lisans"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="Bir böcek rapor"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="Hata bildir"></a>
 </p>
 
 
@@ -51,11 +51,11 @@
   <a href="tests/vm/PROOF.md#nixos" title="NixOS (experimental)"><img src="src/screenshots/distros/nixos.svg" alt="NixOS" width="32" height="32"></a>
 </p>
 
-Bu proje, KDE masaüstü bilgisayarınızın görünümünü ve görünümünü Linux'ta özelleştirir. Apple hizmetlerine dahil edilmez veya bağlanmaz. [Apple ile doğrudan alışveriş yap](https://www.apple.com/store).
+Bu proje, KDE masaüstü bilgisayarınızın görünümünü ve görünümünü Linux'ta özelleştirir. Apple hizmetlerini içermez veya bağlamamaktadır. Eğer Apple'ın hizmetlerine ihtiyacınız varsa, [Apple ile doğrudan alışveriş yap](https://www.apple.com/store).
 
 > [!CAUTION]
-> **Çekilen Özgürlük Felsefi**
-> Deneysel. Günde güncelleştirmeler alır. Güncelleştirmeler uyumluluğu bozabilir. Üretim sistemlerinden kaçının; [Rapor sorunları](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+> **Sürekli sürüm politikası**
+> Deneysel. Günlük güncellemeler alıyor. Güncelleştirmeler uyumluluğu bozabilir. Üretim sistemlerinden kaçının; [sorunları burada bildirin](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 > [!NOTE]
 > Özellik dondurması 0.8x serisi için geçerlidir, yayınlar 0.90'a kadar hata düzeltmelerine odaklanmıştır.
@@ -63,7 +63,7 @@ Bu proje, KDE masaüstü bilgisayarınızın görünümünü ve görünümünü 
 > [!WARNING]
 > **Paywall repackers'den sakının: Bu tema ücretsizdir.**
 >
-> Bu tema üçüncü taraf kanallardan herhangi birinden bulduysanız, satın almak için ödeme yapmanız gerekmez: doğrudan bu depodan indirin.
+> Bu temayı herhangi bir üçüncü taraf kanalı üzerinden bulduysanız, onu almak için ödeme yapmanız gerekmez: doğrudan bu depodan indirin. Bu projeyi serbest tutuyoruz, böylece herkes ödeme duvarı olmadan tadını çıkarabilir. Satın alma veya abonelik gerekmez.
 
 <br>
 
@@ -151,7 +151,7 @@ Cam kırılma, dalga zoom, kırmızı bildirim sayım baloncukları ve otomatik 
 
 <br>
 
-### Çamaşır (Alfa)
+### Shell (Alpha)
 
 Dosya, Düzenleme ve diğer uygulama menüleri aktif pencerenin ardından devam eder. Ayarlar ve oturum kontrolleri için sistem menüsünü açın.
 
@@ -164,11 +164,11 @@ Dosya, Düzenleme ve diğer uygulama menüleri aktif pencerenin ardından devam 
 
 ### Adaptif Kontrastlı Akrilik Cam 2.0
 
-Adaptive Contrast, her etiket arkasındaki arka planı örnekler. Fark en az 33 algılama hafifliği noktası olduğunda tema rengini tutar. Bu hedefin altında, RGB ölçeğinin% 40'ına kadar mümkün olan en küçük düzeltmeyi uyguluyor, aynı zamanda açık metni aydınlık ve karanlık metni karanlık tutar.
+Adaptive Contrast, her etiketin arkasındaki arka planı örnekler. Fark en az 33 algısal hafiflik noktası olduğunda tema rengini korur. Bu hedefin altında, hafif metni hafif ve karanlık metni karanlık tutarken, RGB ölçeğinin% 40'ına kadar mümkün olan en küçük düzeltmeyi uyguluyor. Onu kapatmak tema rengi kullanıyor.
 
 <br>
 
-### Başlatma tabanı (Alfa)
+### Launchpad (Alpha)
 
 Uygulamaları bul, kategorileri taray ve favorilerinize erişimde tut.
 
@@ -206,7 +206,7 @@ Cam bildirim pankartları ve uygulama eylemleri ve cevap desteği ile gruplanmı
 
 <br>
 
-### Arama (Alfa)
+### Finder (Alpha)
 
 Tahoe camı ile arşiv tarama biçimi.
 
@@ -219,7 +219,7 @@ Tahoe camı ile arşiv tarama biçimi.
 
 ### Takvim (Alfa)
 
-Pencere saatini açarak ayı camda görüyorsunuz. Ayları taramak için ok tuşlarını kullanın veya kaydırın. Geçerli aya dönmek için Ev basın.
+Ay'ı camda görmek için panel saatini aç. Ayları taramak için ok tuşlarını kullan. Geçerli aya geri dönmek için Ev basın.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Takvim · Işık" width="328">
@@ -228,7 +228,7 @@ Pencere saatini açarak ayı camda görüyorsunuz. Ayları taramak için ok tuş
 
 <br>
 
-### Bluetooth (Alfa)
+### Bluetooth (Alpha)
 
 Çift cihazları bağla ve menü çubuğundan pil seviyesini kontrol et.
 
@@ -237,9 +237,9 @@ Pencere saatini açarak ayı camda görüyorsunuz. Ayları taramak için ok tuş
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Karanlık Bluetooth menüsü , 82% bağlı Studio kulaklıkları ve kablosuz klavyeleri ile bağlantı kesilmiş" width="48%">
 </p>
 
-### Wi-Fi (Alfa)
+### Wi-Fi (Alpha)
 
-Wi-Fi bağlantılarını açın ve mevcut kablosuz ağları görün. Wi-Fi adaptörü olmadan veya Wi-Fi kapalıyken, menüde kablosuz bağlantılarınız listelenir.
+Wi-Fi menüsünü açın ve mevcut kablosuz ağları görün. Wi-Fi adaptörü olmadan veya Wi-Fi kapalıyken, menü kablosuz bağlantılarınızı listeler ve ardından tek bir bölücü ve Wi-Fi ayarları bağlantısını içerir.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Harbor Studio&#x27;ya bağlı hafif Wi-Fi menüsü, Garden Guest ve Workshop mevcuttur" width="48%">
@@ -259,7 +259,7 @@ Wi-Fi bağlantılarını açın ve mevcut kablosuz ağları görün. Wi-Fi adapt
 
 <br>
 
-### Kayıt Tarihi (Alfa)
+### Pano geçmişi (Alfa)
 
 Launchpad'dan doğrudan kopyalanmış metin ve görüntüleri bulun ve tekrar kullanın.
 
@@ -281,7 +281,7 @@ Adaptif Kontrast ile donanımlı, yazılımlı ve temalı detaylar.
 
 <br>
 
-### Plasma Teması (Alfa)
+### Plasma teması (Alfa)
 
 Açık ve koyu renkleri eşleştiren geçici menüler ve pop-ups.
 
@@ -292,7 +292,7 @@ Açık ve koyu renkleri eşleştiren geçici menüler ve pop-ups.
 
 <br>
 
-### Boot Splash (Alfa)
+### Açılış ekranı (Alfa)
 
 Başlatmadan kapanışa kadar eşleşen bir görünüm, LUKS2 şifreli sürücüleri için yerleşik kilitleme ile.
 
@@ -306,7 +306,7 @@ Başlatmadan kapanışa kadar eşleşen bir görünüm, LUKS2 şifreli sürücü
 
 - **Görünüm:** Masaüstü, uygulamalar, simgeler ve pencere dekorasyonları için otomatik olarak değiştirilen ve monitörlük duvar kağıtları ile birlikte koordinasyonlu ışık ve karanlık temeler. [Uygulama özel pencerelerin dekorasyonu ayarları](docs/app-window-decorations.md)
 - **Cam etkisi:** Düzenlenebilir bulanıklık, kırılma ve renk, desteklenen menülerdeki arka planda uyum sağlayan metin ile.
-- **- Ne ?** Bağlanmış uygulamalar, uzantı, bildirim badjleri ve yapılandırılabilir saklanma.
+- **- Ne ?** Bağlanmış uygulamalar, hover zoom, bildirim rozetleri ve yapılandırılabilir saklanma. Dock sizi göstergeler arasında takip ediyor.
 - **Menü çubuğu ve Kontrol Merkezi:** Küresel uygulama menüleri ve hızlı sistem kontrolleri, ekranlardaki paylaşılan menü çubuğu ayarları ile.
 - **Başlatma tabanı:** Uygulamaları arayın, kategorileri tarayın ve iki düzenden herhangi birinde favorileri kaydetin.
 - **Masaüstü widgetleri:** Masaüstünüzde paketli Liquid Glass widgetlerini ekleyin ve düzenleyin.
@@ -315,7 +315,7 @@ Başlatmadan kapanışa kadar eşleşen bir görünüm, LUKS2 şifreli sürücü
 - **Uygulama entegrasyonu:** Nautilus'ta Finder tarzı tarama, GTK menü entegrasyonu ve profil yedeklemeleri ile Firefox teması.
 - **Sistem bilgisi ve başlatma:** Temalı bir sistem bilgi penceresi ve seçeneği eşleşen bir başlangıç sıçrayışı.
 - **Kurulum ve kurtarma:** Birleştirilmiş tema varlıkları, güncellemeler ve ayarların yedekleme yapısı ile bir grafik yükleyici, kurulumdan çıkarıldığında geri yüklenebilir.
-- **Diller:** Ayarlar'da kurulum dilini seçin. Plasma widgetleri masaüstü dilini takip eder.
+- **Diller:** Ayarlar'da kurulum dilini seçin. Plasma widgetleri masaüstü dilini izler.
 - **Uygunluk:** Plasma 6.6 ⁇ 6.8 Arch ve Fedora tabanlı sistemlerde, openSUSE, Debian ve KDE neon üzerinde.
 - **Seçenekler:** OLED panel koruması ve deneysel NixOS ve Home Manager desteği.
 
@@ -331,9 +331,9 @@ cd macos-tahoe-liquid-kde
 ./installer
 ```
 
-Seçim **Çözüm** - Kurmak için. `./installer` Yeniden güncelleme veya kaldırma.
+Kurmak için **Express** seçeneğini seçin. Güncellemek veya kaldırmak için `./installer` komutunu tekrar çalıştırın.
 
-Git hesabınızı ve yerel çalışmanıza devam ederken disk alanını boşaltmak için:
+Git çalışma kopyanızı ve yerel değişikliklerinizi koruyarak diskte yer açmak için:
 
 ```bash
 ./installer --free-space
@@ -342,20 +342,20 @@ Git hesabınızı ve yerel çalışmanıza devam ederken disk alanını boşaltm
 | Kurulum dili | Durum |
 | --- | --- |
 | 🇺🇸 English | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
-| 🇪🇸 Spanish | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
-| 🇨🇳 Simplified Chinese | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
-| 🇧🇷 Brazilian Portuguese | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
-| 🇩🇪 German | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
-| 🇫🇷 French | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italian | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
-| 🇷🇺 Russian | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanese | ![Önceden Görüş](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Korean | ![Önceden Görüş](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Arabic | ![Önceden Görüş](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Hindi | ![Önceden Görüş](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Dutch | ![Önceden Görüş](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polish | ![Önceden Görüş](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Turkish | ![Önceden Görüş](https://img.shields.io/badge/Preview-D4A017) |
+| 🇪🇸 Español | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
+| 🇨🇳 简体中文 | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
+| 🇧🇷 Português (Brasil) | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
+| 🇩🇪 Deutsch | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
+| 🇫🇷 Français | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇹 Italiano | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
+| 🇷🇺 Русский | ![Kullanılabilir](https://img.shields.io/badge/Available-1A7F37) |
+| 🇯🇵 日本語 | ![Önizleme](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 한국어 | ![Önizleme](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 العربية | ![Önizleme](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 हिन्दी | ![Önizleme](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 Nederlands | ![Önizleme](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 Polski | ![Önizleme](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 Türkçe | ![Önizleme](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>Gereksinimler</b></summary>
@@ -371,16 +371,16 @@ Gerekli masaüstü, araç ve sistem paketleri oluşturmak.
 - `dbus-send`
 - `systemctl` veya `crontab` Geçici özellikler için
 
-**Dinnit:** kurgu dinit tespit eder ve otomatik ışık/karanlık anahtarlama ve OLED bakımı için kullanıcı başına cron girişlerini kullanır. `crontab` Artix/dinit'te hazırlayın:
+**dinit:** yükleyici dinit'i tespit eder ve otomatik ışık/karanlık geçiş ve OLED bakımı için kullanıcı başına kron girişlerini kullanır. Çalışan bir cron demonu gereklidir kurulum `crontab` Tek başına başlamaz. Artix/dinit üzerinde hazırlayın:
 
 ```bash
 sudo pacman -S --needed cronie cronie-dinit
 sudo dinitctl --system enable cronie
 ```
 
-Otomatik anahtarlar giriş yaparken 06:00 ve 18:00'de çalışır; cron arka uçunun giriş zamanı yetişmez. El ışık/karanlık anahtarı cron'dan bağımsız olarak çalışır. dinit masaüstü yeterliliği bekliyor; mevcut Artix ekran görüntüleri OpenRC'yi kapsar.
+Otomatik anahtarlar giriş yaparken 06:00 ve 18:00'de çalışır. cron arka uçunun giriş zamanı tespit edilmemektedir. Kılavuz ışık/karanlık anahtarı cron'dan bağımsız olarak çalışır. Dinit masaüstü niteliği bekleniyor mevcut Artix ekran görüntüleri OpenRC'yi kapsar.
 
-Varlıklar birleştirilmiştir. Kayıp bağımlılıklar ve seçeneği KDE Dört Köşeleri internet erişimini gerektirir. Verified Rounded Corners güncellemeleri, daha eski indirilen kaynakları ve arşivleri kaldırır. Yeniden kurulum yönetilen varlık ağaçlarını değiştirir; başarılı kopyalar geçici verilerini çıkarır ve daha sonra kopyalar kesilen bir kullanım için kullanılabilir aşamalamaları temizler. Geri kazanım yedeklemeleri, tarayıcı profil yedeklemeleri ve kullanıcı tercihleri korunur. Geliştiriciler VM görüntüleri ve yakalama paketleri yükleme önbelleğidir ve asla otomatik olarak silinmez.
+Varlıklar toplanmış. Kaybolan bağımlılıklar ve seçeneği KDE Yüklü Köşeleri internet erişimini gerektirir. Verified Rounded Corners güncellemeleri, daha eski indirilmiş kaynakları ve arşivleri kaldırır. Yeniden yerleştirme, yönetilen varlık ağaçlarını değiştirir. Başarılı kopyalar geçici verilerini kaldırır ve daha sonra kopyalar kesilmiş bir kullanım için kullanılabilir aşamalamaları temizler. Tekrarlama yedeklemeleri, tarayıcı profil yedeklemeleri ve kullanıcı tercihleri korunmaktadır. Geliştiriciler için VM görüntüleri ve yakalama paketleri, kurulum önbellekleri değildir ve asla otomatik olarak kaldırılmaz.
 
 | Distro | Qt 6 Araçlar | KDE Plasma 6 geliştirme paketleri |
 |--------|------------|-----------------------------------|
@@ -395,9 +395,9 @@ Fedora'da, yükleyici Fedora GTK 3 global menü ihracatçısını yükler. `unit
 <details>
 <summary><b>OLED bakımı</b></summary>
 
-Seçeneğiyle panel değiştiriler; varsayılan olarak devre dışı bırakılır.
+Seçeneğe bağlı paneldeki değişiklikler Öntanımlı olarak devre dışı bırakıldı.
 
-Bu işlemleri etkinleştir **OLED koruma** sayfa. Değişiklik aralığını ve maksimum piksel yer değiştirmesini seçin; varsayılan olarak devre dışı bırakılır.
+Bu işlemleri etkinleştir **OLED koruma** Sayfa. Değişiklik aralığını ve maksimum piksel kaydırımını seçin Öntanımlı olarak devre dışı bırakılmıştır.
 
 **El kontrolü**
 
@@ -426,13 +426,13 @@ Temayu izole bir Plasma masaüstü ile deneyin.
 
 **OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
 
-`all` Bulut hedefleri otomatik olarak verilir; diğer hedefler kontrol toplamına dayalı resmi ISO yükleyicilerini kullanır. [VM kurulum ve yeterlilik rehberi](tests/vm/README.md).
+`all` her dağıtımını başlatıyor. Bulut hedeflerinin otomatik olarak sağlanması Diğer hedefler, kontrol toplamlarına bağlı resmi ISO yükleyicilerini kullanırlar. İzleyin . [VM kurulum ve yeterlilik rehberi](tests/vm/README.md).
 
-`./vm kubuntu` resmi Kubuntu 26.04.1 LTS ISO'yu SHA-256 doğrulama ile başlatır (SSH portu) `2234` Bu yeni fırlatıcı geri dönüş hedefi tam canlı kalifikasyon bekleniyor.
+`./vm kubuntu` resmi Kubuntu 26.04.1 LTS ISO'yu SHA-256 doğrulama ile başlatır (SSH portu) `2234` Misafir ayarlamasından sonra). Yeni fırlatıcı geri dönüş hedefi tam canlı kalifikasyon bekleniyor.
 
-`./vm debian` resmi Debian test (Forky) bulut görüntüsünü kullanır, SHA-512 kontrol toplamını doğruluyor ve bir Plasma masaüstü sağlıyor. `tester` Parola ile `tester`SSH: `127.0.0.1:2232`. Kurulum , yazılabilir bir misafir kopyasından açılır . `/home/tester/macos-tahoe-liquid-kde`; host deposu sadece okunur. `./vm debian --clean` Bir kenara atılacak misafirleri sıfırdan yeniden inşa etmek için.
+`./vm debian` resmi Debian test (Forky) bulut görüntüsünü kullanır, SHA-512 kontrol toplamını doğruluyor ve bir Plasma masaüstü sağlar. Giriş yap . `tester` Parola ile `tester`Dönüşüm SSH: `127.0.0.1:2232`- Hayır , hayır . Kurulucu yazılabilir bir misafir kopyasından açılır `/home/tester/macos-tahoe-liquid-kde`Dönüşüm Host deposu sadece okunur. Kullanım `./vm debian --clean` Bir kenara atılacak misafirleri sıfırdan yeniden inşa etmek için.
 
-Bu tabloda bulunan 11 dağıtım canlı VM yeterliliğini geçti.
+Bu tabloda yer alan 11 dağıtım canlı VM kalifikasyonunu geçti. Tekrar gözden geçirilmiş ekran görüntüleri ve test sonuçları için bir durum badge seçin.
 
 | | Adı | Durum |
 |:--:|------|---------|
@@ -450,7 +450,7 @@ Bu tabloda bulunan 11 dağıtım canlı VM yeterliliğini geçti.
 
 **NixOS ve Home Manager (test)**
 
-Flake modüllerini kullan. **Grafikal yüklemeci değil**Canlı masaüstü doğrulama bekliyor.
+Flake modüllerini kullan. **Grafikal yüklemeci değil**- Hayır , hayır . Canlı masaüstü doğrulama bekleniyor.
 
 **Flake girişleri** (Nixpkgs ve Home Manager'ı gerektirir):
 
@@ -470,7 +470,7 @@ services.mac-tahoe.enable = true;
 # services.mac-tahoe.plymouth.enable = true; # optional boot splash
 ```
 
-**Ev Müdürü:** ithalat `inputs.mac-tahoe.homeManagerModules.default`.
+**Home Manager:** ithalat `inputs.mac-tahoe.homeManagerModules.default`.
 
 ```nix
 programs.mac-tahoe = {
@@ -481,18 +481,18 @@ programs.mac-tahoe = {
 };
 ```
 
-**Apple'ın varlıkları:** Seçeneksiz serbest olmayan yazı tipi, duvar kağıdı ve sesleri. `appleAssets` Ayrıca şunları gerektirir:
+**Apple'ın varlıkları:** Özgür olmayan şriftler, duvar kağıtları ve sesler. Yapabilirlik `appleAssets` Ayrıca şunları gerektirir:
 
 ```nix
 nixpkgs.config.allowUnfreePredicate = pkg:
   builtins.elem (lib.getName pkg) [ "mac-tahoe-apple-assets" ];
 ```
 
-**Paneller:** Ayrıca kendi plazma yöneticisi modülünü de ithal et. `inputs.mac-tahoe.homeManagerModules.plasma-manager`- Yapabilir . `programs.mac-tahoe.panels.enable` ve set `programs.mac-tahoe.panels.launchers`Örneğin: `[ "applications:org.kde.dolphin.desktop" ]`Bu, mevcut pinleri ithal etmeden düzenin yerini alır.
+**Paneller:** Ayrıca kendi plazma yöneticisi modülünü de ithal et. `inputs.mac-tahoe.homeManagerModules.plasma-manager`- Hayır , hayır . Uygula `programs.mac-tahoe.panels.enable` ve set `programs.mac-tahoe.panels.launchers`Örneğin: `[ "applications:org.kde.dolphin.desktop" ]`- Hayır , hayır . Bu, mevcut pinleri ithal etmeden düzeni değiştirir.
 
-**Yazılabilir ayarlar:** tut `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` Tema anahtarı tarafından yönetilen değişmez plazma yöneticisi tuşlarından kaçının.
+**Yazılabilir ayarlar:** tut `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` ve canlı GTK yapılandırması yazılabilir. Tema anahtarı tarafından yönetilen değişmez plazma yöneticisi anahtarlarından kaçının.
 
-Çıkış ve etkinleştirildikten sonra tekrar giriş yapın. Firefox profilleri, GTK kitaplıkları ve SDDM yapılandırılmamıştır. `programs.mac-tahoe.gtkAppmenuModule` Giriş sırasında yüklemek için yüklenen GTK 3 uygulama menü modül kütüphanesinin tam yoluna git. OLED bakımını devre dışı bırakmadan önce, çalıştır `mac-tahoe-oled-care restore`; modülleri kaldırmadan önce Breeze seçeneğini seçin.
+Aktifleştirildikten sonra çıkıp tekrar içeri gir. Firefox profilleri, GTK kitap işaretleri ve SDDM yapılandırılmamıştır. Ev Yöneticisi'nde, ayar `programs.mac-tahoe.gtkAppmenuModule` Giriş sırasında yüklemek için yüklenen GTK 3 uygulama menü modül kütüphanesinin tam yoluna. OLED bakımını devre dışı bırakmadan önce çalıştır `mac-tahoe-oled-care restore`Dönüşüm Modülleri çıkarmadan önce Breeze seçin. Kaldırma kullanıcı ayarlarını yerinde bırakır.
 
 </details>
 
@@ -514,14 +514,14 @@ OpenRC ve dinit, çalışkan bir cron demonu gerektirir. [Masaüstü test sonuç
 <details>
 <summary><b>Plasma versiyonları</b></summary>
 
-Plasma 6.6 ⁇ 6.8 desteklenir; oluşturulan efektler host SDK kullanır.
+Plasma 6.6 ⁇ 6.8 desteklenir oluşturulan efektler host SDK'yi kullanır.
 
 | Plasma | Destek | - Evet . |
 |--------|---------|-------|
-| 6.5 ve daha yaşlı | ![Desteklenmiyor](https://img.shields.io/badge/Not%20supported-D1242F) | Uygulanmaz |
-| 6.6 | ![Desteklenmiştir](https://img.shields.io/badge/Supported-1A7F37) | V0.1.0 |
-| 6.7 | ![Desteklenmiştir](https://img.shields.io/badge/Supported-1A7F37) | V0.19.0 |
-| 6.8 | ![Desteklenmiştir](https://img.shields.io/badge/Supported-1A7F37) | V0.54.1 |
+| 6.5 ve daha eski sürümler | ![Desteklenmiyor](https://img.shields.io/badge/Not%20supported-D1242F) | Uygulanmaz |
+| 6.6 | ![Desteklenmiştir](https://img.shields.io/badge/Supported-1A7F37) | v0.1.0 |
+| 6.7 | ![Desteklenmiştir](https://img.shields.io/badge/Supported-1A7F37) | v0.19.0 |
+| 6.8 | ![Desteklenmiştir](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
 
 </details>
 
@@ -529,11 +529,11 @@ Plasma 6.6 ⁇ 6.8 desteklenir; oluşturulan efektler host SDK kullanır.
 
 ![Sorumluluk dışı bırakma](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Bu macOS estetikinden ilham alan bağımsız bir yeniden uygulanma. Apple veya KDE tarafından onaylanmamış veya bağlı değildir. "macOS" ve "Apple" Apple Inc'in ticari markalarıdır.
+Bu macOS estetikinden ilham alan bağımsız bir yeniden uygulanmadır. Apple veya KDE tarafından onaylanmamış veya bağlı değildir. "macOS" ve "Apple" Apple Inc'in ticari markasıdır.
 
-MacOS emblemi, paketli duvar kağıtları, sistem sesleri ve SF Pro / SF Mono yazı tipi Apple'ın mülkiyetinde kalır ve bu projenin lisansıyla kapsamalanmaz. Diğer bileşenler kendi lisanslarını ve telif hakkı bildirimlerini korur; kapsam ve bilinen kaynak boşlukları için aşağıdaki üçüncü taraf bildirim endeksine bakın.
+macOS emblemi, paketli duvar kağıtları, sistem sesleri ve SF Pro / SF Mono fontları Apple'ın mülkiyeti olarak kalır ve bu projenin lisansı altında değildir. Diğer bileşenlerin kendi lisansları ve telif hakkı bildirimleri vardır. Etkinlik kapsamı ve bilinen kaynak boşlukları için aşağıdaki üçüncü taraf bildirim endeksine bakın.
 
-Lisanslı [GPL-3.0](LICENSE) Tümü olarak; ayrı bileşen lisansları ve üçüncü taraf hakları hala geçerlidir. [Telif hakkı bildirimleri](NOTICE), [lisanslama ve proje kimliği](LICENSING.md)ve [Üçüncü taraf bildirimleri](THIRD_PARTY_NOTICES.md).
+Lisanslı [GPL-3.0](LICENSE) Bir bütün olarak Bireysel bileşen lisansları ve üçüncü taraf hakları geçerli kalır. Gördün mü ? [Telif hakkı bildirimleri](NOTICE), [lisanslama ve proje kimliği](LICENSING.md)ve [Üçüncü taraf bildirimleri](THIRD_PARTY_NOTICES.md).
 
 <br>
 
@@ -545,7 +545,7 @@ Lisanslı [GPL-3.0](LICENSE) Tümü olarak; ayrı bileşen lisansları ve üçü
 Proje referansları ve üçüncü taraf bileşenleri:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`: Başlatma tabanı tasarım referansı.
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: temel simgeler ve kursorlar; GTK tasarım referansı. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) Burada, profil yedekleme ve geri yükleme desteği ile MIT lisanslı bir çatal olarak sürdürülmektedir.
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: temel simgeler ve kursorlar GTK tasarım referansı. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) Burada, profil yedekleme ve geri yükleme desteği ile MIT lisanslı bir çatal olarak sürdürülmektedir.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** ve **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur ve cam çatal: Akrilik Cam tarafından kullanılan yukarıdaki kod (KWin blur yazarları kaynak başlıklarında kaydedilmektedir).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0, çevrimdışı olarak paketlenmiş ve panelleri renklendirmek için düzenlemede aşamada kurulmuştur (GPL-3.0, lisansı yan yana gönderilmiştir).
 - **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**: `liquidglass-kde-widgets` Liquid Glass masaüstü widgetlerinin toplu koleksiyonunu sağlar (GPL-3.0, lisansı dahil).
@@ -556,7 +556,7 @@ Proje referansları ve üçüncü taraf bileşenleri:
 - **[Lucide](https://github.com/lucide-icons/lucide)**: global menüde toplanmış simgeler kopyalandı (ISC, © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)**: yüksek çözünürlüklü macOS duvar kağıdı arşivini.
 
-Eğer kredi eksikse, lütfen [bir sorun aç](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+Eğer kredi eksikse, lütfen [bir sorun kaydı açın](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 </details>
 

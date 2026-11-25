@@ -143,9 +143,9 @@ Glasbrechung, Hover-Zoom, rote Benachrichtigungszahlenblase und Auto-Verstecken.
 
 <br>
 
-### Schal (Alpha)
+### Shell (Alpha)
 
-Die Mengen für Dateien, Bearbeiten und die anderen Anwendungen folgen dem aktiven Fenster. Öffnen Sie das Systemmenü für Einstellungen und Sitzungssteuerungen.
+File, Edit und die anderen Anwendungsmenüs folgen dem aktiven Fenster. Öffnen Sie das Systemmenü für Einstellungen und Sitzungssteuerungen.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Dateimenu mit einem Dokument in Kate geöffnet" width="830">
@@ -156,11 +156,11 @@ Die Mengen für Dateien, Bearbeiten und die anderen Anwendungen folgen dem aktiv
 
 ### Akrylglas 2.0 mit anpassendem Kontrast
 
-Adaptive Contrast erfasst den Hintergrund hinter jedem Etikett. Es hält die Themenfarbe bei mindestens 33 Wahrnehmungslichtpunkten. Unter diesem Ziel wird die kleinste Korrektur, die es kann, bis zu 40% der RGB-Skala angewendet, während der leichte Text hell und der dunkle Text dunkel bleibt.
+Adaptive Contrast entdeckt den Hintergrund hinter jedem Etikett. Es bewahrt die Themenfarbe, wenn der Unterschied mindestens 33 Wahrnehmungslichtpunkte beträgt. Unter diesem Ziel wird die geringste Korrektur anwendbar, bis zu 40% der RGB-Skala, während der leichte Text leicht und der dunkle Text dunkel bleibt. Wenn man ihn ausschaltet, benutzt man die Themenfarbe.
 
 <br>
 
-### Startplatte (Alpha)
+### Launchpad (Alpha)
 
 Finden Sie Apps, durchsuchen Sie Kategorien und halten Sie Ihre Favoriten in Reichweite.
 
@@ -173,7 +173,7 @@ Finden Sie Apps, durchsuchen Sie Kategorien und halten Sie Ihre Favoriten in Rei
 
 ### Kontrollzentrum (Alpha)
 
-Wi-Fi, Bluetooth, Ton, Helligkeit und Benachrichtigungen in einem Glasmenü.
+Wi-Fi, Bluetooth, Klang, Helligkeit und Benachrichtigungen in einem Glasmenü. Der Auftritt-Button zeigt eine Sonne für Licht, einen Mond für Dunkelheit und einen Split-Circle für Automatic.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Steuerungszentrum im Lichtmodus" width="415">
@@ -211,7 +211,7 @@ Finder-Stil-Datei-Browsen mit Tahoe Glas.
 
 ### Kalender (Alpha)
 
-Öffnen Sie die Paneluhr, um den Monat auf Glas zu sehen. Scrollen oder mit den Pfeiltasten für Monate durchsuchen. Drücken Sie Home, um zum aktuellen Monat zurückzukehren.
+Öffnen Sie die Paneluhr, um den Monat auf Glas zu sehen. Scrollen oder benutzen Sie die Pfeiltasten, um Monate zu durchsuchen. Drücken Sie auf Home, um zum aktuellen Monat zurückzukehren.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Kalender · Licht" width="328">
@@ -231,7 +231,7 @@ Verbinden Sie die Paargeräte und überprüfen Sie den Akkugrad aus der Menülei
 
 ### Wi-Fi (Alpha)
 
-Öffnen Sie das Wi-Fi-Menü, um verfügbare drahtlose Netzwerke zu sehen. Ohne Wi-Fi-Adapter oder mit Off-Wi-Fi wird in dem Menü Ihre kabelgebundenen Verbindungen aufgeführt, gefolgt von einem einzigen Divider und der Wi-Fi-Einstellungsverbindung.
+Öffnen Sie das Wi-Fi-Menü, um verfügbare drahtlose Netzwerke zu sehen. Ohne einen Wi-Fi-Adapter oder mit ausgeschaltetem Wi-Fi gibt das Menü Ihre drahtgebundenen Verbindungen auf, gefolgt von einem einzigen Divider und dem Wi-Fi-Einstellungslink.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Leichtes Wi-Fi-Menü mit Harbor Studio verbunden, mit Garten Gast und Workshop zur Verfügung" width="48%">
@@ -251,7 +251,7 @@ Verbinden Sie die Paargeräte und überprüfen Sie den Akkugrad aus der Menülei
 
 <br>
 
-### Aufschlagplattengeschichte (Alpha)
+### Zwischenablageverlauf (Alpha)
 
 Finden und wiederverwenden Sie kopierte Text- und Bilder direkt aus Launchpad.
 
@@ -273,7 +273,7 @@ Hardware, Software und Themendetails mit Adaptivcontrast.
 
 <br>
 
-### Plasma-Thema (Alpha)
+### Plasma-Design (Alpha)
 
 Durchsichtig Menüs und Popups mit einer gleichwertigen Licht- und Dunkelfarbe.
 
@@ -284,7 +284,7 @@ Durchsichtig Menüs und Popups mit einer gleichwertigen Licht- und Dunkelfarbe.
 
 <br>
 
-### Boot Splash (Alpha)
+### Startbildschirm (Alpha)
 
 Ein passender Aussehen vom Starten bis zum Abschalten, mit integrierter Öffnung für LUKS2-verschlüsselte Laufwerke.
 

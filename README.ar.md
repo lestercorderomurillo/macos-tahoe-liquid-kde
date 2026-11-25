@@ -24,11 +24,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="الإفراج"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="الإصدار"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="الاختبارات"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="البلازما"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="رخصة"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="إبلاغ عن حشرة"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="الإبلاغ عن خلل"></a>
 </p>
 
 
@@ -51,11 +51,11 @@
   <a href="tests/vm/PROOF.md#nixos" title="NixOS (experimental)"><img src="src/screenshots/distros/nixos.svg" alt="NixOS" width="32" height="32"></a>
 </p>
 
-هذا المشروع يخصيص مظهر و شعور سطح مكتب KDE الخاص بك على لينكس. لا يتضمن أو يتصل بخدمات آبل. إذا كنت بحاجة إلى خدمات آبل، [التسوق مباشرة مع Apple](https://www.apple.com/store).
+يقوم هذا المشروع بتخصيص مظهر ومشاعر مكتب KDE الخاص بك على Linux. لا تشمل أو تتصل بخدمات آبل. إذا كنت بحاجة إلى خدمات آبل، [التسوق مباشرة مع Apple](https://www.apple.com/store).
 
 > [!CAUTION]
-> **الفلسفة المتحركة**
-> تجربي. يتلقى تحديثات يومية. التحديثات قد تفشل التوافق. تجنب أنظمة الإنتاج؛ [تقرير القضايا هنا](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+> **سياسة الإصدارات المتجددة**
+> تجريبي تتلقى تحديثات يومية التحديثات قد تخسر التوافق. تجنب أنظمة الإنتاج [أبلغ عن المشكلات هنا](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 > [!NOTE]
 > يتم تجميد الميزات في التنفيذ لسلسلة 0.8x ، مع الإصدارات التي تركز على إصلاحات الأخطاء حتى 0.90.
@@ -63,7 +63,7 @@
 > [!WARNING]
 > **احذر من إعادة التعبئة الجدار المدفوع: هذا الموضوع مجاني.**
 >
-> إذا وجدت هذا الموضوع من خلال أي قناة خارجية، لا تحتاج إلى دفع مقابل الحصول عليه: قم بتنزيله مباشرة من هذا المخبز. نحن نحافظ على هذا المشروع مجانا حتى يمكن للجميع الاستمتاع به دون جدار دفع. لا يتطلب شراء أو الاشتراك.
+> إذا وجدت هذا الموضوع من خلال أي قناة من طرف ثالث، فأنت لا تحتاج إلى الدفع للحصول عليه: قم بتنزيله مباشرة من هذا المستودع. نحن نحافظ على هذا المشروع مجانًا حتى يتمكن الجميع من الاستمتاع به دون جدار دفع. لا توجد حاجة لشراء أو الاشتراك.
 
 <br>
 
@@ -151,9 +151,9 @@
 
 <br>
 
-### القشرة (ألفا)
+### Shell (Alpha)
 
-متابعة قائمة الملفات والتحرير وغيرها من القوائم التطبيقية في النافذة النشطة. افتح قائمة النظام لإعدادات وإدارة الجلسات.
+ملف، تحرير والقوائم التطبيقية الأخرى تتبع النافذة النشطة. افتح قائمة النظام لإعدادات ومراقبة الجلسة.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="قائمة الملفات مع وثيقة مفتوحة في كيت" width="830">
@@ -164,11 +164,11 @@
 
 ### زجاج أكريليك 2.0 مع تباين ملاءم
 
-يستخدم Contrasts التكيفي عينة الخلفية وراء كل ملصق. يحافظ على لون الموضوع عندما يكون الفرق 33 نقطة من خفيفة الإدراك على الأقل. تحت هذا الهدف، يطبق أصغر تصحيح يمكن له، يصل إلى 40% من مقياس RGB، مع الحفاظ على نص ضوء النص الضوء والنص المظلم مظلم. إيقافه يستخدم لون الموضوع.
+عينة التباين التكيفي عن الخلفية وراء كل علامة. إنه يحافظ على لون الموضوع عندما يكون الفرق 33 نقطة خفيفة على الأقل. أقل من هذا الهدف، فإنه يطبق أصغر تصحيح يمكنه، يصل إلى 40٪ من مقياس RGB، مع الحفاظ على النص الخفيف الخفيف والنص المظلم المظلم. إيقافه يستخدم لون الموضوع
 
 <br>
 
-### لوحة الإطلاق (ألفا)
+### Launchpad (Alpha)
 
 ابحث عن التطبيقات، واطلع على الفئات و ابق المفضلة لديك في متناول اليد
 
@@ -181,7 +181,7 @@
 
 ### مركز التحكم (ألفا)
 
-ويفاي، بلوتوث، الصوت، الوهاء والإشعارات في قائمة زجاجية واحدة. زر المظهر يظهر الشمس للضوء، القمر للظلام، ودورة مقسمة للآتوماتيك.
+واي فاي، بلوتوث، الصوت، الوضوح والإشعارات في قائمة زجاجية واحدة. زر المظهر يظهر الشمس للضوء، القمر للظلام، و الدائرة المنقسمة للسيارات.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="مركز التحكم في وضع الضوء" width="415">
@@ -206,7 +206,7 @@
 
 <br>
 
-### العثور (ألفا)
+### Finder (Alpha)
 
 تصفح الملفات على شكل "مبحث" مع زجاج "تاهو".
 
@@ -219,7 +219,7 @@
 
 ### التقويم (ألفا)
 
-افتح ساعة اللوحة لرؤية الشهر على الزجاج. اركز أو استخدم مفاتيح السهم للتصفح الأشهر. اضغط على Home للعودة إلى الشهر الحالي.
+افتح ساعة اللوحة لرؤية الشهر على الزجاج إزحف أو استخدم مفاتيح السهم لتصفح الأشهر. اضغط على Home للعودة إلى الشهر الحالي.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="التقويم · الضوء" width="328">
@@ -228,7 +228,7 @@
 
 <br>
 
-### بلوطوث (ألفا)
+### Bluetooth (Alpha)
 
 قم بتوصيل الأجهزة المزدوجة وتحقق من مستوى بطاريةها من شريط القائمة.
 
@@ -237,9 +237,9 @@
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="قائمة Bluetooth مظلمة مع سماعات الاستوديو متصلة بـ 82% و لوحة المفاتيح اللاسلكية منفصلة" width="48%">
 </p>
 
-### شبكة Wi-Fi (ألفا)
+### Wi-Fi (Alpha)
 
-افتح قائمة Wi-Fi لرؤية الشبكات اللاسلكية المتاحة. بدون جهاز تعديل Wi-Fi، أو مع إيقاف Wi-Fi، وتعرض القائمة اتصالاتك السلكية تليها مفصل واحد ورابط إعدادات Wi-Fi.
+افتح قائمة Wi-Fi لرؤية الشبكات اللاسلكية المتاحة. بدون جهاز تعديل Wi-Fi، أو مع إيقاف Wi-Fi، قائمة قائمة الاتصالات السلكية الخاصة بك تليها مقسم واحد ورابط إعدادات Wi-Fi.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="قائمة Wi-Fi خفيفة متصلة بـ Harbor Studio، مع Garden Guest و Workshop متاحة" width="48%">
@@ -259,7 +259,7 @@
 
 <br>
 
-### تاريخ المقطع (ألفا)
+### سجل الحافظة (ألفا)
 
 العثور على النصوص والصور المنسخة واستعادتها مباشرة من Launchpad.
 
@@ -281,7 +281,7 @@
 
 <br>
 
-### موضوع البلازما (ألفا)
+### سمة Plasma (ألفا)
 
 قائمة و ملفات مفتوحة ذات اللونين الخفيف والظلام المتطابقين
 
@@ -292,7 +292,7 @@
 
 <br>
 
-### (الفا)
+### شاشة الإقلاع (ألفا)
 
 مظهر متطابق من الإطلاق إلى إيقاف، مع فتح قفل مدمج للقواص المشفّرة لـ LUKS2.
 
@@ -306,7 +306,7 @@
 
 - **مظهر:** مواضيع خفيفة ومظلمة منسقة للمكتب، والتطبيقات، والعلامات، وتزيين النوافذ، مع التبديل الآلي ورق خلفية لكل جهاز. [إعدادات تزيين النوافذ الخاصة بالتطبيق](docs/app-window-decorations.md)
 - **آثار الزجاج:** القليل من التضليل والانكسار واللون، مع نص يتكيف مع الخلفية في القوائم المدعومة.
-- **المرفأ:** تطبيقات مدمجة، زوم التزحلق، شاركات الإخطار والخفاء القابل للتكوين.
+- **المرفأ:** تطبيقات مدمجة، زوم تحليق، شاركات الإخطار والخفاء القابل للتكوين. المرفأ يتبعك بين العروض
 - **شريط القائمة و مركز التحكم:** قائمة التطبيقات العالمية والتحكمات السريعة في النظام، مع إعدادات شريط القائمة المشتركة عبر الشاشات.
 - **لوحة الإطلاق:** ابحث عن تطبيقات، استفحص الفئات و حفظ المفضلة في أي من التخطيطين.
 - **أجهزة سطح المكتب:** إضافة وتنظيم الوسائط المجمعة للقماش السائل على سطح المكتب الخاص بك.
@@ -315,7 +315,7 @@
 - **تكامل التطبيقات:** التصفح في نمط البحث في Nautilus ، وتكامل قائمة GTK وموضوع Firefox مع نسخ احتياطية من الملفات الشخصية.
 - **معلومات النظام وبدء العمل:** نافذة معلومات النظام ذات الموضوع وفرق إطلاق متطابق اختياري.
 - **الإعداد والتحقيق:** مرمّح رسمي مع مجموعة من أصول الموضوع والتحديثات والإعدادات النسخة الاحتياطية التي يمكن استعادتها عند إزالة التثبيت.
-- **اللغات:** اختر لغة التركيب في الإعدادات. تعقب أدوات البلازما لغة سطح المكتب.
+- **اللغات:** اختر لغة التثبيت في الإعدادات أجهزة البلازما تتبع لغة سطح المكتب
 - **التوافق:** البلازما 6.6 ⁇ 6.8 على الأنظمة القائمة على Arch و Fedora، openSUSE، Debian و KDE neon.
 - **الميزات الاختيارية:** حماية لوحة OLED ودعم تجربي لـ NixOS ومدير المنزل.
 
@@ -331,9 +331,9 @@ cd macos-tahoe-liquid-kde
 ./installer
 ```
 
-اختر **الإعلان** لتركيبها `./installer` مرة أخرى للتحديث أو إزالة التثبيت.
+اختر **Express** للتثبيت. للتحديث أو الإزالة شغّل `./installer` مرة أخرى.
 
-لإطلاق مساحة القرص أثناء الحفاظ على حسابات Git والعمل المحلي:
+لإخلاء مساحة على القرص مع الاحتفاظ بنسخة Git وتغييراتك المحلية:
 
 ```bash
 ./installer --free-space
@@ -342,20 +342,20 @@ cd macos-tahoe-liquid-kde
 | لغة التركيب | الحالة |
 | --- | --- |
 | 🇺🇸 English | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
-| 🇪🇸 Spanish | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
-| 🇨🇳 Simplified Chinese | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
-| 🇧🇷 Brazilian Portuguese | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
-| 🇩🇪 German | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
-| 🇫🇷 French | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italian | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
-| 🇷🇺 Russian | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanese | ![عرض مسبق](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Korean | ![عرض مسبق](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Arabic | ![عرض مسبق](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Hindi | ![عرض مسبق](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Dutch | ![عرض مسبق](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polish | ![عرض مسبق](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Turkish | ![عرض مسبق](https://img.shields.io/badge/Preview-D4A017) |
+| 🇪🇸 Español | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
+| 🇨🇳 简体中文 | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
+| 🇧🇷 Português (Brasil) | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
+| 🇩🇪 Deutsch | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
+| 🇫🇷 Français | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇹 Italiano | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
+| 🇷🇺 Русский | ![المتاحة](https://img.shields.io/badge/Available-1A7F37) |
+| 🇯🇵 日本語 | ![معاينة](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 한국어 | ![معاينة](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 العربية | ![معاينة](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 हिन्दी | ![معاينة](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 Nederlands | ![معاينة](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 Polski | ![معاينة](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 Türkçe | ![معاينة](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>المتطلبات</b></summary>
@@ -371,16 +371,16 @@ cd macos-tahoe-liquid-kde
 - `dbus-send`
 - `systemctl` أو `crontab` بالنسبة للمواصفات المخطط لها
 
-**الـ (دينيت):** يقوم الجهاز بتحديد التشغيل و يستخدم إدخالات cron لكل مستخدم لتحويل الضوء / الظلام الآلي والرعاية OLED. مطلوب ديمون cron يعمل؛ `crontab` لا يبدأ بمفرده. على Artix/dinit، إعداده مع:
+**dinit:** يكتشف الجهاز التثبيت (dinit) ويستخدم إدخالات cron لكل مستخدم للتبديل التلقائي للضوء / الظلام والرعاية بالبيانات OLED. مطلوب ديمون التشغيل التثبيت `crontab` وحدها لا تبدأ على Artix/dinit، إعداده مع:
 
 ```bash
 sudo pacman -S --needed cronie cronie-dinit
 sudo dinitctl --system enable cronie
 ```
 
-تعمل المفاتيح الآلية في الساعة 06:00 و 18:00 أثناء تسجيل الدخول. لا يوجد وقت التسجيل الدخول في مؤشر cron. يعمل التبديل اليدوي للضوء / الظلام بشكل مستقل عن cron. لا يزال مؤهلات سطح المكتب متوقعة. تغطي صور الشاشة الحالية Artix OpenRC.
+التبديلات الآلية تعمل في 06:00 و 18:00 أثناء تسجيل الدخول الخلفي cron لا يحتوي على وقت تسجيل الدخول. يعمل التبديل اليدوي للضوء والظلام بشكل مستقل عن cron. صور الشاشة القائمة على Artix تغطي OpenRC.
 
-يتم جمع الأصول. تتطلب الاعتمادات المفقودة والزوايا المتديرة اختيارية KDE الوصول إلى الإنترنت. تحديثات الزوايا المتديرة المحققة تزيل المصادر والأرشيفات القديمة التي تم تنزيلها. إعادة التثبيت يستبدل شجرة الأصول المدارة في مكانها. تقوم النسخ الناجحة بإزالة بياناتها المؤقتة، وتقوم النسخ لاحقا بتنظيف المرحلة القابلة للتخلص من المقاطع. يتم الحفاظ على النسخ الاحتياطية والنسخ الاحتياطية لمصفح المستخدم وتفضيلات المستخدم. لا تكون الصور وقطعات VM للمطور مخزنة ولا يتم إزالتها تلقائيًا.
+الأصول مرتبطة تتطلب الاعتمادات المفقودة والزوايا المتديرة الاختيارية لـ KDE الوصول إلى الإنترنت. تحديثات Verified Rounded Corners تقوم بإزالة المصادر والأرشيفات القديمة التي تم تحميلها. إعادة التثبيت يستبدل أشجار الأصول المدارة في مكانها النسخة الناجحة إزالة بياناتها المؤقتة، والنسخة اللاحقة تنظيف المقاطعة القابلة للتخلص منها. يتم الاحتفاظ بنسخ احتياطية لاسترداد، ونسخ احتياطية لمصفحة المتصفح وتفضيلات المستخدم. الصور والحزم التقاط VM للمطورين ليست محفظات التثبيت ولا يتم إزالتها تلقائيًا.
 
 | المنتجات | أدوات Qt 6 | حزم تطوير KDE Plasma 6 |
 |--------|------------|-----------------------------------|
@@ -395,9 +395,9 @@ sudo dinitctl --system enable cronie
 <details>
 <summary><b>الرعاية OLED</b></summary>
 
-تحريك لوحة اختيارية، غير فعالة افتراضيًا.
+تغييرات إختيارية في اللوحة تم تعطيلها بشكل افتراضي.
 
-تمكينها على **حماية OLED** الصفحة. اختر فترة التحول والتحرك الكبير للبيكسل هناك؛ يتم تعطيلها افتراضيًا.
+تمكينها على **حماية OLED** الصفحة اختر فترة التحول وتحريك أكبر بكسل هناك يتم تعطيلها بشكل افتراضي.
 
 **التحكم اليدوي**
 
@@ -424,13 +424,13 @@ mac-tahoe-oled-care status
 ./vm <os>
 ```
 
-**نظام التشغيل:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
+**OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
 
-`all` يطلق كل التوزيع. تستهدف السحابة توفير تلقائيًا؛ تستخدم الأهداف الأخرى مرصّدات ISO الرسمية المضبطة بمبلغ التحقق. اتبع [دليل إعداد و تأهيل الكمبيوتر](tests/vm/README.md).
+`all` يطلق كل التوزيع. تزويد الأهداف السحابية تلقائيًا يستخدم الأهداف الأخرى معدات التصنيع الرسمية للصيغة المعيارية للصيغة المعيارية (ISO). اتبعوا [دليل إعداد و تأهيل الكمبيوتر](tests/vm/README.md).
 
-`./vm kubuntu` يبدأ مع ISO الرسمي Kubuntu 26.04.1 LTS مع SHA-256 التحقق (مرفأ SSH `2234` هذا الهدف الجديد للعودة إلى القاذفة ينتظر التأهيل الكامل المباشر
+`./vm kubuntu` يبدأ مع ISO الرسمي Kubuntu 26.04.1 LTS مع SHA-256 التحقق (مرفأ SSH `2234` بعد إعداد الضيوف). هذا الهدف الرجعي للمطلق الجديد ينتظر التأهيل الكامل المباشر
 
-`./vm debian` يستخدم صور سحابي (Forky) الرسمية للاختبار في Debian ، ويتحقق من رقم التحقق SHA-512 ، ويحتوي على سطح المكتب البلازما. `tester` مع كلمة مرور `tester`؛ SSH متاح على `127.0.0.1:2232`. يفتح التركيب من نسخة ضيفية يمكن كتابتها `/home/tester/macos-tahoe-liquid-kde`المخبز المضيف يُثبت فقط للقراءة. `./vm debian --clean` لإعادة بناء الضيف القابل للتخلص منه من الصفر
+`./vm debian` يستخدم صورة سحابة ديبيان الرسمية للتجربة (فوركي) ، ويتحقق من مبلغ التحقق من SHA-512 ، ويتيح مكتب بلازما. تسجيل الدخول `tester` مع كلمة مرور `tester`(إنجليزية) الـ SSH متوفرة على `127.0.0.1:2232`. . يفتح التركيب من نسخة ضيفة يمكن كتابتها في `/home/tester/macos-tahoe-liquid-kde`(إنجليزية) يتم تركيب مخزن المضيف للقراءة فقط. الاستخدام `./vm debian --clean` لإعادة بناء الضيف القابل للتخلص منه من الصفر
 
 جميع التوزيعات الـ 11 في هذا الجدول اجتازت مؤهلات VM مباشرة. حدد شارة حالة لقطات الشاشة المراجعة ونتائج الاختبار.
 
@@ -450,7 +450,7 @@ mac-tahoe-oled-care status
 
 **نيكسوس ومدير المنزل (اختبار)**
 
-استخدم وحدات القش **ليس التركيب الرسومي**التحقق من المكتب المباشر في انتظار
+استخدم وحدات القش **ليس التركيب الرسومي**. . التحقق المباشر من سطح المكتب في انتظار.
 
 **مدخلات الفلك** (تطلب نيكس بي جيز و مدير المنزل):
 
@@ -462,7 +462,7 @@ inputs.mac-tahoe = {
 };
 ```
 
-**نيكسوس:** الاستيراد `inputs.mac-tahoe.nixosModules.default`.
+**NixOS:** الاستيراد `inputs.mac-tahoe.nixosModules.default`.
 
 ```nix
 services.desktopManager.plasma6.enable = true;
@@ -470,7 +470,7 @@ services.mac-tahoe.enable = true;
 # services.mac-tahoe.plymouth.enable = true; # optional boot splash
 ```
 
-**مدير المنزل:** الاستيراد `inputs.mac-tahoe.homeManagerModules.default`.
+**Home Manager:** الاستيراد `inputs.mac-tahoe.homeManagerModules.default`.
 
 ```nix
 programs.mac-tahoe = {
@@ -481,18 +481,18 @@ programs.mac-tahoe = {
 };
 ```
 
-**أصول شركة آبل:** اختيارية غير حرة الخطوط والحوالق والأصوات. `appleAssets` يتطلب أيضاً:
+**أصول شركة آبل:** الخطوط غير الحرة، والحائط خلفية وأصوات اختيارية. إمكانيات `appleAssets` يتطلب أيضاً:
 
 ```nix
 nixpkgs.config.allowUnfreePredicate = pkg:
   builtins.elem (lib.getName pkg) [ "mac-tahoe-apple-assets" ];
 ```
 
-**الألواح:** أيضاً استيراد وحدات إدارة البلازما الخاصة بك `inputs.mac-tahoe.homeManagerModules.plasma-manager`- أُمكّن `programs.mac-tahoe.panels.enable` و المجموعة `programs.mac-tahoe.panels.launchers`، على سبيل المثال `[ "applications:org.kde.dolphin.desktop" ]`هذا يبدل التخطيط دون استيراد الرؤوس القائمة
+**الألواح:** أيضاً استيراد وحدات إدارة البلازما الخاصة بك `inputs.mac-tahoe.homeManagerModules.plasma-manager`. . تمكين `programs.mac-tahoe.panels.enable` و المجموعة `programs.mac-tahoe.panels.launchers`، على سبيل المثال `[ "applications:org.kde.dolphin.desktop" ]`. . هذا يحل محل التخطيط دون استيراد الرؤوس القائمة.
 
-**إعدادات الكتابة:** إبق `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` وتتدوين إعدادات GTK المباشرة. تجنب مفاتيح إدارة البلازما التي لا تتغير تديرها مبدل الموضوع.
+**إعدادات الكتابة:** إبق `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` وتكوين GTK الحي قابل للكتابة. تجنب مفاتيح إدارة البلازما غير المتغيرة التي يتم إدارتها بواسطة مفتاح الموضوع.
 
-تسجيل الدخول وإعادة الدخول بعد تفعيل. لا يتم تشكيل ملفات تعريف Firefox، علامات التسجيل GTK و SDDM. في مدير المنزل، حدد `programs.mac-tahoe.gtkAppmenuModule` إلى المسار الكامل لمكتبة وحدات القائمة التطبيقية GTK 3 المثبتة لتحملها عند تسجيل الدخول. قبل تعطيل خدمة OLED ، قم بتشغيل `mac-tahoe-oled-care restore`قبل إزالة الوحدات، حدد بريز.
+تسجيل الخروج والعودة بعد تنشيط. لا يتم تشكيل ملفات تعريف Firefox و علامات التوقيت GTK و SDDM. في مدير المنزل، تعيين `programs.mac-tahoe.gtkAppmenuModule` إلى المسار الكامل لمكتبة وحدات قائمة تطبيقات GTK 3 المثبتة لتحملها عند تسجيل الدخول. قبل تعطيل الرعاية OLED، تشغيل `mac-tahoe-oled-care restore`(إنجليزية) قبل إزالة الوحدات، اختر بريز. إزالة يترك إعدادات المستخدم في مكانها.
 
 </details>
 
@@ -514,11 +514,11 @@ OpenRC و dinit يتطلبون إشعار cron يعمل [نتائج اختبار
 <details>
 <summary><b>إصدارات البلازما</b></summary>
 
-يتم دعم البلازما 6.6 ⁇ 6.8؛ التأثيرات المجمعة تستخدم SDK المضيف.
+يتم دعم البلازما 6.6 ⁇ 6.8 التأثيرات المجمعة تستخدم SDK المضيف.
 
 | Plasma | الدعم | منذ |
 |--------|---------|-------|
-| 6.5 وأكثر سنا | ![لا يدعم](https://img.shields.io/badge/Not%20supported-D1242F) | لا ينطبق |
+| الإصدار 6.5 وما قبله | ![لا يدعم](https://img.shields.io/badge/Not%20supported-D1242F) | لا ينطبق |
 | 6.6 | ![دعم](https://img.shields.io/badge/Supported-1A7F37) | v0.1.0 |
 | 6.7 | ![دعم](https://img.shields.io/badge/Supported-1A7F37) | v0.19.0 |
 | 6.8 | ![دعم](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
@@ -529,11 +529,11 @@ OpenRC و dinit يتطلبون إشعار cron يعمل [نتائج اختبار
 
 ![الإفراج عن المسؤولية](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-هذا هو إعادة تنفيذ مستقلة مستوحاة من جمالية macOS. لا يرتبط بها أو يدعمها Apple أو KDE. "macOS" و "Apple" هي علامات تجارية لشركة Apple Inc.
+هذا إعادة تنفيذ مستقلة مستوحاة من جمالية macOS. "macOS" و"Apple" هي علامات تجارية لشركة Apple Inc.
 
-لا تزال علامة macOS ، والحائط خلفية ، وأصوات النظام ، وشرائح SF Pro / SF Mono هي ملكية Apple ولا تغطيها ترخيص هذا المشروع. تحتفظ المكونات الأخرى بترخيصاتها الخاصة وإشعارات حقوق الطبع والنشر ؛ انظر مؤشر إشعارات الطرف الثالث أدناه لمدى التطبيق والفجوات المعروفة في الأصل.
+لا تزال علامة macOS، ورق خلفية مرتبطة، وأصوات النظام، وخطوط SF Pro / SF Mono ملكية أبل ولا تغطيها ترخيص هذا المشروع. يحتفظ المكونات الأخرى بترخيصاتها الخاصة وإشعارات حقوق الطبع والنشر انظر مؤشر إشعار الأطراف الثالثة أدناه للحصول على نطاق الفجوات والمواصلات المعروفة.
 
-مرخصة [رخصة التأمين 3.0](LICENSE) في كافة أنحاء العالم، تظل تراخيص المكونات الفردية وحقوق الطرف الثالث قابلة للتطبيق. انظر [إشعارات حقوق الطبع والنشر](NOTICE), [الترخيص و هوية المشروع](LICENSING.md)و [إشعارات الطرف الثالث](THIRD_PARTY_NOTICES.md).
+مرخصة [GPL-3.0](LICENSE) ككل تظل تراخيص المكونات الفردية وحقوق الطرف الثالث قابلة للتطبيق. انظر [إشعارات حقوق الطبع والنشر](NOTICE), [الترخيص و هوية المشروع](LICENSING.md)و [إشعارات الطرف الثالث](THIRD_PARTY_NOTICES.md).
 
 <br>
 
@@ -545,7 +545,7 @@ OpenRC و dinit يتطلبون إشعار cron يعمل [نتائج اختبار
 إشارات المشروع ومكونات الطرف الثالث:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`: إشارة لتصميم أداة الإطلاق.
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: أيقونات القاعدة والمركبات؛ مرجع تصميم GTK. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) يتم الحفاظ عليها هنا كشوكة مرخصة من MIT مع نسخة احتياطية للملفات الشخصية واستعادة الدعم.
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: أيقونات القاعدة والمؤشرين إشارة تصميم GTK [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) يتم الحفاظ عليها هنا كشوكة مرخصة من MIT مع نسخة احتياطية للملفات الشخصية واستعادة الدعم.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** و **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur و fork: رمز فوق التيار المستخدم من قبل أكريليك غلاس (مؤلفي KWin blur يبقى مدعوم في العناوين المصدرة).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0 ، يتم جمعها خارج الاتصال وتثبيتها بواسطة خطوة التخطيط للوون للوحات (GPL-3.0 ، الترخيص الذي تم شحنه إلى جانب).
 - **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**: `liquidglass-kde-widgets` يقدم مجموعة متجمعة من أجهزة الكمبيوتر المكتبية لـ Liquid Glass (شملت رخصة GPL-3.0).
@@ -556,7 +556,7 @@ OpenRC و dinit يتطلبون إشعار cron يعمل [نتائج اختبار
 - **[Lucide](https://github.com/lucide-icons/lucide)**: نسخة الرموز المجمعة في القائمة العالمية (ISC، © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)**: أرشيف خلفية macOS عالية الدقة.
 
-إذا كانت هناك إئتمان مفقود، من فضلك [فتح مسألة](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+إذا كانت هناك إئتمان مفقود، من فضلك [افتح بلاغًا](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 </details>
 

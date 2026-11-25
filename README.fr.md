@@ -143,9 +143,9 @@ Réfraction du verre, zoom de déploiement, bulles de comptage des notifications
 
 <br>
 
-### La coque (Alpha)
+### Shell (Alpha)
 
-Les menus de fichiers, d'édition et des autres menus d'application suivent la fenêtre active. Ouvrez le menu système pour les paramètres et les commandes de session.
+Fichier, Modifier et les autres menus d'application suivent la fenêtre active. Ouvrez le menu système pour les paramètres et les commandes de session.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu de fichiers avec un document ouvert en Kate" width="830">
@@ -156,11 +156,11 @@ Les menus de fichiers, d'édition et des autres menus d'application suivent la f
 
 ### Le verre acrylique 2.0 avec contraste adaptatif
 
-Adaptive Contrast prend en compte l'arrière-plan de chaque étiquette. Il conserve la couleur du thème lorsque la différence est d'au moins 33 points de légèreté perceptuelle. En dessous de cette cible, il applique la plus petite correction possible, jusqu'à 40% de l'échelle RGB, tout en gardant le texte clair clair clair et le texte sombre sombre.
+Contrast adaptatif prélève l'arrière-plan de chaque étiquette. Il conserve la couleur du thème lorsque la différence est d'au moins 33 points de légèreté perceptuelle. En dessous de cette cible, il applique la plus petite correction possible, jusqu'à 40% de l'échelle RGB, tout en gardant le texte clair clair et le texte sombre sombre. L'éteindre utilise la couleur du thème.
 
 <br>
 
-### Pape de lancement (Alpha)
+### Launchpad (Alpha)
 
 Trouvez des applications, parcourez les catégories et gardez vos favoris à portée de main.
 
@@ -173,7 +173,7 @@ Trouvez des applications, parcourez les catégories et gardez vos favoris à por
 
 ### Centre de contrôle (Alpha)
 
-Wi-Fi, Bluetooth, son, luminosité et notifications dans un menu en verre. Le bouton d'apparence affiche un soleil pour la lumière, une lune pour le noir et un cercle divisé pour l'automatique.
+Wi-Fi, Bluetooth, son, luminosité et notifications dans un seul menu en verre. Le bouton d'apparition montre un soleil pour la lumière, une lune pour l'obscurité et un cercle divisé pour l'automatique.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centre de contrôle en mode lumière" width="415">
@@ -198,7 +198,7 @@ Banner de notification en verre et historique groupé avec actions dans les appl
 
 <br>
 
-### Le détecteur (Alpha)
+### Finder (Alpha)
 
 Navigation de fichiers à la manière du navigateur avec verre Tahoe.
 
@@ -211,7 +211,7 @@ Navigation de fichiers à la manière du navigateur avec verre Tahoe.
 
 ### Calendrier (Alpha)
 
-Ouvrez l'horloge du panneau pour voir le mois sur le verre. Faites défiler ou utilisez les touches flèches pour parcourir les mois. Appuyez sur Home pour revenir au mois courant.
+Ouvrez l'horloge pour voir le mois sur le verre. Faites défiler ou utilisez les touches de flèche pour parcourir les mois. Appuyez sur Home pour revenir au mois en cours.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendrier · Lumière" width="328">
@@ -231,7 +231,7 @@ Connectez les appareils couplés et vérifiez leur niveau de batterie à partir 
 
 ### Wi-Fi (Alpha)
 
-Ouvrez le menu Wi-Fi pour voir les réseaux sans fil disponibles. Sans adaptateur Wi-Fi ou avec Wi-Fi désactivé, le menu répertorie vos connexions câblées suivis d'un seul divisor et du lien des paramètres Wi-Fi.
+Ouvrez le menu Wi-Fi pour voir les réseaux sans fil disponibles. Sans adaptateur Wi-Fi, ou avec le Wi-Fi désactivé, le menu répertorie vos connexions câblées suivis d'un seul diviser et du lien des paramètres Wi-Fi.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu Wi-Fi léger connecté à Harbor Studio, avec Garden Guest et Workshop disponibles" width="48%">
@@ -251,7 +251,7 @@ Ouvrez le menu de la batterie pour vérifier le niveau de charge et l'état de p
 
 <br>
 
-### L'histoire du clipboard (Alpha)
+### Historique du presse-papiers (Alpha)
 
 Trouver et réutiliser du texte et des images copiés directement depuis Launchpad.
 
@@ -273,7 +273,7 @@ Des détails matériels, logiciels et thèmes avec Contraste adaptatif.
 
 <br>
 
-### Thème plasma (Alpha)
+### Thème Plasma (Alpha)
 
 Des menus et des popups transparents aux couleurs claires et sombres.
 
@@ -284,7 +284,7 @@ Des menus et des popups transparents aux couleurs claires et sombres.
 
 <br>
 
-### Début de la mise en scène (Alpha)
+### Écran de démarrage (Alpha)
 
 Un look correspondant du démarrage à l'arrêt, avec déverrouillage intégré pour les disques cryptés LUKS2.
 

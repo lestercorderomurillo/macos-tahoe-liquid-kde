@@ -143,9 +143,9 @@ Refracção de vidro, zoom de balanço, bolhas vermelhas de contagem de notifica
 
 <br>
 
-### Cachoeira (Alfa)
+### Shell (Alpha)
 
-Arquivo, Edição e outros menus de aplicação seguem a janela ativa. Abra o menu do sistema para configurações e controles de sessão.
+Arquivo, Edição e outros menus de aplicativos seguem a janela ativa. Abra o menu do sistema para configurações e controles de sessão.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu de arquivo com um documento aberto em Kate" width="830">
@@ -156,11 +156,11 @@ Arquivo, Edição e outros menus de aplicação seguem a janela ativa. Abra o me
 
 ### Vidro acrílico 2.0 com contraste adaptativo
 
-O Contraste Adaptive mostra o fundo por trás de cada rótulo. Ele mantém a cor do tema quando a diferença é pelo menos 33 pontos de leveza perceptiva. Abaixo desse objetivo, aplica a menor correção que pode, até 40% da escala RGB, mantendo o texto claro claro e o texto escuro escuro escuro. Desligando-o usa a cor do tema.
+O contraste adaptativo mostra o fundo por trás de cada rótulo. Mantém a cor do tema quando a diferença é de pelo menos 33 pontos de leveza perceptiva. Abaixo desse alvo, aplica a menor correcção possível, até 40% da escala RGB, mantendo o texto claro claro e o texto escuro escuro. Desligá-lo usa a cor do tema.
 
 <br>
 
-### Lançador (Alpha)
+### Launchpad (Alpha)
 
 Encontre aplicativos, navegue pelas categorias e mantenha os seus favoritos ao seu alcance.
 
@@ -173,7 +173,7 @@ Encontre aplicativos, navegue pelas categorias e mantenha os seus favoritos ao s
 
 ### Centro de Controle (Alfa)
 
-Wi-Fi, Bluetooth, som, brilho e notificações em um menu de vidro. O botão de aparência mostra um sol para Luz, uma lua para Escuridão e um círculo dividido para Automático.
+Wi-Fi, Bluetooth, som, brilho e notificações num menu de vidro. O botão de aparência mostra um sol para Luz, uma lua para Escuridão e um círculo dividido para Automático.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro de controlo em modo de luz" width="415">
@@ -198,7 +198,7 @@ Bandeirantes de notificação de vidro e histórico agrupado com ações do apli
 
 <br>
 
-### Finder (Alfa)
+### Finder (Alpha)
 
 Navegando em arquivos no estilo Finder com vidro Tahoe.
 
@@ -211,7 +211,7 @@ Navegando em arquivos no estilo Finder com vidro Tahoe.
 
 ### Calendário (Alfa)
 
-Abra o relógio do painel para ver o mês em vidro. Deslize ou use as teclas de flecha para navegar meses. Pressione Home para voltar ao mês atual.
+Abra o relógio do painel para ver o mês em vidro. Rolar ou usar as teclas de flecha para navegar meses. Pressão Home para voltar ao mês atual.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendário · Luz" width="328">
@@ -220,7 +220,7 @@ Abra o relógio do painel para ver o mês em vidro. Deslize ou use as teclas de 
 
 <br>
 
-### Bluetooth (Alfa)
+### Bluetooth (Alpha)
 
 Conecte os dispositivos emparelhados e verifique o nível de bateria da barra de menu.
 
@@ -229,9 +229,9 @@ Conecte os dispositivos emparelhados e verifique o nível de bateria da barra de
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu Bluetooth escuro com fones de ouvido de estúdio conectados em 82% e teclado sem fio desconectado" width="48%">
 </p>
 
-### Wi-Fi (Alfa)
+### Wi-Fi (Alpha)
 
-Abre o menu Wi-Fi para ver as redes sem fio disponíveis. Sem um adaptador Wi-Fi ou com a Wi-Fi desligada, o menu lista as suas conexões com fio seguidas por um único divisor e o link de configurações Wi-Fi.
+Abra o menu Wi-Fi para ver as redes sem fio disponíveis. Sem um adaptador Wi-Fi, ou com o Wi-Fi desligado, o menu lista as suas conexões sem fio seguidas por um único divisor e o link de configurações Wi-Fi.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu de Wi-Fi ligado ao Harbor Studio, com Garden Guest e Workshop disponíveis" width="48%">
@@ -251,7 +251,7 @@ Abre o menu da bateria para verificar o nível de carga e o estado de energia.
 
 <br>
 
-### História do clipboard (Alfa)
+### Histórico da área de transferência (Alpha)
 
 Encontre e reutilize texto e imagens copiados diretamente no Launchpad.
 
@@ -273,7 +273,7 @@ Detalhes de hardware, software e tema com contraste adaptativo.
 
 <br>
 
-### Tema de plasma (Alfa)
+### Tema Plasma (Alpha)
 
 Menus translúcidos e popups com cores claras e escuras.
 
@@ -284,7 +284,7 @@ Menus translúcidos e popups com cores claras e escuras.
 
 <br>
 
-### Bot Splash (Alfa)
+### Tela de inicialização (Alpha)
 
 Uma aparência correspondente do início ao fechamento, com desbloqueio embuído para unidades criptografadas LUKS2.
 

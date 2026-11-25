@@ -143,9 +143,9 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 <br>
 
-### ⁇  (阿尔法)
+### Shell (Alpha)
 
-文件,编辑和其他应用程序菜单遵循主动窗口. 打开系统菜单设置和会议控制.
+文件,编辑和其他应用程序菜单遵循主动窗口. 打开设置和会议控制系统菜单.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="开放的文件菜单在 Kate 中" width="830">
@@ -156,11 +156,11 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### ⁇ 烯基玻璃2.0具有适应性对比
 
-适应对比采样每个标签背后的背景.它保持主题颜色,当差异至少33个感知光度点.在目标以下,它应用最小的纠正,高达40%的RGB尺度,同时保持轻文本光和暗文本黑暗.关闭它使用主题颜色.
+适应性对比采样每个标签背后的背景. 如果差距至少为33个感觉轻度点, 在这个目标以下,它应用了最小的修正,高达RGB尺度的40%,同时保持了光文的光文和暗文的黑暗. 关闭它使用主题颜色.
 
 <br>
 
-### 发射板 (Alpha)
+### Launchpad (Alpha)
 
 找应用程序,浏览类别,
 
@@ -173,7 +173,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 控制中心 (阿尔法)
 
-在一个玻璃菜单中,可提供 Wi-Fi,蓝牙,声音,亮度和通知. 显示按 ⁇ 显示光的太阳,黑暗的月亮和自动的分圆.
+在一个玻璃菜单中提供Wi-Fi,蓝牙,声音,亮度和通知. 显现按 ⁇ 显示光的太阳,黑暗的月亮和自动的分圆.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="控制中心在光模式下" width="415">
@@ -198,7 +198,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 <br>
 
-### 搜索器 (Alpha)
+### Finder (Alpha)
 
 通过塔霍玻璃浏览文件.
 
@@ -211,7 +211,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 历日 (阿尔法)
 
-打开表盘钟,以显示月份在玻璃上.滚动或使用箭头键浏览月份.按Home返回当前月份.
+在玻璃上打开表表表,看月份. 滚动或使用箭头键浏览几个月. 按Home来返回当前的月份.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="日历 · 光" width="328">
@@ -220,7 +220,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 <br>
 
-### 蓝牙 (阿尔法)
+### Bluetooth (Alpha)
 
 连接配对设备,从菜单 ⁇ 查看它们的电池水平.
 
@@ -229,9 +229,9 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="暗色蓝牙菜单,工作室耳机连接82%和无线键盘断开" width="48%">
 </p>
 
-### 无线电 (Alpha)
+### Wi-Fi (Alpha)
 
-打开Wi-Fi菜单,可查看可用的无线网络.没有Wi-Fi适配器或没有Wi-Fi,菜单列出您的有线连接,然后单个分区和Wi-Fi设置链接.
+打开Wi-Fi菜单,查看可用的无线网络. 没有Wi-Fi适配器,或者没有Wi-Fi,菜单列出了您的有线连接,
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="轻微的Wi-Fi菜单连接到港湾工作室,有园客和车间可用" width="48%">
@@ -251,7 +251,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 <br>
 
-### 剪辑板历史 (阿尔法)
+### 剪贴板历史记录（Alpha）
 
 直接从启动板中找到和重复使用复制的文本和图像.
 
@@ -273,7 +273,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 <br>
 
-### 激光主题 (阿尔法)
+### Plasma 主题（Alpha）
 
 透明菜单和弹出窗口,有相应的光色和暗色.
 
@@ -284,7 +284,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 <br>
 
-### ⁇ 片 (阿尔法)
+### 启动画面（Alpha）
 
 启动到关闭的相匹配外观,
 

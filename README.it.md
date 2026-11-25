@@ -24,11 +24,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="rilascio"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="Versione"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="test"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="licenza"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="segnalare un insetto"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="Segnala un bug"></a>
 </p>
 
 
@@ -51,11 +51,11 @@
   <a href="tests/vm/PROOF.md#nixos" title="NixOS (experimental)"><img src="src/screenshots/distros/nixos.svg" alt="NixOS" width="32" height="32"></a>
 </p>
 
-Questo progetto personalizza l'aspetto e il senso del desktop KDE su Linux. Non include o si connette ai servizi di Apple. [negozi direttamente con Apple](https://www.apple.com/store).
+Questo progetto personalizza l'aspetto e la sensazione del desktop KDE su Linux. Non include né si connette ai servizi di Apple. Se avete bisogno dei servizi di Apple, [negozi direttamente con Apple](https://www.apple.com/store).
 
 > [!CAUTION]
-> **Filosofia della liberazione**
-> L'aggiornamento può rompere la compatibilità. [- il rapporto](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+> **Aggiornamenti continui**
+> Sperimentale. Riceve aggiornamenti giornalieri. Gli aggiornamenti possono interrompere la compatibilità. Evita i sistemi di produzione; [segnala qui i problemi](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 > [!NOTE]
 > Il congelamento delle funzionalità è in vigore per la serie 0.8x, con rilasci focalizzati sulle correzioni di bug fino a 0.90.
@@ -63,7 +63,7 @@ Questo progetto personalizza l'aspetto e il senso del desktop KDE su Linux. Non 
 > [!WARNING]
 > **Attenzione ai repackers di paywall: questo tema è GRATUITO.**
 >
-> Se avete trovato questo tema attraverso un canale di terze parti, non è necessario pagare per ottenerlo: scaricate direttamente da questo repository.
+> Se avete trovato questo tema tramite un canale di terze parti, non è necessario pagare per ottenerlo: scaricatelo direttamente da questo archivio. Manteniamo questo progetto libero, cosi' che tutti possano goderlo senza un muro di pagamento. Non è richiesto acquisto o sottoscrizione.
 
 <br>
 
@@ -151,9 +151,9 @@ Refrazione vetrata, zoom di galleggiamento, bolle di conteggio delle notifiche r
 
 <br>
 
-### Confezione di carbone
+### Shell (Alpha)
 
-File, Edit e gli altri menu dell'applicazione seguono la finestra attiva. Apri il menu del sistema per le impostazioni e i controlli di sessione.
+File, Edit e gli altri menu delle applicazioni seguono la finestra attiva. Apri il menu del sistema per le impostazioni e i controlli di sessione.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menù file con un documento aperto in Kate" width="830">
@@ -164,11 +164,11 @@ File, Edit e gli altri menu dell'applicazione seguono la finestra attiva. Apri i
 
 ### Vetro acrilico 2.0 con contrasto adattativo
 
-Adaptive Contrast mostra lo sfondo dietro ogni etichetta. mantiene il colore del tema quando la differenza è di almeno 33 punti di leggerezza percezionale. Al di sotto di questo obiettivo, applica la più piccola correzione possibile, fino al 40% della scala RGB, mantenendo il testo chiaro chiaro e il testo scuro scuro.
+Il contrasto adattativo mostra lo sfondo dietro ogni etichetta. Conserva il colore del tema quando la differenza è di almeno 33 punti di leggerezza percettiva. Al di sotto di tale obiettivo, si applica la più piccola correzione possibile, fino al 40% della scala RGB, mantenendo il testo chiaro chiaro e il testo scuro scuro. Spegnarlo usa il colore del tema.
 
 <br>
 
-### Lavoratore (Alfa)
+### Launchpad (Alpha)
 
 Trova app, scorri le categorie e tieni a portata di mano i tuoi preferiti.
 
@@ -181,7 +181,7 @@ Trova app, scorri le categorie e tieni a portata di mano i tuoi preferiti.
 
 ### Centro di controllo (Alfa)
 
-Wi-Fi, Bluetooth, suono, luminosità e notifiche in un menu di vetro.
+Wi-Fi, Bluetooth, suono, luminosità e notifiche in un menu di vetro. Il pulsante apparenza mostra un sole per la luce, una luna per l'oscurità e un cerchio diviso per l'automatico.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro di controllo in modalità luce" width="415">
@@ -206,7 +206,7 @@ Banner di notifica in vetro e storia raggruppata con azioni dell'app e supporto 
 
 <br>
 
-### Finder (Alfa)
+### Finder (Alpha)
 
 Navigare in file in stile Finder con vetro Tahoe.
 
@@ -219,7 +219,7 @@ Navigare in file in stile Finder con vetro Tahoe.
 
 ### Calendario (Alfa)
 
-Apri l'orologio del pannello per vedere il mese sul vetro. Scorri o usa le taste frecce per navigare nei mesi. Presi Home per tornare al mese corrente.
+Apri l'orologio per vedere il mese sul vetro. Scorrere o utilizzare i tasti delle frecce per navigare mesi. Presi Home per tornare al mese corrente.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Luce" width="328">
@@ -228,7 +228,7 @@ Apri l'orologio del pannello per vedere il mese sul vetro. Scorri o usa le taste
 
 <br>
 
-### Bluetooth (Alfa)
+### Bluetooth (Alpha)
 
 Connettere i dispositivi abbinati e controllare il livello della batteria dalla barra del menu.
 
@@ -237,9 +237,9 @@ Connettere i dispositivi abbinati e controllare il livello della batteria dalla 
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu bluetooth scuro con cuffie di studio collegate all&#x27;82% e tastiera wireless disconnessa" width="48%">
 </p>
 
-### Wi-Fi (Alfa)
+### Wi-Fi (Alpha)
 
-Apri il menu Wi-Fi per vedere le reti wireless disponibili. Senza un adattatore Wi-Fi o con la rete Wi-Fi spenta, il menu elenca le connessioni cablate seguite da un singolo divisore e dal collegamento per le impostazioni Wi-Fi.
+Apri il menu Wi-Fi per vedere le reti wireless disponibili. Senza un adattatore Wi-Fi, o con il Wi-Fi spento, il menu elenca le connessioni cablate seguite da un singolo divisore e il link per le impostazioni Wi-Fi.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menù Wi-Fi leggero connesso a Harbor Studio, con Garden Guest e Workshop disponibili" width="48%">
@@ -259,7 +259,7 @@ Apri il menu della batteria per controllare il livello di carica e lo stato di p
 
 <br>
 
-### Storia della cartolina (Alfa)
+### Cronologia degli appunti (Alpha)
 
 Trova e riutilizza il testo e le immagini copiati direttamente da Launchpad.
 
@@ -281,7 +281,7 @@ Hardware, software e dettagli di tema con contrasto adattativo.
 
 <br>
 
-### Tema plasmatico (Alfa)
+### Tema Plasma (Alpha)
 
 Menù e popup trasparenti con colori chiari e scuri.
 
@@ -292,7 +292,7 @@ Menù e popup trasparenti con colori chiari e scuri.
 
 <br>
 
-### Splash di scarpa (Alfa)
+### Schermata di avvio (Alpha)
 
 Un look corrispondente dal start all'interruzione, con sblocco integrato per i drive criptati LUKS2.
 
@@ -306,7 +306,7 @@ Un look corrispondente dal start all'interruzione, con sblocco integrato per i d
 
 - **Apparizione:** Tematiche di luce e scura coordinate per desktop, app, icone e decorazioni delle finestre, con commutazione automatica e wallpaper per monitor. [Impostazioni specifiche per la decorazione delle finestre](docs/app-window-decorations.md)
 - **Effetti di vetro:** Disfusione, rifrazione e tonalità regolabili, con testo che si adatta allo sfondo nei menu supportati.
-- **- Il porto:** Applications inserite, zoom di navigazione, badge di notifica e nascondigli configurabili.
+- **- Il porto:** Applications pin, zoom hover, badge di notifica e nascondigli configurabili. Il Dock ti segue tra le mostre.
 - **Barretta menù e Centro di controllo:** Menù globali di app e controlli sistemi rapidi, con impostazioni della barra dei menu condivise su tutti i display.
 - **- Pad di lancio:** Cerca app, scorri le categorie e salva i preferiti in uno dei due layout.
 - **Widget desktop:** Aggiungi e organizza i widget di Liquid Glass sul tuo desktop.
@@ -315,7 +315,7 @@ Un look corrispondente dal start all'interruzione, con sblocco integrato per i d
 - **Integrazione delle applicazioni:** Navigare in stile Finder in Nautilus, integrazione del menu GTK e Firefox con backup di profilo.
 - **Informazioni sul sistema e avvio:** Una finestra di informazioni a tema e un'opzione di accoppiamento.
 - **Impostazione e recupero:** Un'installazione grafica con risorse di tema, aggiornamenti e backup delle impostazioni che possono essere ripristinati dopo la disinstallazione.
-- **Lingue:** Scegli il linguaggio di installazione nelle impostazioni.
+- **Lingue:** Scegli il linguaggio di installazione nelle impostazioni. I widget plasma seguono il linguaggio del desktop.
 - **Compatibilità:** Plasma 6.6 ⁇ 6.8 su sistemi basati su Arch e Fedora, openSUSE, Debian e KDE neon.
 - **Caratteristiche opzionali:** Protezione OLED e supporto sperimentale di NixOS e Home Manager.
 
@@ -331,31 +331,31 @@ cd macos-tahoe-liquid-kde
 ./installer
 ```
 
-Scegliere **Espresso** - Apri. `./installer` - Per aggiornare o disinstallare.
+Per installare, scegli **Express**. Per aggiornare o disinstallare, riapri `./installer`.
 
-Per liberare spazio su disco mantenendo la tua cassa Git e il lavoro locale:
+Per liberare spazio su disco conservando la copia Git e le modifiche locali:
 
 ```bash
 ./installer --free-space
 ```
 
-| Lingua dell'installazione | Statuto |
+| Lingua dell'installazione | Stato |
 | --- | --- |
 | 🇺🇸 English | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
-| 🇪🇸 Spanish | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
-| 🇨🇳 Simplified Chinese | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
-| 🇧🇷 Brazilian Portuguese | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
-| 🇩🇪 German | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
-| 🇫🇷 French | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italian | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
-| 🇷🇺 Russian | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanese | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Korean | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Arabic | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Hindi | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Dutch | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polish | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Turkish | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
+| 🇪🇸 Español | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
+| 🇨🇳 简体中文 | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
+| 🇧🇷 Português (Brasil) | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
+| 🇩🇪 Deutsch | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
+| 🇫🇷 Français | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇹 Italiano | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
+| 🇷🇺 Русский | ![Disponibile](https://img.shields.io/badge/Available-1A7F37) |
+| 🇯🇵 日本語 | ![Anteprima](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 한국어 | ![Anteprima](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 العربية | ![Anteprima](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 हिन्दी | ![Anteprima](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 Nederlands | ![Anteprima](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 Polski | ![Anteprima](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 Türkçe | ![Anteprima](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>Requisiti</b></summary>
@@ -371,16 +371,16 @@ Requisiti desktop, strumenti di costruzione e pacchetti di sistema.
 - `dbus-send`
 - `systemctl` o `crontab` per le caratteristiche di programmazione
 
-**- dicitura:** l'installator rileva il dinit e utilizza le voci cron per utente per il commutazione automatica di luce/oscuro e la cura OLED. `crontab` In Artix/dinit, prepararlo con:
+**dinit:** l'impianto rileva il dinit e utilizza le voci cron per utente per l'interruzione automatica di luce/oscuro e la cura OLED. È necessario un cron daemon in esecuzione installazione `crontab` Solo non inizia. Su Artix/dinit, prepararlo con:
 
 ```bash
 sudo pacman -S --needed cronie cronie-dinit
 sudo dinitctl --system enable cronie
 ```
 
-I commutatori automatici funzionano alle 06:00 e 18:00 durante il log in; il backend cron non ha tempo di accesso. Il commutatore manuale luce/oscuro funziona indipendentemente dal cron.
+I commutatori automatici funzionano alle 06:00 e alle 18:00 durante l'accesso il cron backend non ha tempo di accesso. La commutazione di luce/oscuro manuale funziona indipendentemente dal cron. le immagini di schermo Artix esistenti coprono OpenRC.
 
-Le attività sono bundled. Le dipendenze mancanti e i corni rotondati KDE opzionali richiedono l'accesso a Internet. Gli aggiornamenti di Corni rotondati verificati rimuovono le fonti e gli archivi scaricati più vecchi. Il reinstallazione sostituisce gli alberi di asset gestiti in atto; le copie riuscite rimuovono i loro dati temporanei, e le copie successive ripudiano la messa in scena discaricabile interrotta. I backup di recupero, i backup del profilo del browser e le preferenze dell'utente vengono conservati.
+I beni sono messi insieme. Le dipendenze mancanti e gli angoli arrotondati KDE opzionali richiedono l'accesso a Internet. Gli aggiornamenti di Verified Rounded Corners rimuovono le fonti e gli archivi scaricati più antichi. La reinstallazione sostituisce gli alberi di asset gestiti le copie di successo rimuovono i loro dati temporanei, e le copie successive ripulire interrotto staging usa e getta. I backup di recupero, i backup del profilo del browser e le preferenze dell'utente vengono conservati. Le immagini di sviluppatori VM e i bundle di cattura non sono cache di installazione e non vengono mai rimossi automaticamente.
 
 | Distribuzione | Qt 6 strumenti | KDE Plasma 6 pacchetti di sviluppo |
 |--------|------------|-----------------------------------|
@@ -395,9 +395,9 @@ Su Fedora, l'installator installa Fedora ⁇ s GTK 3 global menu exporter, `unit
 <details>
 <summary><b>Servizi di assistenza OLED</b></summary>
 
-Trasferimenti facoltativi del pannello; disabilitato per impostazione predefinita.
+Trasferimenti facoltativi del pannello disabilitato per impostazione predefinita.
 
-Abilitare il **Protezione OLED** Selezionare l'intervallo di spostamento e il massimo spostamento dei pixel; è disabilitato per impostazione predefinita.
+Abilitare il **Protezione OLED** pagina. Scegli l'intervallo di spostamento e lo spostamento massimo dei pixel lì è disabilitato per impostazione predefinita.
 
 **Controlli manuali**
 
@@ -426,15 +426,15 @@ Prova il tema in un desktop Plasma isolato.
 
 **OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
 
-`all` La distribuzione di dati è effettuata automaticamente in cloud, mentre gli altri target utilizzano i loro installati ufficiali ISO con supporto di somma di controllo. [Guida di configurazione e qualificazione della macchina](tests/vm/README.md).
+`all` lancia tutte le distribuzioni. Disponibilità automatica di obiettivi cloud gli altri bersagli utilizzano i loro impianti ufficiali di installazione ISO con somma di controllo. Seguire il [Guida di configurazione e qualificazione della macchina](tests/vm/README.md).
 
-`./vm kubuntu` avviene l'ISO ufficiale Kubuntu 26.04.1 LTS con verifica SHA-256 (porta SSH) `2234` Questo nuovo obiettivo di regressione del lanciatore è in attesa della qualifica completa.
+`./vm kubuntu` avviene l'ISO ufficiale Kubuntu 26.04.1 LTS con verifica SHA-256 (porta SSH) `2234` dopo l'installazione degli ospiti). Questo nuovo obiettivo di regressione del lanciatore è in attesa della qualifica completa.
 
-`./vm debian` utilizza l'immagine cloud ufficiale di test Debian (Forky), verifica la sua somma di controllo SHA-512 e fornisce un desktop Plasma. `tester` con la password `tester`; SSH è disponibile su `127.0.0.1:2232`L' installator si apre da una copia inviata scrivibile al `/home/tester/macos-tahoe-liquid-kde`; il repository host è montato solo per lettura. `./vm debian --clean` Per ricostruire il visitatore di scarto da zero.
+`./vm debian` utilizza l'immagine cloud ufficiale di test Debian (Forky), verifica la somma di controllo SHA-512 e fornisce un desktop Plasma. Accedere come `tester` con la password `tester`- il SSH è disponibile su: `127.0.0.1:2232`- Non lo so . L'impianto si apre da una copia inviata scrivibile a `/home/tester/macos-tahoe-liquid-kde`- il il repository ospitante è montato solo per lettura. Utilizzare `./vm debian --clean` Per ricostruire il visitatore di scarto da zero.
 
-Tutte le 11 distribuzioni di questa tabella hanno superato la qualifica VM in diretta. Selezionare un badge di stato per le screenshot e i risultati dei test rivisti.
+Tutte le undici distribuzioni di questa tabella hanno superato la qualifica VM in diretta. Selezionare un badge di stato per le screenshot e i risultati dei test esaminati.
 
-| | Nome | Statuto |
+| | Nome | Stato |
 |:--:|------|---------|
 | <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | [![Verificata la VM](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#cachyos) |
 | <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | [![Verificata la VM](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#arch) |
@@ -450,7 +450,7 @@ Tutte le 11 distribuzioni di questa tabella hanno superato la qualifica VM in di
 
 **NixOS e Home Manager (testo)**
 
-Utilizzare i moduli di flake, **non l'installator grafico**La convalida del desktop in diretta è in attesa.
+Utilizzare i moduli di flake, **non l'installator grafico**- Non lo so . La convalida del desktop è in attesa.
 
 **Input di fiocco** (rechiede Nixpkgs e Home Manager):
 
@@ -481,18 +481,18 @@ programs.mac-tahoe = {
 };
 ```
 
-**Attività di Apple:** Fonti, cartelli da parati e suoni non liberi opzionali. `appleAssets` richiede inoltre:
+**Attività di Apple:** caratteri non liberi, wallpaper e suoni opzionali. Abilitare `appleAssets` richiede inoltre:
 
 ```nix
 nixpkgs.config.allowUnfreePredicate = pkg:
   builtins.elem (lib.getName pkg) [ "mac-tahoe-apple-assets" ];
 ```
 
-**Pannelli:** importare anche il proprio modulo di plasma-manager e `inputs.mac-tahoe.homeManagerModules.plasma-manager`- Abilitare `programs.mac-tahoe.panels.enable` e set `programs.mac-tahoe.panels.launchers`, ad esempio: `[ "applications:org.kde.dolphin.desktop" ]`Questo sostituisce il layout senza importare i pin esistenti.
+**Pannelli:** importare anche il proprio modulo di plasma-manager e `inputs.mac-tahoe.homeManagerModules.plasma-manager`- Non lo so . Abilitare `programs.mac-tahoe.panels.enable` e set `programs.mac-tahoe.panels.launchers`, ad esempio: `[ "applications:org.kde.dolphin.desktop" ]`- Non lo so . Questo sostituisce il layout senza importare i pin esistenti.
 
-**Impostazioni scrittrici:** - mantenere `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` Evitare le chiavi immutabili del gestore di plasma gestite dal commutatore di tema.
+**Impostazioni scrittrici:** - mantenere `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` e la configurazione GTK live scrivibile. Evitare le chiavi immutabili del gestore del plasma gestite dallo switcher di tema.
 
-Logging out e back in dopo l'attivazione. Profili Firefox, segni librari GTK e SDDM non sono configurati. `programs.mac-tahoe.gtkAppmenuModule` Per caricarlo al login, accedere al percorso completo di una libreria di moduli di menù app GTK 3 installata. Prima di disabilitare la cura OLED, eseguire `mac-tahoe-oled-care restore`; prima di rimuovere i moduli, selezionare Breeze.
+Uscite e tornate dopo l'attivazione. I profili di Firefox, i segnalibri GTK e SDDM non sono configurati. In Home Manager, impostato `programs.mac-tahoe.gtkAppmenuModule` all'intero percorso di una libreria di moduli di menu app GTK 3 installata per caricarla al login. Prima di disattivare la cura OLED, eseguire `mac-tahoe-oled-care restore`- il prima di rimuovere i moduli, selezionare Breeze. La rimozione lascia le impostazioni dell'utente in atto.
 
 </details>
 
@@ -514,14 +514,14 @@ OpenRC e dinit richiedono un cron daemon in esecuzione. [Risultati dei test desk
 <details>
 <summary><b>Versioni di plasma</b></summary>
 
-Plasma 6.6 ⁇ 6.8 è supportato; gli effetti compilati utilizzano l'SDK host.
+Il plasma 6.6 ⁇ 6.8 è supportato gli effetti compilati utilizzano l'SDK host.
 
 | Plasma | Supporto | Da quando |
 |--------|---------|-------|
-| 6.5 e più | ![Non supportato](https://img.shields.io/badge/Not%20supported-D1242F) | Non applicabile |
-| 6.6 | ![Sostenuto](https://img.shields.io/badge/Supported-1A7F37) | V0.1.0 |
-| 6.7 | ![Sostenuto](https://img.shields.io/badge/Supported-1A7F37) | V0.19.0 |
-| 6.8 | ![Sostenuto](https://img.shields.io/badge/Supported-1A7F37) | V0.54.1 |
+| 6.5 e precedenti | ![Non supportato](https://img.shields.io/badge/Not%20supported-D1242F) | Non applicabile |
+| 6.6 | ![Sostenuto](https://img.shields.io/badge/Supported-1A7F37) | v0.1.0 |
+| 6.7 | ![Sostenuto](https://img.shields.io/badge/Supported-1A7F37) | v0.19.0 |
+| 6.8 | ![Sostenuto](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
 
 </details>
 
@@ -529,11 +529,11 @@ Plasma 6.6 ⁇ 6.8 è supportato; gli effetti compilati utilizzano l'SDK host.
 
 ![Disclaimer](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Questa è una riimplementazione indipendente ispirata all'estetica di macOS. Non è affiliata o approvata da Apple o KDE. "macOS" e "Apple" sono marchi commerciali di Apple Inc.
+Si tratta di una reimplementazione indipendente ispirata all'estetica di macOS. Non è affiliato o approvato da Apple o KDE. "macOS" e "Apple" sono marchi commerciali di Apple Inc.
 
-L'emblema macOS, i wallpaper bundled, i suoni del sistema e i font SF Pro / SF Mono rimangono proprietà di Apple e non sono coperti dalla licenza di questo progetto.
+L'emblema macOS, i wallpaper bundled, i suoni del sistema e i font SF Pro / SF Mono rimangono proprietà di Apple e non sono coperti dalla licenza di questo progetto. Altri componenti conservano le proprie licenze e le proprie notifiche sui diritti d'autore vedere l'indice di notifiche di terzi di seguito per l'ambito di applicazione e le lacune di provenienza note.
 
-Licenza [GPL-3.0](LICENSE) La Commissione ha adottato una decisione che prevede che le licenze per i componenti individuali e i diritti di terzi restino applicabili. [Notifiche di diritto d'autore](NOTICE), [licenze e identità del progetto](LICENSING.md), e [notifiche di terzi](THIRD_PARTY_NOTICES.md).
+Licenza [GPL-3.0](LICENSE) nel suo insieme restano applicabili le singole licenze dei componenti e i diritti di terzi. Vedi ? [Notifiche di diritto d'autore](NOTICE), [licenze e identità del progetto](LICENSING.md), e [notifiche di terzi](THIRD_PARTY_NOTICES.md).
 
 <br>
 
@@ -545,7 +545,7 @@ Licenza [GPL-3.0](LICENSE) La Commissione ha adottato una decisione che prevede 
 Referenze di progetto e componenti di terzi:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`: riferimento alla progettazione del lanciatore.
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: icone di base e cursori; riferimento al design GTK. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) è mantenuto qui come una forchetta con licenza MIT con backup di profilo e supporto al ripristino.
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: icone di base e cursori Riferimento al design GTK. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) è mantenuto qui come una forchetta con licenza MIT con backup di profilo e supporto al ripristino.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** e **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur e la sua forchetta di vetro: codice upstream utilizzato da Acrylic Glass (gli autori del blur KWin rimangono accreditati nelle intestazioni sorgenti).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0, bundled offline e installato con il passaggio di layout per colorare i pannelli (GPL-3.0, licenza spedita accanto).
 - **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**: `liquidglass-kde-widgets` fornisce la collezione bundled di widget desktop Liquid Glass (GPL-3.0, licenza inclusa).
@@ -556,7 +556,7 @@ Referenze di progetto e componenti di terzi:
 - **[Lucide](https://github.com/lucide-icons/lucide)**: coprire le icone nel menu globale (ISC, © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)**: archivio di cartelloni da parati macOS ad alta risoluzione.
 
-Se manca un credito, per favore. [aprire un numero](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+Se manca un credito, per favore. [apri una segnalazione](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 </details>
 

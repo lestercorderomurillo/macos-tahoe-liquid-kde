@@ -24,11 +24,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="放出"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="リリース"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="試験"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="プラズマ"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="免許"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="虫を報告する"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="不具合を報告"></a>
 </p>
 
 
@@ -51,11 +51,11 @@
   <a href="tests/vm/PROOF.md#nixos" title="NixOS (experimental)"><img src="src/screenshots/distros/nixos.svg" alt="NixOS" width="32" height="32"></a>
 </p>
 
-このプロジェクトは,Linux上の KDEデスクトップの外観と感覚をカスタマイズします. [アップルで直接買い物](https://www.apple.com/store).
+このプロジェクトは,Linuxで KDE デスクトップの外観と感覚をカスタマイズします. アップルのサービスには含まれていません. アップルのサービスを必要とするなら [アップルで直接買い物](https://www.apple.com/store).
 
 > [!CAUTION]
-> **ローリング リレーズ 哲学**
-> 実験的な. 毎日更新を受けます.更新は互換性を壊す可能性があります. 生産システムを避ける. [報告する問題](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+> **ローリングリリースについて**
+> 実験的な 日常の更新を受けています 更新は互換性を損なう可能性があります. 生産システムを避けること [こちらで不具合を報告](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 > [!NOTE]
 > 機能凍結は0.8xシリーズで有効で,バグ修正を0.90まで中心としたリリースがあります.
@@ -63,7 +63,7 @@
 > [!WARNING]
 > **壁のリパッキングに注意してください このテーマは無料です**
 >
-> テーマは,第三者のチャンネルで見つかったら,購入費を払う必要はありません.このリポジトリから直接ダウンロードしてください.私たちはこのプロジェクトを無料にしており,誰もがペイウォールなしで楽しめるようにしています.購入やサブスクリプションは必要ありません.
+> このテーマを第三者のチャンネルで検索した場合は,購入費を支払わなく,このリポジトリから直接ダウンロードします. 私たちはこのプロジェクトを無料にして お金を払わずに 誰もが楽しめるようにしています 購入や購読は必要ありません.
 
 <br>
 
@@ -151,9 +151,9 @@
 
 <br>
 
-### シェル (アルファ)
+### Shell (Alpha)
 
-ファイル,編集および他のアプリケーションメニューはアクティブウィンドウに従います.設定とセッション制御のためのシステムメニューを開きます.
+ファイル,編集および他のアプリケーションメニューは,アクティブウィンドウに従います. 設定とセッション制御のためのシステムメニューを開きます.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kateで開いた文書のファイルメニュー" width="830">
@@ -164,11 +164,11 @@
 
 ### アクリルガラス2.0 適応コントラスト
 
-Adaptive Contrastは,各ラベルの背景をサンプル化します.差が少なくとも33点であるときに主題色を維持します.その目標の下では,RGBスケールの40%まで可能な最小の修正を適用し,軽文を明るく暗文を暗く保つ.それを消すには主題色を使用します.
+Adaptive Contrastは,各ラベルの後ろの背景をサンプル化します. 感知的な軽度点が 33点以上になると主題の色が保たれます この目標以下では,RGBスケールの最大40%の最小の修正を適用し, ライトテキストをライトとダークテキストをダークに保つ. 消すには主題色を使います
 
 <br>
 
-### 打ち上げパッド (アルファ)
+### Launchpad (Alpha)
 
 アプリを見つけ,カテゴリーを閲覧し,好きなものを入手できるようにします.
 
@@ -181,7 +181,7 @@ Adaptive Contrastは,各ラベルの背景をサンプル化します.差が少�
 
 ### 制御センター (アルファ)
 
-Wi-Fi,Bluetooth,音,明るさ,通知がガラスメニューで表示されます.外観ボタンは光に太陽,暗に月と自動に分割円を示します.
+Wi-Fi,Bluetooth,音,明るさ,通知がガラスのメニューで 出現ボタンは光に太陽,闇に月,自動に分岐した円を示します
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="制御センターがライトモード" width="415">
@@ -206,7 +206,7 @@ Wi-Fi,Bluetooth,音,明るさ,通知がガラスメニューで表示されま�
 
 <br>
 
-### 検索器 (アルファ)
+### Finder (Alpha)
 
 タホガラスでファイルブラウジング
 
@@ -219,7 +219,7 @@ Wi-Fi,Bluetooth,音,明るさ,通知がガラスメニューで表示されま�
 
 ### カレンダー (アルファ)
 
-グラス上の月を表示するにはパネル時計を開け.数ヶ月を閲覧するために矢印をスクロールまたは使用します.現在の月に戻るにはホームを押してください.
+グラスで月を見るためにパネルクロックを開いてください. 矢印キーを使って数ヶ月を閲覧する 本月に戻るためにホームを押してください.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="カレンダー · 光" width="328">
@@ -228,7 +228,7 @@ Wi-Fi,Bluetooth,音,明るさ,通知がガラスメニューで表示されま�
 
 <br>
 
-### ブルーツ (アルファ)
+### Bluetooth (Alpha)
 
 配列デバイスを接続し メニューバーからバッテリーレベルを確認します
 
@@ -237,9 +237,9 @@ Wi-Fi,Bluetooth,音,明るさ,通知がガラスメニューで表示されま�
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="暗黒のBluetoothメニューで,スタジオヘッドホンが82%接続され,ワイヤレスキーボードは切断された" width="48%">
 </p>
 
-### ワイ・ファイ (アルファ)
+### Wi-Fi (Alpha)
 
-Wi-Fi アダプタなしやWi-Fiがオフになっている場合,メニューは,あなたのワイヤレス接続をリストにします.
+Wi-Fi メニューを開いて,利用可能な無線ネットワークを見ることができます. Wi-Fi アダプタなし,またはWi-Fiがオフになっている場合,メニューはあなたのワイヤレス接続をリストし, 単一のディバイダーとWi-Fi設定リンクが表示されます.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="ハーバー・スタジオに接続されたライトWi-Fiメニュー,ガーデンゲストとワークショップが利用可能" width="48%">
@@ -259,7 +259,7 @@ Wi-Fi アダプタなしやWi-Fiがオフになっている場合,メニュー�
 
 <br>
 
-### クリップボードの歴史 (アルファ)
+### クリップボード履歴 (Alpha)
 
 Launchpadから直接コピーされたテキストと画像を検索して再利用します.
 
@@ -281,7 +281,7 @@ Launchpadから直接コピーされたテキストと画像を検索して再�
 
 <br>
 
-### プラズマテーマ (アルファ)
+### Plasma テーマ (Alpha)
 
 透明なメニューや ポップアップが 照明と暗色に一致する
 
@@ -292,7 +292,7 @@ Launchpadから直接コピーされたテキストと画像を検索して再�
 
 <br>
 
-### 靴のスプラッシュ (アルファ)
+### 起動画面 (Alpha)
 
 LUKS2暗号化されたドライブに内蔵の開封機能がある
 
@@ -306,7 +306,7 @@ LUKS2暗号化されたドライブに内蔵の開封機能がある
 
 - **顔:** デスクトップ,アプリ,アイコン,ウィンドウ装飾のための調整された光と暗いテーマ,自動切り替えとモニターごとに壁紙. [アプリの特定で窓飾り設定](docs/app-window-decorations.md)
 - **ガラス効果:** 調整可能な模糊,折りたみ,色彩,サポートされたメニューの背景に適応するテキスト.
-- **港湾:** ピンインアプリ,ホーバーズーム,通知バッジ,設定可能な隠れ. ドックがディスプレイの間をフォローします.
+- **港湾:** ピンアップ,ホーバーズーム,通知バッジ,設定可能な隠蔽 ドックが君を追いかける
 - **メニューバーとコントロールセンター:** グローバルアプリメニューとシステム制御が,ディスプレイに共有されたメニューバー設定で
 - **打ち上げパッド:** アプリを検索し,カテゴリーを閲覧し,好きなものを2つのレイアウトで保存します.
 - **デスクトップウィジェット:** テーブルの上にLiquid Glass ウィジェットを追加して並べます.
@@ -315,7 +315,7 @@ LUKS2暗号化されたドライブに内蔵の開封機能がある
 - **アプリの統合:** Nautilus でFinder スタイルのブラウジング,GTK メニュー統合,プロフィールバックアップ付きの Firefox テーマ.
 - **システム情報と起動:** テーマシステム情報ウィンドウとオプションの対応ブートスプラッシュ
 - **設定と復元:** ダウンロード時に復元できる,テーマ資産,更新および設定バックアップをまとめたグラフィックインストーラ.
-- **言語:** 設定でインストーラ言語を選択します.プラズマウィジェットはデスクトップ言語に従います.
+- **言語:** 設定からインストーラ言語を選択します. プラズマウィジェットはデスクトップ言語に従います
 - **互換性:** プラズマ 6.6 ⁇ 6.8は,アーチとフェドラベースのシステム, openSUSE, Debian, KDEのネオンで.
 - **選択的機能:** OLEDパネル保護と実験的な NixOSとホームマネージャーのサポート
 
@@ -331,9 +331,9 @@ cd macos-tahoe-liquid-kde
 ./installer
 ```
 
-選択する **発音** 設置する `./installer` 更新またはアンインストール
+インストールするには **Express** を選択します。更新またはアンインストールするには `./installer` をもう一度開きます。
 
-Gitのチェックアウトとローカル作業を保持しながらディスクスペースを解放する:
+Git の作業コピーとローカルの変更を残したままディスク容量を解放するには、次を実行します。
 
 ```bash
 ./installer --free-space
@@ -342,20 +342,20 @@ Gitのチェックアウトとローカル作業を保持しながらディス�
 | インストーラー言語 | 状態 |
 | --- | --- |
 | 🇺🇸 English | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇪🇸 Spanish | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇨🇳 Simplified Chinese | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇧🇷 Brazilian Portuguese | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇩🇪 German | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇫🇷 French | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italian | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇷🇺 Russian | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanese | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Korean | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Arabic | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Hindi | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Dutch | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polish | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Turkish | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
+| 🇪🇸 Español | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇨🇳 简体中文 | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇧🇷 Português (Brasil) | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇩🇪 Deutsch | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇫🇷 Français | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇹 Italiano | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇷🇺 Русский | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇯🇵 日本語 | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 한국어 | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 العربية | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 हिन्दी | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 Nederlands | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 Polski | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 Türkçe | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>要求</b></summary>
@@ -371,16 +371,16 @@ Gitのチェックアウトとローカル作業を保持しながらディス�
 - `dbus-send`
 - `systemctl` 及び `crontab` 予定されている特色について
 
-**⁇** インストーラはdinitを検出し,自動ライト/ダークスイッチとOLEDケアのためにユーザー દીઠクロンエントリを使用します.実行中のクロンダイモンが必要です;インストール `crontab` 単独で起動しない. Artix/dinit で,次の方法で準備する:
+**dinit:** インストーラはdinitを検出し,自動ライト/ダークスイッチとOLEDケアのためにユーザーごとにクロンエントリを使用します. 実行するクロンデモンが必要です 設置 `crontab` 一人では始まらない Artix/dinit において,以下で準備する.
 
 ```bash
 sudo pacman -S --needed cronie cronie-dinit
 sudo dinitctl --system enable cronie
 ```
 
-自動スイッチはログインしている間に 06:00 と 18:00 で実行されます. cron バックエンドにはログイン時間追いつきはありません.マニュアルなライト/ダークスイッチは cron に独立して動作します. dinit デスクトップ資格が待っています.既存の Artix スクリーンショットは OpenRC をカバーしています.
+自動スイッチはログインしている間に 06:00と 18:00で動作します クロンのバックエンドはログイン時間追いつきがない. 手動のライト/ダークスイッチはクロンから独立して動作します 既存のArtixスクリーンショットは OpenRCをカバーしている.
 
-資産はバンドルされます.欠落する依存関係とオプションのKDEラウンドコーナーにはインターネットアクセスが必要です.検証されたラウンドコーナーアップデートにより古いダウンロードされたソースとアーカイブが削除されます.再インストールによって管理されている資産の木が置き換えられます.成功したコピーでは一時的なデータを削除し,後にコピーが干渉された使い捨てステージをクリーンにします.復元バックアップ,ブラウザプロファイルバックアップ,ユーザー選択は保持されます.開発者VM画像とキャプチャバンドルはインストーラーキャッシュではなく,自動的に削除されません.
+資産は束縛されています 欠落する依存関係とオプションのKDEラウンドコーナーにはインターネットアクセスが必要です. Verified Rounded Corners の更新は,古いダウンロードされたソースとアーカイブを削除します. 再インストールにより管理された資産木が置き換えられる 失敗したコピーは一時的なデータを削除し,後にコピーは断片された使い捨てステージをクリーンにします. 復元バックアップ,ブラウザプロフィールバックアップ,ユーザー選択が保存されます. 開発者VMの画像とキャプチャバンドルはインストーラキャッシュではなく,自動的に削除されません.
 
 | ダイストロ | Qt 6 道具 | KDE Plasma 6開発パッケージ |
 |--------|------------|-----------------------------------|
@@ -395,9 +395,9 @@ Fedoraでは,インストールがFedora ⁇ s GTK 3のグローバルメニュ�
 <details>
 <summary><b>OLEDケア</b></summary>
 
-選択的なパネルシフト; デフォルトで無効
+オプションパネルシフト デフォルトで無効です
 
-オンに有効にする **OLED保護** ページ.シフト間隔と最大ピクセル移動を選択します.
+オンに有効にする **OLED保護** ページ シフト間隔と最大ピクセル移動を選択します デフォルトで無効になっている.
 
 **手動制御**
 
@@ -426,13 +426,13 @@ mac-tahoe-oled-care status
 
 **OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
 
-`all` クラウドターゲットの提供が自動的に開始される.他のターゲットはチェックサムに固定された公式のISOインストーラを使用します. [VMの設定と資格ガイド](tests/vm/README.md).
+`all` すべてのディストリビューションを起動します クラウドターゲットの自動提供 他の標的は,チェックサムに固定された公式のISOインストーラーを使用します. フォローする [VMの設定と資格ガイド](tests/vm/README.md).
 
-`./vm kubuntu` 公式のKubuntu 26.04.1 LTS ISOを SHA-256 検証 (SSHポート) と起動する `2234` 打ち上げ機の逆転目標は 完全ライブ資格を待っています
+`./vm kubuntu` 公式のKubuntu 26.04.1 LTS ISOを SHA-256 検証 (SSHポート) と起動する `2234` ゲストの設定後) この新しい発射機の回帰目標は 完全なライブ資格を待っています
 
-`./vm debian` 公式の Debian テスト (Forky) クラウドイメージを使用し,SHA-512 チェックサムを検証し,プラズマ デスクトップを用意します. `tester` パスワード `tester`; SSHは `127.0.0.1:2232`インストールが開きます. `/home/tester/macos-tahoe-liquid-kde`ホストリポジトリは読み込みのみに搭載されています. `./vm debian --clean` 捨て客をゼロから再構築する
+`./vm debian` 公式の Debian テスト (Forky) クラウドイメージを使用し,SHA-512 チェックサムを確認し,Plasma デスクトップを用意します. ログインする `tester` パスワード `tester`について SSH は `127.0.0.1:2232`やってみよう インストーラが書き込み可能なゲストコピーから開きます `/home/tester/macos-tahoe-liquid-kde`について ホストリポジトリは読み込みのみに搭載されている. 使用 `./vm debian --clean` 捨て客をゼロから再構築する
 
-この表の11つの分布は VM 資格を直行した.レビューされたスクリーンショットとテスト結果のためのステータスバッジを選択します.
+この表の11つの配分は全て VM資格を通過した. レビューされたスクリーンショットとテスト結果のためのステータスバッジを選択します.
 
 | | 名前 | 状態 |
 |:--:|------|---------|
@@ -450,7 +450,7 @@ mac-tahoe-oled-care status
 
 **NixOSとホームマネージャー (テスト)**
 
-フレークモジュールを使う **グラフィックインストーラではない**テストが待っています
+フレークモジュールを使う **グラフィックインストーラではない**やってみよう ライブデスクトップの検証が待っています
 
 **フレーク入力** (Nixpkgsとホームマネージャーを要求する):
 
@@ -462,7 +462,7 @@ inputs.mac-tahoe = {
 };
 ```
 
-**ナイキスOS:** 輸入 `inputs.mac-tahoe.nixosModules.default`.
+**NixOS:** 輸入 `inputs.mac-tahoe.nixosModules.default`.
 
 ```nix
 services.desktopManager.plasma6.enable = true;
@@ -470,7 +470,7 @@ services.mac-tahoe.enable = true;
 # services.mac-tahoe.plymouth.enable = true; # optional boot splash
 ```
 
-**家庭管理者:** 輸入 `inputs.mac-tahoe.homeManagerModules.default`.
+**Home Manager:** 輸入 `inputs.mac-tahoe.homeManagerModules.default`.
 
 ```nix
 programs.mac-tahoe = {
@@ -481,18 +481,18 @@ programs.mac-tahoe = {
 };
 ```
 
-**Appleの資産:** 選択的非自由なフォント,壁紙,音声 `appleAssets` また,次のことを要求する.
+**Appleの資産:** 選択的非自由なフォント,壁紙,音声 許可する `appleAssets` また,次のことを要求する.
 
 ```nix
 nixpkgs.config.allowUnfreePredicate = pkg:
   builtins.elem (lib.getName pkg) [ "mac-tahoe-apple-assets" ];
 ```
 
-**パネル:** また,自分のプラズマ管理モジュールを輸入し `inputs.mac-tahoe.homeManagerModules.plasma-manager`有効にする `programs.mac-tahoe.panels.enable` セット `programs.mac-tahoe.panels.launchers`⁇  ( ⁇ ) について `[ "applications:org.kde.dolphin.desktop" ]`既存のピンを輸入せずにレイアウトを交換します
+**パネル:** また,自分のプラズマ管理モジュールを輸入し `inputs.mac-tahoe.homeManagerModules.plasma-manager`やってみよう 有効にする `programs.mac-tahoe.panels.enable` セット `programs.mac-tahoe.panels.launchers`⁇  ( ⁇ ) について `[ "applications:org.kde.dolphin.desktop" ]`やってみよう これは既存のピンを輸入せずにレイアウトを置き換える.
 
-**書き込み可能の設定:** 保持する `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` テーマスイッチによって管理される不変プラズマ管理鍵を避ける.
+**書き込み可能の設定:** 保持する `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` GTKの設定を書き直すことができます テーマスイッチによって管理される不変なプラズマ管理鍵を避ける.
 
-起動後ログアウトして戻る. Firefox プロフィール,GTKブックマーク,SDDMは設定されていません. `programs.mac-tahoe.gtkAppmenuModule` ログイン時に読み込むためにインストールされた GTK 3 アプリメニュー モジュールライブラリの全経路に. OLEDケアを無効にする前に,実行します `mac-tahoe-oled-care restore`; モジュールを取り除く前に,Breezeを選択してください.削除するとユーザの設定が表示されます.
+起動後 ログアウトして戻る Firefox プロフィール,GTKブックマーク,SDDMは設定されていません. Home Manager でセット `programs.mac-tahoe.gtkAppmenuModule` ログイン時にアップロードするには,インストールされた GTK 3 アプリメニューモジュールライブラリの完全なパスへ. OLEDケアを無効にする前に実行する `mac-tahoe-oled-care restore`について モジュールを取り除く前に,Breezeを選択してください. 削除すると,ユーザの設定が設定されます.
 
 </details>
 
@@ -514,14 +514,14 @@ OpenRCとdinitには実行可能なcronデモンが必要です [デスクトッ
 <details>
 <summary><b>プラズマ版</b></summary>
 
-プラズマ6.6 ⁇ 6.8がサポートされています. 組み立てられた効果はホストSDKを使用します.
+プラズマ6.6 ⁇ 6.8がサポートされています ホストSDKを使用する.
 
 | Plasma | 支援 | 経緯 |
 |--------|---------|-------|
-| 6.5歳以上 | ![サポートされていない](https://img.shields.io/badge/Not%20supported-D1242F) | 適用されない |
-| 6.6 | ![支援](https://img.shields.io/badge/Supported-1A7F37) | 変数 |
-| 6.7 | ![支援](https://img.shields.io/badge/Supported-1A7F37) | ⁇ |
-| 6.8 | ![支援](https://img.shields.io/badge/Supported-1A7F37) | ⁇ |
+| 6.5 以前 | ![サポートされていない](https://img.shields.io/badge/Not%20supported-D1242F) | 適用されない |
+| 6.6 | ![支援](https://img.shields.io/badge/Supported-1A7F37) | v0.1.0 |
+| 6.7 | ![支援](https://img.shields.io/badge/Supported-1A7F37) | v0.19.0 |
+| 6.8 | ![支援](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
 
 </details>
 
@@ -529,11 +529,11 @@ OpenRCとdinitには実行可能なcronデモンが必要です [デスクトッ
 
 ![責任の免除](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-これはMacOSの美学にインスピレーションを受けた独立した再実装です.AppleやKDEが提携したり承認したりしていない. "macOS"と"Apple"はApple Incの商標です.
+これはMacOSのエステティックにインスピレーションを受けた独立した再実装です "macOS"と"Apple"はApple Incの商標である.
 
-MacOS シンボル,バンドルされた壁紙,システム音声,SF Pro/SF Mono フォントはApple の所有であり,このプロジェクトのライセンスに該当しない.他のコンポーネントは独自のライセンスを保持し,著作権通知を保持しています.範囲と既知の起源のギャップについては以下の第三者の通知インデックスを参照してください.
+マコス・エンブレム,バンドル・ウォールペーパー,システム・サウンド,SF Pro/SF Monoフォントはアップルの所有であり,このプロジェクトのライセンスには含まれていません. 他の構成要素は独自のライセンスと著作権通知を保持する 範囲と既知の起源のギャップについては,下記の第三者通知指数を参照してください.
 
-ライセンス [ライセンス 3.0](LICENSE) 単一の構成要素のライセンスと第三者の権利は依然として適用されます. [著作権に関する通知](NOTICE), [ライセンスおよびプロジェクトアイデンティティ](LICENSING.md)及び [第三者からの通知](THIRD_PARTY_NOTICES.md).
+ライセンス [GPL-3.0](LICENSE) 全体として パーソナルコンポーネントライセンスと第三者の権利は引き続き適用されます. 見て下さい [著作権に関する通知](NOTICE), [ライセンスおよびプロジェクトアイデンティティ](LICENSING.md)及び [第三者からの通知](THIRD_PARTY_NOTICES.md).
 
 <br>
 
@@ -545,7 +545,7 @@ MacOS シンボル,バンドルされた壁紙,システム音声,SF Pro/SF Mono
 プロジェクト参照および第三者の構成要素:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`: 打ち上げ台設計参照
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`:ベースアイコンとカーソル;GTKデザイン参照. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) ファイルバックアップと復元サポートを備えた MITライセンスフォークとして維持されています
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: ベースアイコンとカーサー GTKデザイン参照 [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) ファイルバックアップと復元サポートを備えた MITライセンスフォークとして維持されています
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** 及び **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur and its glass fork: アクリルガラスによって使用される上流コード (KWin blurの著者はソースヘッダーでクレジットされます).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0,オフラインでパッケージ化され,レイアウトステップで設置され,パネルを染める (GPL-3.0,ライセンス付属).
 - **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**: `liquidglass-kde-widgets` 液体グラスのデスクトップウィジェットのバンドコレクション (GPL-3.0ライセンスを含む) を提供しています.
@@ -556,7 +556,7 @@ MacOS シンボル,バンドルされた壁紙,システム音声,SF Pro/SF Mono
 - **[Lucide](https://github.com/lucide-icons/lucide)**:グローバルメニューにまとめたコピーアイコン (ISC, © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)**:高解像度マコス壁紙アーカイブ
 
-信用が欠けている場合は, [発行を開く](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+信用が欠けている場合は, [Issue を作成](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 </details>
 

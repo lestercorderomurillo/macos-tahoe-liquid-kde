@@ -24,11 +24,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="방출"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="릴리스"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="시험"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="플라즈마"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="면허"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="버그 보고"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="버그 신고"></a>
 </p>
 
 
@@ -51,11 +51,11 @@
   <a href="tests/vm/PROOF.md#nixos" title="NixOS (experimental)"><img src="src/screenshots/distros/nixos.svg" alt="NixOS" width="32" height="32"></a>
 </p>
 
-이 프로젝트는 리눅스에서 KDE 데스크톱의 외모와 느낌을 사용자 정의합니다. 애플 서비스와 연결되지 않습니다. [애플과 직접 쇼핑](https://www.apple.com/store).
+이 프로젝트는 리눅스에서 KDE 데스크톱의 모습과 느낌을 사용자 정의합니다. 그것은 애플 서비스와 연결되지 않습니다. 애플의 서비스가 필요하다면 [애플과 직접 쇼핑](https://www.apple.com/store).
 
 > [!CAUTION]
-> **롤링 리즈 철학**
-> 실험용. 매일 업데이트를 받습니다. 업데이트는 호환성을 깨뜨릴 수 있습니다. 생산 시스템을 피하십시오. [여기서 보고하는 문제](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+> **롤링 릴리스 정책**
+> 실험적 매일 업데이트를 받습니다. 업데이트는 호환성을 깨뜨릴 수 있습니다. 생산시스템을 피한다. [여기에 문제를 신고하세요](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 > [!NOTE]
 > 기능 얼음은 0.8x 시리즈에 적용되며, 0.90까지 버그 수정에 초점을 맞추는 출시가 있습니다.
@@ -63,7 +63,7 @@
 > [!WARNING]
 > **보급형 벽돌 재 포장자에 주의하세요. 이 테마는 무료입니다.**
 >
-> 이 테마를 제3자 채널에서 발견한 경우, 구매할 때 돈을 지불할 필요가 없습니다. 이 저장소에서 직접 다운로드 합니다. 우리는 이 프로젝트를 무료로 유지하여 누구나 유료 벽 없이 즐길 수 있습니다. 구매 또는 가입이 필요하지 않습니다.
+> 이 테마를 제3자 채널에서 발견한 경우, 구매하기 위해 돈을 지불할 필요가 없습니다. 이 저장소에서 직접 다운로드 합니다. 우리는 이 프로젝트를 무료로 유지합니다. 그래서 모든 사람들이 돈을 지불하지 않고 즐길 수 있습니다. 구매나 가입이 필요하지 않습니다.
 
 <br>
 
@@ -151,9 +151,9 @@
 
 <br>
 
-### 껍질 (알파)
+### Shell (Alpha)
 
-파일, 편집 및 다른 응용 프로그램 메뉴는 활성 창을 따라 이동합니다. 설정 및 세션 제어 장치에 대한 시스템 메뉴를 열십시오.
+파일, 편집 및 다른 응용 프로그램 메뉴는 활성 창을 따르습니다. 설정 및 세션 컨트롤을 위한 시스템 메뉴를 열십시오.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="케이트에서 문서가 열리는 파일 메뉴" width="830">
@@ -164,11 +164,11 @@
 
 ### 적응성 대조성 액리크 글래스 2.0
 
-적응적 대조는 각 레이블 뒤에 있는 배경 샘플을 취합니다. 이 색상은 적어도 33개의 인식 경량점의 차이로 유지됩니다. 그 목표 아래에서는 RGB 스케일의 40%까지 가능한 가장 작은 수정법을 적용하며, 밝은 텍스트를 밝게하고 어두운 텍스트를 어두운 상태로 유지합니다. 그것을 끄는 것은 주제 색을 사용합니다.
+Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 테마 색상은 적어도 33개의 인식을 가진 가벼운 점의 차이가 있을 때 유지됩니다. 그 목표보다 낮은 경우, RGB 스케일의 40%까지 가능한 최소한의 수정법을 적용하고, 가벼운 텍스트를 가벼운 텍스트와 어두운 텍스트를 어두운 상태로 유지합니다. 켜면 테마 컬러를 사용합니다.
 
 <br>
 
-### 발사판 (Alpha)
+### Launchpad (Alpha)
 
 앱을 찾아서 카테고리를 탐색하고 좋아하는 것을 접근할 수 있도록 하세요.
 
@@ -181,7 +181,7 @@
 
 ### 제어 센터 (알파)
 
-와이파이, 블루투스, 소리, 밝기 및 알림은 하나의 유리 메뉴에서 표시됩니다. 출력 버튼은 빛의 태양, 어두운 달과 자동의 분할 원을 보여줍니다.
+와이파이, 블루투스, 사운드, 밝기, 알림 같은 유리 메뉴. 출현 버튼은 빛의 태양, 암흑의 달, 자동의 분단순환을 나타냅니다.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="제어 센터 가 빛 모드" width="415">
@@ -206,7 +206,7 @@
 
 <br>
 
-### 검색기 (Alpha)
+### Finder (Alpha)
 
 타호 유리로 파일이 검색하는 파이더 스타일
 
@@ -219,7 +219,7 @@
 
 ### 달력 (알파)
 
-유리판에 달을 보기 위해 패널 시계 를 열고 달을 탐색하기 위해 화살표 키를 스크롤 하거나 사용 하십시오. 현재 달으로 돌아가기 위해 홈을 누르십시오.
+유리판에 달을 볼 수 있는 패널 시계를 열어 보세요. 몇 달 동안 탐색하기 위해 화살키를 스크롤하거나 사용하십시오. 현재 달으로 돌아가기 위해 홈을 누르세요.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="달력 · 빛" width="328">
@@ -228,7 +228,7 @@
 
 <br>
 
-### 블루투스 (알파)
+### Bluetooth (Alpha)
 
 쌍용 기기를 연결하고 메뉴 바에서 배터리 수준을 확인하십시오.
 
@@ -237,9 +237,9 @@
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="82%에 연결된 스튜디오 헤드폰과 무선 키보드가 끊어지는 어두운 블루투스 메뉴" width="48%">
 </p>
 
-### 와이파이 (알파)
+### Wi-Fi (Alpha)
 
-와이파이 어댑터 없이 또는 와이파이가 꺼져 있는 상태에서, 메뉴는 와이파이 연결을 나열하고, 다음에는 단일 디비더와 와이파이 설정 링크를 표시합니다.
+와이파이 메뉴를 열고 사용 가능한 무선 네트워크를 볼 수 있습니다. Wi-Fi 어댑터가 없거나 Wi-Fi가 꺼져 있는 경우, 메뉴는 당신의 유선 연결을 나열하고
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="하버 스튜디오에 연결된 라이트 와이파이 메뉴, 가든 게스트와 워크샵이 제공됩니다" width="48%">
@@ -259,7 +259,7 @@
 
 <br>
 
-### 클리프보드 역사 (알파)
+### 클립보드 기록 (Alpha)
 
 Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용하십시오.
 
@@ -281,7 +281,7 @@ Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용�
 
 <br>
 
-### 플라즈마 테마 (알파)
+### Plasma 테마 (Alpha)
 
 맑고 어두운 색으로 일치하는 투명 메뉴와 팝업
 
@@ -292,7 +292,7 @@ Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용�
 
 <br>
 
-### 부트 스플래시 (알파)
+### 부팅 화면 (Alpha)
 
 시작부터 종료까지의 일치하는 모습, LUKS2 암호화된 드라이브에 내장된 잠금을 해제합니다.
 
@@ -306,7 +306,7 @@ Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용�
 
 - **외모:** 자동 스위치 및 모니터 벽화로 데스크톱, 앱, 아이콘 및 창 장식용 조율된 빛과 어두운 테마 [응용 프로그램별 창 창 장식 설정](docs/app-window-decorations.md)
 - **유리 효과:** 조정 가능한 흐릿함, 굴절 및 색채, 지원 메뉴의 배경에 적응하는 텍스트
-- **- 아, 아, 아.** ⁇  어플리케이션, 헤버 확대, 알림 배지 및 설정 가능한 숨기기.
+- **- 아, 아, 아.** 핀된 앱, 헤버 줌, 알림 배지 및 구성 가능한 숨기기 도크는 디스플레이 사이를 따라갑니다.
 - **메뉴 바와 제어 센터:** 글로벌 앱 메뉴와 빠른 시스템 컨트롤, 디스플레이에서 공유된 메뉴 바 설정을 통해
 - **발사 패드:** 앱 검색, 카테고리를 탐색하고 두 레이아웃 중 어느 하나에서 좋아하는 것을 저장합니다.
 - **데스크톱 위젯:** 데스크톱에 묶인 액체 유리 위젯을 추가하고 정리하십시오.
@@ -315,7 +315,7 @@ Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용�
 - **응용 프로그램 통합:** 나우틸루스에서 검색어 스타일의 브라우징, GTK 메뉴 통합 및 프로필 백업으로 파이어폭스 테마
 - **시스템 정보 및 시작:** 테마 시스템 정보 창과 선택적으로 일치하는 부트 스프래시
 - **설치 및 복구:** 설치 중지 시 복원될 수 있는 템스 자산, 업데이트 및 설정 백업을 묶어있는 그래픽 설치 프로그램
-- **언어:** 설치를 설정에서 설치 언어를 선택하십시오. 플라즈마 위젯은 데스크톱 언어를 따라합니다.
+- **언어:** 설정에서 설치 언어를 선택하십시오. 플라즈마 위젯은 데스크톱 언어를 따라합니다.
 - **호환성:** 플라즈마 6.6 ⁇ 6.8는 아치 및 페도라 기반 시스템, openSUSE, 데비안 및 KDE 네온에 있습니다.
 - **선택 사항:** OLED 패널 보호 및 실험적인 NixOS 및 홈 관리자 지원
 
@@ -331,9 +331,9 @@ cd macos-tahoe-liquid-kde
 ./installer
 ```
 
-선택 **발급** 설치할 수 있습니다 `./installer` 다시 업데이트하거나 제거하기 위해
+설치하려면 **Express**를 선택하세요. 업데이트하거나 제거하려면 `./installer`를 다시 실행하세요.
 
-Git 체크 아웃 및 로컬 작업을 유지하면서 디스크 공간을 자유롭게 하기 위해:
+Git 작업 사본과 로컬 변경 사항을 유지하면서 디스크 공간을 확보하려면 다음을 실행하세요.
 
 ```bash
 ./installer --free-space
@@ -342,20 +342,20 @@ Git 체크 아웃 및 로컬 작업을 유지하면서 디스크 공간을 자�
 | 설치자 언어 | 상태 |
 | --- | --- |
 | 🇺🇸 English | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇪🇸 Spanish | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇨🇳 Simplified Chinese | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇧🇷 Brazilian Portuguese | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇩🇪 German | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇫🇷 French | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italian | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇷🇺 Russian | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanese | ![미리보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Korean | ![미리보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Arabic | ![미리보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Hindi | ![미리보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Dutch | ![미리보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polish | ![미리보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Turkish | ![미리보기](https://img.shields.io/badge/Preview-D4A017) |
+| 🇪🇸 Español | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇨🇳 简体中文 | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇧🇷 Português (Brasil) | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇩🇪 Deutsch | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇫🇷 Français | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇹 Italiano | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇷🇺 Русский | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇯🇵 日本語 | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 한국어 | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 العربية | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 हिन्दी | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 Nederlands | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 Polski | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 Türkçe | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>요구 사항</b></summary>
@@ -371,16 +371,16 @@ Git 체크 아웃 및 로컬 작업을 유지하면서 디스크 공간을 자�
 - `dbus-send`
 - `systemctl` 또는 `crontab` 일정한 기능
 
-**이산화** 설치자는 dinit를 감지하고 자동으로 빛/암을 스위치하고 OLED 관리에 대해 사용자 당 크론 항목을 사용합니다. 실행되는 크론 데이몬이 필요합니다. `crontab` Artix/dinit에 대해 다음으로 준비하십시오.
+**dinit:** 설치업체는 dinit을 감지하고 자동으로 빛/아름의 전환 및 OLED 관리에 사용자 당 크론 항목을 사용합니다. 실행되는 크론 데이몬이 필요합니다 설치 `crontab` 혼자서는 시작이 되지 않습니다. Artix/dinit에 대해 다음과 같이 준비하십시오.
 
 ```bash
 sudo pacman -S --needed cronie cronie-dinit
 sudo dinitctl --system enable cronie
 ```
 
-로그인 중 자동 스위치는 06:00와 18:00에 실행됩니다. 크론 백엔드는 로그인 시간 수납이 없습니다. 수동 빛/암 스위치는 크론과 독립적으로 작동합니다.
+로그인 중 자동 스위치는 06:00와 18:00에 실행됩니다 크론 백엔드는 로그인 시간을 추적하지 않습니다. 수동 빛/암 스위치는 크론과 독립적으로 작동합니다. 기존의 Artix 스크린샷은 OpenRC를 다루고 있습니다.
 
-자산은 묶여 있습니다. 결실된 의존성 및 선택적 KDE 라운드 코너는 인터넷 액세스이 필요합니다. 검증 된 라운드 코너 업데이트는 이전 다운로드 된 소스와 아카이브를 제거합니다. 재 설치는 관리 된 자산 나무를 대신합니다. 성공적인 복사본은 일시적인 데이터를 제거하고 나중에 복사본을 청소합니다. 복구 백업, 브라우저 프로필 백업 및 사용자 선호도는 유지됩니다. 개발자 VM 이미지 및 캡처 팩은 설치 캐시가 아니며 자동으로 제거되지 않습니다.
+자산은 묶여 있습니다. 실종된 의존성 및 선택적 KDE 둥근 코너는 인터넷 접속이 필요합니다. 검증된 둥근 코너 업데이트는 이전 다운로드된 소스와 아카이브를 제거합니다. 재설정으로 관리된 자산 나무가 교체됩니다. 성공한 복사본은 일시적인 데이터를 제거하고, 나중에 복사본은 중단된 일회용 스테이징을 청소합니다. 복구 백업, 브라우저 프로파일 백업 및 사용자 선호도는 유지됩니다. 개발자 VM 이미지 및 캡처 패키지는 설치 캐시가 아니며 자동으로 제거되지 않습니다.
 
 | 디스트로 | Qt 6 도구 | KDE 플라즈마 6 개발 패키지 |
 |--------|------------|-----------------------------------|
@@ -395,9 +395,9 @@ Fedora에서 설치자는 Fedora GTK 3 글로벌 메뉴 수출자를 설치합�
 <details>
 <summary><b>OLED 관리</b></summary>
 
-선택적 패널 이동; 기본적으로 비활성화
+선택적 패널 이동 기본으로 비활성화
 
-이 기능을 **OLED 보호** 페이지. Shift 간격과 최대 픽셀 이동을 선택하세요. 기본적으로 비활성화됩니다.
+이 기능을 **OLED 보호** 페이지 시차 간격과 최대 픽셀 이동을 선택하세요 그것은 기본적으로 비활성화되어 있습니다.
 
 **수동 제어**
 
@@ -426,13 +426,13 @@ mac-tahoe-oled-care status
 
 **OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
 
-`all` 모든 디스트로를 출시합니다. 클라우드 타겟 제공은 자동으로; 다른 타겟은 체크섬에 꽂힌 공식 ISO 설치 프로그램을 사용합니다. [VM 설정 및 자격 안내서](tests/vm/README.md).
+`all` 모든 디스트로를 출시합니다. 클라우드 타깃 제공 자동 다른 타겟은 체크섬으로 정해진 공식적인 ISO 설치 장치를 사용합니다. 그 다음으로 [VM 설정 및 자격 안내서](tests/vm/README.md).
 
-`./vm kubuntu` 공식 Kubuntu 26.04.1 LTS ISO를 SHA-256 검증 (SSH 포트) `2234` 새로운 발사체 회귀 목표가 본격적인 라이브 자격을 기다리고 있습니다.
+`./vm kubuntu` 공식 Kubuntu 26.04.1 LTS ISO를 SHA-256 검증 (SSH 포트) `2234` 손님 설정 후). 이 새로운 발사체 회귀 목표물은 완전한 라이브 자격을 기다리고 있습니다.
 
-`./vm debian` 공식 데비안 테스트 (포키) 클라우드 이미지를 사용하며 SHA-512 체크섬을 확인하고 플라즈마 데스크톱을 제공합니다. `tester` 비밀번호 `tester`; SSH는 `127.0.0.1:2232`설치 장치가 문장 가능한 게스트 복사본에서 열립니다 `/home/tester/macos-tahoe-liquid-kde`; 호스트 저장소는 읽기 전용으로 설치되어 있습니다. `./vm debian --clean` 일회용 손님을 처음부터 다시 만들 수 있게 해주는 거죠.
+`./vm debian` 공식적인 데비안 테스트 (포키) 클라우드 이미지를 사용하고, SHA-512 체크섬을 확인하고, 플라즈마 데스크톱을 제공합니다. 로그인 `tester` 비밀번호 `tester`[중고] SSH는 `127.0.0.1:2232`. 설치 프로그램은 글쓰기 가능한 게스트 복사본에서 열립니다 `/home/tester/macos-tahoe-liquid-kde`[중고] 호스트 저장소는 읽기 전용으로 설치되어 있습니다. 사용 `./vm debian --clean` 일회용 손님을 처음부터 다시 만들 수 있게 해주는 거죠.
 
-이 표의 11개의 배포는 모두 VM 자격을 통과했습니다. 검토된 스크린샷과 테스트 결과를 위한 상태 배지를 선택하세요.
+이 테이블의 11개의 배포 모두 실시간 VM 자격증을 통과했습니다. 검토된 스크린샷과 테스트 결과를 위한 상태 배지를 선택하십시오.
 
 | | 이름 | 상태 |
 |:--:|------|---------|
@@ -450,7 +450,7 @@ mac-tahoe-oled-care status
 
 **NixOS 및 홈 매니저 (실험)**
 
-플레크 모듈을 사용하세요 **그래픽 설치 장치가 아닙니다**라이브 데스크톱 검증이 기다리고 있습니다.
+플레크 모듈을 사용하세요 **그래픽 설치 장치가 아닙니다**. 라이브 데스크톱 검증이 기다리고 있습니다.
 
 **플레이크 입력** (Nixpkgs 및 홈 매니저를 필요로 한다):
 
@@ -470,7 +470,7 @@ services.mac-tahoe.enable = true;
 # services.mac-tahoe.plymouth.enable = true; # optional boot splash
 ```
 
-**홈 매니저:** 수입 `inputs.mac-tahoe.homeManagerModules.default`.
+**Home Manager:** 수입 `inputs.mac-tahoe.homeManagerModules.default`.
 
 ```nix
 programs.mac-tahoe = {
@@ -481,18 +481,18 @@ programs.mac-tahoe = {
 };
 ```
 
-**애플 자산:** 선택적으로 무료 없는 글꼴, 벽화 및 소리 `appleAssets` 또한 다음과 같이 요구합니다.
+**애플 자산:** 자발적인 비자유 글꼴, 벽화 및 사운드 가능하게 하는 것 `appleAssets` 또한 다음과 같이 요구합니다.
 
 ```nix
 nixpkgs.config.allowUnfreePredicate = pkg:
   builtins.elem (lib.getName pkg) [ "mac-tahoe-apple-assets" ];
 ```
 
-**패널:** 또한 자신의 플라즈마 관리 모듈을 수입하고 `inputs.mac-tahoe.homeManagerModules.plasma-manager`- 활성화 `programs.mac-tahoe.panels.enable` 그리고 세트 `programs.mac-tahoe.panels.launchers`예를 들어 `[ "applications:org.kde.dolphin.desktop" ]`. 이것은 기존 핀을 수입하지 않고 레이아웃을 대체합니다.
+**패널:** 또한 자신의 플라즈마 관리 모듈을 수입하고 `inputs.mac-tahoe.homeManagerModules.plasma-manager`. 활성화 `programs.mac-tahoe.panels.enable` 그리고 세트 `programs.mac-tahoe.panels.launchers`예를 들어 `[ "applications:org.kde.dolphin.desktop" ]`. 이것은 기존 핀을 수입하지 않고 레이아웃을 대체합니다.
 
-**쓰기 가능한 설정:** 계속 `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` 그리고 라이브 GTK 구성으로 작성할 수 있습니다. 테마 스위치에서 관리되는 변함없는 플라즈마 관리자 키를 피하십시오.
+**쓰기 가능한 설정:** 계속 `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` 그리고 라이브 GTK 구성을 작성할 수 있습니다. 테마 스위치에 의해 관리되는 변함없는 플라즈마 관리자 키를 피하십시오.
 
-로그인 및 활성화 후 다시 로그인. 파이어폭스 프로필, GTK 북마크 및 SDDM는 구성되지 않습니다. 홈 관리자에서 설정 `programs.mac-tahoe.gtkAppmenuModule` 로그인 시 로딩하려면 설치된 GTK 3 앱 메뉴 모듈 라이브러리의 전체 경로로 이동합니다. OLED 관리 기능을 비활성화하기 전에 실행 `mac-tahoe-oled-care restore`; 모듈을 제거하기 전에 Breeze를 선택하세요.
+활성화 후 로그아웃하고 다시 로그아웃. 파이어폭스 프로파일, GTK 북마크 및 SDDM는 구성되지 않습니다. 홈 매니저에서 설정 `programs.mac-tahoe.gtkAppmenuModule` 설치된 GTK 3 앱 메뉴 모듈 라이브러리의 전체 경로로 로그인 시 로드합니다. OLED 관리를 비활성화하기 전에 실행 `mac-tahoe-oled-care restore`[중고] 모듈을 제거하기 전에 Breeze를 선택하십시오. 삭제하면 사용자 설정이 그대로 유지됩니다.
 
 </details>
 
@@ -514,11 +514,11 @@ OpenRC와 dinit는 실행되는 크론 데이몬이 필요합니다. [데스크�
 <details>
 <summary><b>플라즈마 버전</b></summary>
 
-플라즈마 6.6 ⁇ 6.8가 지원되고; 컴파일된 효과는 호스트 SDK를 사용합니다.
+플라즈마 6.6 ⁇  6.8가 지원됩니다 컴파일된 효과는 호스트 SDK를 사용합니다.
 
 | Plasma | 지원 | 그 이후로 |
 |--------|---------|-------|
-| 6.5 이상 | ![지원되지 않습니다](https://img.shields.io/badge/Not%20supported-D1242F) | 적용되지 않습니다 |
+| 6.5 이하 | ![지원되지 않습니다](https://img.shields.io/badge/Not%20supported-D1242F) | 적용되지 않습니다 |
 | 6.6 | ![지원](https://img.shields.io/badge/Supported-1A7F37) | v0.1.0 |
 | 6.7 | ![지원](https://img.shields.io/badge/Supported-1A7F37) | v0.19.0 |
 | 6.8 | ![지원](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
@@ -529,11 +529,11 @@ OpenRC와 dinit는 실행되는 크론 데이몬이 필요합니다. [데스크�
 
 ![면책](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-이 버전은 macOS의 미학에 영감을 받아 독립적인 재시행입니다. Apple 또는 KDE가 인정한 것이 아닙니다. "macOS"와 "Apple"는 Apple Inc의 상표입니다.
+이것은 macOS의 미학에서 영감을 받은 독립적인 재 구현입니다. 애플이나 KDE가 승인하거나 인연을 맺지 않습니다. "macOS"와 "Apple"는 Apple Inc의 상표입니다.
 
-macOS 로켓, 뭉치형 벽화, 시스템 사운드 및 SF Pro / SF Mono 폰트는 애플의 소유물이며 이 프로젝트의 라이선스에 적용되지 않습니다. 다른 구성 요소들은 자체 라이센스와 저작권 공지사항을 유지합니다. 범주 및 알려진 출산 격차를 위해 아래의 제3자 알림 지수를 참조하십시오.
+macOS 엠블럼, 복합 벽화, 시스템 사운드 및 SF Pro / SF Mono 폰트는 여전히 애플의 소유물이며 이 프로젝트의 라이선스에 적용되지 않습니다. 다른 구성 요소들은 자신들의 라이센스와 저작권 공지사항을 유지합니다. 범주와 알려진 출산 격차에 대해서는 아래의 제3자 알림 인덱스를 참조하십시오.
 
-허가 [GPL-3.0](LICENSE) 전체적으로 개별 구성 요소 라이센스와 제3자 권리 가 여전히 적용됩니다. [저작권 공표](NOTICE), [라이선스 및 프로젝트 신분](LICENSING.md), 그리고 [제3자 통지](THIRD_PARTY_NOTICES.md).
+허가 [GPL-3.0](LICENSE) 전체적으로 개별 구성 요소 라이센스와 제3자의 권리가 여전히 적용됩니다. 보시다시피 [저작권 공표](NOTICE), [라이선스 및 프로젝트 신분](LICENSING.md), 그리고 [제3자 통지](THIRD_PARTY_NOTICES.md).
 
 <br>
 
@@ -545,7 +545,7 @@ macOS 로켓, 뭉치형 벽화, 시스템 사운드 및 SF Pro / SF Mono 폰트�
 프로젝트 참조 및 제3자 구성요소:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`: 발사판 설계 참조
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: 기본 아이콘 및 커서; GTK 디자인 참조 [`MacTahoe-gtk-theme` 파이어폭스 CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) 여기서는 프로파일 백업 및 복원 지원이 있는 MIT 라이선스 있는 포크로 유지됩니다.
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: 기본 아이콘과 커서 GTK 디자인 참조 [`MacTahoe-gtk-theme` 파이어폭스 CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) 여기서는 프로파일 백업 및 복원 지원이 있는 MIT 라이선스 있는 포크로 유지됩니다.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** 그리고 **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: 더 나은 블러와 그 유리 포크: 아크릴 글래스에서 사용되는 상류 코드 (KWin blur의 저자는 소스 헤더에 적혀 있습니다).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` v7.3.0, 오프라인에서 묶여서 레이아웃 단계로 설치하여 패널을 색칠합니다 (GPL-3.0, 라이선스와 함께 배송됩니다).
 - **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**: `liquidglass-kde-widgets` 액체 글래스 데스크톱 위젯의 뭉친 컬렉션을 제공합니다 (GPL-3.0 라이선스를 포함합니다).
@@ -556,7 +556,7 @@ macOS 로켓, 뭉치형 벽화, 시스템 사운드 및 SF Pro / SF Mono 폰트�
 - **[Lucide](https://github.com/lucide-icons/lucide)**: 글로벌 메뉴에 묶여 있는 아이콘을 복사합니다 (ISC, © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)**: 고 해상도 macOS 벽화 아카이브.
 
-신용이 부족하다면, [문제 를 열기](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+신용이 부족하다면, [이슈를 등록하세요](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 </details>
 

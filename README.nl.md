@@ -24,11 +24,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="vrijlating"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/releases"><img src="https://img.shields.io/github/v/release/lestercorderomurillo/macos-tahoe-liquid-kde?label=release&amp;color=blue" alt="Uitgave"></a>
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml"><img src="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/workflows/test.yml/badge.svg?branch=dev" alt="tests"></a>
   <a href="https://kde.org/plasma-desktop/"><img src="https://img.shields.io/badge/Plasma-6.6%2B-1d99f3?logo=kde" alt="plasma"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="licentie"></a>
-  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="meld een bug"></a>
+  <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="Een bug melden"></a>
 </p>
 
 
@@ -51,11 +51,11 @@
   <a href="tests/vm/PROOF.md#nixos" title="NixOS (experimental)"><img src="src/screenshots/distros/nixos.svg" alt="NixOS" width="32" height="32"></a>
 </p>
 
-Dit project maakt de uitstraling en het gevoel van uw KDE-desktop op Linux aan. Het bevat geen Apple-diensten of verbinding met hen. [rechtstreeks winkelen bij Apple](https://www.apple.com/store).
+Dit project past het uiterlijk en het gevoel van uw KDE-desktop op Linux aan. Het omvat of verbindt zich niet met Apple-diensten. Als je Apple-diensten nodig hebt, [rechtstreeks winkelen bij Apple](https://www.apple.com/store).
 
 > [!CAUTION]
-> **Rollende vrijlating filosofie**
-> Experimental. ontvangt dagelijkse updates. Updates kunnen de compatibiliteit verbreken. Vermijd productiesystemen; [Rapportage hier](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+> **Doorlopende updates**
+> Experimenteel. Ontvang dagelijks updates. Updates kunnen de compatibiliteit verbreken. Vermijd productiesystemen; [meld problemen hier](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 > [!NOTE]
 > De bevriezing van de functie is in werking voor de 0.8x-serie, met releases gericht op bugfixes tot 0.90.
@@ -63,7 +63,7 @@ Dit project maakt de uitstraling en het gevoel van uw KDE-desktop op Linux aan. 
 > [!WARNING]
 > **Pas op voor de paywall repackers: dit thema is GRATIS.**
 >
-> Als u dit thema hebt gevonden via een externe kanaal, hoeft u het niet te betalen: download het direct van deze bewaarplaats. We houden dit project gratis zodat iedereen er zonder paywall van kan genieten.
+> Als u dit thema hebt gevonden via een channel van derden, hoeft u het niet te betalen om het te verkrijgen: u kunt het rechtstreeks downloaden van dit archief. We houden dit project vrij zodat iedereen het kan genieten zonder een betaalmuur. Er is geen aankoop of abonnement vereist.
 
 <br>
 
@@ -151,9 +151,9 @@ Glasbreuk, hover zoom, rode meldingsbalen en auto-verstop.
 
 <br>
 
-### Schelp (Alpha)
+### Shell (Alpha)
 
-File, Edit en de andere applicatiemenu's volgen het actieve venster. Open het systeemmenu voor instellingen en sessiebeheer.
+File, Edit en de andere applicatiemenu's volgen het actieve venster. Open het systeemmenu voor instellingen en sessiecontroles.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="File menu met een document in Kate geopend" width="830">
@@ -164,7 +164,7 @@ File, Edit en de andere applicatiemenu's volgen het actieve venster. Open het sy
 
 ### Acrylglas 2.0 met een aanpassend contrast
 
-Adaptive Contrast neemt de achtergrond achter elk label in. Het houdt de thema kleur bij wanneer het verschil ten minste 33 perceptuele lichtheidspunt is.
+Adaptive Contrast neemt de achtergrond achter elk etiket. Het behoudt de kleur van het thema wanneer het verschil minstens 33 perceptuele lichtpunten is. Hieronder wordt de kleinste correctie toegepast, tot 40% van de RGB-schaal, terwijl de lichte tekst licht en de donkere tekst donker blijft. Om het uit te schakelen gebruikt de thema kleur.
 
 <br>
 
@@ -206,7 +206,7 @@ Glasmeldingsbanner en gegroepeerde geschiedenis met app-acties en antwoordonders
 
 <br>
 
-### Finder (Alfa)
+### Finder (Alpha)
 
 Files bladeren in de stijl van Finder met Tahoe Glass.
 
@@ -219,7 +219,7 @@ Files bladeren in de stijl van Finder met Tahoe Glass.
 
 ### Kalender (Alpha)
 
-Open de klok om de maand op glas te zien. Blader of gebruik de pijlteken om maanden te bekijken. Druk op Home om terug te keren naar de huidige maand.
+Maak de klok open om de maand op glas te zien. Blader of gebruik de pijltoets om maanden te bladeren. Druk op Home om terug te keren naar de huidige maand.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Kalender · Licht" width="328">
@@ -239,7 +239,7 @@ Verbind gepaardgaande apparaten en controleer hun batterijniveau vanaf de menuba
 
 ### Wi-Fi (Alpha)
 
-Open het Wi-Fi menu om beschikbare draadloze netwerken te zien. Zonder een Wi-Fi adapter of met de Wi-Fi uitgeschakeld, wordt in het menu uw draadloze verbindingen vermeld, gevolgd door een enkele divider en de link voor de Wi-Fi-instellingen.
+Open het Wi-Fi menu om beschikbare draadloze netwerken te zien. Zonder een Wi-Fi-adapter, of met Wi-Fi uitgeschakeld, wordt in het menu uw draadloze verbindingen vermeld, gevolgd door een enkele divider en de link voor de Wi-Fi-instellingen.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Lichte Wi-Fi menu verbonden met Harbor Studio, met Garden Guest en Workshop beschikbaar" width="48%">
@@ -259,7 +259,7 @@ Open het batterijmenu om het laadniveau en de stroomstatus te controleren.
 
 <br>
 
-### Clipboard geschiedenis (Alpha)
+### Klembordgeschiedenis (Alpha)
 
 Kopieerde tekst en afbeeldingen direct van Launchpad vinden en opnieuw gebruiken.
 
@@ -281,7 +281,7 @@ Hardware, software en thema-details met Adaptive Contrast.
 
 <br>
 
-### Plasma-thema (Alfa)
+### Plasma-thema (Alpha)
 
 Doorzichtige menu's en popups met overeenkomende lichte en donkere kleuren.
 
@@ -292,7 +292,7 @@ Doorzichtige menu's en popups met overeenkomende lichte en donkere kleuren.
 
 <br>
 
-### Boot Splash (Alpha)
+### Opstartscherm (Alpha)
 
 Een overeenkomstige uitstraling van start tot afsluiting, met ingebouwde ontsluiting voor LUKS2-versleutelde schijven.
 
@@ -306,7 +306,7 @@ Een overeenkomstige uitstraling van start tot afsluiting, met ingebouwde ontslui
 
 - **Uiterlijk:** Gecoördineerde licht- en donkere thema's voor de desktop, apps, icoons en vensterdekoratie, met automatische schakeling en behangpapers per monitor. [App-specifieke ingestelde vensterdekoratie](docs/app-window-decorations.md)
 - **Glas effecten:** Verstelbare vervaagbaarheid, breuk en tinting, met tekst die zich aanpast aan de achtergrond in ondersteunde menu's.
-- **- Ik ben er niet .** De Dock volgt je tussen de schermen.
+- **- Ik ben er niet .** Pinned apps, hover zoom, kennisgeving badges en configureerbare verstoppen. De Dock volgt je tussen de schijven.
 - **Menubar en Centrum van besturing:** Globale appmenüs en snelle systeemcontroles, met gedeelde menubalkeninstellingen op verschillende displays.
 - **Startpad:** Zoek apps, blader categorieën en bewaren favorieten in een van de twee lay-outs.
 - **Desktop widgets:** Voeg de bundelde Liquid Glass-widgets toe en regel ze op je desktop.
@@ -315,7 +315,7 @@ Een overeenkomstige uitstraling van start tot afsluiting, met ingebouwde ontslui
 - **App-integratie:** Browsing in de stijl van Finder in Nautilus, GTK-menu-integratie en Firefox-thema met profielbackups.
 - **Systeminformatie en opstart:** Een thematisch systeeminformatievenster en een optionele matchende bootsplash.
 - **Installatie en herstel:** Een grafische installatie met bundelde thema-acties, updates en settings back-ups die bij het verwijderen van de installatie kunnen worden hersteld.
-- **Taal:** Kies de installatiel in Instellingen. Plasma widgets volgen de desktoptaal.
+- **Taal:** Kies de installatiel in Instellingen. Plasma widgets volgen de desktop taal.
 - **Compatibiliteit:** Plasma 6.6 ⁇ 6.8 op Arch- en Fedora-gebaseerde systemen, openSUSE, Debian en KDE neon.
 - **Facultatieve functies:** OLED-paneelbescherming en experimentele ondersteuning voor NixOS en Home Manager.
 
@@ -331,9 +331,9 @@ cd macos-tahoe-liquid-kde
 ./installer
 ```
 
-Kies **Uitdrukkelijk** - Open. `./installer` opnieuw te updaten of te verwijderen.
+Kies **Express** om te installeren. Open `./installer` opnieuw om bij te werken of te verwijderen.
 
-Om schijfruimte vrij te maken terwijl je Git-checkout en lokaal werk behoudt:
+Zo maak je schijfruimte vrij met behoud van je Git-werkkopie en lokale wijzigingen:
 
 ```bash
 ./installer --free-space
@@ -342,20 +342,20 @@ Om schijfruimte vrij te maken terwijl je Git-checkout en lokaal werk behoudt:
 | Installaattaal | Status |
 | --- | --- |
 | 🇺🇸 English | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇪🇸 Spanish | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇨🇳 Simplified Chinese | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇧🇷 Brazilian Portuguese | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇩🇪 German | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇫🇷 French | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇮🇹 Italian | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇷🇺 Russian | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanese | ![Voorbeeld](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Korean | ![Voorbeeld](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Arabic | ![Voorbeeld](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Hindi | ![Voorbeeld](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Dutch | ![Voorbeeld](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polish | ![Voorbeeld](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Turkish | ![Voorbeeld](https://img.shields.io/badge/Preview-D4A017) |
+| 🇪🇸 Español | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇨🇳 简体中文 | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇧🇷 Português (Brasil) | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇩🇪 Deutsch | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇫🇷 Français | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇹 Italiano | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇷🇺 Русский | ![Beschikbaar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇯🇵 日本語 | ![Voorvertoning](https://img.shields.io/badge/Preview-D4A017) |
+| 🇰🇷 한국어 | ![Voorvertoning](https://img.shields.io/badge/Preview-D4A017) |
+| 🇸🇦 العربية | ![Voorvertoning](https://img.shields.io/badge/Preview-D4A017) |
+| 🇮🇳 हिन्दी | ![Voorvertoning](https://img.shields.io/badge/Preview-D4A017) |
+| 🇳🇱 Nederlands | ![Voorvertoning](https://img.shields.io/badge/Preview-D4A017) |
+| 🇵🇱 Polski | ![Voorvertoning](https://img.shields.io/badge/Preview-D4A017) |
+| 🇹🇷 Türkçe | ![Voorvertoning](https://img.shields.io/badge/Preview-D4A017) |
 
 <details>
 <summary><b>Verplichtingen</b></summary>
@@ -371,16 +371,16 @@ Vervolgens wordt de werkplek, de bouwwerktuigen en de systeempakketten vereist.
 - `dbus-send`
 - `systemctl` of `crontab` voor geplande functies
 
-**- De volgende:** de installateur detecteert dinit en gebruikt cron-inscripties per gebruiker voor automatische licht/donker schakeling en OLED-verzorging. `crontab` op Artix/dinit, bereiden met:
+**dinit:** de installateur detecteert dinit en maakt gebruik van cron-inscripties per gebruiker voor automatische licht-/donkeruitwisseling en OLED-verzorging. Een running cron daemon is vereist installatie `crontab` Alleen begint het niet. Op Artix/dinit bereiden:
 
 ```bash
 sudo pacman -S --needed cronie cronie-dinit
 sudo dinitctl --system enable cronie
 ```
 
-Automatische schakelaars worden uitgevoerd om 06:00 en 18:00 uur tijdens het inloggen; de cron backend heeft geen opvangtijd. Handmatige licht/donker schakelen werkt onafhankelijk van cron.
+Automatische schakelaars werken om 06:00 en 18:00 uur tijdens het inloggen de cron backend heeft geen log-time ophalen. Handmatig licht/donker schakelen werkt onafhankelijk van cron. De bestaande screenshots van Artix bestrijken OpenRC.
 
-Vermiste afhankelijkheden en optionele KDE Rounded Corners vereisen internettoegang. Verified Rounded Corners updates verwijderen oudere gedownload bronnen en archieven. Herinstalleren vervangt de beheerde assetbomen op hun plaats; succesvolle kopieën verwijderen hun tijdelijke gegevens, en later kopieën reinigen onderbroken wegwerpbare instadiering. Herstel backups, browser-profiel back-ups en gebruikersvoorkeuren worden bewaard. Ontwikkelaar VM beelden en vangen bundels zijn geen installatie caches en worden nooit automatisch verwijderd.
+De activa zijn gebundeld. Ontbrekende afhankelijkheden en optionele KDE Rounded Corners vereisen internettoegang. Geverifieerde Rounded Corners updates verwijderen oudere gedownload bronnen en archieven. De herinstalling vervangt de beheerde assetbomen op hun plaats. Succesvolle kopieën verwijderen hun tijdelijke gegevens, en later kopieën schone onderbroken wegwerpstaging. Er worden back-ups van het herstel, back-ups van het browserprofiel en gebruikersvoorkeuren bewaard. Ontwikkelaars VM-afbeeldingen en opnamebundels zijn geen installatie-caches en worden nooit automatisch verwijderd.
 
 | Distro | Qt 6 Werktuigen | KDE Plasma 6 ontwikkelpakketten |
 |--------|------------|-----------------------------------|
@@ -395,9 +395,9 @@ Op Fedora installeert de installateur Fedora  ⁇ s GTK 3 wereldwijde menu-expor
 <details>
 <summary><b>OLED-verzorging</b></summary>
 
-Facultatief schakelen van het paneel; standaard uitgeschakeld.
+Optioneel schakelen van panelen standaard uitgeschakeld.
 
-De **OLED-bescherming** De verschuiving tussen de twee pixelpunten is op basis van de standaard-optie uitgeschakeld.
+De **OLED-bescherming** pagina. Kies het verschuivingsinterval en de maximale pixelverplaatsing daar Het is standaard uitgeschakeld.
 
 **Handmatige bediening**
 
@@ -424,15 +424,15 @@ Probeer het thema in een geïsoleerde Plasma desktop.
 ./vm <os>
 ```
 
-**OV:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
+**OS:** `cachyos` · `arch` · `manjaro` · `endeavouros` · `garuda` · `fedora` · `nobara` · `opensuse` · `neon` · `debian` · `artix` · `kubuntu`
 
-`all` De cloud-targets voorzien automatisch; de andere targets gebruiken hun officiële ISO-installateurs die op een checksum zijn gepenneerd. [VM-instelling en kwalificatiehandleiding](tests/vm/README.md).
+`all` Elke distributie wordt gelanceerd. Automatische levering van clouddoelstellingen de andere doelstellingen gebruiken hun officiële ISO-installaties met een controle-som. Volg de [VM-instelling en kwalificatiehandleiding](tests/vm/README.md).
 
-`./vm kubuntu` opstart van de officiële Kubuntu 26.04.1 LTS ISO met SHA-256 verificatie (SSH-poort) `2234` Dit nieuwe doel van de regressie van de lancer is in afwachting van volledige live kwalificatie.
+`./vm kubuntu` opstart van de officiële Kubuntu 26.04.1 LTS ISO met SHA-256 verificatie (SSH-poort) `2234` na de opstelling van de gasten). Het nieuwe doel van de regressie van de lancer is in afwachting van volledige live kwalificatie.
 
-`./vm debian` gebruikt de officiële Debian-testing (Forky) cloud-image, verifieert zijn SHA-512 checksum en beschikt over een Plasma desktop. `tester` met wachtwoord `tester`; SSH is beschikbaar op `127.0.0.1:2232`De installatie wordt geopend vanaf een schrijfbare gast kopie op `/home/tester/macos-tahoe-liquid-kde`De hostrepository is alleen voor lezen. `./vm debian --clean` om de wegwerpgasten opnieuw te bouwen.
+`./vm debian` gebruikt de officiële Debian-testing (Forky) cloud-image, verifieert zijn SHA-512 checksum en beschikt over een Plasma desktop. Log in als `tester` met wachtwoord `tester`Het gaat om SSH is beschikbaar op: `127.0.0.1:2232`- Ik heb het niet gedaan . De installatie wordt geopend vanaf een schrijfbare gast kopie op `/home/tester/macos-tahoe-liquid-kde`Het gaat om de host-repository is alleen voor lezen bevestigd. Gebruik `./vm debian --clean` om de wegwerpgasten opnieuw te bouwen.
 
-Alle 11 distributies in deze tabel hebben de VM-kwalificatie live geslaagd.
+Alle 11 distributies in deze tabel hebben de live VM-kwalificatie geslaagd. Selecteer een status badge voor herzien screenshots en testresultaten.
 
 | | Naam | Status |
 |:--:|------|---------|
@@ -450,7 +450,7 @@ Alle 11 distributies in deze tabel hebben de VM-kwalificatie live geslaagd.
 
 **NixOS en Home Manager (testing)**
 
-Gebruik de flake modules. **niet de grafische installateur**De live desktop validatie is aan de gang.
+Gebruik de flake modules. **niet de grafische installateur**- Ik heb het niet gedaan . Live desktop validatie is in afwachting.
 
 **Invoer van vlekken** (vervolgt Nixpkgs en Home Manager):
 
@@ -470,7 +470,7 @@ services.mac-tahoe.enable = true;
 # services.mac-tahoe.plymouth.enable = true; # optional boot splash
 ```
 
-**Huismanager:** invoer `inputs.mac-tahoe.homeManagerModules.default`.
+**Home Manager:** invoer `inputs.mac-tahoe.homeManagerModules.default`.
 
 ```nix
 programs.mac-tahoe = {
@@ -481,18 +481,18 @@ programs.mac-tahoe = {
 };
 ```
 
-**Apple-activa:** Optieve niet-vrije lettertypen, behang en geluiden. `appleAssets` vereist ook:
+**Apple-activa:** optionele niet-vrije lettertypen, behangpapieren en geluiden. Het mogelijk maken `appleAssets` vereist ook:
 
 ```nix
 nixpkgs.config.allowUnfreePredicate = pkg:
   builtins.elem (lib.getName pkg) [ "mac-tahoe-apple-assets" ];
 ```
 
-**Panelen:** ook uw eigen plasma-manager module importeren en `inputs.mac-tahoe.homeManagerModules.plasma-manager`- Toegankelijk maken `programs.mac-tahoe.panels.enable` en set `programs.mac-tahoe.panels.launchers`, bv. `[ "applications:org.kde.dolphin.desktop" ]`Dit vervangt de lay-out zonder bestaande pins te importeren.
+**Panelen:** ook uw eigen plasma-manager module importeren en `inputs.mac-tahoe.homeManagerModules.plasma-manager`- Ik heb het niet gedaan . In staat stellen `programs.mac-tahoe.panels.enable` en set `programs.mac-tahoe.panels.launchers`, bv. `[ "applications:org.kde.dolphin.desktop" ]`- Ik heb het niet gedaan . Dit vervangt de lay-out zonder het importeren van bestaande pins.
 
-**Schrijfbare instellingen:** - Hou `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` Vermijd onveranderlijke plasma-managertoetsjes die worden beheerd door de thema-schakelaar.
+**Schrijfbare instellingen:** - Hou `kdeglobals`, `kwinrc`, `plasmarc`, `plasmashellrc`, `kcminputrc`, `plasma-org.kde.plasma.desktop-appletsrc`, `Kvantum/kvantum.kvconfig` en live GTK-configuratie schrijfbaar. Vermijd onveranderlijke plasma-manager-sleutels die worden beheerd door de thema-schakelaar.
 
-Log uit en terug naar de website na activering. Firefox profielen, GTK boekmerken en SDDM zijn niet geconfigureerd. `programs.mac-tahoe.gtkAppmenuModule` De volledige route van een geïnstalleerde GTK 3 appmenu module bibliotheek om te laden bij login. `mac-tahoe-oled-care restore`Voor het verwijderen van de modules selecteer Breeze.
+Log uit en terug na activering. Firefox profielen, GTK boekmerken en SDDM zijn niet geconfigureerd. In Home Manager ingesteld `programs.mac-tahoe.gtkAppmenuModule` naar het volledige pad van een geïnstalleerde GTK 3-appmenu-modulebibliotheek om het bij login te laden. Voordat de OLED-verzorging wordt uitgeschakeld, loop `mac-tahoe-oled-care restore`Het gaat om Selecteer Breeze voordat u de modules verwijdert. Het verwijderen laat de gebruikersinstellingen op hun plaats.
 
 </details>
 
@@ -514,14 +514,14 @@ OpenRC en dinit hebben een running cron daemon nodig. [Resultaten van de test op
 <details>
 <summary><b>Plasma-versie</b></summary>
 
-Plasma 6.6 ⁇ 6.8 wordt ondersteund; gecompileerde effecten gebruiken de host SDK.
+Plasma 6.6 ⁇ 6.8 wordt ondersteund gecompileerde effecten gebruiken de host SDK.
 
 | Plasma | Ondersteuning | Sinds |
 |--------|---------|-------|
 | 6.5 en ouder | ![Niet ondersteund](https://img.shields.io/badge/Not%20supported-D1242F) | Niet van toepassing |
-| 6.6 | ![Ondersteuning](https://img.shields.io/badge/Supported-1A7F37) | V0.1.0 |
-| 6.7 | ![Ondersteuning](https://img.shields.io/badge/Supported-1A7F37) | V0.19.0 |
-| 6.8 | ![Ondersteuning](https://img.shields.io/badge/Supported-1A7F37) | V0.54.1 |
+| 6.6 | ![Ondersteuning](https://img.shields.io/badge/Supported-1A7F37) | v0.1.0 |
+| 6.7 | ![Ondersteuning](https://img.shields.io/badge/Supported-1A7F37) | v0.19.0 |
+| 6.8 | ![Ondersteuning](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
 
 </details>
 
@@ -529,11 +529,11 @@ Plasma 6.6 ⁇ 6.8 wordt ondersteund; gecompileerde effecten gebruiken de host S
 
 ![Verwijdering van aansprakelijkheid](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Dit is een onafhankelijke herimplementatie geïnspireerd op de macOS-esthetiek. Het is niet gelieerd aan of goedgekeurd door Apple of KDE. "macOS" en "Apple" zijn handelsmerken van Apple Inc.
+Dit is een onafhankelijke herimplementatie geïnspireerd op de macOS-esthetiek. "macOS" en "Apple" zijn handelsmerken van Apple Inc.
 
-Het macOS-emblem, gebundelde behangpapieren, systeemgeluiden en SF Pro / SF Mono-fonten blijven eigendom van Apple en zijn niet gedekt door de licentie van dit project.
+Het macOS-emblem, gebundelde behangpapers, systeemgeluiden en SF Pro / SF Mono-fonten blijven eigendom van Apple en vallen niet onder de licentie van dit project. Andere componenten behouden hun eigen licenties en auteursrechtelijke kennisgevingen Zie de onderstaande index van kennisgevingen van derden voor de omvang en bekende afkomstgappoorten.
 
-Gelicentieerd [GPL-3.0](LICENSE) In de eerste plaats is het mogelijk om een nieuwe regeling te treffen die de lidstaten in staat stelt hun rechten op de markt te verlenen. [berichten over auteursrechten](NOTICE), [licentie en identiteit van het project](LICENSING.md), en [kennisgevingen van derden](THIRD_PARTY_NOTICES.md).
+Gelicentieerd [GPL-3.0](LICENSE) in het geheel individuele licenties voor componenten en rechten van derden blijven van toepassing. Zie je ? [berichten over auteursrechten](NOTICE), [licentie en identiteit van het project](LICENSING.md), en [kennisgevingen van derden](THIRD_PARTY_NOTICES.md).
 
 <br>
 
@@ -545,7 +545,7 @@ Gelicentieerd [GPL-3.0](LICENSE) In de eerste plaats is het mogelijk om een nieu
 Projectreferenties en componenten van derden:
 
 - **[EliverLara](https://github.com/EliverLara/TahoeLauncher)**: `TahoeLauncher`: Verwijzing voor het ontwerp van de lanceringspad.
-- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`De basisiconen en cursoren; GTK-ontwerpreferentie. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) wordt hier als een MIT-licentie gewaarborgd fork met profiel back-up en herstel ondersteuning.
+- **[vinceliuice](https://github.com/vinceliuice)**: `MacTahoe-icon-theme`: basisiconen en cursoren GTK-ontwerpreferentie. [`MacTahoe-gtk-theme` Firefox CSS/SVG](https://github.com/vinceliuice/MacTahoe-gtk-theme/tree/main/other/firefox) wordt hier als een MIT-licentie gewaarborgd fork met profiel back-up en herstel ondersteuning.
 - **[taj-ny](https://github.com/taj-ny/kwin-effects-forceblur)** en **[4v3ngR](https://github.com/4v3ngR/kwin-effects-glass)**: Better Blur en zijn glasvork: upstream code gebruikt door Acrylic Glass (de auteurs van KWin blur blijven in de bronopschriften vermeld).
 - **[luisbocanegra](https://github.com/luisbocanegra/plasma-panel-colorizer)**: `plasma-panel-colorizer` V7.3.0, offline gebundeld en geïnstalleerd via de lay-out stap om de panelen te tinten (GPL-3.0, licentie geleverd naast).
 - **[jaxparrow07](https://github.com/jaxparrow07/liquidglass-kde-widgets)**: `liquidglass-kde-widgets` biedt de bundelde collectie van Liquid Glass desktop widgets (GPL-3.0, licentie inbegrepen).
@@ -556,7 +556,7 @@ Projectreferenties en componenten van derden:
 - **[Lucide](https://github.com/lucide-icons/lucide)**: kopieër iconen in het wereldwijde menu (ISC, © Lucide Contributors).
 - **[512pixels.net](https://512pixels.net/projects/default-mac-wallpapers-in-5k/)**: een archief met hoge resolutie voor macOS behang.
 
-Als er een krediet ontbreekt, alsjeblieft. [een probleem openen](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
+Als er een krediet ontbreekt, alsjeblieft. [open een issue](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new).
 
 </details>
 
