@@ -1775,5 +1775,16 @@
   "Exit": "Sair",
   "Hide logs": "Ocultar registros",
   "Once the components are built, the screen will go black while your desktop is updated.": "Após a compilação, a tela ficará preta enquanto a área de trabalho é atualizada.",
-  "View logs": "Ver registros"
+  "View logs": "Ver registros",
+  "{n} GTK themes installed/reinstalled": "{n} temas GTK instalados/reinstalados",
+  "all dependencies present": "Todas as dependências presentes",
+  "Kvantum Qt styling installed": "Estilo Qt do Kvantum instalado",
+  "Firefox theme: 0 profiles changed": "Tema do Firefox: 0 perfis alterados",
+  "preflight failed — refusing to uninstall": "Falha na verificação prévia — desinstalação recusada",
+  "Kvantum ownership transaction prepared": "Transação de propriedade do Kvantum preparada",
+  "preflight failed — refusing to install": "Falha na verificação prévia — instalação recusada",
+  "installing missing: {value1}": "Instalando dependências ausentes: {value1}",
+  "dependency package transaction failed — refusing to continue": "Falha na transação de pacotes de dependências — execução interrompida",
+  "Kvantum bundled-source marker installed": "Marcador do código-fonte incluído do Kvantum instalado",
+  "No initialized Firefox profiles found — run Firefox once, then reinstall": "Nenhum perfil inicializado do Firefox encontrado — execute o Firefox uma vez e reinstale"
 }

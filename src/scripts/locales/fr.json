@@ -1775,5 +1775,16 @@
   "Show full text": "Afficher le texte complet",
   "Text and images you copy will appear here.": "Le texte et les images que vous copierez apparaîtront ici.",
   "mac-tahoe-clipd isn’t running.": "mac-tahoe-clipd est-ce que’Je ne cours pas.",
-  "{count} selected": "Sélectionnée: {count}"
+  "{count} selected": "Sélectionnée: {count}",
+  "{n} GTK themes installed/reinstalled": "{n} thèmes GTK installés/réinstallés",
+  "all dependencies present": "Toutes les dépendances sont présentes",
+  "Kvantum Qt styling installed": "Style Qt Kvantum installé",
+  "Firefox theme: 0 profiles changed": "Thème Firefox : 0 profil modifié",
+  "preflight failed — refusing to uninstall": "Échec des vérifications préalables — désinstallation refusée",
+  "Kvantum ownership transaction prepared": "Transaction de propriété Kvantum préparée",
+  "preflight failed — refusing to install": "Échec des vérifications préalables — installation refusée",
+  "installing missing: {value1}": "Installation des éléments manquants : {value1}",
+  "dependency package transaction failed — refusing to continue": "Échec de la transaction des paquets de dépendances — poursuite refusée",
+  "Kvantum bundled-source marker installed": "Marqueur des sources Kvantum fournies installé",
+  "No initialized Firefox profiles found — run Firefox once, then reinstall": "Aucun profil Firefox initialisé trouvé — lancez Firefox une fois, puis réinstallez"
 }

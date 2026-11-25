@@ -1775,5 +1775,16 @@
   "Text and images you copy will appear here.": "Il testo e le immagini che copierai appaiono qui.",
   "mac-tahoe-clipd isn’t running.": "mac-tahoe-clipd non è’Non correre.",
   "{count} selected": "Selezionato: {count}",
-  "Full log storage is unavailable. Only the latest output is retained.": "Impossibile salvare il registro completo. Viene conservato solo l’output più recente."
+  "Full log storage is unavailable. Only the latest output is retained.": "Impossibile salvare il registro completo. Viene conservato solo l’output più recente.",
+  "{n} GTK themes installed/reinstalled": "{n} GTK temi installati/reinstallati",
+  "all dependencies present": "tutte le dipendenze presenti",
+  "Kvantum Qt styling installed": "Stile Qt di Kvantum installato",
+  "Firefox theme: 0 profiles changed": "Tema Firefox: 0 profili modificati",
+  "preflight failed — refusing to uninstall": "preflight fallito — rifiutando di disinstallare",
+  "Kvantum ownership transaction prepared": "Kvantum transazione di proprietà preparato",
+  "preflight failed — refusing to install": "preflight fallito — rifiutando di installare",
+  "installing missing: {value1}": "installazione mancante: {value1}",
+  "dependency package transaction failed — refusing to continue": "Installazione dei pacchetti richiesti non riuscita. Operazione interrotta",
+  "Kvantum bundled-source marker installed": "Kvantum bundle-source marcatore installato",
+  "No initialized Firefox profiles found — run Firefox once, then reinstall": "Nessun profilo di Firefox inizializzato trovato — eseguire Firefox una volta, quindi reinstallare"
 }
