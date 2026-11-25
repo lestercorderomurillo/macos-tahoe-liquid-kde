@@ -277,7 +277,7 @@ def test_rounded_corners_flag_is_first_class(cli_module):
     assert cli_module.DEFAULT_FEATURES["rounded_corners"] is True
 
 
-def test_online_download_failure_skips_feature_without_blocking(
+def test_selected_download_failure_preserves_selection_and_stops(
         cli_module, monkeypatch):
     feature = "rounded_corners"
 
@@ -294,10 +294,9 @@ def test_online_download_failure_skips_feature_without_blocking(
     monkeypatch.setattr(cli_module, "step_module", lambda _: _OnlineStep)
     monkeypatch.setattr(cli_module, "warn", warnings.append)
 
-    assert cli_module._run_optional_downloads(feat) is True
-    assert feat[feature] is False
-    assert cli_module.os.environ["FEAT_ROUNDED_CORNERS"] == "false"
-    assert any("install continues" in message for message in warnings)
+    assert cli_module._prepare_downloads(feat) is False
+    assert feat[feature] is True
+    assert cli_module.os.environ["FEAT_ROUNDED_CORNERS"] == "true"
 
 
 def test_successful_online_download_keeps_feature_enabled(
@@ -315,7 +314,7 @@ def test_successful_online_download_keeps_feature_enabled(
     monkeypatch.setattr(cli_module, "run_phase", lambda *args: True)
     monkeypatch.setattr(cli_module, "step_module", lambda _: _OnlineStep)
 
-    assert cli_module._run_optional_downloads(feat) is True
+    assert cli_module._prepare_downloads(feat) is True
     assert feat[feature] is True
 
 
@@ -582,7 +581,7 @@ def _deps_env(monkeypatch, cli_module):
 def test_check_deps_installs_only_missing_packages(monkeypatch, cli_module, _deps_env):
     # vulkan-headers absent, the rest present → only it gets installed.
     monkeypatch.setattr(_deps_env, "package_installed",
-                        lambda pkg: pkg != "vulkan-headers")
+                        lambda pkg: pkg != "vulkan-headers" or bool(installed))
     installed: list[tuple] = []
     monkeypatch.setattr(cli_module, "pkg_sync_install",
                         lambda *pkgs: installed.append(pkgs) or True)
@@ -744,7 +743,7 @@ def test_run_install_body_stops_before_download_when_deps_fail(
     monkeypatch.setattr(cli_module, "verify_plasma", lambda: True)
     monkeypatch.setattr(cli_module, "_check_deps", lambda _feat: False)
     monkeypatch.setattr(
-        cli_module, "_run_optional_downloads",
+        cli_module, "_prepare_downloads",
         lambda _feat: pytest.fail("download ran after dependency failure"),
     )
     monkeypatch.setattr(
@@ -771,9 +770,9 @@ def test_wizard_update_preserves_layout_and_respects_file_manager(
     features = installer_choices.features(selected, cli_module.DEFAULT_FEATURES,
                                           existing_install=existing)
     phases, defaults = [], []
-    for name in ("run_preflight", "verify_plasma", "_check_deps", "_run_builds_or_abort"):
+    for name in ("run_preflight", "verify_plasma", "_check_deps", "_prepare_downloads", "_run_builds_or_abort"):
         monkeypatch.setattr(cli_module, name, lambda *args: True)
-    for name in ("_run_optional_downloads", "_flush_icon_cache_signal", "verify_config", "_print_done"):
+    for name in ("_flush_icon_cache_signal", "verify_config", "_print_done"):
         monkeypatch.setattr(cli_module, name, lambda *args: None)
     monkeypatch.setattr(cli_module, "step_exists", lambda *args: True)
     monkeypatch.setattr(cli_module, "errors", [])
@@ -855,3 +854,17 @@ def test_only_globalmenu_selects_just_globalmenu(cli_module):
     assert cli_module.should_process("globalmenu", feat) is True
     assert cli_module.should_process("plasmoids", feat) is False
     assert cli_module.should_process("icons", feat) is False
+
+
+def test_successful_package_command_must_install_requested_packages(monkeypatch, cli_module, _deps_env):
+    monkeypatch.setattr(_deps_env, "package_installed", lambda _: False)
+    monkeypatch.setattr(cli_module, "pkg_sync_install", lambda *_: True)
+    assert not cli_module._check_deps({})
+
+
+def test_failed_download_stops_before_build_or_application(monkeypatch, cli_module):
+    for name in ("run_preflight", "verify_plasma", "_check_deps"):
+        monkeypatch.setattr(cli_module, name, lambda *_: True)
+    monkeypatch.setattr(cli_module, "_prepare_downloads", lambda *_: False)
+    monkeypatch.setattr(cli_module, "_run_builds_or_abort", lambda *_: pytest.fail("started build"))
+    assert cli_module._run_install_steps({}) == 1
