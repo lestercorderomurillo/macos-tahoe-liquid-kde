@@ -20,6 +20,7 @@ from distro import (
 from steps._helpers import (
     HOME, _as_root, fail, info, ok, offline, sudo_install_tree, sudo_remove, temp_dir, warn,
 )
+from glass_surface_settings import atomic_write
 from utils import have, pkg_install
 
 
@@ -359,10 +360,7 @@ def _save_previous_simpledrm(*, legacy_override: bool) -> bool:
     value = cp.get("Daemon", "UseSimpledrm") if present else None
     try:
         STATE_DIR.mkdir(parents=True, exist_ok=True)
-        state_file.write_text(
-            json.dumps({"present": present, "value": value}) + "\n",
-            encoding="utf-8",
-        )
+        atomic_write(state_file, (json.dumps({"present": present, "value": value}) + "\n").encode())
     except OSError as exc:
         warn(tr('could not snapshot previous UseSimpledrm setting ({exc})', exc=exc))
         return False
@@ -380,7 +378,8 @@ def _restore_previous_simpledrm() -> bool:
         warn(tr('could not read previous UseSimpledrm setting ({exc})', exc=exc))
         return False
 
-    if not isinstance(payload, dict):
+    if (not isinstance(payload, dict) or type(payload.get("present")) is not bool
+            or (payload["present"] and not isinstance(payload.get("value"), str))):
         warn(tr('previous UseSimpledrm state has an invalid shape'))
         return False
     if payload.get("present") is True and isinstance(payload.get("value"), str):
@@ -391,7 +390,7 @@ def _restore_previous_simpledrm() -> bool:
 def _save_previous(name: str) -> bool:
     try:
         STATE_DIR.mkdir(parents=True, exist_ok=True)
-        PREV_THEME_FILE.write_text(name + "\n", encoding="utf-8")
+        atomic_write(PREV_THEME_FILE, (name + "\n").encode())
         return True
     except OSError as exc:
         fail(tr('could not snapshot previous Plymouth theme ({exc})', exc=exc))
@@ -507,27 +506,23 @@ def install() -> None:
 
 
 def uninstall() -> None:
+    if not any(path.exists() for path in (DEST, PREV_THEME_FILE, _previous_simpledrm_file())):
+        return
     previous = _read_previous()
 
     # Restore the renderer policy before -R rebuilds the previous theme into
     # the initramfs.
-    simpledrm_restored = _restore_previous_simpledrm()
-    if simpledrm_restored:
-        ok(tr('Previous UseSimpledrm setting restored'))
+    if not all(have(tool) for tool in plymouth_tools()):
+        fail(tr('{PLYMOUTH_BIN} not available — skipping splash restore', PLYMOUTH_BIN=", ".join(plymouth_tools())))
+        return
+    if not _restore_previous_simpledrm():
+        fail(tr('could not read previous UseSimpledrm setting ({exc})', exc=_previous_simpledrm_file()))
+        return
+    ok(tr('Previous UseSimpledrm setting restored'))
 
-    if all(have(tool) for tool in plymouth_tools()):
-        if _activate(previous):
-            ok(tr('Boot splash restored to {previous}', previous=previous))
-        else:
-            if plymouth_uses_alternatives():
-                return
-            warn(tr('could not restore boot splash to {previous} — continuing cleanup', previous=previous))
-    else:
-        message = tr('{PLYMOUTH_BIN} not available — skipping splash restore', PLYMOUTH_BIN=", ".join(plymouth_tools()))
-        if plymouth_uses_alternatives():
-            fail(message)
-            return
-        warn(message)
+    if not _activate(previous):
+        return
+    ok(tr('Boot splash restored to {previous}', previous=previous))
 
     for command in plymouth_cleanup_commands(THEME_NAME):
         try:
@@ -545,13 +540,8 @@ def uninstall() -> None:
         if PREV_THEME_FILE.is_file():
             PREV_THEME_FILE.unlink()
         previous_simpledrm = _previous_simpledrm_file()
-        if simpledrm_restored and previous_simpledrm.is_file():
+        if previous_simpledrm.is_file():
             previous_simpledrm.unlink()
-        if simpledrm_restored:
-            ok(tr('Plymouth state cleared'))
-        else:
-            ok(tr('Previous Plymouth theme state cleared'))
-    except OSError:
-        pass
-    if not simpledrm_restored:
-        warn(tr('Plymouth renderer recovery state retained because restoration failed'))
+        ok(tr('Plymouth state cleared'))
+    except OSError as exc:
+        fail(f'{STATE_DIR}: {exc}')

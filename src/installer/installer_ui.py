@@ -484,7 +484,7 @@ def _make_installer_bridge():
             if self._log_failed:
                 return
             self._log_failed = True
-            message = "Full log storage is unavailable. Only the latest output is retained."
+            message = translate("Full log storage is unavailable. Only the latest output is retained.", self._language)
             self.summary.accept({'kind': 'warning', 'message': message})
             self.summaryChanged.emit()
             self._log_lines.append(message)
@@ -647,7 +647,7 @@ def _make_installer_bridge():
 
         @pyqtSlot()
         def cancel(self) -> None:
-            if not self._running:
+            if not self._running or self.summary.application_started:
                 return
             self.cancelRequested = True
             _mark_cancel_requested(self._cancel_file)
