@@ -320,9 +320,9 @@ def uninstall() -> None:
 
 def migrate_settings_context() -> None:
     script = offline("layouts/migrate-settings-context.js").read_text(encoding="utf-8")
-    if not qdbus_call("org.kde.plasmashell", "/PlasmaShell",
-                      "org.kde.PlasmaShell.evaluateScript", script):
-        warn(tr("Could not update widget configuration shortcuts."))
+    from steps.layout import evaluate_panel_transaction
+    if not evaluate_panel_transaction(script):
+        fail(tr("Could not update widget configuration shortcuts."))
 
 
 def _installed_widgets() -> set[str]:

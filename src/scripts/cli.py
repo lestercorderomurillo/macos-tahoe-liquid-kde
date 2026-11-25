@@ -1186,8 +1186,6 @@ def _run_install_steps(feat: dict[str, object]) -> int:
 
         if not keep_layout and step_exists("layout"):
             run_phase("layout", "migrate_status_controls")
-        if feat.get("plasmoids", True):
-            run_phase("plasmoids", "migrate_settings_context")
 
         step('Restarting Plasma')
         note(tr('Restarts Plasma shell to load all changes'))
@@ -1199,6 +1197,8 @@ def _run_install_steps(feat: dict[str, object]) -> int:
             run_phase("layout", "install")
         if feat.get("layout", True) and step_exists("layout"):
             run_phase("layout", "finish_reset")
+        if feat.get("plasmoids", True) or feat.get("layout", True):
+            run_phase("plasmoids", "migrate_settings_context")
         if feat.get("plasmoids", True) and step_exists("plasmoids"):
             run_phase("plasmoids", "place_desktop_widgets")
         if not keep_layout and not feat.get("layout", True) and step_exists("layout"):

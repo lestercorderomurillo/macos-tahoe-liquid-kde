@@ -327,7 +327,30 @@ def migrate_dock_preset() -> None:
 def _evaluate_layout_with_launchers(
         script_path: Path, pins: list[str], widget_type: str) -> bool:
     script = _layout_script_with_launchers(script_path, pins, widget_type)
-    return script is not None and _evaluate_layout_script(script)
+    if script is None:
+        return False
+    # A client timeout does not cancel evaluateScript in Plasma. Submitting a
+    # second panel rebuild can leave multiple live copies on slower desktops.
+    return evaluate_panel_transaction(script)
+
+
+def evaluate_panel_transaction(script: str) -> bool:
+    service = "org.kde.plasmashell"
+    method = "org.kde.PlasmaShell.evaluateScript"
+    script += '\nprint("layout-complete");'
+    if have("dbus-send"):
+        command = ["dbus-send", "--session", "--print-reply=literal", "--reply-timeout=120000",
+                   "--dest=" + service, "/PlasmaShell", method, "string:" + script]
+    else:
+        qdbus = qdbus_cmd()
+        if not qdbus:
+            return False
+        command = [qdbus, service, "/PlasmaShell", method, script]
+    try:
+        result = run_user(command, capture_output=True, text=True, timeout=125)
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0 and result.stdout.rstrip().endswith("layout-complete")
 
 
 def _restore_pins(pins: list[str], widget_type: str) -> bool:
@@ -555,7 +578,15 @@ def finish_reset() -> None:
     (function () {
         const retired = RETIRED;
         const panelsToRemove = panels().filter(panel => retired.includes(panel.id));
-        if (panelsToRemove.some(panel => panel.widgetIds.length !== 0)) {
+        const replacements = panels().filter(panel => !retired.includes(panel.id));
+        function replaced(panel) {
+            const types = panel.widgets().map(w => w.type);
+            if (!types.includes("org.kde.mac.tahoe.liquid.globalmenu") &&
+                    !types.includes("org.kde.mac.tahoe.liquid.icontasks")) return false;
+            return replacements.some(p => p.location === panel.location && p.screen === panel.screen &&
+                JSON.stringify(p.widgets().map(w => w.type)) === JSON.stringify(types));
+        }
+        if (panelsToRemove.some(panel => panel.widgetIds.length !== 0 && !replaced(panel))) {
             throw new Error("A panel from before the layout reset is still active");
         }
         panelsToRemove.forEach(panel => panel.remove());
