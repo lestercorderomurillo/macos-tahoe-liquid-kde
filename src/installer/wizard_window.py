@@ -97,11 +97,11 @@ PANEL_LABELS = {
     "boot": "Boot animation", "oled": "OLED protection",
 }
 SECTIONS = {
-    "theme": SUMMARY_SECTIONS["theme"],
+    "theme": ("Appearance", "appearance", ("appearance", "icons", "fonts", "effects", "glass_style", "acrylic_glass_editor")),
     "desktop": ("Desktop", "wallpaper", ("wallpaper",)),
     "widgets": ("Widgets", "stage-manager", ("desktop_widgets",)),
     "dock_bar": SUMMARY_SECTIONS["dock_bar"],
-    "windows": SUMMARY_SECTIONS["windows"],
+    "windows": ("Windows", "windows", ("window_controls", "button_position", "shadows")),
     "applications": ("Applications", "apps", ("launcher", "files", "firefox")),
     "preferences": ("Preferences", "notification-options", ()),
     "startup": SUMMARY_SECTIONS["startup"],
@@ -111,7 +111,7 @@ SETTINGS_PAGES = {
     "general": ("General", "settings", ()),
     **SECTIONS,
 }
-SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows", "weather_panel": "widgets", "desktop_widget": "widgets"}
+SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "theme", "weather_panel": "widgets", "desktop_widget": "widgets"}
 PANEL_SECTIONS = {panel: section for section, (_, _, panels) in SUMMARY_SECTIONS.items() for panel in panels}
 PANEL_STEPS = {panel: step for step, (_, panels) in INSTALL_SECTIONS.items() for panel in panels}
 
