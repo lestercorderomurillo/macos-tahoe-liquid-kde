@@ -10,6 +10,18 @@ cause when known. An apology, promise, or repeated explanation is insufficient.
 If blocked, finish independent work and identify the exact remaining blocker.
 Ask only for a decision or permission the user has not already given.
 
+### Mistake dictionary
+
+Whenever an agent makes a mistake, correct the user's deliverable first. Then
+update this dictionary in both editions during the same task. Record what
+happened, the assumption or decision that caused it, and an observable check
+that prevents recurrence. Extend an existing entry when the mistake repeats.
+
+| Mistake | What went wrong | Check before closing |
+| --- | --- | --- |
+| Treating a local installer as a published fix | After v0.84.32 restored the older installer, the agent provided a local fullscreen launcher and repeatedly explained the rollback. It treated the working candidate as the endpoint even though the user wanted the ordinary published installer. | Follow the release request through both publication workflows once the applicable approval is in hand. Verify each published tag contains or pins the fix and synchronize the ordinary checkouts. Give the user both release links. |
+| Documenting before repairing | When the user asked why the release was missing, the agent prioritized writing a rule while the requested deliverable was still missing. | Take the next authorized repair or delivery action first. If a decision genuinely blocks it, show the exact result and ask for that decision once. Record the lesson after advancing the repair. |
+
 ## Non-negotiable execution discipline
 
 If an operation is likely to take 20 minutes or more, treat that as a sign
