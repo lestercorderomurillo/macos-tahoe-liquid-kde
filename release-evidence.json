@@ -1,23 +1,24 @@
 {
-  "version": "0.84.18",
+  "version": "0.84.19",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Installation continues when Rounded Corners is installed and enabled but KWin cannot confirm activation in the current session.",
+  "scope": "Copied and saved installer diagnostics include the computer's hardware, operating system, kernel, session type and installer version.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_rounded_corners_step.py (34 passed, one opt-in native SDK build skipped). Three previously fatal live activation cases were reproduced against v0.84.17.",
+      "command": "python3 -m pytest -q tests/test_installer_progress.py tests/test_about_info.py (258 passed)",
       "result": "passed"
     },
     {
-      "command": "On a disposable KDE neon 6.8.1 Wayland guest with Golden Gate defaults, run installer_backend.py install --wizard-options with Rounded Corners selected. Filter only its ID from the loadedEffects reply on the first installation. Confirm the login warning and completion. Reinstall with the real D-Bus response and confirm the effect loads.",
+      "command": "With QT_QPA_PLATFORM=offscreen, open the installer progress page under Tahoe and Golden Gate defaults. Click Copy diagnostic and Save log with a simulated failure and live About probes. Compare both outputs, private file permissions, edition, version and diagnostic fields.",
       "result": "passed"
     }
   ],
-  "captures": [],
-  "qualified_commit": "af735a45a8a8074dec96d4253db55e3a6216d101",
-  "installed_source_sha256": {
-    "src/scripts/steps/rounded_corners.py": "0b05ac5c5282143c5ea0d84a4ed7008abea232a0ed05893b62d6cf7be526293c",
-    "component-hashes.json": "3bea5318a3982e286fe3ce3a9c3b800addabfbb7e4e1ab51461dc81969195bec"
+  "qualified_commit": "72e84a6d55946bfcd98e210fa4dc94d07a03ad84",
+  "component_source_sha256": {
+    "src/installer/installer_ui.py": "31d7878c841bb8d6be526f33bac40b0768e691ab5f5a182a92fcb8d729ed14aa",
+    "src/installer/wizard_window.py": "9db35656838e5b3539cd515753be9df1632d010a326446f46782e2469f422e43",
+    "src/scripts/about_info.py": "e6721877ff6232ee55ffcb6454b1f2ece4c7bb40e8fe7e1d065d03c98de6fa99"
   },
-  "coverage_limits": "The VM exercised the shared installer under Golden Gate defaults. The reporter\u2019s compositor state on Plasma 6.8.3 is unknown. A separate Tahoe desktop and X11 were not exercised. No native effect or shader changed.",
-  "source_sha256": "10bd269c6d4e34e375458afe0e8cc8975a74b0a9754786ee076ea318eea46a43"
+  "coverage_limits": "Export was exercised in an offscreen Qt session. This change affects diagnostic export only. Installer lifecycle and desktop rendering were unchanged.",
+  "captures": [],
+  "source_sha256": "c9ec2c662c2d272dc11c311b2c20ca8da6a7331ed4a92b3d8124997d24a2de63"
 }
