@@ -16,6 +16,11 @@ cache paths, before running tools. Resolve paths and symlinks before writing.
 External prepared images and tools may be read in place. If a tool needs an
 external write, choose a repository-local method or stop and identify the
 required location. Never move scratch work to another disk for extra space.
+If `build` is an existing executable, use the ignored `temporal/` directory.
+Give each run an isolated directory and clean it automatically on exit,
+including errors and cancellation (for example, a context manager or shell
+trap). Remove task-owned Git worktrees with `git worktree remove`. Keep only
+requested deliverables and necessary recovery evidence. Never stage scratch files.
 
 ## No lazy mode
 

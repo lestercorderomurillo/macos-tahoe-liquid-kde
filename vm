@@ -200,13 +200,15 @@ prepare_one() {
         [[ -f "$disk" ]] || qemu-img create -f qcow2 -F qcow2 -b "$CACHE/$base" "$disk" 60G >/dev/null
         ci="$CI/$distro.yaml"
         [[ -f "$ci" ]] || { warn "$distro: no cloud-init at $ci"; return 1; }
-        tmp="$(mktemp -d)"
-        cp "$ci" "$tmp/user-data"
-        printf "instance-id: vm-%s-%s\nlocal-hostname: %s\n" \
-            "$distro" "$(date +%s)" "$distro" > "$tmp/meta-data"
-        genisoimage -output "$cidata" -volid cidata -joliet -rock \
-            "$tmp/user-data" "$tmp/meta-data" 2>/dev/null
-        rm -rf "$tmp"
+        (
+            tmp="$(mktemp -d "$work/cloud-init.XXXXXXXX")"
+            trap 'rm -rf -- "$tmp"' EXIT
+            cp "$ci" "$tmp/user-data"
+            printf "instance-id: vm-%s-%s\nlocal-hostname: %s\n" \
+                "$distro" "$(date +%s)" "$distro" > "$tmp/meta-data"
+            genisoimage -output "$cidata" -volid cidata -joliet -rock \
+                "$tmp/user-data" "$tmp/meta-data" 2>/dev/null
+        )
         extra=(
             -drive file="$disk",if=virtio,format=qcow2
             -drive file="$cidata",if=virtio,format=raw,readonly=on

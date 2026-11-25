@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-import fcntl
 import json
 import os
 from pathlib import Path
@@ -164,10 +163,9 @@ class Guest:
 
 @contextmanager
 def capture_lock():
-    directory = Path(tempfile.gettempdir()) / f'mttkde-release-{os.getuid()}'
-    directory.mkdir(mode=0o700, exist_ok=True)
-    with (directory / 'capture.lock').open('a') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    # A Linux abstract socket serializes captures across checkouts and vanishes on exit.
+    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as lock:
+        lock.bind(f'\0mttkde-release-capture-{os.getuid()}')
         yield
 
 
@@ -221,7 +219,9 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
             if not any(n.startswith(edition + '-') or (edition == 'tahoe' and n in ('boot', 'shutdown'))
                        for n in pending):
                 continue
-            with tempfile.TemporaryDirectory(prefix='mttkde-cap-') as temp:
+            scratch = repo / 'build' / 'capture'
+            scratch.mkdir(parents=True, exist_ok=True)
+            with tempfile.TemporaryDirectory(dir=scratch, prefix='vm-') as temp:
                 guest_dir = Path(temp)
                 try:
                     with Guest(guest_dir, profile, image, archive, edition) as vm:
