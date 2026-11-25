@@ -48,8 +48,7 @@ if (colorizer) {
             "floatingDialogs": true
         }
     }));
-    colorizer.currentConfigGroup = ["Configuration"];
-    colorizer.writeConfig("hideWidget", "true");
+    colorizer.writeConfig("hideWidget", true);
 }
 
 bar.addWidget("org.kde.mac.tahoe.liquid.globalmenu");
