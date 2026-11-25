@@ -1,35 +1,14 @@
 {
-  "version": "0.84.25",
-  "scope": "The installer repairs duplicate Docks and top bars and restores transparent menu bars on existing two-monitor layouts.",
+  "version": "0.84.26",
+  "scope": "The graphical installer keeps routine Qt font matching messages out of terminal output.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_commit": "c9d1957fdbb875b705dcd03b52d9ed5b0218ff85",
+  "qualified_commit": "8c1904ca43f250ad3ac473212b234a5bae62b61d",
   "checks": [
     {
-      "command": "Golden Gate installer_backend.py install with layout reset, then install with reset_layout=false starting from four top bars and three Docks. Both installer processes exited 0.",
-      "result": "passed"
-    },
-    {
-      "command": "After VM reboot, read active containments: one shared Dock, two transparent top bars, original IDs and ten original pins retained. Compared the two-monitor captures.",
-      "result": "passed"
-    },
-    {
-      "command": "Isolated pytest test_finish_reset_only_removes_panels_retired_by_this_install and test_wizard_update_preserves_layout_and_respects_file_manager (10 passed).",
-      "result": "passed"
-    },
-    {
-      "command": "Isolated pytest tests/test_layout_step.py tests/test_edition_transition.py with the panel transaction replaced in the test fixtures (42 passed).",
+      "command": "QT_QPA_PLATFORM=offscreen MAC_TAHOE_NO_UPDATE_CHECK=true: launched _launch_preview_pyqt using shared Tahoe source and Golden Gate --prepare output. Checked the visible language selector, Hindi glyph run in Noto Sans Devanagari, disabled qt.text.font.db info and enabled category warnings and unrelated info.",
       "result": "passed"
     }
   ],
-  "captures": [
-    {
-      "path": "docs/evidence/golden-gate-panel-recovery-4dbac9b241eb.png",
-      "sha256": "4dbac9b241eb84261004be9e9ccb869a03f83c0f23e32cf4898eea5996bf61f6",
-      "reviewed": true,
-      "source_commit": "bac0e7f73dace7dd7b5b65e1c1b892652321624d",
-      "environment": "KDE neon, Plasma 6.8.1, Wayland, two outputs, Golden Gate"
-    }
-  ],
-  "coverage_limits": "Golden Gate VM exercised the shared panel code. Tahoe was not separately booted. The live scripting API retained the previous widget width until reboot. Captures show it hidden right after reinstall. The post-boot width was zero.",
-  "source_sha256": "51e8dd8a913a3b30deb5128637bda9115e0b27234cd531a3387887ae63daa10e"
+  "coverage_limits": "Qt 6.11.2 on CachyOS. The original informational message did not recur during baseline runs. Checked its logging level and actual glyph shaping. No backend installation was run.",
+  "source_sha256": "d8caeace3bb8b7a26bd26aa1b9cf19d8a5f0964e89fec7a474f32ff5133a6896"
 }
