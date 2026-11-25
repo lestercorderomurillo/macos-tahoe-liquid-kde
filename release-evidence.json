@@ -1,27 +1,65 @@
 {
-  "version": "0.84.21",
+  "version": "0.84.22",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Hide Panel Colorizer beside the system menu on secondary monitors and migrate the saved visibility setting on existing Liquid panels.",
-  "qualified_commit": "3f8bf62030eca4cf40c7188bfa3f186d1fe39f40",
+  "scope": "After installation, Open Settings closes the installer and opens a new Settings window.",
+  "qualified_commit": "86ffde2d06e2316f21b7ced73d48a7f85acd0b75",
   "checks": [
     {
-      "command": "Golden Gate installer_backend.py install with reset_layout on two outputs, followed by reinstall in the same disposable KDE neon Plasma 6.8.1 Wayland guest.",
-      "result": "passed"
+      "command": "python3 -m pytest -q tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion",
+      "result": "passed",
+      "detail": "Both edition fixtures passed on the integrated source."
     },
     {
-      "command": "Ran steps.plasmoids.migrate_settings_context() with the legacy hide flag on monitor 2 and captured both panels with spectacle. The approved monitor 2 capture shows the system menu first.",
-      "result": "passed"
+      "command": "Complete an express installation in a disposable Golden Gate KDE neon guest, click Open Settings and inspect KWin window IDs and the launch arguments.",
+      "result": "passed",
+      "observed": {
+        "source": "1b30990113d7f738472d8edd882cecb87b29f0a2",
+        "backend": "Wayland",
+        "plasma": "6.8.1",
+        "edition": "Golden Gate",
+        "ready": {
+          "id": "{f0e0e97a-6572-4314-bbdc-eeef90074eee}",
+          "caption": "Install Golden Gate \u00b7 v0.84.19",
+          "resourceClass": "org.kde.mac-tahoe-liquid-kde.settings",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 510,
+            "y": 182,
+            "width": 900,
+            "height": 680
+          }
+        },
+        "settings": {
+          "id": "{74bd419c-d2dd-4664-a95a-f61cf0bef58c}",
+          "caption": "Golden Gate Settings \u00b7 v0.84.19",
+          "resourceClass": "org.kde.mac-tahoe-liquid-kde.settings",
+          "type": 0,
+          "appletPopup": false,
+          "hidden": false,
+          "active": true,
+          "geometry": {
+            "x": 460,
+            "y": 245,
+            "width": 1000,
+            "height": 620
+          }
+        },
+        "command": "2958 /usr/bin/python3 /home/tester/release-capture/source/installer --mode=settings --section theme"
+      }
     }
   ],
-  "captures": [
-    {
-      "path": "docs/evidence/golden-gate-monitor2-menu-14b302534db2.png",
-      "sha256": "14b302534db2c38928d9895f797a6e339053e38348898f1fd1c95fb806d022f7",
-      "reviewed": true,
-      "source_commit": "6b5c3189f90cde8fe27c6166cf82606fc79dcbdd",
-      "environment": "Golden Gate, KDE neon Plasma 6.8.1 Wayland, Virtual-2 at scale 1. Approved in chat on 2026-11-24."
-    }
-  ],
-  "coverage_limits": "The VM exercised Golden Gate with two virtual displays. Tahoe shares the same layout and migration scripts. Their contents match the approved capture candidate.",
-  "source_sha256": "21b1c275e1a486dc63a439712ceaaeeaf66522c9166482402b0c4e767d355ac8"
+  "captures": [],
+  "approved_preview_sha256": {
+    "completed.png": "c9e391352ce08ffff874b569367c240aec87729798d8423d233b3a374a0a6b54",
+    "settings.png": "3485d31a95b53337061cf0f75c7696326a885806067ef2ecf250eea3f4ac5c57"
+  },
+  "installed_source_sha256": {
+    "src/installer/installer_ui.py": "fcc3fc142941d40d0f7f9334e24862d8e0bba8a694c719dc387f3ab6b23348d4",
+    "src/installer/wizard_window.py": "fbf9d6376023d0351b2e16345a1efc8ed24ec39a45ddf8883d4dce26de783622"
+  },
+  "coverage_limits": "The approved VM preview used the recorded candidate before integration with the v0.84.20 translation update. The final navigation check exercised both editions offscreen. Desktop coverage was Golden Gate on Wayland.",
+  "source_sha256": "75d6674f52e6e48e9e89b219bec5107392ab640c1adc2fd573356dd865de982f"
 }
