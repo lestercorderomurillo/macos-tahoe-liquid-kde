@@ -314,9 +314,40 @@ def verify_dock_glass() -> None:
             check += 'if (docks.some(p => p.opacity !== "translucent")) throw new Error("Dock opacity");'
             if evaluate_panel_transaction(check):
                 return
+            # Plasma 6.7.4's scripting setter calls QWindow::setOpacity.
+            # PanelView reads the real opacity mode from plasmashellrc when
+            # its view is restored. Persist only existing project Dock IDs.
+            if attempt == 3:
+                _restore_dock_view_mode(docks, check)
+                return
         if attempt < 3:
             time.sleep(0.5)
     fail(tr("Dock preset update failed"))
+
+
+def _restore_dock_view_mode(docks: str, check: str) -> None:
+    from steps.apply import restart_plasma
+
+    try:
+        result = run_user([qdbus_cmd() or "qdbus6", "org.kde.plasmashell", "/PlasmaShell",
+                           "org.kde.PlasmaShell.evaluateScript",
+                           f"print(JSON.stringify({docks}.map(p => p.id)))"],
+                          capture_output=True, text=True, timeout=10)
+        ids = json.loads(result.stdout) if result.returncode == 0 else None
+    except (OSError, subprocess.SubprocessError, ValueError):
+        ids = None
+    if not isinstance(ids, list) or not ids or not all(type(i) is int and i > 0 for i in ids):
+        fail(tr("Dock preset update failed"))
+        return
+    for panel_id in ids:
+        if not kw_write("--file", "plasmashellrc", "--group", "PlasmaViews", "--group",
+                        f"Panel {panel_id}", "--key", "panelOpacity", "2"):
+            fail(f"Dock {panel_id}: plasmashellrc panelOpacity")
+            return
+    restart_plasma()
+    require_docks = f'if ({docks}.length !== {len(ids)}) throw new Error("Missing Dock");'
+    if not evaluate_panel_transaction(require_docks + check):
+        fail(f"Dock {ids}: {tr('Dock preset update failed')} (panelOpacity)")
 
 
 def _dock_migration_script() -> str:
