@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import codecs
 import errno
+from functools import cached_property
 import json
 import os
 import pwd
@@ -501,12 +502,43 @@ def _make_installer_bridge():
                     self._log_storage_failure()
             return "\n".join(self._log_lines)
 
+        @cached_property
+        def _diagnostic_header(self) -> str:
+            from about_info import collect
+
+            system = os.uname()
+            lines = [
+                "About This Computer",
+                f"Installer: {self.editionName} {self.version}",
+                f"Kernel: {system.sysname} {system.release} ({system.machine})",
+                f"Session: {os.environ.get('XDG_SESSION_TYPE') or 'Unknown'}",
+            ]
+            try:
+                about = collect()
+            except Exception:
+                # An unavailable hardware probe must never hide the failure log.
+                lines.append("Hardware information unavailable")
+            else:
+                # These reports are often shared publicly. Export hardware
+                # descriptions without copying About's serial or MAC address.
+                for key, label in (
+                    ("os", "Operating system"), ("vendor", "Manufacturer"),
+                    ("model", "Model"), ("year", "BIOS year"), ("chip", "Processor"),
+                    ("cores", "CPU cores"), ("memory", "Memory"),
+                    ("graphics", "Graphics"), ("disk", "Storage"),
+                ):
+                    lines.append(f"{label}: {about.get(key) or 'Unknown'}")
+            return "\n".join(lines)
+
+        def diagnosticText(self) -> str:
+            return self._diagnostic_header + "\n\n" + self.logText()
+
         def saveLog(self, path):
             from PyQt6.QtCore import QSaveFile, QIODeviceBase, QFileDevice
             output = QSaveFile(path)
             if not output.open(QIODeviceBase.OpenModeFlag.WriteOnly):
                 raise OSError(output.errorString())
-            data = self.logText().encode('utf-8')
+            data = self.diagnosticText().encode('utf-8')
             if (not output.setPermissions(QFileDevice.Permission.ReadOwner | QFileDevice.Permission.WriteOwner)
                     or output.write(data) != len(data)):
                 output.cancelWriting()

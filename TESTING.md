@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.17**. The menu bar brush opens the Acrylic Glass editor in Settings, including when the installed launcher must be recovered from the edition source. [Evidence and coverage](release-evidence.json).
+**v0.84.19**. Copied and saved installer diagnostics include the computer's hardware, operating system, kernel, session type and installer version. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

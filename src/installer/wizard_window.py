@@ -3435,7 +3435,7 @@ class InstallerWindow(OpaqueSurface):
         controls.addStretch()
         copy = QPushButton(self.t("Copy diagnostic"))
         copy.setObjectName("copyInstallationLog")
-        copy.clicked.connect(lambda: QApplication.clipboard().setText(self.bridge.logText()))
+        copy.clicked.connect(lambda: QApplication.clipboard().setText(self.bridge.diagnosticText()))
         controls.addWidget(copy)
         save = QPushButton(self.t("Save log…"))
         save.setObjectName("saveInstallationLog")

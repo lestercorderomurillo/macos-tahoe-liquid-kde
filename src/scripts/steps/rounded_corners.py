@@ -546,13 +546,13 @@ def _restore_round_corners_keys(*, legacy_install: bool) -> bool:
     return True
 
 
-def _activate_distinct_build(effect: Path, plugin: Path) -> bool:
+def _install_distinct_build(effect: Path, plugin: Path) -> Path | None:
     # Qt retains a library by canonical path after unloading its effect.
     # Keep the plugin basename (its KPlugin ID), but give each build its
     # own canonical path outside KWin's plugin discovery directory.
     library = plugin.parent.parent / "mttkde-rounded-builds" / _sha256(effect) / plugin.name
     if not sudo_install_file(effect, library, "KDE Rounded Corners effect installed"):
-        return False
+        return None
     link = plugin.with_name(f".{plugin.name}.{uuid.uuid4().hex}")
     try:
         with _as_root():
@@ -563,10 +563,8 @@ def _activate_distinct_build(effect: Path, plugin: Path) -> bool:
                 link.unlink(missing_ok=True)
     except OSError as exc:
         fail(str(exc))
-        return False
-    qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", EFFECT_ID)
-    qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", EFFECT_ID)
-    return _effect_active() and running_kwin_plugin_matches(library) is True
+        return None
+    return library.resolve()
 
 
 def install() -> None:
@@ -640,7 +638,8 @@ def install() -> None:
         "--file", "kwinrc", "--group", "Plugins",
         "--key", "shapecornersEnabled", "true",
     ):
-        warn(tr('KDE Rounded Corners could not be enabled — kwriteconfig6 failed'))
+        fail(tr('KDE Rounded Corners could not be enabled — kwriteconfig6 failed'))
+        return
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
     qdbus_call(
         "org.kde.KWin", "/Effects",
@@ -648,8 +647,15 @@ def install() -> None:
     )
     plugin = destinations[0][1]
     if running_kwin_plugin_matches(plugin.resolve()) is False or not _effect_active():
-        if not _activate_distinct_build(effect, plugin):
-            fail(tr('KWin could not activate the installed KDE Rounded Corners build'))
+        library = _install_distinct_build(effect, plugin)
+        if library is None:
+            return
+        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.unloadEffect", EFFECT_ID)
+        qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", EFFECT_ID)
+        # The installed files are ready for the next KWin session even if
+        # this compositor cannot load or identify the new library in place.
+        if not _effect_active() or running_kwin_plugin_matches(library) is not True:
+            warn(tr('KDE Rounded Corners installed (log out and back in to activate)'))
             return
     ok(tr('KDE Rounded Corners loaded'))
     info(tr('KDE Rounded Corners v{UPSTREAM_VERSION} installed from verified upstream source', UPSTREAM_VERSION=UPSTREAM_VERSION))

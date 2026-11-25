@@ -1,26 +1,24 @@
 {
-  "version": "0.84.17",
+  "version": "0.84.19",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "The menu bar brush opens the Acrylic Glass editor in Settings, including when the installed launcher must be recovered from the edition source.",
+  "scope": "Copied and saved installer diagnostics include the computer's hardware, operating system, kernel, session type and installer version.",
   "checks": [
     {
-      "command": "Run the affected pytest cases for theme switch installation and uninstallation with isolated user paths, wallpaper defaults and Settings source records for both editions.",
+      "command": "python3 -m pytest -q tests/test_installer_progress.py tests/test_about_info.py (258 passed)",
       "result": "passed"
     },
     {
-      "command": "Install and reinstall in a disposable Golden Gate KDE neon Plasma 6.8.1 Wayland guest. With both launcher paths missing at panel startup, restore only the source record and click the brush. Restore the normal launcher and click again without restarting Plasma. Inspect the active window, native editor module and installed file hashes.",
+      "command": "With QT_QPA_PLATFORM=offscreen, open the installer progress page under Tahoe and Golden Gate defaults. Click Copy diagnostic and Save log with a simulated failure and live About probes. Compare both outputs, private file permissions, edition, version and diagnostic fields.",
       "result": "passed"
     }
   ],
-  "captures": [],
-  "qualified_commit": "9e0524bbf993a79e30338471852d74a2946c8521",
-  "installed_source_sha256": {
-    "component-hashes.json": "5b8abb0ece9ecde15f9a8951c83e7a93c2a307395643338df61c9497261d3bf2",
-    "src/scripts/settings_launcher.py": "06b33b18855212072a25dc7424c03a53949ca48a29b9d5c3c2778cf8a4ddec1a",
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.acrylicglass/contents/ui/main.qml": "ca332bee4eafd53341f2862150bc7483b28bc63398303fe827aef8ef388d51dc",
-    "src/offline/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/SettingsEntry.qml": "f52997268aba8bbb16e3b5b2c42733666eaf48e0a44c2b1ca40a0155164962ba"
+  "qualified_commit": "72e84a6d55946bfcd98e210fa4dc94d07a03ad84",
+  "component_source_sha256": {
+    "src/installer/installer_ui.py": "31d7878c841bb8d6be526f33bac40b0768e691ab5f5a182a92fcb8d729ed14aa",
+    "src/installer/wizard_window.py": "9db35656838e5b3539cd515753be9df1632d010a326446f46782e2469f422e43",
+    "src/scripts/about_info.py": "e6721877ff6232ee55ffcb6454b1f2ece4c7bb40e8fe7e1d065d03c98de6fa99"
   },
-  "preview_sha256": "a97130d3c35de7a50aecd89786dd0189fbdb920a1a19289002c9161446be7985",
-  "coverage_limits": "The installed panel interaction was exercised on Golden Gate under Wayland. Tahoe uses the same panel implementation. X11 and a separate Tahoe desktop were not exercised.",
-  "source_sha256": "1dd84857fa471ce5153a1df25af43665b6eb870da77b54210f5c2d197ecccb58"
+  "coverage_limits": "Export was exercised in an offscreen Qt session. This change affects diagnostic export only. Installer lifecycle and desktop rendering were unchanged.",
+  "captures": [],
+  "source_sha256": "c9ec2c662c2d272dc11c311b2c20ca8da6a7331ed4a92b3d8124997d24a2de63"
 }

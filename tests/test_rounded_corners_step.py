@@ -880,7 +880,13 @@ def test_reinstall_preserves_identical_files(monkeypatch, tmp_path):
     assert targets["shaders"] / "shapecorners_core.frag" in installed
 
 
-def test_install_activates_previous_build_replacement(monkeypatch, tmp_path):
+@pytest.mark.parametrize("active, mapped, loaded", [
+    (True, True, True),     # KWin switched to the new build
+    (True, False, False),   # Qt retained the previous library
+    (True, None, False),    # running library identity is unavailable
+    (False, True, False),   # mapped library without a loaded effect
+])
+def test_install_activates_previous_build_replacement(monkeypatch, tmp_path, active, mapped, loaded):
     from contextlib import nullcontext
     import shutil
     targets = _pin_install_targets(monkeypatch, tmp_path)
@@ -896,11 +902,21 @@ def test_install_activates_previous_build_replacement(monkeypatch, tmp_path):
     checked = []
     def matches(path):
         checked.append(path)
-        return path != plugin and path.read_bytes() == b"artifact"
+        if path == plugin:
+            return False
+        assert path.read_bytes() == b"artifact"
+        return mapped
     monkeypatch.setattr(rounded, "running_kwin_plugin_matches", matches)
+    monkeypatch.setattr(rounded, "_effect_active", lambda: active)
+    notices, successes = [], []
+    monkeypatch.setattr(rounded, "warn", notices.append)
+    monkeypatch.setattr(rounded, "ok", successes.append)
+    monkeypatch.setattr(rounded, "fail", pytest.fail)
     rounded.install()
-    assert checked == [plugin, plugin.resolve()]
+    assert checked == ([plugin, plugin.resolve()] if active else [plugin])
     assert plugin.is_symlink() and plugin.resolve().name == plugin.name
+    assert ("KDE Rounded Corners loaded" in successes) == loaded
+    assert any("log out and back in" in msg for msg in notices) == (not loaded)
 
 
 def test_uninstall_leaves_distro_package_files_and_reports_replacement(
