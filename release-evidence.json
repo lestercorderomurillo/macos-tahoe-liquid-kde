@@ -1,65 +1,32 @@
 {
-  "version": "0.84.22",
+  "version": "0.84.23",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "After installation, Open Settings closes the installer and opens a new Settings window.",
-  "qualified_commit": "86ffde2d06e2316f21b7ced73d48a7f85acd0b75",
+  "scope": "The installer uses KWin's registered Rounded Corners setting, rechecks delayed activation and records effect-specific diagnostics when activation is unconfirmed.",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion",
-      "result": "passed",
-      "detail": "Both edition fixtures passed on the integrated source."
+      "command": "In an isolated user environment and private D-Bus session, python3 -m pytest -q tests/test_rounded_corners_step.py tests/test_kconf_update.py tests/test_theme_switch.py. 176 passed and the opt-in standalone native build was skipped.",
+      "result": "passed"
     },
     {
-      "command": "Complete an express installation in a disposable Golden Gate KDE neon guest, click Open Settings and inspect KWin window IDs and the launch arguments.",
+      "command": "Install Golden Gate on a disposable KDE neon 6.8.1 Wayland guest. With the effect loaded, notify the legacy short setting false, then the registered setting false, then the short setting true. Observe D-Bus loadedEffects after each write. Reinstall, verify the registered setting and the loaded plugin.",
       "result": "passed",
-      "observed": {
-        "source": "1b30990113d7f738472d8edd882cecb87b29f0a2",
-        "backend": "Wayland",
-        "plasma": "6.8.1",
-        "edition": "Golden Gate",
-        "ready": {
-          "id": "{f0e0e97a-6572-4314-bbdc-eeef90074eee}",
-          "caption": "Install Golden Gate \u00b7 v0.84.19",
-          "resourceClass": "org.kde.mac-tahoe-liquid-kde.settings",
-          "type": 0,
-          "appletPopup": false,
-          "hidden": false,
-          "active": true,
-          "geometry": {
-            "x": 510,
-            "y": 182,
-            "width": 900,
-            "height": 680
-          }
-        },
-        "settings": {
-          "id": "{74bd419c-d2dd-4664-a95a-f61cf0bef58c}",
-          "caption": "Golden Gate Settings \u00b7 v0.84.19",
-          "resourceClass": "org.kde.mac-tahoe-liquid-kde.settings",
-          "type": 0,
-          "appletPopup": false,
-          "hidden": false,
-          "active": true,
-          "geometry": {
-            "x": 460,
-            "y": 245,
-            "width": 1000,
-            "height": 620
-          }
-        },
-        "command": "2958 /usr/bin/python3 /home/tester/release-capture/source/installer --mode=settings --section theme"
-      }
+      "observed": [
+        "Legacy false left the effect loaded",
+        "Registered false unloaded it",
+        "Legacy true left it absent",
+        "Reinstallation enabled and loaded it"
+      ]
     }
   ],
-  "captures": [],
-  "approved_preview_sha256": {
-    "completed.png": "c9e391352ce08ffff874b569367c240aec87729798d8423d233b3a374a0a6b54",
-    "settings.png": "3485d31a95b53337061cf0f75c7696326a885806067ef2ecf250eea3f4ac5c57"
-  },
+  "qualified_commit": "9f1a0c6b3866c2dba5828d1a1e025148de29c5f1",
   "installed_source_sha256": {
-    "src/installer/installer_ui.py": "fcc3fc142941d40d0f7f9334e24862d8e0bba8a694c719dc387f3ab6b23348d4",
-    "src/installer/wizard_window.py": "fbf9d6376023d0351b2e16345a1efc8ed24ec39a45ddf8883d4dce26de783622"
+    "src/scripts/steps/rounded_corners.py": "3a5e2c3a8fde349c8c8c29bedb8a0ba1edb6dd57d97c39619a7429bb86e0ebd2",
+    "src/scripts/theme_switch.py": "d40444b5496accb162e9645aa9fd42e18145edc2b22a45eaebf98ba348aa9a5a",
+    "src/scripts/steps/apply.py": "2429a6d4193656cfb0d8d082dac5b1fbb76004004f3383334738dc930a94e064",
+    "src/scripts/cli.py": "800aac5c4a49453365c340c2b9c441cbb1a4395fbe78462e50f8809f2aecdd00",
+    "component-hashes.json": "682f371697b87eaec40447b9cf1f2c0b1e4c25fcaab2656b01255d9f4a0eac26"
   },
-  "coverage_limits": "The approved VM preview used the recorded candidate before integration with the v0.84.20 translation update. The final navigation check exercised both editions offscreen. Desktop coverage was Golden Gate on Wayland.",
-  "source_sha256": "75d6674f52e6e48e9e89b219bec5107392ab640c1adc2fd573356dd865de982f"
+  "coverage_limits": "No native code or shaders changed. The original 6.8.3 log does not contain KWin loader output. The reproducible setting mismatch and delayed-query regression do not identify the historical machine's loader state. No separate X11 or Tahoe desktop was exercised.",
+  "captures": [],
+  "source_sha256": "82faee8ab5d4957bf9ce3fcd2624a123815daa7ee3894be258917104e843d885"
 }

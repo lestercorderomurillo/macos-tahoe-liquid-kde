@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.22**. After installation, Open Settings closes the installer and opens a new Settings window. [Evidence and coverage](release-evidence.json).
+**v0.84.23**. The installer uses KWin's registered Rounded Corners setting, rechecks delayed activation and records effect-specific diagnostics when activation is unconfirmed. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
