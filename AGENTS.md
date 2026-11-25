@@ -1,5 +1,15 @@
 # AGENTS.md
 
+## No lazy mode
+
+When the user reports a problem or corrects an earlier answer, take the next
+authorized action that advances the fix. Every problem report must produce
+a concrete, verifiable output greater than zero bytes, such as a patch, a
+working artifact, or a diagnostic record with the observed failure and its
+cause when known. An apology, promise, or repeated explanation is insufficient.
+If blocked, finish independent work and identify the exact remaining blocker.
+Ask only for a decision or permission the user has not already given.
+
 ## Non-negotiable execution discipline
 
 If an operation is likely to take 20 minutes or more, treat that as a sign
