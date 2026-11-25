@@ -149,7 +149,7 @@
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="قائمة الملفات مع وثيقة مفتوحة في كيت" width="830">
@@ -158,11 +158,15 @@
 
 <br>
 
-### زجاج أكريليك 2.0 مع تباين ملاءم
+### التباين التكيفي
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="التباين التكيفي · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="تهيئة التهوه 1 في وضع الضوء ، مع البحث المتكامل ورق خلفية التهوه" width="415">
@@ -171,7 +175,7 @@
 
 <br>
 
-### مركز التحكم (ألفا)
+### مركز التحكم
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="مركز التحكم في وضع الضوء" width="415">
@@ -180,7 +184,7 @@
 
 <br>
 
-### الإخطارات (الفا)
+### الإخطارات
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="لافتات الإخطار التهوي في وضع الضوء" width="48%">
@@ -194,7 +198,7 @@
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="مكتب تاهو خفيف مع الملفات تركيز" width="415"></a>
@@ -203,7 +207,7 @@
 
 <br>
 
-### التقويم (ألفا)
+### التقويم
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="التقويم · الضوء" width="328">
@@ -212,14 +216,14 @@
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="قائمة Bluetooth خفيفة مع سماعات الاستوديو متصلة بنسبة 82% و لوحة المفاتيح اللاسلكية منفصلة" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="قائمة Bluetooth مظلمة مع سماعات الاستوديو متصلة بـ 82% و لوحة المفاتيح اللاسلكية منفصلة" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="قائمة Wi-Fi خفيفة متصلة بـ Harbor Studio، مع Garden Guest و Workshop متاحة" width="48%">
@@ -228,7 +232,7 @@
 
 <br>
 
-### البطارية (ألفا)
+### البطارية
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="خيارات البطارية الخفيفة لا توجد بطارية داخلية" width="48%">
@@ -237,7 +241,7 @@
 
 <br>
 
-### سجل الحافظة (ألفا)
+### سجل الحافظة
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="تاريخ المقطع في جهاز إطلاق التهوه في وضع الضوء" width="415">
@@ -246,7 +250,7 @@
 
 <br>
 
-### معلومات النظام (ألفا)
+### معلومات النظام
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="نافذة معلومات النظام الضوئي" width="415">
@@ -255,7 +259,7 @@
 
 <br>
 
-### سمة Plasma (ألفا)
+### سمة Plasma
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="قائمة السياق المكتبية في وضع الضوء" width="415">
@@ -264,7 +268,7 @@
 
 <br>
 
-### شاشة الإقلاع (ألفا)
+### شاشة الإقلاع
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="بليموث بدء البدء مع شريط التقدم" width="415">

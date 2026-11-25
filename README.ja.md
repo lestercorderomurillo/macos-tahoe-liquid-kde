@@ -149,7 +149,7 @@
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kateで開いた文書のファイルメニュー" width="830">
@@ -158,11 +158,15 @@
 
 <br>
 
-### アクリルガラス2.0 適応コントラスト
+### 適応コントラスト
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="適応コントラスト · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="既定 Tahoe プリセット 1 ライトモードで,統合検索と Tahoe 壁紙" width="415">
@@ -171,7 +175,7 @@
 
 <br>
 
-### 制御センター (アルファ)
+### 制御センター
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="制御センターがライトモード" width="415">
@@ -180,7 +184,7 @@
 
 <br>
 
-### 通知 (アルファ)
+### 通知
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="ライトモードのタホー通知バナー" width="48%">
@@ -194,7 +198,7 @@
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="ファイルを集中したタホライトデスクトップ" width="415"></a>
@@ -203,7 +207,7 @@
 
 <br>
 
-### カレンダー (アルファ)
+### カレンダー
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="カレンダー · 光" width="328">
@@ -212,14 +216,14 @@
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82%で接続されたスタジオヘッドフォンと無線キーボードが切断された軽いBluetoothメニュー" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="暗黒のBluetoothメニューで,スタジオヘッドホンが82%接続され,ワイヤレスキーボードは切断された" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="ハーバー・スタジオに接続されたライトWi-Fiメニュー,ガーデンゲストとワークショップが利用可能" width="48%">
@@ -228,7 +232,7 @@
 
 <br>
 
-### バッテリー (アルファ)
+### バッテリー
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="内部バッテリーがないライト バッテリーメニュー" width="48%">
@@ -237,7 +241,7 @@
 
 <br>
 
-### クリップボード履歴 (Alpha)
+### クリップボード履歴
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="ライトモードのタホー発射機におけるクリップボード履歴" width="415">
@@ -246,7 +250,7 @@
 
 <br>
 
-### システム情報 (アルファ)
+### システム情報
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="ライトシステム情報ウィンドウ" width="415">
@@ -255,7 +259,7 @@
 
 <br>
 
-### Plasma テーマ (Alpha)
+### Plasma テーマ
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="ライトモードでデスクトップコンテキストメニュー" width="415">
@@ -264,7 +268,7 @@
 
 <br>
 
-### 起動画面 (Alpha)
+### 起動画面
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="プライマススタートアップは,進捗バーでスプラッシュ" width="415">

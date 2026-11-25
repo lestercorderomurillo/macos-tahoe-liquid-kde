@@ -146,7 +146,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu de arquivo com um documento aberto em Kate" width="830">
@@ -155,11 +155,15 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Vidro acrílico 2.0 com contraste adaptativo
+### Contraste adaptativo
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Contraste adaptativo · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Tahoe predefinido 1 em modo de luz, com pesquisa integrada e papel de parede Tahoe" width="415">
@@ -168,7 +172,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Centro de Controle (Alfa)
+### Centro de Controle
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro de controlo em modo de luz" width="415">
@@ -177,7 +181,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Notificações (Alpha)
+### Notificações
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Bandeiras de notificação Tahoe em modo de luz" width="48%">
@@ -191,7 +195,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe desktop leve com arquivos focados" width="415"></a>
@@ -200,7 +204,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Calendário (Alfa)
+### Calendário
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendário · Luz" width="328">
@@ -209,14 +213,14 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth leve com fones de ouvido de estúdio conectados em 82% e teclado sem fio desconectado" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu Bluetooth escuro com fones de ouvido de estúdio conectados em 82% e teclado sem fio desconectado" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu de Wi-Fi ligado ao Harbor Studio, com Garden Guest e Workshop disponíveis" width="48%">
@@ -225,7 +229,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Bateria (Alfa)
+### Bateria
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Light Battery menu sem bateria interna" width="48%">
@@ -234,7 +238,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Histórico da área de transferência (Alpha)
+### Histórico da área de transferência
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="História do clipboard no lançador tahoe em modo de luz" width="415">
@@ -243,7 +247,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Informações do sistema (Alfa)
+### Informações do sistema
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Janela de informação do sistema de luz" width="415">
@@ -252,7 +256,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Tema Plasma (Alpha)
+### Tema Plasma
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menu de contexto de desktop em modo de luz" width="415">
@@ -261,7 +265,7 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 <br>
 
-### Tela de inicialização (Alpha)
+### Tela de inicialização
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash com uma barra de progresso" width="415">

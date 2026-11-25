@@ -149,7 +149,7 @@
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="케이트에서 문서가 열리는 파일 메뉴" width="830">
@@ -158,11 +158,15 @@
 
 <br>
 
-### 적응성 대조성 액리크 글래스 2.0
+### 적응형 대비
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="적응형 대비 · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="기본 타호가 전제 설정된 1 라이트 모드, 통합 검색 및 타호 벽화" width="415">
@@ -171,7 +175,7 @@
 
 <br>
 
-### 제어 센터 (알파)
+### 제어 센터
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="제어 센터 가 빛 모드" width="415">
@@ -180,7 +184,7 @@
 
 <br>
 
-### 통지 (Alpha)
+### 통지
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="라이트 모드에서 타호에 대한 알림 표지판" width="48%">
@@ -194,7 +198,7 @@
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="파일 중점을 가진 타호 라이트 데스크톱" width="415"></a>
@@ -203,7 +207,7 @@
 
 <br>
 
-### 달력 (알파)
+### 달력
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="달력 · 빛" width="328">
@@ -212,14 +216,14 @@
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82%에 연결된 스튜디오 헤드폰과 무선 키보드가 끊어지는 가벼운 블루투스 메뉴" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="82%에 연결된 스튜디오 헤드폰과 무선 키보드가 끊어지는 어두운 블루투스 메뉴" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="하버 스튜디오에 연결된 라이트 와이파이 메뉴, 가든 게스트와 워크샵이 제공됩니다" width="48%">
@@ -228,7 +232,7 @@
 
 <br>
 
-### 배터리 (알파)
+### 배터리
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="내장 배터리 없는 라이트 배터리 메뉴" width="48%">
@@ -237,7 +241,7 @@
 
 <br>
 
-### 클립보드 기록 (Alpha)
+### 클립보드 기록
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="라이트 모드에서 타호 발사기의 클립보드 역사" width="415">
@@ -246,7 +250,7 @@
 
 <br>
 
-### 시스템 정보 (Alpha)
+### 시스템 정보
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="빛 시스템 정보 창" width="415">
@@ -255,7 +259,7 @@
 
 <br>
 
-### Plasma 테마 (Alpha)
+### Plasma 테마
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="라이트 모드에서 데스크톱 컨텍스트 메뉴" width="415">
@@ -264,7 +268,7 @@
 
 <br>
 
-### 부팅 화면 (Alpha)
+### 부팅 화면
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="플리머스 스타트업 스프래시" width="415">

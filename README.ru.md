@@ -146,7 +146,7 @@
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Меню файлов с открытым документом в Kate" width="830">
@@ -155,11 +155,15 @@
 
 <br>
 
-### Акриловое стекло 2.0 с адаптивным контрастом
+### Адаптивный контраст
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Адаптивный контраст · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="По умолчанию Tahoe 1 в световом режиме с интегрированным поиском и обоев Tahoe" width="415">
@@ -168,7 +172,7 @@
 
 <br>
 
-### Центр управления (Альфа)
+### Центр управления
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Центр управления в световом режиме" width="415">
@@ -177,7 +181,7 @@
 
 <br>
 
-### Уведомления (Альфа)
+### Уведомления
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Значки уведомления о тахо в световом режиме" width="48%">
@@ -191,7 +195,7 @@
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe легкий рабочий стол с файлами сосредоточенными" width="415"></a>
@@ -200,7 +204,7 @@
 
 <br>
 
-### Календарь (Альфа)
+### Календарь
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Календарь · Свет" width="328">
@@ -209,14 +213,14 @@
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Легкое меню Bluetooth с Studio Headphones подключенными на 82% и беспроводной клавиатуры отключенной" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Темное меню Bluetooth с Studio Headphones подключенными на 82% и беспроводной клавиатуры отключенной" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Меню Wi-Fi подключено к Harbor Studio, с доступными Garden Guest и Workshop" width="48%">
@@ -225,7 +229,7 @@
 
 <br>
 
-### Батарея (Альфа)
+### Батарея
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Меню Light Battery без внутренней батареи" width="48%">
@@ -234,7 +238,7 @@
 
 <br>
 
-### История буфера обмена (Alpha)
+### История буфера обмена
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="История клипборда в пусковике тахо в световом режиме" width="415">
@@ -243,7 +247,7 @@
 
 <br>
 
-### Информационная система (Альфа)
+### Информационная система
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Окно информации о световой системе" width="415">
@@ -252,7 +256,7 @@
 
 <br>
 
-### Тема Plasma (Alpha)
+### Тема Plasma
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Контекстный меню рабочего стола в световом режиме" width="415">
@@ -261,7 +265,7 @@
 
 <br>
 
-### Загрузочная заставка (Alpha)
+### Загрузочная заставка
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Плимутский стартап с прогрессным панелем" width="415">

@@ -149,7 +149,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menù file con un documento aperto in Kate" width="830">
@@ -158,11 +158,15 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Vetro acrilico 2.0 con contrasto adattativo
+### Contrasto adattivo
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Contrasto adattivo · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Tahoe predefinito 1 in modalità luce, con ricerca integrata e carta da parati Tahoe" width="415">
@@ -171,7 +175,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Centro di controllo (Alfa)
+### Centro di controllo
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro di controllo in modalità luce" width="415">
@@ -180,7 +184,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Notifiche (Alfa)
+### Notifiche
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Bandiere di notifica Tahoe in modalità leggera" width="48%">
@@ -194,7 +198,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Desktop leggero Tahoe con file focalizzati" width="415"></a>
@@ -203,7 +207,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Calendario (Alfa)
+### Calendario
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Luce" width="328">
@@ -212,14 +216,14 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth leggero con cuffie di studio collegate all&#x27;82% e tastiera wireless disconnessa" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu bluetooth scuro con cuffie di studio collegate all&#x27;82% e tastiera wireless disconnessa" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menù Wi-Fi leggero connesso a Harbor Studio, con Garden Guest e Workshop disponibili" width="48%">
@@ -228,7 +232,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Batteria (Alfa)
+### Batteria
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menu Light Battery che non mostra batteria interna" width="48%">
@@ -237,7 +241,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Cronologia degli appunti (Alpha)
+### Cronologia degli appunti
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Storia della scheda di registrazione nel lanciatore tahoe in modalità leggera" width="415">
@@ -246,7 +250,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Informazioni del sistema (Alfa)
+### Informazioni del sistema
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Finestra di informazioni del sistema luminoso" width="415">
@@ -255,7 +259,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Tema Plasma (Alpha)
+### Tema Plasma
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menù di contesto desktop in modalità luce" width="415">
@@ -264,7 +268,7 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 <br>
 
-### Schermata di avvio (Alpha)
+### Schermata di avvio
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash con una barra di progresso" width="415">

@@ -149,7 +149,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu plików z otwartym dokumentem w Kate" width="830">
@@ -158,11 +158,15 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Szklane akrylowe 2.0 z adaptacyjnym kontrastem
+### Kontrast adaptacyjny
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Kontrast adaptacyjny · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Domyślne ustawienie Tahoe 1 w trybie światła, z zintegrowanym wyszukiwaniem i tapetą Tahoe" width="415">
@@ -171,7 +175,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Centrum sterowania (Alfa)
+### Centrum sterowania
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centrum sterowania w trybie światła" width="415">
@@ -180,7 +184,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Powiadomienia (Alfa)
+### Powiadomienia
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Plakaty powiadomienia o tahoe w trybie światła" width="48%">
@@ -194,7 +198,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe lekki biurko z skoncentrowanymi plikami" width="415"></a>
@@ -203,7 +207,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Kalendarz (Alfa)
+### Kalendarz
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Kalendarz · Światło" width="328">
@@ -212,14 +216,14 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth oświetlony z słuchawkami Studio podłączonymi na 82% i nieprzełączoną klawiaturą bezprzewodową" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Męso Bluetooth z słuchawkami w studio podłączonymi na 82% i bezprzewodową klawiaturą odłączoną" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu Wi-Fi połączone z Harbor Studio, z dostępem Garden Guest i Workshop" width="48%">
@@ -228,7 +232,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Bateria (Alfa)
+### Bateria
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menu Battery Light bez wewnętrznych baterii" width="48%">
@@ -237,7 +241,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Historia schowka (Alpha)
+### Historia schowka
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Historia płyty nagrywającej w starcie tahoe w trybie światła" width="415">
@@ -246,7 +250,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Informacje o systemie (Alfa)
+### Informacje o systemie
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Okno informacji o świetle systemu" width="415">
@@ -255,7 +259,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Motyw Plasma (Alpha)
+### Motyw Plasma
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menu kontekstowe w trybie światła" width="415">
@@ -264,7 +268,7 @@ Współpracownicy kodów i reporterzy w Tahoe i Golden Gate:
 
 <br>
 
-### Ekran rozruchowy (Alpha)
+### Ekran rozruchowy
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash z paskiem postępu" width="415">

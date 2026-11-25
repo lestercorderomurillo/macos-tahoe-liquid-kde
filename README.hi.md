@@ -149,7 +149,7 @@
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kate में एक दस्तावेज़ खोले गए फ़ाइल मेनू" width="830">
@@ -158,11 +158,15 @@
 
 <br>
 
-### अनुकूलन विपरीत के साथ एक्रिलिक ग्लास 2.0
+### अनुकूली कंट्रास्ट
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="अनुकूली कंट्रास्ट · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="डिफ़ॉल्ट ताहो प्रकाश मोड में पूर्व निर्धारित 1, एकीकृत खोज और ताहो वॉलपेपर के साथ" width="415">
@@ -171,7 +175,7 @@
 
 <br>
 
-### नियंत्रण केंद्र (अल्फा)
+### नियंत्रण केंद्र
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="नियंत्रण केंद्र प्रकाश मोड में" width="415">
@@ -180,7 +184,7 @@
 
 <br>
 
-### सूचनाएं (अल्फा)
+### सूचनाएं
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="प्रकाश मोड में ताहो सूचना बैनर" width="48%">
@@ -194,7 +198,7 @@
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="फ़ाइलों को केंद्रित के साथ ताहो लाइट डेस्कटॉप" width="415"></a>
@@ -203,7 +207,7 @@
 
 <br>
 
-### कैलेंडर (अल्फा)
+### कैलेंडर
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="कैलेंडर · प्रकाश" width="328">
@@ -212,14 +216,14 @@
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82% पर स्टूडियो हेडफोन कनेक्ट और वायरलेस कीबोर्ड डिस्कनेक्ट के साथ हल्का ब्लूटूथ मेनू" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="82% पर कनेक्ट स्टूडियो हेडफोन और वायरलेस कीबोर्ड से डिस्कनेक्ट के साथ डार्क ब्लूटूथ मेनू" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="हार्बर स्टूडियो से कनेक्ट लाइट वाई-फाई मेनू, गार्डन गेस्ट और वर्कशॉप उपलब्ध" width="48%">
@@ -228,7 +232,7 @@
 
 <br>
 
-### बैटरी (अल्फा)
+### बैटरी
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="कोई आंतरिक बैटरी नहीं दिखाने वाला हल्का बैटरी मेनू" width="48%">
@@ -237,7 +241,7 @@
 
 <br>
 
-### क्लिपबोर्ड इतिहास (अल्फ़ा)
+### क्लिपबोर्ड इतिहास
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="प्रकाश मोड में ताहू लांचर में क्लिपबोर्ड इतिहास" width="415">
@@ -246,7 +250,7 @@
 
 <br>
 
-### सिस्टम सूचना (अल्फा)
+### सिस्टम सूचना
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="प्रकाश प्रणाली सूचना विंडो" width="415">
@@ -255,7 +259,7 @@
 
 <br>
 
-### Plasma थीम (अल्फ़ा)
+### Plasma थीम
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="प्रकाश मोड में डेस्कटॉप संदर्भ मेनू" width="415">
@@ -264,7 +268,7 @@
 
 <br>
 
-### बूट स्क्रीन (अल्फ़ा)
+### बूट स्क्रीन
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="प्रगति पट्टी के साथ प्लीमाउथ स्टार्टअप स्प्लैश" width="415">

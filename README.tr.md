@@ -149,7 +149,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kate&#x27;de açılmış bir belge ile dosya menüsü" width="830">
@@ -158,11 +158,15 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Adaptif Kontrastlı Akrilik Cam 2.0
+### Uyarlanabilir Kontrast
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Uyarlanabilir Kontrast · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Öntanımlı Tahoe ön ayar 1 ışık modunda, entegre arama ve Tahoe duvar kağıdı ile" width="415">
@@ -171,7 +175,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Kontrol Merkezi (Alfa)
+### Kontrol Merkezi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Kontrol Merkezi ışık modunda" width="415">
@@ -180,7 +184,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### İletişimler (Alfa)
+### İletişimler
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe bildirim pankartları ışık modunda" width="48%">
@@ -194,7 +198,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Dosya odaklı Tahoe ışık masaüstü" width="415"></a>
@@ -203,7 +207,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Takvim (Alfa)
+### Takvim
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Takvim · Işık" width="328">
@@ -212,14 +216,14 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Studio kulaklıkları % 82&#x27;ye bağlı ve kablosuz klavyesi bağlantısız olan hafif Bluetooth menüsü" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Karanlık Bluetooth menüsü , 82% bağlı Studio kulaklıkları ve kablosuz klavyeleri ile bağlantı kesilmiş" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Harbor Studio&#x27;ya bağlı hafif Wi-Fi menüsü, Garden Guest ve Workshop mevcuttur" width="48%">
@@ -228,7 +232,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Batarya (Alfa)
+### Batarya
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Işık Akü menüsü iç akü göstermiyor" width="48%">
@@ -237,7 +241,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Pano geçmişi (Alfa)
+### Pano geçmişi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Tahoe fırlatıcısındaki kaset tablosunun geçmişi hafif modunda" width="415">
@@ -246,7 +250,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Sistem Bilgisi (Alfa)
+### Sistem Bilgisi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Işık sistem bilgisi penceresi" width="415">
@@ -255,7 +259,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Plasma teması (Alfa)
+### Plasma teması
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Açık modunda masaüstü bağlam menüsü" width="415">
@@ -264,7 +268,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 <br>
 
-### Açılış ekranı (Alfa)
+### Açılış ekranı
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth başlatma sıçrayışı ilerleme çubuğu ile" width="415">

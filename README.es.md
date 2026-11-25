@@ -146,7 +146,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menú de archivos con un documento abierto en Kate" width="830">
@@ -155,11 +155,15 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Vidrio acrílico 2.0 con contraste adaptativo
+### Contraste adaptativo
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Contraste adaptativo · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Preconfigurado Tahoe 1 en modo de luz, con búsqueda integrada y papel pintado Tahoe" width="415">
@@ -168,7 +172,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Centro de control (Alfa)
+### Centro de control
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro de control en modo de luz" width="415">
@@ -177,7 +181,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Notificaciones (Alfa)
+### Notificaciones
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Carteles de notificación de Tahoe en modo ligero" width="48%">
@@ -191,7 +195,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Desktop de Tahoe con enfoque de archivos" width="415"></a>
@@ -200,7 +204,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Calendario (Alfa)
+### Calendario
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Luz" width="328">
@@ -209,14 +213,14 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menú Bluetooth ligero con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menú Bluetooth oscuro con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menú Wi-Fi ligero conectado a Harbor Studio, con Garden Guest y Workshop disponibles" width="48%">
@@ -225,7 +229,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Batería (Alfa)
+### Batería
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menú de baterías ligeras sin batería interna" width="48%">
@@ -234,7 +238,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Historial del portapapeles (Alpha)
+### Historial del portapapeles
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Historia de la cinta en el lanzador tahoe en modo ligero" width="415">
@@ -243,7 +247,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Información del sistema (Alfa)
+### Información del sistema
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Ventana de información del sistema de luz" width="415">
@@ -252,7 +256,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Tema Plasma (Alpha)
+### Tema Plasma
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menú de contexto de escritorio en modo luz" width="415">
@@ -261,7 +265,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 <br>
 
-### Pantalla de inicio (Alpha)
+### Pantalla de inicio
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth arranque salpicaduras con una barra de progreso" width="415">

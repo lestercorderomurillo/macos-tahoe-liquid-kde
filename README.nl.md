@@ -149,7 +149,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="File menu met een document in Kate geopend" width="830">
@@ -158,11 +158,15 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Acrylglas 2.0 met een aanpassend contrast
+### Adaptief contrast
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Adaptief contrast · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Vooraf ingestelde Tahoe 1 in lichtmodus, met geïntegreerde zoek- en Tahoe behang" width="415">
@@ -171,7 +175,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Control Center (Alfa)
+### Control Center
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centrum van besturing in lichtmodus" width="415">
@@ -180,7 +184,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Meldingen (Alpha)
+### Meldingen
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe-meldingsbanner in lichtmodus" width="48%">
@@ -194,7 +198,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe licht desktop met bestanden gericht" width="415"></a>
@@ -203,7 +207,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Kalender (Alpha)
+### Kalender
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Kalender · Licht" width="328">
@@ -212,14 +216,14 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Licht Bluetooth menu met Studio headphones verbonden op 82% en draadloos toetsenbord afgesloten" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu met Studio headphones verbonden op 82% en Wireless Keyboard afgesloten" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Lichte Wi-Fi menu verbonden met Harbor Studio, met Garden Guest en Workshop beschikbaar" width="48%">
@@ -228,7 +232,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Batterij (Alfa)
+### Batterij
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Lichte batterij menu zonder interne batterij" width="48%">
@@ -237,7 +241,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Klembordgeschiedenis (Alpha)
+### Klembordgeschiedenis
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="De geschiedenis van de clipboard in de tahoe-launcher in lichtmodus" width="415">
@@ -246,7 +250,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Systeminformatie (Alfa)
+### Systeminformatie
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Licht systeem informatievenster" width="415">
@@ -255,7 +259,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Plasma-thema (Alpha)
+### Plasma-thema
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in lichtmodus" width="415">
@@ -264,7 +268,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 <br>
 
-### Opstartscherm (Alpha)
+### Opstartscherm
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth start splash met een progressiebalk" width="415">

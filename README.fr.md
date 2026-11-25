@@ -146,7 +146,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Shell (Alpha)
+### Quickbar
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu de fichiers avec un document ouvert en Kate" width="830">
@@ -155,11 +155,15 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Le verre acrylique 2.0 avec contraste adaptatif
+### Contraste adaptatif
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Contraste adaptatif · Tahoe" width="830">
+</p>
 
 <br>
 
-### Launchpad (Alpha)
+### Launchpad
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Par défaut Tahoe préconfiguré 1 en mode lumière, avec recherche intégrée et papier peint Tahoe" width="415">
@@ -168,7 +172,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Centre de contrôle (Alpha)
+### Centre de contrôle
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centre de contrôle en mode lumière" width="415">
@@ -177,7 +181,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Les notifications (Alpha)
+### Les notifications
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Panneaux de notification Tahoe en mode lumière" width="48%">
@@ -191,7 +195,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Finder (Alpha)
+### Finder
 
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe de bureau léger avec les fichiers concentrés" width="415"></a>
@@ -200,7 +204,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Calendrier (Alpha)
+### Calendrier
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendrier · Lumière" width="328">
@@ -209,14 +213,14 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Bluetooth (Alpha)
+### Bluetooth
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth léger avec écouteurs de studio connectés à 82% et clavier sans fil déconnecté" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu Bluetooth sombre avec écouteurs de studio connectés à 82% et clavier sans fil déconnecté" width="48%">
 </p>
 
-### Wi-Fi (Alpha)
+### Wi-Fi
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu Wi-Fi léger connecté à Harbor Studio, avec Garden Guest et Workshop disponibles" width="48%">
@@ -225,7 +229,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Batterie (Alpha)
+### Batterie
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menu de batterie légère sans batterie interne" width="48%">
@@ -234,7 +238,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Historique du presse-papiers (Alpha)
+### Historique du presse-papiers
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="L&#x27;historique de la planche à rouleaux dans le lanceur tahoe en mode lumière" width="415">
@@ -243,7 +247,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Informations sur le système (Alpha)
+### Informations sur le système
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Fenêtre d&#x27;information du système de lumière" width="415">
@@ -252,7 +256,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Thème Plasma (Alpha)
+### Thème Plasma
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menu de contexte de bureau en mode lumière" width="415">
@@ -261,7 +265,7 @@ Contributeurs au code et personnes signalant des bogues dans Tahoe et Golden Gat
 
 <br>
 
-### Écran de démarrage (Alpha)
+### Écran de démarrage
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Le démarrage de Plymouth avec une barre de progression" width="415">
