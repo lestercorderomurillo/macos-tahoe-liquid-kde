@@ -181,9 +181,9 @@ _LAUNCHERS_LINE = (
 )
 
 
-def _capture_evaluated_script(monkeypatch):
+def _capture_evaluated_script(monkeypatch, evaluator="_evaluate_layout_script"):
     captured = {}
-    monkeypatch.setattr(layout, "_evaluate_layout_script",
+    monkeypatch.setattr(layout, evaluator,
                         lambda script: captured.update(script=script) or True)
     return captured
 
@@ -349,7 +349,7 @@ def test_reinstall_applies_default_visibility_with_preserved_pins(monkeypatch, t
     marker = layout._layout_marker()
     marker.parent.mkdir(parents=True)
     marker.write_text("1\n")
-    captured = _capture_evaluated_script(monkeypatch)
+    captured = _capture_evaluated_script(monkeypatch, "evaluate_panel_transaction")
     monkeypatch.setattr(layout, "_discover_is_installed", lambda: False)
     monkeypatch.setattr(layout, "_wait_for_layout_install", lambda: True)
 

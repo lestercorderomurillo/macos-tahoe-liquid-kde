@@ -98,7 +98,7 @@ def test_installer_round_trip_replaces_other_edition_and_preserves_same_edition(
     def evaluate(script):
         results[:] = execute_layout(script, saved)
         return True
-    monkeypatch.setattr(layout, "_evaluate_layout_script", evaluate)
+    monkeypatch.setattr(layout, "evaluate_panel_transaction", evaluate)
 
     for target in (3 - first, first):
         outgoing = "MacGoldenGate" if target == 1 else "MacTahoe"
@@ -199,7 +199,7 @@ def test_install_without_legacy_edition_evidence_selects_new_defaults(
     assert defaults.applied_edition(sandbox) == "unknown"
     scripts = []
     monkeypatch.setattr(layout, "_capture_pinned_launchers", lambda: [])
-    monkeypatch.setattr(layout, "_evaluate_layout_script", lambda script: scripts.append(script) or True)
+    monkeypatch.setattr(layout, "evaluate_panel_transaction", lambda script: scripts.append(script) or True)
     layout.install()
     assert [item["preset"] for item in execute_layout(scripts[-1], [3 - target, 3 - target])] == [target]
     assert defaults.applied_edition(sandbox) == defaults.edition_name()
@@ -227,7 +227,7 @@ def test_older_release_replacing_package_invalidates_edition_record(
     assert defaults.applied_edition(sandbox) == "unknown"
     scripts = []
     monkeypatch.setattr(layout, "_capture_pinned_launchers", lambda: [])
-    monkeypatch.setattr(layout, "_evaluate_layout_script", lambda script: scripts.append(script) or True)
+    monkeypatch.setattr(layout, "evaluate_panel_transaction", lambda script: scripts.append(script) or True)
     layout.install()
     assert [item["preset"] for item in execute_layout(scripts[-1], [3 - target, 3 - target])] == [target]
     assert defaults.applied_edition(sandbox) == defaults.edition_name()
