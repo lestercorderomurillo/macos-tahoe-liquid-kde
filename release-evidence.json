@@ -1,5 +1,5 @@
 {
-  "version": "0.84.24",
+  "version": "0.84.25",
   "scope": "The installer repairs duplicate Docks and top bars and restores transparent menu bars on existing two-monitor layouts.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "qualified_commit": "c9d1957fdbb875b705dcd03b52d9ed5b0218ff85",
@@ -15,6 +15,10 @@
     {
       "command": "Isolated pytest test_finish_reset_only_removes_panels_retired_by_this_install and test_wizard_update_preserves_layout_and_respects_file_manager (10 passed).",
       "result": "passed"
+    },
+    {
+      "command": "Isolated pytest tests/test_layout_step.py tests/test_edition_transition.py with the panel transaction replaced in the test fixtures (42 passed).",
+      "result": "passed"
     }
   ],
   "captures": [
@@ -27,5 +31,5 @@
     }
   ],
   "coverage_limits": "Golden Gate VM exercised the shared panel code. Tahoe was not separately booted. The live scripting API retained the previous widget width until reboot. Captures show it hidden right after reinstall. The post-boot width was zero.",
-  "source_sha256": "61527e6fe1b29cb1ceb2440205c4f366f03063a3998b4840ade7c9039e7bd986"
+  "source_sha256": "51e8dd8a913a3b30deb5128637bda9115e0b27234cd531a3387887ae63daa10e"
 }
