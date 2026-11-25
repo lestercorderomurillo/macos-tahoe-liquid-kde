@@ -1419,7 +1419,8 @@ def run_install(argv: list[str],
         # the running backend underneath that transaction.
         if parsed.wizard_options is None and check_for_updates(inline=True):
             auto_update_and_reexec(argv, prog)
-        rc = _run_install_body(feat)
+        with tracker.track_components():
+            rc = _run_install_body(feat)
 
         check_cancelled()
         if rc == 0:
@@ -1470,7 +1471,8 @@ def run_uninstall(argv: list[str],
             tracker.mark_aborted()
             rc = 130
             return rc
-        rc = _run_uninstall_body(feat)
+        with tracker.track_components():
+            rc = _run_uninstall_body(feat)
 
         check_cancelled()
         if rc == 0:

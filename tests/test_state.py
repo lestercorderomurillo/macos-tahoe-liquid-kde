@@ -138,3 +138,27 @@ def test_replace_failure_preserves_previous_run_state(tmp_path, monkeypatch):
 
     assert state.RunTracker("install", []).start() is False
     assert state.last_run_file().read_text() == '{"status":"completed"}\n'
+
+
+def test_component_failure_keeps_actual_exit_code_and_diagnostic(tmp_path, monkeypatch):
+    import step_runner
+    from types import SimpleNamespace
+
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path))
+    monkeypatch.setattr(step_runner, "errors", [])
+    monkeypatch.setattr(step_runner, "fail", step_runner.errors.append)
+    tracker = state.RunTracker("install", [])
+    tracker.start()
+
+    def install():
+        row = json.loads(state.last_run_file().read_text())["steps"][-1]
+        assert row["status"] == "running" and row["exit_code"] is None
+        return 23
+
+    monkeypatch.setattr(step_runner, "step_module", lambda _: SimpleNamespace(install=install))
+    with tracker.track_components():
+        assert not step_runner.run_phase("icons", "install")
+    tracker.finalize(1)
+    row, = json.loads(state.last_run_file().read_text())["steps"]
+    assert (row["component"], row["operation"], row["status"], row["exit_code"]) == ("icons", "install", "failed", 23)
+    assert row["messages"] and row["finished_at"]

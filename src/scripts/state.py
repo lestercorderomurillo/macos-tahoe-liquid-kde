@@ -1,4 +1,6 @@
 from localization import tr
+from contextlib import contextmanager
+from contextvars import ContextVar
 import datetime as _dt
 import json
 import os
@@ -24,12 +26,13 @@ def _now_iso() -> str:
     return _dt.datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-_active_tracker = None
+_active_tracker = ContextVar("installer_active_tracker", default=None)
 
 
 def record_component(feature, phase, status, code=None, messages=()):
-    if _active_tracker is not None:
-        _active_tracker.record_component(feature, phase, status, code, messages)
+    tracker = _active_tracker.get()
+    if tracker is not None:
+        tracker.record_component(feature, phase, status, code, messages)
 
 
 class RunTracker:
@@ -44,14 +47,20 @@ class RunTracker:
         self.steps = []
 
     def start(self) -> bool:
-        global _active_tracker
-        _active_tracker = self
         self.started_at = _now_iso()
         self.active = True
         ok = self._write("running", finished_at=None, exit_code=0)
         if not ok:
             warn(tr('could not record run state to {value1}', value1=last_run_file()))
         return ok
+
+    @contextmanager
+    def track_components(self):
+        token = _active_tracker.set(self)
+        try:
+            yield
+        finally:
+            _active_tracker.reset(token)
 
     def record_component(self, feature, phase, status, code, messages):
         if status == "running":
@@ -72,9 +81,6 @@ class RunTracker:
         self.aborted = True
 
     def finalize(self, exit_code: int) -> bool:
-        global _active_tracker
-        if _active_tracker is self:
-            _active_tracker = None
         if not self.active:
             return True
         if self.aborted:

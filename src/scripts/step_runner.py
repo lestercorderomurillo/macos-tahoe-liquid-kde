@@ -51,13 +51,15 @@ def run_phase(feature: str, phase: str) -> bool:
     record_component(feature, phase, "running")
     before = len(errors)
     warning_count = len(warnings)
+    code = 0
     try:
         module = step_module(feature)
         operation = getattr(module, phase, None)
         if not callable(operation):
             raise AttributeError(f"steps.{feature}.{phase}")
         result = operation()
-        if (result is False or (type(result) is int and result != 0)) and len(errors) == before:
+        code = int(result is False) if type(result) is not int else result
+        if code and len(errors) == before:
             fail(f"{feature}.{phase}: {result}")
         check_cancelled()
     except KeyboardInterrupt:
@@ -68,5 +70,5 @@ def run_phase(feature: str, phase: str) -> bool:
     failed = len(errors) > before
     messages = warnings[warning_count:] + errors[before:]
     status = "failed" if failed else "warning" if messages else "completed"
-    record_component(feature, phase, status, int(failed), messages)
+    record_component(feature, phase, status, code or int(failed), messages)
     return not failed
