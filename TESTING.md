@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.32**. Restore the v0.84.30 installer and desktop implementation. [Evidence and coverage](release-evidence.json).
+**v0.84.33**. The fullscreen installer restores the live Dock opacity on Plasma 6.7.4 when the scripting setter leaves it adaptive. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
