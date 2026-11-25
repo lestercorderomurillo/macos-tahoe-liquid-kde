@@ -1,81 +1,25 @@
 {
-  "version": "0.85.0",
-  "scope": "Settings uses compact, right-aligned controls; Appearance groups the glass panels, and Windows shows its four shadow choices on one row.",
+  "version": "0.85.1",
+  "scope": "Settings has one desktop widget switch and a widget checklist. Calendar, Analog Clock and Photos are selected by default.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_commit": "0629ac227ed06e85a5183b35c5d7bb4e57edf9c2",
-  "settings_source_sha256": "53ca18918ac718cb1d1f1bc3852d016242b2a8903a8294f7692abfaf69d6daf3",
   "checks": [
     {
-      "command": "Golden Gate Settings captured in the isolated KDE neon Wayland guest: ten section views, then Window glass and the Acrylic Glass shortcut under Appearance, then all four shadow choices on one row in Windows.",
+      "command": "pytest tests/test_desktop_widgets.py tests/test_plasmoids_step.py tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion (17 passed)",
       "result": "passed"
     },
     {
-      "command": "pytest -q tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion: 2 passed (MacTahoe and MacGoldenGate), offscreen Qt with isolated user settings.",
+      "command": "pytest tests/test_localization.py (10 passed)",
       "result": "passed"
     },
     {
-      "command": "Validated the 15 local README destinations in each language selector, active language, translated section structure, edition-specific images, local asset paths and removal of the superseded sections.",
+      "command": "KDE neon disposable VM, Golden Gate defaults: opened Settings > Widgets. Installed the selected bundled packages into an isolated guest data directory, changed the selection, reinstalled it, then removed the managed packages.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Golden Gate on virtual graphics supplied the rendered Settings previews. The Acrylic Glass shortcut was verified with the editor unavailable in the capture guest. Both editions exercised native wizard navigation offscreen. New translations were machine-assisted and have not had independent native-speaker review.",
-  "reviewed_frames": {
-    "settings-sections/applications.png": {
-      "sha256": "a8c0c3d9710b98e5e7445d0265d33bd96dc3a7fc71e53520dd7e38436f2a915d",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/desktop.png": {
-      "sha256": "351e036dbc0c6cc2e66c73cd5774033504f2b706b544d713460263d4349335de",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/display.png": {
-      "sha256": "d5040a2490d00b52896024ad3c7f3563eada8101aa3e524dd968331dba7ac797",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/dock_bar.png": {
-      "sha256": "b40ae6f4b9ad93e6d98d85d8e5bc5901f65d530b58e4b7fbc7f962c50e791b27",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/general.png": {
-      "sha256": "10410ea4056b2458b393a8b056f93eb77e670cfcda42bce576d323015e9db10f",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/preferences.png": {
-      "sha256": "a55dc858e3db0fc5b6b4ea0b74946e9820c9cef903710511d5f9cf01cce64627",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/startup.png": {
-      "sha256": "50a305a5ee54d77c5bc2ff90fed1cfe4229592868c39222d0819c39748e936d4",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/theme.png": {
-      "sha256": "8ce2eaf5cd427d6e2dc9bd320068616576600563124a8a778b2041a5ce8b7904",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/widgets.png": {
-      "sha256": "b7ee18040d4e775129b382f4267a045605bd979602186676359ec12eb7ab9408",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-sections/windows.png": {
-      "sha256": "8520d95ac6443015fb91618f8eb9836102fa75c100df39108e781aaf97fe52fd",
-      "source": "a4538eee0b5d78175a6321c7c7623be199b76079"
-    },
-    "settings-glass/acrylic_glass.png": {
-      "sha256": "a28e2756208dc7991abfc6ff7d78b8161919889a23b2c71d4637aa41a63b7c80",
-      "source": "fc3009ed674f160828256d98f90144db119b8602"
-    },
-    "settings-glass/materiales.png": {
-      "sha256": "ac62b11fc186e48291bd8762f13d1342eb74a70a76c52029ccf9605ddb995e54",
-      "source": "fc3009ed674f160828256d98f90144db119b8602"
-    },
-    "settings-glass/windows.png": {
-      "sha256": "ab866e98a7ae92fd3966dc81802203b98e57212b0e848486cc5f30895d252792",
-      "source": "fc3009ed674f160828256d98f90144db119b8602"
-    },
-    "settings-shadows/ventanas.png": {
-      "sha256": "e284321c13c07b42d78e9242607bde6a68b6f43b85e8941551d9876a1d466eb3",
-      "source": "0629ac227ed06e85a5183b35c5d7bb4e57edf9c2"
-    }
-  },
-  "source_sha256": "dfbab7a7cb7241f2a09e08a35c2adf795c54319c3a88cb022afc5c328d788ebb"
+  "settings_source_sha256": "ef8f98d7c7b9a4cccadd34bddf88ebfef79bc05e295c729d75e29cf82f000385",
+  "widget_step_sha256": "8c22b91c0eeb24b643d5e71ae185b2aeab3132e5fe2bcb32e4cabc304a8612fb",
+  "approved_preview_sha256": "b90b8664ab432328f48deabe14220f791d4f4befb08854ad0945ebb3bec32f96",
+  "qualified_preview_sha256": "b90b8664ab432328f48deabe14220f791d4f4befb08854ad0945ebb3bec32f96",
+  "coverage_limits": "Golden Gate supplied the VM capture. Both editions exercised wizard navigation offscreen. Guest package lifecycle ran against the bundled archive in an isolated directory. Desktop applet placement was not exercised in this lifecycle check.",
+  "source_sha256": "65b2c8c1aef5694507b8088f579e1fecdafdbdc38206ee7cf15269055537cc42"
 }
