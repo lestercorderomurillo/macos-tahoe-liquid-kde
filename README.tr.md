@@ -141,9 +141,7 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ![Özellikler ve ekran görüntüleri](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Çok renkli destekle dok (Alfa)
-
-Cam kırılma, dalga zoom, kırmızı bildirim sayım baloncukları ve otomatik saklama.
+### Çok Renkli Dock
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock, ışık ve karanlık modunda çok renkli simgeler gösterir, sonra gökkuşağı renklerini bisikletle geçirir" width="830">
@@ -152,8 +150,6 @@ Cam kırılma, dalga zoom, kırmızı bildirim sayım baloncukları ve otomatik 
 <br>
 
 ### Shell (Alpha)
-
-Dosya, Düzenleme ve diğer uygulama menüleri aktif pencerenin ardından devam eder. Ayarlar ve oturum kontrolleri için sistem menüsünü açın.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kate&#x27;de açılmış bir belge ile dosya menüsü" width="830">
@@ -164,13 +160,9 @@ Dosya, Düzenleme ve diğer uygulama menüleri aktif pencerenin ardından devam 
 
 ### Adaptif Kontrastlı Akrilik Cam 2.0
 
-Adaptive Contrast, her etiketin arkasındaki arka planı örnekler. Fark en az 33 algısal hafiflik noktası olduğunda tema rengini korur. Bu hedefin altında, hafif metni hafif ve karanlık metni karanlık tutarken, RGB ölçeğinin% 40'ına kadar mümkün olan en küçük düzeltmeyi uyguluyor. Onu kapatmak tema rengi kullanıyor.
-
 <br>
 
 ### Launchpad (Alpha)
-
-Uygulamaları bul, kategorileri taray ve favorilerinize erişimde tut.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Öntanımlı Tahoe ön ayar 1 ışık modunda, entegre arama ve Tahoe duvar kağıdı ile" width="415">
@@ -181,8 +173,6 @@ Uygulamaları bul, kategorileri taray ve favorilerinize erişimde tut.
 
 ### Kontrol Merkezi (Alfa)
 
-Wi-Fi, Bluetooth, ses, parlaklık ve bildirimler bir cam menüde. Görünüm düğmesi Işık için güneş, Karanlık için ay ve Otomatik için bölünmüş bir döngü gösterir.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Kontrol Merkezi ışık modunda" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Kontrol Merkezi karanlık modda" width="415">
@@ -191,8 +181,6 @@ Wi-Fi, Bluetooth, ses, parlaklık ve bildirimler bir cam menüde. Görünüm dü
 <br>
 
 ### İletişimler (Alfa)
-
-Cam bildirim pankartları ve uygulama eylemleri ve cevap desteği ile gruplanmış geçmiş.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe bildirim pankartları ışık modunda" width="48%">
@@ -208,8 +196,6 @@ Cam bildirim pankartları ve uygulama eylemleri ve cevap desteği ile gruplanmı
 
 ### Finder (Alpha)
 
-Tahoe camı ile arşiv tarama biçimi.
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Dosya odaklı Tahoe ışık masaüstü" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Dosya odaklı Tahoe karanlık masaüstü" width="415"></a>
@@ -218,8 +204,6 @@ Tahoe camı ile arşiv tarama biçimi.
 <br>
 
 ### Takvim (Alfa)
-
-Ay'ı camda görmek için panel saatini aç. Ayları taramak için ok tuşlarını kullan. Geçerli aya geri dönmek için Ev basın.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Takvim · Işık" width="328">
@@ -230,16 +214,12 @@ Ay'ı camda görmek için panel saatini aç. Ayları taramak için ok tuşların
 
 ### Bluetooth (Alpha)
 
-Çift cihazları bağla ve menü çubuğundan pil seviyesini kontrol et.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Studio kulaklıkları % 82&#x27;ye bağlı ve kablosuz klavyesi bağlantısız olan hafif Bluetooth menüsü" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Karanlık Bluetooth menüsü , 82% bağlı Studio kulaklıkları ve kablosuz klavyeleri ile bağlantı kesilmiş" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-Wi-Fi menüsünü açın ve mevcut kablosuz ağları görün. Wi-Fi adaptörü olmadan veya Wi-Fi kapalıyken, menü kablosuz bağlantılarınızı listeler ve ardından tek bir bölücü ve Wi-Fi ayarları bağlantısını içerir.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Harbor Studio&#x27;ya bağlı hafif Wi-Fi menüsü, Garden Guest ve Workshop mevcuttur" width="48%">
@@ -250,8 +230,6 @@ Wi-Fi menüsünü açın ve mevcut kablosuz ağları görün. Wi-Fi adaptörü o
 
 ### Batarya (Alfa)
 
-Şarj seviyesini ve güç durumunu kontrol etmek için pil menüsünü açın.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Işık Akü menüsü iç akü göstermiyor" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Karar batarya göstermeyen karanlık pil menüsü" width="48%">
@@ -260,8 +238,6 @@ Wi-Fi menüsünü açın ve mevcut kablosuz ağları görün. Wi-Fi adaptörü o
 <br>
 
 ### Pano geçmişi (Alfa)
-
-Launchpad'dan doğrudan kopyalanmış metin ve görüntüleri bulun ve tekrar kullanın.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Tahoe fırlatıcısındaki kaset tablosunun geçmişi hafif modunda" width="415">
@@ -272,8 +248,6 @@ Launchpad'dan doğrudan kopyalanmış metin ve görüntüleri bulun ve tekrar ku
 
 ### Sistem Bilgisi (Alfa)
 
-Adaptif Kontrast ile donanımlı, yazılımlı ve temalı detaylar.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Işık sistem bilgisi penceresi" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Karanlık Sistem Bilgi Penceresi" width="415">
@@ -283,8 +257,6 @@ Adaptif Kontrast ile donanımlı, yazılımlı ve temalı detaylar.
 
 ### Plasma teması (Alfa)
 
-Açık ve koyu renkleri eşleştiren geçici menüler ve pop-ups.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Açık modunda masaüstü bağlam menüsü" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Karanlık modunda masaüstü bağlam menüsü" width="415">
@@ -293,8 +265,6 @@ Açık ve koyu renkleri eşleştiren geçici menüler ve pop-ups.
 <br>
 
 ### Açılış ekranı (Alfa)
-
-Başlatmadan kapanışa kadar eşleşen bir görünüm, LUKS2 şifreli sürücüleri için yerleşik kilitleme ile.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth başlatma sıçrayışı ilerleme çubuğu ile" width="415">

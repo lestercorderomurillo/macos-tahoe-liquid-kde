@@ -141,9 +141,7 @@
 
 ![الميزات والصور الشاشية](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### المرفق مع دعم متعدد الألوان (ألفا)
-
-كسر الزجاج، زوم التهاب، فقاعات إشعار الحمراء و إخفاء تلقائي.
+### Dock متعدد الألوان
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="تاهو Dock يظهر رموز متعددة الألوان في وضع ضوء ومظلم ، ثم تتجول عبر ألوان قوس قزح" width="830">
@@ -152,8 +150,6 @@
 <br>
 
 ### Shell (Alpha)
-
-ملف، تحرير والقوائم التطبيقية الأخرى تتبع النافذة النشطة. افتح قائمة النظام لإعدادات ومراقبة الجلسة.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="قائمة الملفات مع وثيقة مفتوحة في كيت" width="830">
@@ -164,13 +160,9 @@
 
 ### زجاج أكريليك 2.0 مع تباين ملاءم
 
-عينة التباين التكيفي عن الخلفية وراء كل علامة. إنه يحافظ على لون الموضوع عندما يكون الفرق 33 نقطة خفيفة على الأقل. أقل من هذا الهدف، فإنه يطبق أصغر تصحيح يمكنه، يصل إلى 40٪ من مقياس RGB، مع الحفاظ على النص الخفيف الخفيف والنص المظلم المظلم. إيقافه يستخدم لون الموضوع
-
 <br>
 
 ### Launchpad (Alpha)
-
-ابحث عن التطبيقات، واطلع على الفئات و ابق المفضلة لديك في متناول اليد
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="تهيئة التهوه 1 في وضع الضوء ، مع البحث المتكامل ورق خلفية التهوه" width="415">
@@ -181,8 +173,6 @@
 
 ### مركز التحكم (ألفا)
 
-واي فاي، بلوتوث، الصوت، الوضوح والإشعارات في قائمة زجاجية واحدة. زر المظهر يظهر الشمس للضوء، القمر للظلام، و الدائرة المنقسمة للسيارات.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="مركز التحكم في وضع الضوء" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="مركز التحكم في وضع مظلم" width="415">
@@ -191,8 +181,6 @@
 <br>
 
 ### الإخطارات (الفا)
-
-لافتات الإخطار الزجاجية وتاريخ المجموعة مع إجراءات التطبيق ودعم الرد.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="لافتات الإخطار التهوي في وضع الضوء" width="48%">
@@ -208,8 +196,6 @@
 
 ### Finder (Alpha)
 
-تصفح الملفات على شكل "مبحث" مع زجاج "تاهو".
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="مكتب تاهو خفيف مع الملفات تركيز" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="مكتب تاهو المظلم مع تركيز الملفات" width="415"></a>
@@ -218,8 +204,6 @@
 <br>
 
 ### التقويم (ألفا)
-
-افتح ساعة اللوحة لرؤية الشهر على الزجاج إزحف أو استخدم مفاتيح السهم لتصفح الأشهر. اضغط على Home للعودة إلى الشهر الحالي.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="التقويم · الضوء" width="328">
@@ -230,16 +214,12 @@
 
 ### Bluetooth (Alpha)
 
-قم بتوصيل الأجهزة المزدوجة وتحقق من مستوى بطاريةها من شريط القائمة.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="قائمة Bluetooth خفيفة مع سماعات الاستوديو متصلة بنسبة 82% و لوحة المفاتيح اللاسلكية منفصلة" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="قائمة Bluetooth مظلمة مع سماعات الاستوديو متصلة بـ 82% و لوحة المفاتيح اللاسلكية منفصلة" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-افتح قائمة Wi-Fi لرؤية الشبكات اللاسلكية المتاحة. بدون جهاز تعديل Wi-Fi، أو مع إيقاف Wi-Fi، قائمة قائمة الاتصالات السلكية الخاصة بك تليها مقسم واحد ورابط إعدادات Wi-Fi.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="قائمة Wi-Fi خفيفة متصلة بـ Harbor Studio، مع Garden Guest و Workshop متاحة" width="48%">
@@ -250,8 +230,6 @@
 
 ### البطارية (ألفا)
 
-افتح قائمة البطارية للتحقق من مستوى الشحن وحالة الطاقة.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="خيارات البطارية الخفيفة لا توجد بطارية داخلية" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="قائمة البطارية المظلمة لا تظهر بطارية داخلية" width="48%">
@@ -260,8 +238,6 @@
 <br>
 
 ### سجل الحافظة (ألفا)
-
-العثور على النصوص والصور المنسخة واستعادتها مباشرة من Launchpad.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="تاريخ المقطع في جهاز إطلاق التهوه في وضع الضوء" width="415">
@@ -272,8 +248,6 @@
 
 ### معلومات النظام (ألفا)
 
-التفاصيل المتعلقة بالجهاز والبرمجيات وتفاصيل الموضوع مع التباين المتكيف
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="نافذة معلومات النظام الضوئي" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="نافذة معلومات النظام المظلم" width="415">
@@ -283,8 +257,6 @@
 
 ### سمة Plasma (ألفا)
 
-قائمة و ملفات مفتوحة ذات اللونين الخفيف والظلام المتطابقين
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="قائمة السياق المكتبية في وضع الضوء" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="قائمة سياق المكتب في وضع مظلم" width="415">
@@ -293,8 +265,6 @@
 <br>
 
 ### شاشة الإقلاع (ألفا)
-
-مظهر متطابق من الإطلاق إلى إيقاف، مع فتح قفل مدمج للقواص المشفّرة لـ LUKS2.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="بليموث بدء البدء مع شريط التقدم" width="415">

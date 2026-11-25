@@ -141,9 +141,7 @@
 
 ![विशेषताएं और स्क्रीनशॉट](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### बहुरंगी समर्थन (अल्फा) के साथ डॉक
-
-ग्लास तोड़ने, फहराव ज़ूम, लाल सूचना गिनती बुलबुले और ऑटो छिपाने.
+### बहुरंगी डॉक
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="ताहो डॉक प्रकाश और अंधेरे मोड में बहुरंगी आइकन दिखा रहा है, फिर चक्र में इंद्रधनुष रंगों के माध्यम से" width="830">
@@ -152,8 +150,6 @@
 <br>
 
 ### Shell (Alpha)
-
-फ़ाइल, संपादन और अन्य अनुप्रयोग मेनू सक्रिय विंडो का पालन करें। सेटिंग्स और सत्र नियंत्रण के लिए सिस्टम मेनू खोलें।
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kate में एक दस्तावेज़ खोले गए फ़ाइल मेनू" width="830">
@@ -164,13 +160,9 @@
 
 ### अनुकूलन विपरीत के साथ एक्रिलिक ग्लास 2.0
 
-एडाप्टिव कंट्रास्ट प्रत्येक लेबल के पीछे पृष्ठभूमि का नमूना लेता है। यह विषय रंग को तब बनाए रखता है जब अंतर कम से कम 33 धारणा प्रकाश बिंदु है। उस लक्ष्य के नीचे, यह प्रकाश पाठ को प्रकाश और अंधेरे पाठ को अंधेरा रखते हुए, RGB स्केल के 40% तक के लिए सबसे छोटे सुधार को लागू करता है। इसे बंद करने के लिए विषय रंग का उपयोग करता है।
-
 <br>
 
 ### Launchpad (Alpha)
-
-ऐप्स खोजें, श्रेणियों को ब्राउज़ करें और अपने पसंदीदा को पहुंच में रखें।
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="डिफ़ॉल्ट ताहो प्रकाश मोड में पूर्व निर्धारित 1, एकीकृत खोज और ताहो वॉलपेपर के साथ" width="415">
@@ -181,8 +173,6 @@
 
 ### नियंत्रण केंद्र (अल्फा)
 
-एक ग्लास मेनू में वाई-फाई, ब्लूटूथ, ध्वनि, चमक और सूचनाएं। उपस्थिति बटन प्रकाश के लिए एक सूर्य, अंधेरे के लिए एक चंद्रमा और स्वचालित के लिए एक विभाजित सर्कल दिखाता है।
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="नियंत्रण केंद्र प्रकाश मोड में" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="अंधेरे मोड में नियंत्रण केंद्र" width="415">
@@ -191,8 +181,6 @@
 <br>
 
 ### सूचनाएं (अल्फा)
-
-ग्लास सूचना बैनर और एप्लिकेशन क्रियाओं और उत्तर समर्थन के साथ समूहबद्ध इतिहास।
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="प्रकाश मोड में ताहो सूचना बैनर" width="48%">
@@ -208,8 +196,6 @@
 
 ### Finder (Alpha)
 
-ताहो ग्लास के साथ फाइंडर शैली फ़ाइल ब्राउज़िंग।
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="फ़ाइलों को केंद्रित के साथ ताहो लाइट डेस्कटॉप" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="फ़ाइलों को केंद्रित के साथ ताहो डार्क डेस्कटॉप" width="415"></a>
@@ -218,8 +204,6 @@
 <br>
 
 ### कैलेंडर (अल्फा)
-
-ग्लास पर महीने को देखने के लिए पैनल घड़ी खोलें। महीनों को ब्राउज़ करने के लिए तीर कुंजी को स्क्रॉल या उपयोग करें। वर्तमान महीने में लौटने के लिए होम दबाएं।
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="कैलेंडर · प्रकाश" width="328">
@@ -230,16 +214,12 @@
 
 ### Bluetooth (Alpha)
 
-जोड़े गए उपकरणों को कनेक्ट करें और मेनू बार से उनकी बैटरी स्तर की जांच करें।
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82% पर स्टूडियो हेडफोन कनेक्ट और वायरलेस कीबोर्ड डिस्कनेक्ट के साथ हल्का ब्लूटूथ मेनू" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="82% पर कनेक्ट स्टूडियो हेडफोन और वायरलेस कीबोर्ड से डिस्कनेक्ट के साथ डार्क ब्लूटूथ मेनू" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-उपलब्ध वायरलेस नेटवर्क देखने के लिए वाई-फाई मेनू खोलें। वाई-फाई एडाप्टर के बिना, या वाई-फाई बंद होने के साथ, मेनू में आपके वायर्ड कनेक्शन की सूची दी जाती है, जिसके बाद एक डिवाइडर और वाई-फाई सेटिंग्स लिंक होता है।
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="हार्बर स्टूडियो से कनेक्ट लाइट वाई-फाई मेनू, गार्डन गेस्ट और वर्कशॉप उपलब्ध" width="48%">
@@ -250,8 +230,6 @@
 
 ### बैटरी (अल्फा)
 
-चार्ज स्तर और पावर स्टेटस की जांच करने के लिए बैटरी मेनू खोलें।
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="कोई आंतरिक बैटरी नहीं दिखाने वाला हल्का बैटरी मेनू" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="आंतरिक बैटरी नहीं दिखाने वाला डार्क बैटरी मेनू" width="48%">
@@ -260,8 +238,6 @@
 <br>
 
 ### क्लिपबोर्ड इतिहास (अल्फ़ा)
-
-सीधे Launchpad से कॉपी पाठ और छवियों को खोजें और पुनः उपयोग करें।
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="प्रकाश मोड में ताहू लांचर में क्लिपबोर्ड इतिहास" width="415">
@@ -272,8 +248,6 @@
 
 ### सिस्टम सूचना (अल्फा)
 
-अनुकूलन विपरीत के साथ हार्डवेयर, सॉफ्टवेयर और विषय विवरण।
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="प्रकाश प्रणाली सूचना विंडो" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="अंधेरी प्रणाली सूचना विंडो" width="415">
@@ -283,8 +257,6 @@
 
 ### Plasma थीम (अल्फ़ा)
 
-प्रकाश और अंधेरे रंगों के साथ पारदर्शी मेनू और पॉपअप।
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="प्रकाश मोड में डेस्कटॉप संदर्भ मेनू" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="अंधेरे मोड में डेस्कटॉप संदर्भ मेनू" width="415">
@@ -293,8 +265,6 @@
 <br>
 
 ### बूट स्क्रीन (अल्फ़ा)
-
-स्टार्टअप से शटडाउन तक एक समान रूप, LUKS2 एन्क्रिप्टेड ड्राइव के लिए अंतर्निहित अनलॉक के साथ।
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="प्रगति पट्टी के साथ प्लीमाउथ स्टार्टअप स्प्लैश" width="415">

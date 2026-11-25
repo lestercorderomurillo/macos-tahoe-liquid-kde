@@ -138,9 +138,7 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ![Funciones y capturas](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Dock con soporte multicolor (Alfa)
-
-Refracción de vidrio, zoom de desplazamiento, burbujas rojas de cuenta de notificación y ocultación automática.
+### Dock multicolor
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock mostrando iconos multicolores en modo claro y oscuro, luego recorriendo los tonos del arco iris" width="830">
@@ -149,8 +147,6 @@ Refracción de vidrio, zoom de desplazamiento, burbujas rojas de cuenta de notif
 <br>
 
 ### Shell (Alpha)
-
-File, Edit y los otros menús de aplicaciones siguen la ventana activa. Abre el menú del sistema para configuraciones y controles de sesión.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menú de archivos con un documento abierto en Kate" width="830">
@@ -161,13 +157,9 @@ File, Edit y los otros menús de aplicaciones siguen la ventana activa. Abre el 
 
 ### Vidrio acrílico 2.0 con contraste adaptativo
 
-El contraste adaptativo muestra el fondo detrás de cada etiqueta. Se mantiene el color del tema cuando la diferencia es de al menos 33 puntos de ligereza perceptiva. Por debajo de ese objetivo, aplica la corrección más pequeña que pueda, hasta el 40% de la escala RGB, manteniendo el texto claro claro y el texto oscuro oscuro. Apagarlo utiliza el color del tema.
-
 <br>
 
 ### Launchpad (Alpha)
-
-Encuentra aplicaciones, busca categorías y mantén tus favoritos al alcance.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Preconfigurado Tahoe 1 en modo de luz, con búsqueda integrada y papel pintado Tahoe" width="415">
@@ -178,8 +170,6 @@ Encuentra aplicaciones, busca categorías y mantén tus favoritos al alcance.
 
 ### Centro de control (Alfa)
 
-Wi-Fi, Bluetooth, sonido, brillo y notificaciones en un menú de vidrio. El botón de apariencia muestra un sol para Luz, una luna para Oscuridad y un círculo dividido para Automático.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro de control en modo de luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centro de control en modo oscuro" width="415">
@@ -188,8 +178,6 @@ Wi-Fi, Bluetooth, sonido, brillo y notificaciones en un menú de vidrio. El bot�
 <br>
 
 ### Notificaciones (Alfa)
-
-Banner de notificación de vidrio y historial agrupado con acciones de la aplicación y soporte de respuestas.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Carteles de notificación de Tahoe en modo ligero" width="48%">
@@ -205,8 +193,6 @@ Banner de notificación de vidrio y historial agrupado con acciones de la aplica
 
 ### Finder (Alpha)
 
-Browsing de archivos en estilo de buscador con vidrio Tahoe.
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Desktop de Tahoe con enfoque de archivos" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe escritorio oscuro con archivos enfocados" width="415"></a>
@@ -215,8 +201,6 @@ Browsing de archivos en estilo de buscador con vidrio Tahoe.
 <br>
 
 ### Calendario (Alfa)
-
-Abre el reloj para ver el mes en vidrio. Despliegue o use las teclas de flecha para navegar meses. Presione Home para volver al mes actual.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Luz" width="328">
@@ -227,16 +211,12 @@ Abre el reloj para ver el mes en vidrio. Despliegue o use las teclas de flecha p
 
 ### Bluetooth (Alpha)
 
-Conecte los dispositivos emparejados y compruebe el nivel de batería desde la barra de menú.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menú Bluetooth ligero con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menú Bluetooth oscuro con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-Abre el menú Wi-Fi para ver las redes inalámbricas disponibles. Sin un adaptador Wi-Fi, o con Wi-Fi apagado, el menú enumera sus conexiones por cable seguidas de un único divisor y el enlace de configuración Wi-Fi.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menú Wi-Fi ligero conectado a Harbor Studio, con Garden Guest y Workshop disponibles" width="48%">
@@ -247,8 +227,6 @@ Abre el menú Wi-Fi para ver las redes inalámbricas disponibles. Sin un adaptad
 
 ### Batería (Alfa)
 
-Abre el menú de la batería para comprobar el nivel de carga y el estado de potencia.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menú de baterías ligeras sin batería interna" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Menú de baterías oscuras sin batería interna" width="48%">
@@ -257,8 +235,6 @@ Abre el menú de la batería para comprobar el nivel de carga y el estado de pot
 <br>
 
 ### Historial del portapapeles (Alpha)
-
-Encuentra y reutilice texto e imágenes copiados directamente desde Launchpad.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Historia de la cinta en el lanzador tahoe en modo ligero" width="415">
@@ -269,8 +245,6 @@ Encuentra y reutilice texto e imágenes copiados directamente desde Launchpad.
 
 ### Información del sistema (Alfa)
 
-Detalles de hardware, software y tema con contraste adaptativo.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Ventana de información del sistema de luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Ventana de información del sistema oscuro" width="415">
@@ -280,8 +254,6 @@ Detalles de hardware, software y tema con contraste adaptativo.
 
 ### Tema Plasma (Alpha)
 
-Menús y popups translúcidos con colores claros y oscuros iguales.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menú de contexto de escritorio en modo luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Menú de contexto del escritorio en modo oscuro" width="415">
@@ -290,8 +262,6 @@ Menús y popups translúcidos con colores claros y oscuros iguales.
 <br>
 
 ### Pantalla de inicio (Alpha)
-
-Un aspecto parecido desde el inicio hasta el cierre, con desbloqueo incorporado para unidades encriptadas LUKS2.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth arranque salpicaduras con una barra de progreso" width="415">

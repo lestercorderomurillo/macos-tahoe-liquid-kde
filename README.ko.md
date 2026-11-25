@@ -141,9 +141,7 @@
 
 ![기능 및 스크린샷](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### 다채로운 지원 (알파) 을 가진 항구
-
-유리 굴절,  ⁇ 식 확대, 빨간 알림 수 Bubbles 및 자동 감추기.
+### 멀티컬러 Dock
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="다채로운 아이콘을 밝고 어두운 모드로 표시하고, 다음으로 무지개 색상을 통해 자전거를 타고" width="830">
@@ -152,8 +150,6 @@
 <br>
 
 ### Shell (Alpha)
-
-파일, 편집 및 다른 응용 프로그램 메뉴는 활성 창을 따르습니다. 설정 및 세션 컨트롤을 위한 시스템 메뉴를 열십시오.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="케이트에서 문서가 열리는 파일 메뉴" width="830">
@@ -164,13 +160,9 @@
 
 ### 적응성 대조성 액리크 글래스 2.0
 
-Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 테마 색상은 적어도 33개의 인식을 가진 가벼운 점의 차이가 있을 때 유지됩니다. 그 목표보다 낮은 경우, RGB 스케일의 40%까지 가능한 최소한의 수정법을 적용하고, 가벼운 텍스트를 가벼운 텍스트와 어두운 텍스트를 어두운 상태로 유지합니다. 켜면 테마 컬러를 사용합니다.
-
 <br>
 
 ### Launchpad (Alpha)
-
-앱을 찾아서 카테고리를 탐색하고 좋아하는 것을 접근할 수 있도록 하세요.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="기본 타호가 전제 설정된 1 라이트 모드, 통합 검색 및 타호 벽화" width="415">
@@ -181,8 +173,6 @@ Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 
 
 ### 제어 센터 (알파)
 
-와이파이, 블루투스, 사운드, 밝기, 알림 같은 유리 메뉴. 출현 버튼은 빛의 태양, 암흑의 달, 자동의 분단순환을 나타냅니다.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="제어 센터 가 빛 모드" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="어두운 모드에서 제어 센터" width="415">
@@ -191,8 +181,6 @@ Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 
 <br>
 
 ### 통지 (Alpha)
-
-글래스 알림 배너와 앱 액션 및 응답 지원으로 그룹화된 역사
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="라이트 모드에서 타호에 대한 알림 표지판" width="48%">
@@ -208,8 +196,6 @@ Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 
 
 ### Finder (Alpha)
 
-타호 유리로 파일이 검색하는 파이더 스타일
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="파일 중점을 가진 타호 라이트 데스크톱" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="파일 중점을 가진 타호 어두운 데스크톱" width="415"></a>
@@ -218,8 +204,6 @@ Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 
 <br>
 
 ### 달력 (알파)
-
-유리판에 달을 볼 수 있는 패널 시계를 열어 보세요. 몇 달 동안 탐색하기 위해 화살키를 스크롤하거나 사용하십시오. 현재 달으로 돌아가기 위해 홈을 누르세요.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="달력 · 빛" width="328">
@@ -230,16 +214,12 @@ Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 
 
 ### Bluetooth (Alpha)
 
-쌍용 기기를 연결하고 메뉴 바에서 배터리 수준을 확인하십시오.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82%에 연결된 스튜디오 헤드폰과 무선 키보드가 끊어지는 가벼운 블루투스 메뉴" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="82%에 연결된 스튜디오 헤드폰과 무선 키보드가 끊어지는 어두운 블루투스 메뉴" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-와이파이 메뉴를 열고 사용 가능한 무선 네트워크를 볼 수 있습니다. Wi-Fi 어댑터가 없거나 Wi-Fi가 꺼져 있는 경우, 메뉴는 당신의 유선 연결을 나열하고
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="하버 스튜디오에 연결된 라이트 와이파이 메뉴, 가든 게스트와 워크샵이 제공됩니다" width="48%">
@@ -250,8 +230,6 @@ Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 
 
 ### 배터리 (알파)
 
-배터리 메뉴를 열고 충전 수준과 전력 상태를 확인하세요.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="내장 배터리 없는 라이트 배터리 메뉴" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="내부 배터리가 없는 어두운 배터리 메뉴" width="48%">
@@ -260,8 +238,6 @@ Adaptive Contrast는 각 라벨 뒤에 있는 배경 샘플을 보여줍니다. 
 <br>
 
 ### 클립보드 기록 (Alpha)
-
-Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용하십시오.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="라이트 모드에서 타호 발사기의 클립보드 역사" width="415">
@@ -272,8 +248,6 @@ Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용�
 
 ### 시스템 정보 (Alpha)
 
-하드웨어, 소프트웨어 및 Adaptive Contrast을 가진 테마 세부 사항
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="빛 시스템 정보 창" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="어두운 시스템 정보 창" width="415">
@@ -283,8 +257,6 @@ Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용�
 
 ### Plasma 테마 (Alpha)
 
-맑고 어두운 색으로 일치하는 투명 메뉴와 팝업
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="라이트 모드에서 데스크톱 컨텍스트 메뉴" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="어두운 모드에서 데스크톱 컨텍스트 메뉴" width="415">
@@ -293,8 +265,6 @@ Launchpad에서 직접 복사된 텍스트와 이미지를 찾아서 재사용�
 <br>
 
 ### 부팅 화면 (Alpha)
-
-시작부터 종료까지의 일치하는 모습, LUKS2 암호화된 드라이브에 내장된 잠금을 해제합니다.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="플리머스 스타트업 스프래시" width="415">

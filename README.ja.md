@@ -141,9 +141,7 @@
 
 ![機能とスクリーンショット](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### 多色支持 (アルファ) のドック
-
-ガラス折りたみ 浮遊拡大 赤い通知数値バブル 自動隠れ
+### マルチカラードック
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="ライトとダークモードで多彩なアイコンを表示し,その後虹色をサイクリングする" width="830">
@@ -152,8 +150,6 @@
 <br>
 
 ### Shell (Alpha)
-
-ファイル,編集および他のアプリケーションメニューは,アクティブウィンドウに従います. 設定とセッション制御のためのシステムメニューを開きます.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kateで開いた文書のファイルメニュー" width="830">
@@ -164,13 +160,9 @@
 
 ### アクリルガラス2.0 適応コントラスト
 
-Adaptive Contrastは,各ラベルの後ろの背景をサンプル化します. 感知的な軽度点が 33点以上になると主題の色が保たれます この目標以下では,RGBスケールの最大40%の最小の修正を適用し, ライトテキストをライトとダークテキストをダークに保つ. 消すには主題色を使います
-
 <br>
 
 ### Launchpad (Alpha)
-
-アプリを見つけ,カテゴリーを閲覧し,好きなものを入手できるようにします.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="既定 Tahoe プリセット 1 ライトモードで,統合検索と Tahoe 壁紙" width="415">
@@ -181,8 +173,6 @@ Adaptive Contrastは,各ラベルの後ろの背景をサンプル化します. 
 
 ### 制御センター (アルファ)
 
-Wi-Fi,Bluetooth,音,明るさ,通知がガラスのメニューで 出現ボタンは光に太陽,闇に月,自動に分岐した円を示します
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="制御センターがライトモード" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="暗黒モードの制御センター" width="415">
@@ -191,8 +181,6 @@ Wi-Fi,Bluetooth,音,明るさ,通知がガラスのメニューで 出現ボタ�
 <br>
 
 ### 通知 (アルファ)
-
-グラス通知バナーとアプリアクションと応答サポートを集めた履歴
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="ライトモードのタホー通知バナー" width="48%">
@@ -208,8 +196,6 @@ Wi-Fi,Bluetooth,音,明るさ,通知がガラスのメニューで 出現ボタ�
 
 ### Finder (Alpha)
 
-タホガラスでファイルブラウジング
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="ファイルを集中したタホライトデスクトップ" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="ファイルを集中したタホダークデスクトップ" width="415"></a>
@@ -218,8 +204,6 @@ Wi-Fi,Bluetooth,音,明るさ,通知がガラスのメニューで 出現ボタ�
 <br>
 
 ### カレンダー (アルファ)
-
-グラスで月を見るためにパネルクロックを開いてください. 矢印キーを使って数ヶ月を閲覧する 本月に戻るためにホームを押してください.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="カレンダー · 光" width="328">
@@ -230,16 +214,12 @@ Wi-Fi,Bluetooth,音,明るさ,通知がガラスのメニューで 出現ボタ�
 
 ### Bluetooth (Alpha)
 
-配列デバイスを接続し メニューバーからバッテリーレベルを確認します
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82%で接続されたスタジオヘッドフォンと無線キーボードが切断された軽いBluetoothメニュー" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="暗黒のBluetoothメニューで,スタジオヘッドホンが82%接続され,ワイヤレスキーボードは切断された" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-Wi-Fi メニューを開いて,利用可能な無線ネットワークを見ることができます. Wi-Fi アダプタなし,またはWi-Fiがオフになっている場合,メニューはあなたのワイヤレス接続をリストし, 単一のディバイダーとWi-Fi設定リンクが表示されます.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="ハーバー・スタジオに接続されたライトWi-Fiメニュー,ガーデンゲストとワークショップが利用可能" width="48%">
@@ -250,8 +230,6 @@ Wi-Fi メニューを開いて,利用可能な無線ネットワークを見る�
 
 ### バッテリー (アルファ)
 
-電池メニューを開いて 充電レベルと電力状態を確認します
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="内部バッテリーがないライト バッテリーメニュー" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="内部バッテリーがないダークバッテリーメニュー" width="48%">
@@ -260,8 +238,6 @@ Wi-Fi メニューを開いて,利用可能な無線ネットワークを見る�
 <br>
 
 ### クリップボード履歴 (Alpha)
-
-Launchpadから直接コピーされたテキストと画像を検索して再利用します.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="ライトモードのタホー発射機におけるクリップボード履歴" width="415">
@@ -272,8 +248,6 @@ Launchpadから直接コピーされたテキストと画像を検索して再�
 
 ### システム情報 (アルファ)
 
-適応コントラストのハードウェア,ソフトウェア,テーマ詳細
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="ライトシステム情報ウィンドウ" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="ダークシステム情報ウィンドウ" width="415">
@@ -283,8 +257,6 @@ Launchpadから直接コピーされたテキストと画像を検索して再�
 
 ### Plasma テーマ (Alpha)
 
-透明なメニューや ポップアップが 照明と暗色に一致する
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="ライトモードでデスクトップコンテキストメニュー" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="ダークモードでデスクトップコンテキストメニュー" width="415">
@@ -293,8 +265,6 @@ Launchpadから直接コピーされたテキストと画像を検索して再�
 <br>
 
 ### 起動画面 (Alpha)
-
-LUKS2暗号化されたドライブに内蔵の開封機能がある
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="プライマススタートアップは,進捗バーでスプラッシュ" width="415">

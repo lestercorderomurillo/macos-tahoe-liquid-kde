@@ -141,9 +141,7 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ![Features and screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Dock with Multicolor Support (Alpha)
-
-Glass refraction, hover zoom, red notification count bubbles and auto-hide.
+### Multicolor Dock
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock showing multicolor icons in light and dark mode, then cycling through rainbow tints" width="830">
@@ -152,8 +150,6 @@ Glass refraction, hover zoom, red notification count bubbles and auto-hide.
 <br>
 
 ### Shell (Alpha)
-
-File, Edit and the other application menus follow the active window. Open the system menu for settings and session controls.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="File menu with a document open in Kate" width="830">
@@ -164,17 +160,9 @@ File, Edit and the other application menus follow the active window. Open the sy
 
 ### Acrylic Glass 2.0 with Adaptive Contrast
 
-Adaptive Contrast samples the background behind each label. It keeps the theme
-color when the difference is at least 33 perceptual lightness points. Below
-that target, it applies the smallest correction it can, up to 40% of the RGB
-scale, while keeping light text light and dark text dark. Turning it off uses
-the theme color.
-
 <br>
 
 ### Launchpad (Alpha)
-
-Find apps, browse categories and keep your favorites within reach.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
@@ -185,8 +173,6 @@ Find apps, browse categories and keep your favorites within reach.
 
 ### Control Center (Alpha)
 
-Wi-Fi, Bluetooth, sound, brightness and notifications in one glass menu. The appearance button shows a sun for Light, a moon for Dark and a split circle for Automatic.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Control Center in light mode" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Control Center in dark mode" width="415">
@@ -195,8 +181,6 @@ Wi-Fi, Bluetooth, sound, brightness and notifications in one glass menu. The app
 <br>
 
 ### Notifications (Alpha)
-
-Glass notification banners and grouped history with app actions and reply support.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe notification banners in light mode" width="48%">
@@ -212,8 +196,6 @@ Glass notification banners and grouped history with app actions and reply suppor
 
 ### Finder (Alpha)
 
-Finder-style file browsing with Tahoe glass.
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
@@ -222,8 +204,6 @@ Finder-style file browsing with Tahoe glass.
 <br>
 
 ### Calendar (Alpha)
-
-Open the panel clock to see the month on glass. Scroll or use the arrow keys to browse months. Press Home to return to the current month.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendar · Light" width="328">
@@ -234,16 +214,12 @@ Open the panel clock to see the month on glass. Scroll or use the arrow keys to 
 
 ### Bluetooth (Alpha)
 
-Connect paired devices and check their battery level from the menu bar.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Light Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-Open the Wi-Fi menu to see available wireless networks. Without a Wi-Fi adapter, or with Wi-Fi off, the menu lists your wired connections followed by a single divider and the Wi-Fi settings link.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Light Wi-Fi menu connected to Harbor Studio, with Garden Guest and Workshop available" width="48%">
@@ -254,8 +230,6 @@ Open the Wi-Fi menu to see available wireless networks. Without a Wi-Fi adapter,
 
 ### Battery (Alpha)
 
-Open the battery menu to check the charge level and power status.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Light Battery menu showing no internal battery" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Dark Battery menu showing no internal battery" width="48%">
@@ -264,8 +238,6 @@ Open the battery menu to check the charge level and power status.
 <br>
 
 ### Clipboard History (Alpha)
-
-Find and reuse copied text and images directly from Launchpad.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Clipboard history in the tahoe launcher in light mode" width="415">
@@ -276,8 +248,6 @@ Find and reuse copied text and images directly from Launchpad.
 
 ### System Information (Alpha)
 
-Hardware, software and theme details with Adaptive Contrast.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Light system information window" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Dark system information window" width="415">
@@ -287,8 +257,6 @@ Hardware, software and theme details with Adaptive Contrast.
 
 ### Plasma Theme (Alpha)
 
-Translucent menus and popups with matching light and dark colors.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in light mode" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Desktop context menu in dark mode" width="415">
@@ -297,8 +265,6 @@ Translucent menus and popups with matching light and dark colors.
 <br>
 
 ### Boot Splash (Alpha)
-
-A matching look from startup to shutdown, with built-in unlocking for LUKS2-encrypted drives.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash with a progress bar" width="415">

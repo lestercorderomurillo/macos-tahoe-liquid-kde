@@ -141,9 +141,7 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ![Features en screenshots](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Dock met veelkleurige ondersteuning (Alpha)
-
-Glasbreuk, hover zoom, rode meldingsbalen en auto-verstop.
+### Veelkleurig Dock
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock met veelkleurige icoons in licht- en donkere modus, dan door regenboogtinten" width="830">
@@ -152,8 +150,6 @@ Glasbreuk, hover zoom, rode meldingsbalen en auto-verstop.
 <br>
 
 ### Shell (Alpha)
-
-File, Edit en de andere applicatiemenu's volgen het actieve venster. Open het systeemmenu voor instellingen en sessiecontroles.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="File menu met een document in Kate geopend" width="830">
@@ -164,13 +160,9 @@ File, Edit en de andere applicatiemenu's volgen het actieve venster. Open het sy
 
 ### Acrylglas 2.0 met een aanpassend contrast
 
-Adaptive Contrast neemt de achtergrond achter elk etiket. Het behoudt de kleur van het thema wanneer het verschil minstens 33 perceptuele lichtpunten is. Hieronder wordt de kleinste correctie toegepast, tot 40% van de RGB-schaal, terwijl de lichte tekst licht en de donkere tekst donker blijft. Om het uit te schakelen gebruikt de thema kleur.
-
 <br>
 
 ### Launchpad (Alpha)
-
-Zoek apps, blader in categorieën en hou je favorieten binnen bereik.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Vooraf ingestelde Tahoe 1 in lichtmodus, met geïntegreerde zoek- en Tahoe behang" width="415">
@@ -181,8 +173,6 @@ Zoek apps, blader in categorieën en hou je favorieten binnen bereik.
 
 ### Control Center (Alfa)
 
-Wi-Fi, Bluetooth, geluid, helderheid en meldingen in één glasmenu. De verschijningsknop toont een zon voor Licht, een maan voor Duister en een gespleten cirkel voor Automatic.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centrum van besturing in lichtmodus" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centrum in duister modus" width="415">
@@ -191,8 +181,6 @@ Wi-Fi, Bluetooth, geluid, helderheid en meldingen in één glasmenu. De verschij
 <br>
 
 ### Meldingen (Alpha)
-
-Glasmeldingsbanner en gegroepeerde geschiedenis met app-acties en antwoordondersteuning.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe-meldingsbanner in lichtmodus" width="48%">
@@ -208,8 +196,6 @@ Glasmeldingsbanner en gegroepeerde geschiedenis met app-acties en antwoordonders
 
 ### Finder (Alpha)
 
-Files bladeren in de stijl van Finder met Tahoe Glass.
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe licht desktop met bestanden gericht" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe donkere desktop met bestanden gericht" width="415"></a>
@@ -218,8 +204,6 @@ Files bladeren in de stijl van Finder met Tahoe Glass.
 <br>
 
 ### Kalender (Alpha)
-
-Maak de klok open om de maand op glas te zien. Blader of gebruik de pijltoets om maanden te bladeren. Druk op Home om terug te keren naar de huidige maand.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Kalender · Licht" width="328">
@@ -230,16 +214,12 @@ Maak de klok open om de maand op glas te zien. Blader of gebruik de pijltoets om
 
 ### Bluetooth (Alpha)
 
-Verbind gepaardgaande apparaten en controleer hun batterijniveau vanaf de menubalk.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Licht Bluetooth menu met Studio headphones verbonden op 82% en draadloos toetsenbord afgesloten" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu met Studio headphones verbonden op 82% en Wireless Keyboard afgesloten" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-Open het Wi-Fi menu om beschikbare draadloze netwerken te zien. Zonder een Wi-Fi-adapter, of met Wi-Fi uitgeschakeld, wordt in het menu uw draadloze verbindingen vermeld, gevolgd door een enkele divider en de link voor de Wi-Fi-instellingen.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Lichte Wi-Fi menu verbonden met Harbor Studio, met Garden Guest en Workshop beschikbaar" width="48%">
@@ -250,8 +230,6 @@ Open het Wi-Fi menu om beschikbare draadloze netwerken te zien. Zonder een Wi-Fi
 
 ### Batterij (Alfa)
 
-Open het batterijmenu om het laadniveau en de stroomstatus te controleren.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Lichte batterij menu zonder interne batterij" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Dark Battery menu zonder interne batterij" width="48%">
@@ -260,8 +238,6 @@ Open het batterijmenu om het laadniveau en de stroomstatus te controleren.
 <br>
 
 ### Klembordgeschiedenis (Alpha)
-
-Kopieerde tekst en afbeeldingen direct van Launchpad vinden en opnieuw gebruiken.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="De geschiedenis van de clipboard in de tahoe-launcher in lichtmodus" width="415">
@@ -272,8 +248,6 @@ Kopieerde tekst en afbeeldingen direct van Launchpad vinden en opnieuw gebruiken
 
 ### Systeminformatie (Alfa)
 
-Hardware, software en thema-details met Adaptive Contrast.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Licht systeem informatievenster" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Duister systeeminformatievenster" width="415">
@@ -283,8 +257,6 @@ Hardware, software en thema-details met Adaptive Contrast.
 
 ### Plasma-thema (Alpha)
 
-Doorzichtige menu's en popups met overeenkomende lichte en donkere kleuren.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in lichtmodus" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Desktop contextmenu in donkere modus" width="415">
@@ -293,8 +265,6 @@ Doorzichtige menu's en popups met overeenkomende lichte en donkere kleuren.
 <br>
 
 ### Opstartscherm (Alpha)
-
-Een overeenkomstige uitstraling van start tot afsluiting, met ingebouwde ontsluiting voor LUKS2-versleutelde schijven.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth start splash met een progressiebalk" width="415">

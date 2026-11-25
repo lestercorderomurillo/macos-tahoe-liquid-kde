@@ -138,9 +138,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ![功能与截图](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### 具有多色支持的码头 (Alpha)
-
-玻璃 ⁇ ,浮动变焦,红色通知数量泡 ⁇ 和自动隐藏.
+### 多彩 Dock
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="塔霍码头显示多彩色图标在光和黑暗模式下,然后通过虹色 ⁇ 色进行自行车" width="830">
@@ -149,8 +147,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### Shell (Alpha)
-
-文件,编辑和其他应用程序菜单遵循主动窗口. 打开设置和会议控制系统菜单.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="开放的文件菜单在 Kate 中" width="830">
@@ -161,13 +157,9 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### ⁇ 烯基玻璃2.0具有适应性对比
 
-适应性对比采样每个标签背后的背景. 如果差距至少为33个感觉轻度点, 在这个目标以下,它应用了最小的修正,高达RGB尺度的40%,同时保持了光文的光文和暗文的黑暗. 关闭它使用主题颜色.
-
 <br>
 
 ### Launchpad (Alpha)
-
-找应用程序,浏览类别,
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="默认Tahhoe预设1在光模式下,有集成的搜索和Tahhoe壁纸" width="415">
@@ -178,8 +170,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 控制中心 (阿尔法)
 
-在一个玻璃菜单中提供Wi-Fi,蓝牙,声音,亮度和通知. 显现按 ⁇ 显示光的太阳,黑暗的月亮和自动的分圆.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="控制中心在光模式下" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="控制中心在黑暗模式下" width="415">
@@ -188,8 +178,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### 通知 (Alpha)
-
-玻璃通知标志和组合历史记录,应用程序操作和回复支持.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="预示标志在光模式下" width="48%">
@@ -205,8 +193,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### Finder (Alpha)
 
-通过塔霍玻璃浏览文件.
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="专注于文件的太hoe轻型桌面" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="⁇ 黑桌面,文件集中" width="415"></a>
@@ -215,8 +201,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### 历日 (阿尔法)
-
-在玻璃上打开表表表,看月份. 滚动或使用箭头键浏览几个月. 按Home来返回当前的月份.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="日历 · 光" width="328">
@@ -227,16 +211,12 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### Bluetooth (Alpha)
 
-连接配对设备,从菜单 ⁇ 查看它们的电池水平.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="轻微的蓝牙菜单,工作室耳机连接到82%和无线键盘断开" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="暗色蓝牙菜单,工作室耳机连接82%和无线键盘断开" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-打开Wi-Fi菜单,查看可用的无线网络. 没有Wi-Fi适配器,或者没有Wi-Fi,菜单列出了您的有线连接,
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="轻微的Wi-Fi菜单连接到港湾工作室,有园客和车间可用" width="48%">
@@ -247,8 +227,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 电池 (阿尔法)
 
-打开电池菜单查看电荷水平和电源状态.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="轻电池菜单显示没有内部电池" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="暗电池菜单显示没有内部电池" width="48%">
@@ -257,8 +235,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### 剪贴板历史记录（Alpha）
-
-直接从启动板中找到和重复使用复制的文本和图像.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="在轻模式下,塔霍发射机的剪辑板历史" width="415">
@@ -269,8 +245,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 系统信息 (Alpha)
 
-配备适应对比的硬件,软件和主题细节.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="灯系统信息窗口" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="黑暗系统信息窗口" width="415">
@@ -280,8 +254,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### Plasma 主题（Alpha）
 
-透明菜单和弹出窗口,有相应的光色和暗色.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="在光模式下桌面文本菜单" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="桌面背景菜单在暗模式下" width="415">
@@ -290,8 +262,6 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### 启动画面（Alpha）
-
-启动到关闭的相匹配外观,
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="普利 ⁇ 斯创业点击与进步行" width="415">

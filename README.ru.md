@@ -138,9 +138,7 @@
 
 ![Возможности и снимки экрана](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Док с многоцветной поддержкой (Альфа)
-
-Стеклянная рефракция, затягивание, красные пузыри и автоматическое скрытие.
+### Многоцветная панель Dock
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Док Тахо, показывающий многоцветные иконы в светло-темном режиме, затем проходящий по колесам радуги" width="830">
@@ -149,8 +147,6 @@
 <br>
 
 ### Shell (Alpha)
-
-Файлы, редактирование и другие меню приложений следуют за активным окном. Откройте меню системы для настройки и управления сеансами.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Меню файлов с открытым документом в Kate" width="830">
@@ -161,13 +157,9 @@
 
 ### Акриловое стекло 2.0 с адаптивным контрастом
 
-Adaptive Contrast демонстрирует фон за каждой этикеткой. Он сохраняет цвет темы, когда разница составляет по меньшей мере 33 точки восприятия. Ниже этой цели она применяет самую малую коррекцию, которую может, до 40% шкалы RGB, сохраняя светлый текст светлым и темный текст темным. Выключение использует цвет темы.
-
 <br>
 
 ### Launchpad (Alpha)
-
-Найдите приложения, просматривайте категории и держите любимые в пределах досягаемости.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="По умолчанию Tahoe 1 в световом режиме с интегрированным поиском и обоев Tahoe" width="415">
@@ -178,8 +170,6 @@ Adaptive Contrast демонстрирует фон за каждой этике
 
 ### Центр управления (Альфа)
 
-Wi-Fi, Bluetooth, звук, яркость и уведомления в одном стеклянном меню. На кнопке появления показывается солнце для Света, луна для Темноты и разделённый круг для Автоматика.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Центр управления в световом режиме" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Центр управления в темном режиме" width="415">
@@ -188,8 +178,6 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 <br>
 
 ### Уведомления (Альфа)
-
-Стеклянные баннеры уведомлений и группированная история с действиями приложения и поддержкой ответа.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Значки уведомления о тахо в световом режиме" width="48%">
@@ -205,8 +193,6 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 
 ### Finder (Alpha)
 
-Просмотр файлов в стиле Finder с помощью стекла Тахо.
-
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe легкий рабочий стол с файлами сосредоточенными" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Тэхо темный рабочий стол с файлами сосредоточенными" width="415"></a>
@@ -215,8 +201,6 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 <br>
 
 ### Календарь (Альфа)
-
-Откройте панель часов, чтобы увидеть месяц на стекле. Прокрутите или используйте клавиши стрел для просмотра месяцев. Нажмите на "Домой", чтобы вернуться к текущему месяцу.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Календарь · Свет" width="328">
@@ -227,16 +211,12 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 
 ### Bluetooth (Alpha)
 
-Подключите паревые устройства и проверьте уровень батареи из меню.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Легкое меню Bluetooth с Studio Headphones подключенными на 82% и беспроводной клавиатуры отключенной" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Темное меню Bluetooth с Studio Headphones подключенными на 82% и беспроводной клавиатуры отключенной" width="48%">
 </p>
 
 ### Wi-Fi (Alpha)
-
-Откройте меню Wi-Fi, чтобы увидеть доступные беспроводные сети. Без адаптера Wi-Fi или при отключении Wi-Fi в меню отображаются ваши проводные соединения, за которыми следует единый разделитель и ссылка на настройки Wi-Fi.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Меню Wi-Fi подключено к Harbor Studio, с доступными Garden Guest и Workshop" width="48%">
@@ -247,8 +227,6 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 
 ### Батарея (Альфа)
 
-Откройте меню батареи, чтобы проверить уровень заряд и состояние питания.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Меню Light Battery без внутренней батареи" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Меню &quot; Темные батареи &quot; без внутренней батареи" width="48%">
@@ -257,8 +235,6 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 <br>
 
 ### История буфера обмена (Alpha)
-
-Найти и повторно использовать скопированный текст и изображения непосредственно с Launchpad.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="История клипборда в пусковике тахо в световом режиме" width="415">
@@ -269,8 +245,6 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 
 ### Информационная система (Альфа)
 
-Оборудование, программное обеспечение и детали темы с адаптивным контрастом.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Окно информации о световой системе" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Темное окно информации системы" width="415">
@@ -280,8 +254,6 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 
 ### Тема Plasma (Alpha)
 
-Прозрачные меню и всплывающие окна с совпадающими светлыми и темными цветами.
-
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Контекстный меню рабочего стола в световом режиме" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Контекстный меню рабочего стола в темном режиме" width="415">
@@ -290,8 +262,6 @@ Wi-Fi, Bluetooth, звук, яркость и уведомления в одно
 <br>
 
 ### Загрузочная заставка (Alpha)
-
-Совпадающий вид от запуска до выключения, с встроенным разблокированием для шифрованных дисков LUKS2.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Плимутский стартап с прогрессным панелем" width="415">
