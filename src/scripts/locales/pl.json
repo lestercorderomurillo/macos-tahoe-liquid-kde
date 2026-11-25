@@ -1,4 +1,6 @@
 {
+  "Preferences": "Preferencje",
+  "Widgets": "Widżety",
   "\n  Aborted.": "\n  - Zastrzelony.",
   "\u001b[0;32m\u001b[1m  ── Done\u001b[0m": "\u001b[0;32m\u001b[1m  ── /Wykonane\u001b[0m",
   "  \u001b[0;31m  Run from repo root.\u001b[0m": "  \u001b[0;31m  - Wykorzystaj repo root.\u001b[0m",

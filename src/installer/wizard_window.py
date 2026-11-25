@@ -66,7 +66,7 @@ STEPS = (
 
 # The individual panel IDs remain available to the screenshot harness. Only
 # these grouped routes participate in the interactive installation flow.
-SECTIONS = {
+SUMMARY_SECTIONS = {
     "theme": ("Appearance", "appearance", ("appearance", "icons", "fonts")),
     "desktop": ("Desktop", "wallpaper", ("wallpaper", "desktop_widgets", "launcher")),
     "dock_bar": ("Dock", "dock", ("layout",)),
@@ -79,11 +79,11 @@ SECTIONS = {
 INSTALL_SECTIONS = {
     "theme": ("Appearance", ("appearance",)),
     "personalization": ("Icons & Typography", ("icons", "fonts")),
-    "desktop": ("Desktop", SECTIONS["desktop"][2]),
-    "dock_bar": (SECTIONS["dock_bar"][0], SECTIONS["dock_bar"][2]),
+    "desktop": ("Desktop", SUMMARY_SECTIONS["desktop"][2]),
+    "dock_bar": (SUMMARY_SECTIONS["dock_bar"][0], SUMMARY_SECTIONS["dock_bar"][2]),
     "windows": ("Effects", ("effects", "glass_style")),
     "window_details": ("Windows", ("window_controls", "button_position", "shadows")),
-    "applications": ("Applications", SECTIONS["applications"][2]),
+    "applications": ("Applications", SUMMARY_SECTIONS["applications"][2]),
     "startup": ("Startup & Display", ("boot", "oled")),
 }
 INSTALL_FLOW = ("welcome", *INSTALL_SECTIONS, "summary")
@@ -96,12 +96,23 @@ PANEL_LABELS = {
     "glass_style": "Window glass", "acrylic_glass_editor": "Acrylic Glass",
     "boot": "Boot animation", "oled": "OLED protection",
 }
+SECTIONS = {
+    "theme": SUMMARY_SECTIONS["theme"],
+    "desktop": ("Desktop", "wallpaper", ("wallpaper",)),
+    "widgets": ("Widgets", "stage-manager", ("desktop_widgets",)),
+    "dock_bar": SUMMARY_SECTIONS["dock_bar"],
+    "windows": SUMMARY_SECTIONS["windows"],
+    "applications": ("Applications", "apps", ("launcher", "files", "firefox")),
+    "preferences": ("Preferences", "notification-options", ()),
+    "startup": SUMMARY_SECTIONS["startup"],
+    "display": SUMMARY_SECTIONS["display"],
+}
 SETTINGS_PAGES = {
     "general": ("General", "settings", ()),
     **SECTIONS,
 }
-SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows", "weather_panel": "desktop", "desktop_widget": "desktop"}
-PANEL_SECTIONS = {panel: section for section, (_, _, panels) in SECTIONS.items() for panel in panels}
+SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "windows", "weather_panel": "widgets", "desktop_widget": "widgets"}
+PANEL_SECTIONS = {panel: section for section, (_, _, panels) in SUMMARY_SECTIONS.items() for panel in panels}
 PANEL_STEPS = {panel: step for step, (_, panels) in INSTALL_SECTIONS.items() for panel in panels}
 
 SETTINGS_GLYPHS = {
@@ -1181,7 +1192,7 @@ class InstallerWindow(OpaqueSurface):
 
             try:
                 if widget in instances("launcher"):
-                    section = "desktop"
+                    section = "preferences"
             except RuntimeError:
                 pass
         self.page = section if self.settings_mode else "uninstall" if uninstall else "welcome"
@@ -1471,11 +1482,13 @@ class InstallerWindow(OpaqueSurface):
                 terms += ("Language", "Restoration", "Reinstall", "Uninstall")
             elif page == "theme":
                 terms += ("Light", "Dark", "Auto", "Icon appearance", "Icon color palette", "Tinted")
-            elif page == "desktop":
+            elif page == "preferences":
                 from launcher_preferences import FORMS as launcher_forms
 
                 terms += tuple(label for form in launcher_forms.values() for label in form.values())
-                terms += ("Apps preferences", "Activation shortcut", "Weather (Panel)", "Temperature unit",
+                terms += ("Apps preferences", "Activation shortcut")
+            elif page == "widgets":
+                terms += ("Weather (Panel)", "Temperature unit",
                           "Widget settings", "Clock", "Timer", "Photos")
             elif page == "dock_bar":
                 from system_menu_preferences import FORMS as system_menu_forms
@@ -2228,8 +2241,9 @@ class InstallerWindow(OpaqueSurface):
                 ("dock", "Dock preferences"), ("trash", "Trash"), ("control_center", "Control Center"),
                 ("bar_shortcuts", "Widget shortcuts"), ("system_menu", "System menu"),
             ))
-        if self.page == "desktop":
+        if self.page == "preferences":
             self.page_widget_preferences((("launcher", "Apps preferences"),))
+        if self.page == "widgets":
             self.page_weather_panel()
             from desktop_widget_editor import DesktopWidgetEditor, installed_instances
             widgets = installed_instances()

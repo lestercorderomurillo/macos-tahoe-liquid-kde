@@ -1,4 +1,6 @@
 {
+  "Preferences": "環境設定",
+  "Widgets": "ウィジェット",
   "\n  Aborted.": "\n  堕胎した",
   "\u001b[0;32m\u001b[1m  ── Done\u001b[0m": "\u001b[0;32m\u001b[1m  ── 完成した\u001b[0m",
   "  \u001b[0;31m  Run from repo root.\u001b[0m": "  \u001b[0;31m  レポルーツから実行する\u001b[0m",
