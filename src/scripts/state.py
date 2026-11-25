@@ -1,6 +1,4 @@
 from localization import tr
-from contextlib import contextmanager
-from contextvars import ContextVar
 import datetime as _dt
 import json
 import os
@@ -26,15 +24,6 @@ def _now_iso() -> str:
     return _dt.datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-_active_tracker = ContextVar("installer_active_tracker", default=None)
-
-
-def record_component(feature, phase, status, code=None, messages=()):
-    tracker = _active_tracker.get()
-    if tracker is not None:
-        tracker.record_component(feature, phase, status, code, messages)
-
-
 class RunTracker:
     def __init__(self, script: str, argv: list[str], theme_mode: str = "auto"):
         self.script = script
@@ -44,7 +33,6 @@ class RunTracker:
         self.completed = False
         self.aborted = False
         self.active = False
-        self.steps = []
 
     def start(self) -> bool:
         self.started_at = _now_iso()
@@ -53,26 +41,6 @@ class RunTracker:
         if not ok:
             warn(tr('could not record run state to {value1}', value1=last_run_file()))
         return ok
-
-    @contextmanager
-    def track_components(self):
-        token = _active_tracker.set(self)
-        try:
-            yield
-        finally:
-            _active_tracker.reset(token)
-
-    def record_component(self, feature, phase, status, code, messages):
-        if status == "running":
-            self.steps.append({"component": feature, "operation": phase, "started_at": _now_iso()})
-        entry = self.steps[-1]
-        entry.update(status=status, exit_code=code)
-        if code is not None:
-            entry["finished_at"] = _now_iso()
-        if messages:
-            entry["messages"] = list(messages)
-        if not self._write("running", finished_at=None, exit_code=None):
-            warn(tr('could not record run state to {value1}', value1=last_run_file()))
 
     def mark_completed(self) -> None:
         self.completed = True
@@ -100,7 +68,7 @@ class RunTracker:
         return "./" + " ".join([self.script, *self.argv]).rstrip()
 
     def _write(self, status: Status, finished_at: str | None,
-               exit_code: int | None) -> bool:
+               exit_code: int) -> bool:
         out = last_run_file()
         payload = {
             "script": self.script,
@@ -112,7 +80,6 @@ class RunTracker:
             "started_at": self.started_at,
             "finished_at": finished_at,
             "exit_code": exit_code,
-            "steps": self.steps,
         }
         # Write-then-rename so a crash/kill mid-write (OOM, power loss)
         # can't leave last-run.json truncated — same pattern as

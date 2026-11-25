@@ -555,12 +555,6 @@ def install() -> None:
             _restore_conflicting_blurs()
 
 
-def verify_active() -> None:
-    loaded = _loaded_effects()
-    if loaded is None or "liquidglass" not in loaded or _render_status() != "ready":
-        fail(tr('Acrylic Glass installed but activation was not confirmed. Log out and back in after a KWin upgrade; if it remains inactive, check the KWin log for liquidglass shader or plugin errors.'))
-
-
 def uninstall() -> None:
     home = Path.home()
     from glass_surface_settings import restore as restore_surfaces

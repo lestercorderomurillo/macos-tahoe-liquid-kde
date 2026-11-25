@@ -203,10 +203,10 @@ def build() -> None:
             return
         if not cmake_build(
             ENGINE_SOURCE / "Kvantum", ENGINE_BUILD,
-            tr("Kvantum Qt 6 engine v{version}", version=ENGINE_VERSION), targets=("kvantum",),
+            f"Kvantum Qt 6 engine v{ENGINE_VERSION}", targets=("kvantum",),
         ):
             return
-    cmake_build(MENU_SOURCE, MENU_BUILD, tr("Continuous menu corners"))
+    cmake_build(MENU_SOURCE, MENU_BUILD, "Continuous menu corners")
 
 
 def _install_bundled_engine() -> bool:
@@ -268,7 +268,7 @@ def _install_bundled_engine() -> bool:
     if not sudo_install_file(
         pending_marker_source,
         ENGINE_MARKER,
-        tr('Kvantum installation record prepared'),
+        tr('Kvantum ownership transaction prepared'),
     ):
         return False
     if not sudo_install_file(
@@ -286,7 +286,7 @@ def _install_bundled_engine() -> bool:
 
     if not sudo_install_file(
         final_marker_source, ENGINE_MARKER,
-        tr('Kvantum source information recorded'),
+        tr('Kvantum bundled-source marker installed'),
     ):
         # The pending marker already recognizes the installed digest. Retain it
         # as recovery state instead of creating an unmarked system plugin.
@@ -353,7 +353,7 @@ def install() -> None:
         ok(tr('Widget style installed'))
     else:
         warn(tr("Widget style not applied — kwriteconfig6 unavailable (install plasma-workspace or your distro's equivalent)"))
-    info(tr('Kvantum style installed for Qt applications'))
+    info(tr('Kvantum Qt styling installed'))
 
 
 def _remove_bundled_engine() -> None:

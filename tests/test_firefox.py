@@ -123,7 +123,7 @@ def test_install_never_themes_forks(firefox_home, root):
     assert firefox.discover_profiles() == [native.resolve()]
     assert (native / "chrome" / firefox.THEME_DIRNAME).is_dir()
     assert {p.relative_to(fork): p.read_bytes() for p in fork.rglob("*") if p.is_file()} == before
-    assert str(fork) not in firefox.read_manifest()["profiles"]
+    assert str(fork) not in firefox._load_manifest()["profiles"]
 
 
 @pytest.mark.parametrize("alias", ["root", "profile", "registered", "shared-external"])
@@ -175,7 +175,7 @@ def test_existing_zen_theme_is_retired_without_losing_customizations(
     (zen / "user.js").write_text(original_user)
     (zen / "places.sqlite").write_bytes(b"history and bookmarks")
     # Reproduce the old installer's writes, without allowing fork discovery.
-    assert firefox._install_profile(zen, firefox.read_manifest())
+    assert firefox._install_profile(zen, firefox._load_manifest())
     if not keep_manifest:
         firefox._manifest_path().unlink()
     with (chrome / "userChrome.css").open("a") as handle:
@@ -191,7 +191,7 @@ def test_existing_zen_theme_is_retired_without_losing_customizations(
     assert not (chrome / firefox.THEME_DIRNAME).exists()
     assert (zen / "places.sqlite").read_bytes() == b"history and bookmarks"
     assert (zen / "prefs.js").read_bytes() == before_prefs
-    assert str(zen) not in firefox.read_manifest()["profiles"]
+    assert str(zen) not in firefox._load_manifest()["profiles"]
     assert len(list((firefox._state_root() / "snapshots").iterdir())) == 2
 
 
@@ -201,7 +201,7 @@ def test_failed_zen_recovery_retains_manifest_and_can_retry(
     firefox_home, monkeypatch, action, failure,
 ):
     zen = _seed_profile(firefox_home / ".zen")
-    assert firefox._install_profile(zen, firefox.read_manifest())
+    assert firefox._install_profile(zen, firefox._load_manifest())
     css = zen / "chrome/userChrome.css"
     original_css = css.read_text()
     with monkeypatch.context() as patch:
@@ -217,12 +217,12 @@ def test_failed_zen_recovery_retains_manifest_and_can_retry(
         getattr(firefox, action)()
         assert css.read_text() == before
         assert (zen / "chrome" / firefox.THEME_DIRNAME).is_dir()
-        assert str(zen) in firefox.read_manifest()["profiles"]
+        assert str(zen) in firefox._load_manifest()["profiles"]
 
     css.write_text(original_css)
     getattr(firefox, action)()
     assert not (zen / "chrome").exists()
-    assert str(zen) not in firefox.read_manifest()["profiles"]
+    assert str(zen) not in firefox._load_manifest()["profiles"]
 
 
 def test_retiring_zen_restores_colliding_directory(firefox_home):
@@ -230,7 +230,7 @@ def test_retiring_zen_restores_colliding_directory(firefox_home):
     collision = zen / "chrome" / firefox.THEME_DIRNAME
     collision.mkdir(parents=True)
     (collision / "mine.css").write_text("/* unrelated */\n")
-    assert firefox._install_profile(zen, firefox.read_manifest())
+    assert firefox._install_profile(zen, firefox._load_manifest())
 
     firefox.install()
     firefox.install()
@@ -443,21 +443,3 @@ def test_bundled_fork_has_license_provenance_and_complete_entrypoints(offline):
     assert (theme / "userContent.css").is_file()
     assert (theme / "MacTahoe/theme.css").is_file()
     assert len(list((theme / "MacTahoe/icons").glob("*.svg"))) > 50
-
-
-def test_corrupt_manifest_preserved_before_install_and_removal(firefox_home):
-    path = firefox._manifest_path()
-    path.parent.mkdir(parents=True)
-    path.write_text("{invalid")
-    for operation in (firefox.install, firefox.uninstall):
-        with pytest.raises(ValueError, match="manifest.json"):
-            operation()
-        assert path.read_text() == "{invalid"
-
-
-def test_invalid_relative_flag_does_not_block_other_profiles(firefox_home):
-    root = firefox_home / ".mozilla/firefox"
-    good = _seed_profile(root)
-    with (root / "profiles.ini").open("a") as ini:
-        ini.write("\n[Profile1]\nPath=uninitialized\nIsRelative=unknown\n")
-    assert firefox.discover_profiles() == [good]

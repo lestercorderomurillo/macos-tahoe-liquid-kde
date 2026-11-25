@@ -1971,7 +1971,7 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
                   file=sys.stderr)
 
     config_ok = write_kde_theme_config(
-        mode, force_color_reload=context != "install" and _APPEARANCE_GUARD is None,
+        mode, force_color_reload=_APPEARANCE_GUARD is None,
     )
     if not config_ok:
         print(tr('theme apply: core KDE config writes failed, theme not fully applied'), file=sys.stderr)
@@ -1989,11 +1989,7 @@ def _apply_unlocked(mode: str, context: str = "user") -> bool:
               file=sys.stderr)
     if not apply_cursortheme_live(cursor):
         print(tr('theme apply: live cursor apply skipped'), file=sys.stderr)
-    # The replacement shell reads the final style on startup. Notify open
-    # applications once without briefly repainting the desktop in Breeze.
-    if context == "install":
-        _broadcast_widget_style_change(widget)
-    elif not cycle_widget_style_live(widget):
+    if not cycle_widget_style_live(widget):
         if _APPEARANCE_GUARD is not None:
             config_ok = False
         print(tr('theme apply: widget-style cycle skipped'), file=sys.stderr)

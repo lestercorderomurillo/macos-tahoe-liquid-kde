@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.31**. The fullscreen installer records individual component results and verifies the live Dock translucency and Acrylic Glass renderer after layout activation. [Evidence and coverage](release-evidence.json).
+**v0.84.32**. Restore the v0.84.30 installer and desktop implementation. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

@@ -1,29 +1,29 @@
 {
-  "version": "0.84.31",
-  "scope": "The fullscreen installer records individual component results and verifies the live Dock translucency and Acrylic Glass renderer after layout activation.",
+  "version": "0.84.32",
+  "scope": "Restore the v0.84.30 installer and desktop implementation.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_commit": "986dd508e650c3f9b94963e203a1dc6f07c7f5c2",
+  "qualified_commit": "e679f85c32782bb2f94460debff483b4b03ea466",
   "checks": [
     {
-      "command": "Golden Gate graphical fullscreen install and reinstall in KDE neon Wayland, using the real Qt bridge, supervisor and backend. Verified 41 recorded component operations with exit code 0, no warnings, live Dock translucency and shader readiness after layout reset. Decoded 6,355 light and 6,355 dark regular icon PNGs, compared source manifests, and checked 76 installed asset receipts.",
+      "command": "python3 -m pytest -q tests/test_installer_wizard.py -k 'native_wizard_navigation or wizard_catalogs' (3 passed)",
       "result": "passed"
     },
     {
-      "command": "Focused installer, layout, state tracker, Acrylic Glass and wizard pytest checks plus a failure regression retaining a nonzero component code and diagnostics.",
+      "command": "python3 -m pytest -q tests/test_multilanguage.py -k every_python_message_has_a_complete_catalog (14 passed)",
       "result": "passed"
     },
     {
-      "command": "After integrating the v0.84.30 Settings changes, ran tests/test_installer_wizard.py, tests/test_localization.py and tests/test_multilanguage.py with Qt offscreen.",
+      "command": "Opened installed Settings with --mode=settings --section for desktop, widgets, applications and preferences in an isolated KDE neon Plasma VM. Captured the active Settings window using spectacle. User approved the four-section layout.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Golden Gate on a prepared KDE neon Wayland VM exercised the shared runtime. Other desktop sessions and physical GPUs were not booted for this change.",
-  "source_sha256": "613a28ba87454afebd90d59cdb014df29914dc5a6e914914585d817e9881007a",
+  "coverage_limits": "Focused Settings navigation and catalog checks. Golden Gate was captured in dark mode and Tahoe in light mode. The installer flow and desktop lifecycle were outside this change.",
+  "source_sha256": "52891d0eda0fadaabb04c8f63a25e3596cbb0fecca6a007cb49c8d6654adc871",
   "reviewed_frames": {
-    "fullscreen.png": "847c9f4dc43b6ba3fc0ba8481540fec401ef9afc2a6cfc6566ebae44b01c27b5",
-    "dock.png": "fddba84cfd058dbdb33e0fba2841b36545b9d0ae7b65b0ac2e762f8bb74f8ae1",
-    "dock-dark.png": "28d66dc074089b621348381c4b2533f1b3434b232ee47d07ee7e5d80d24ed44c",
-    "dock-red.png": "08d993f4a421cc040ef975f7d06b3b53305a61d2ceed36fd4aab4ff1afe99c17",
-    "dock-blue.png": "0c4b8ca3bf8ce88c8c34ddaa0894ae569a9729bd3632ccceddfc80a6cd055525"
+    "tahoe-applications": "c5b693d864f0aeae2fb6e25640f3907b21cde196f1b4251f605428f88a4a3853",
+    "tahoe-before": "5fd642982ee9450ef215a264a5eb9cb41a7c67ea9f0bc556ff133ab2d570b5f0",
+    "tahoe-desktop": "d8813214fb5115b121b9a0201218e38a1f67e8d07600051b2c530e4af9cb3bdf",
+    "tahoe-preferences": "c8509e85a3b504d9c0ae323e0d20708a0e30f7c3064e85250c334e383178f901",
+    "tahoe-widgets": "b7514989c6d6fdfa3a7a2995e1c136ab9c183bf43d5cd5f696c593738b2497b8"
   }
 }

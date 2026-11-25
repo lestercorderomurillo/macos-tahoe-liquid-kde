@@ -31,7 +31,6 @@ _APPLE_RAINBOW = (
 
 _step_counter = 0
 errors: list[str] = []
-warnings: list[str] = []
 
 _CONFIGURED_PROGRESS_FILE = os.environ.get("MTTKDE_PROGRESS_FILE")
 PROGRESS_FILE = _CONFIGURED_PROGRESS_FILE or (
@@ -187,28 +186,27 @@ def info(msg: str) -> None:
 
 def ok(msg: str) -> None:
     global _last_ended_blank
-    print(f"  [OK] {msg}")
+    print(f"  {GREEN}✓{RESET}  {msg}")
     _last_ended_blank = False
 
 
 def reinstall(msg: str) -> None:
     global _last_ended_blank
     display = tr("{message} (reinstalled)", message=msg)
-    print(f"  [OK] {display}")
+    print(f"  {GREEN}↺{RESET}  {display}")
     _last_ended_blank = False
 
 
 def warn(msg: str) -> None:
     global _last_ended_blank
-    warnings.append(msg)
     progress_event("warning", message=msg)
-    print(f"  [{tr('Warning')}] {msg}")
+    print(f"  {YELLOW}⚠{RESET}  {msg}")
     _last_ended_blank = False
 
 
 def fail(msg: str) -> None:
     global _last_ended_blank
-    print(f"  [{tr('Error')}] {msg}", file=sys.stderr)
+    print(f"  {RED}✗{RESET}  {msg}", file=sys.stderr)
     errors.append(msg)
     _last_ended_blank = False
 
