@@ -143,6 +143,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ### Multicolor Dock
 
+Tint the Dock icons to match your desktop.
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock showing multicolor icons in light and dark mode, then cycling through rainbow tints" width="830">
 </p>
@@ -150,6 +152,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 <br>
 
 ### Quickbar
+
+Use the active app’s menus from the top bar.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="File menu with a document open in Kate" width="830">
@@ -160,13 +164,17 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ### Adaptive Contrast
 
+Text adjusts to the background so labels stay readable.
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Adaptive Contrast · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Adaptive Contrast · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+Search for apps or browse them by category.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
@@ -177,6 +185,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ### Control Center
 
+Adjust Wi-Fi, sound and brightness in one menu.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Control Center in light mode" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Control Center in dark mode" width="415">
@@ -185,6 +195,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 <br>
 
 ### Notifications
+
+Read recent alerts grouped by app.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe notification banners in light mode" width="48%">
@@ -200,6 +212,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ### Finder
 
+Browse files in a Finder-style window.
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
@@ -208,6 +222,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 <br>
 
 ### Calendar
+
+Open the clock to browse the month.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendar · Light" width="328">
@@ -218,12 +234,16 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ### Bluetooth
 
+Connect paired devices and check their battery levels.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Light Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
 </p>
 
 ### Wi-Fi
+
+View available networks and connection status.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Light Wi-Fi menu connected to Harbor Studio, with Garden Guest and Workshop available" width="48%">
@@ -234,6 +254,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ### Battery
 
+Check the battery level and charging status.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Light Battery menu showing no internal battery" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Dark Battery menu showing no internal battery" width="48%">
@@ -242,6 +264,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 <br>
 
 ### Clipboard History
+
+Reuse text and images you copied earlier.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Clipboard history in the tahoe launcher in light mode" width="415">
@@ -252,6 +276,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ### System Information
 
+View hardware, software and theme details.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Light system information window" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Dark system information window" width="415">
@@ -261,6 +287,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 
 ### Plasma Theme
 
+Menus and popups follow the light or dark theme.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in light mode" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Desktop context menu in dark mode" width="415">
@@ -269,6 +297,8 @@ Code contributors and issue reporters across Tahoe and Golden Gate:
 <br>
 
 ### Boot Splash
+
+A themed splash screen appears at startup.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash with a progress bar" width="415">

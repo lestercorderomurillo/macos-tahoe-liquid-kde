@@ -1,0 +1,26 @@
+{
+  "edition": "tahoe",
+  "component": "Notification Center",
+  "source_commit": "3c545be9d3694938321a4b935606403c4fb46938",
+  "environment": "KDE neon / Plasma 6.8.1 / Wayland, disposable overlay, 3840x2160 at 2x",
+  "appearance": "Project light theme with custom white ForegroundNormal in its light KDE palette, background #f3f3f3",
+  "setting": "kwinrc / Effect-liquidglass / DynamicTinting, false then true, same open notification history",
+  "exposures": [
+    {
+      "state": "OFF",
+      "crop_png_sha256": "ccca8eea45c53d8ad0a78b20461440798a7da840a5a3793aa05f6d0f6523d706",
+      "path": "src/screenshots/previews/tahoe-contrast-off-ccca8eea45c5.png"
+    },
+    {
+      "state": "ON",
+      "crop_png_sha256": "93cada77a3588e1ecc79f784c8353c27e20848a7e2ab8998d218b65ec23d5e0c",
+      "path": "src/screenshots/previews/tahoe-contrast-on-93cada77a358.png"
+    }
+  ],
+  "annotation": "Gray OFF and mint ON badges generated with ImageGen, placed outside both unmodified screenshot crops.",
+  "pixels_changed_from_white_in_heading": 3017,
+  "comparison": "src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png",
+  "sha256": "442477246a8ad0f0efe54d2217ab162898abb8871caee5d71cd679f4c8a0e0e7",
+  "label_generator": "ImageGen",
+  "label_prompt": "Two matched rounded cards on transparency, gray with black OFF and pale mint with dark green ON, clean sans-serif, no other marks."
+}

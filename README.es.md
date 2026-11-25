@@ -140,6 +140,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ### Dock multicolor
 
+Dale a los iconos del Dock el color de tu escritorio.
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock mostrando iconos multicolores en modo claro y oscuro, luego recorriendo los tonos del arco iris" width="830">
 </p>
@@ -147,6 +149,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 <br>
 
 ### Quickbar
+
+Accede a los menús de la aplicación activa desde la barra superior.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menú de archivos con un documento abierto en Kate" width="830">
@@ -157,13 +161,17 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ### Contraste adaptativo
 
+El texto se ajusta al fondo para que las etiquetas sigan siendo legibles.
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Contraste adaptativo · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Contraste adaptativo · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+Busca aplicaciones o explóralas por categoría.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Preconfigurado Tahoe 1 en modo de luz, con búsqueda integrada y papel pintado Tahoe" width="415">
@@ -174,6 +182,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ### Centro de control
 
+Ajusta el Wi-Fi, el sonido y el brillo desde un solo menú.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro de control en modo de luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centro de control en modo oscuro" width="415">
@@ -182,6 +192,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 <br>
 
 ### Notificaciones
+
+Consulta las notificaciones recientes agrupadas por aplicación.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Carteles de notificación de Tahoe en modo ligero" width="48%">
@@ -197,6 +209,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ### Finder
 
+Explora tus archivos en una ventana al estilo Finder.
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Desktop de Tahoe con enfoque de archivos" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe escritorio oscuro con archivos enfocados" width="415"></a>
@@ -205,6 +219,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 <br>
 
 ### Calendario
+
+Abre el reloj para consultar el calendario del mes.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Luz" width="328">
@@ -215,12 +231,16 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ### Bluetooth
 
+Conecta tus dispositivos emparejados y consulta su batería.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menú Bluetooth ligero con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menú Bluetooth oscuro con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
 </p>
 
 ### Wi-Fi
+
+Consulta las redes disponibles y el estado de la conexión.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menú Wi-Fi ligero conectado a Harbor Studio, con Garden Guest y Workshop disponibles" width="48%">
@@ -231,6 +251,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ### Batería
 
+Consulta el nivel de batería y el estado de carga.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menú de baterías ligeras sin batería interna" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Menú de baterías oscuras sin batería interna" width="48%">
@@ -239,6 +261,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 <br>
 
 ### Historial del portapapeles
+
+Reutiliza texto e imágenes que hayas copiado.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Historia de la cinta en el lanzador tahoe en modo ligero" width="415">
@@ -249,6 +273,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ### Información del sistema
 
+Consulta los detalles del hardware, el software y el tema.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Ventana de información del sistema de luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Ventana de información del sistema oscuro" width="415">
@@ -258,6 +284,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ### Tema Plasma
 
+Los menús y las ventanas emergentes siguen el tema claro u oscuro.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menú de contexto de escritorio en modo luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Menú de contexto del escritorio en modo oscuro" width="415">
@@ -266,6 +294,8 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 <br>
 
 ### Pantalla de inicio
+
+Al arrancar, aparece una pantalla de bienvenida a juego con el tema.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth arranque salpicaduras con una barra de progreso" width="415">

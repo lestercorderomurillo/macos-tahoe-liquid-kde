@@ -143,6 +143,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ### Çok Renkli Dock
 
+Dock simgelerinin rengini masaüstünüze uydurun.
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock, ışık ve karanlık modunda çok renkli simgeler gösterir, sonra gökkuşağı renklerini bisikletle geçirir" width="830">
 </p>
@@ -150,6 +152,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 <br>
 
 ### Quickbar
+
+Etkin uygulamanın menülerine üst çubuktan erişin.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kate&#x27;de açılmış bir belge ile dosya menüsü" width="830">
@@ -160,13 +164,17 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ### Uyarlanabilir Kontrast
 
+Metin rengi arka plana uyum sağlayarak etiketlerin okunaklı kalmasını sağlar.
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Uyarlanabilir Kontrast · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Uyarlanabilir Kontrast · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+Uygulamaları arayın veya kategoriye göre gözden geçirin.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Öntanımlı Tahoe ön ayar 1 ışık modunda, entegre arama ve Tahoe duvar kağıdı ile" width="415">
@@ -177,6 +185,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ### Kontrol Merkezi
 
+Wi-Fi, ses ve parlaklığı tek menüden ayarlayın.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Kontrol Merkezi ışık modunda" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Kontrol Merkezi karanlık modda" width="415">
@@ -185,6 +195,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 <br>
 
 ### İletişimler
+
+Son bildirimleri uygulamaya göre gruplanmış olarak görün.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe bildirim pankartları ışık modunda" width="48%">
@@ -200,6 +212,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ### Finder
 
+Dosyalarınızı Finder tarzı bir pencerede inceleyin.
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Dosya odaklı Tahoe ışık masaüstü" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Dosya odaklı Tahoe karanlık masaüstü" width="415"></a>
@@ -208,6 +222,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 <br>
 
 ### Takvim
+
+Aylık takvimi görmek için saati açın.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Takvim · Işık" width="328">
@@ -218,12 +234,16 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ### Bluetooth
 
+Eşleştirilmiş cihazları bağlayın ve pil düzeylerini kontrol edin.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Studio kulaklıkları % 82&#x27;ye bağlı ve kablosuz klavyesi bağlantısız olan hafif Bluetooth menüsü" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Karanlık Bluetooth menüsü , 82% bağlı Studio kulaklıkları ve kablosuz klavyeleri ile bağlantı kesilmiş" width="48%">
 </p>
 
 ### Wi-Fi
+
+Kullanılabilir ağları ve bağlantı durumunu görün.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Harbor Studio&#x27;ya bağlı hafif Wi-Fi menüsü, Garden Guest ve Workshop mevcuttur" width="48%">
@@ -234,6 +254,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ### Batarya
 
+Pil düzeyini ve şarj durumunu kontrol edin.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Işık Akü menüsü iç akü göstermiyor" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Karar batarya göstermeyen karanlık pil menüsü" width="48%">
@@ -242,6 +264,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 <br>
 
 ### Pano geçmişi
+
+Kopyaladığınız metinleri ve görselleri yeniden kullanın.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Tahoe fırlatıcısındaki kaset tablosunun geçmişi hafif modunda" width="415">
@@ -252,6 +276,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ### Sistem Bilgisi
 
+Donanım, yazılım ve tema ayrıntılarını görüntüleyin.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Işık sistem bilgisi penceresi" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Karanlık Sistem Bilgi Penceresi" width="415">
@@ -261,6 +287,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 
 ### Plasma teması
 
+Menüler ve açılır pencereler açık veya koyu temayı izler.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Açık modunda masaüstü bağlam menüsü" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Karanlık modunda masaüstü bağlam menüsü" width="415">
@@ -269,6 +297,8 @@ Tahoe ve Golden Gate'daki kod katılımcıları ve gazeteci yayınları:
 <br>
 
 ### Açılış ekranı
+
+Başlangıçta temaya uygun bir açılış ekranı görünür.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth başlatma sıçrayışı ilerleme çubuğu ile" width="415">

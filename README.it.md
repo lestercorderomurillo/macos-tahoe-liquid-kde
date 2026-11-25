@@ -143,6 +143,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 ### Dock multicolore
 
+Abbina il colore delle icone del Dock al desktop.
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock mostra icone multicolori in modalità luce e scura, quindi cicla attraverso le tonalità arcobaleno" width="830">
 </p>
@@ -150,6 +152,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 <br>
 
 ### Quickbar
+
+Accedi ai menu dell’app attiva dalla barra superiore.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menù file con un documento aperto in Kate" width="830">
@@ -160,13 +164,17 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 ### Contrasto adattivo
 
+Il colore del testo si adatta allo sfondo per mantenere leggibili le etichette.
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Contrasto adattivo · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Contrasto adattivo · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+Cerca le app o sfogliale per categoria.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Tahoe predefinito 1 in modalità luce, con ricerca integrata e carta da parati Tahoe" width="415">
@@ -177,6 +185,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 ### Centro di controllo
 
+Regola Wi-Fi, audio e luminosità da un unico menu.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro di controllo in modalità luce" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centro di controllo in modalità buia" width="415">
@@ -185,6 +195,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 <br>
 
 ### Notifiche
+
+Leggi le notifiche recenti raggruppate per app.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Bandiere di notifica Tahoe in modalità leggera" width="48%">
@@ -200,6 +212,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 ### Finder
 
+Sfoglia i file in una finestra in stile Finder.
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Desktop leggero Tahoe con file focalizzati" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe dark desktop con file focalizzati" width="415"></a>
@@ -208,6 +222,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 <br>
 
 ### Calendario
+
+Apri l’orologio per consultare il calendario del mese.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Luce" width="328">
@@ -218,12 +234,16 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 ### Bluetooth
 
+Connetti i dispositivi associati e controlla la loro batteria.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth leggero con cuffie di studio collegate all&#x27;82% e tastiera wireless disconnessa" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu bluetooth scuro con cuffie di studio collegate all&#x27;82% e tastiera wireless disconnessa" width="48%">
 </p>
 
 ### Wi-Fi
+
+Visualizza le reti disponibili e lo stato della connessione.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menù Wi-Fi leggero connesso a Harbor Studio, con Garden Guest e Workshop disponibili" width="48%">
@@ -234,6 +254,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 ### Batteria
 
+Controlla il livello della batteria e lo stato di carica.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menu Light Battery che non mostra batteria interna" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Menù Batteria oscura senza batteria interna" width="48%">
@@ -242,6 +264,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 <br>
 
 ### Cronologia degli appunti
+
+Riutilizza il testo e le immagini che hai copiato.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Storia della scheda di registrazione nel lanciatore tahoe in modalità leggera" width="415">
@@ -252,6 +276,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 ### Informazioni del sistema
 
+Consulta i dettagli di hardware, software e tema.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Finestra di informazioni del sistema luminoso" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Finestra di informazioni del sistema oscuro" width="415">
@@ -261,6 +287,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 
 ### Tema Plasma
 
+I menu e le finestre a comparsa seguono il tema chiaro o scuro.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menù di contesto desktop in modalità luce" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Menù di contesto desktop in modalità scura" width="415">
@@ -269,6 +297,8 @@ I collaboratori del codice e i giornalisti di emissione in Tahoe e Golden Gate:
 <br>
 
 ### Schermata di avvio
+
+All’avvio appare una schermata coordinata con il tema.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash con una barra di progresso" width="415">

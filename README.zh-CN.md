@@ -140,6 +140,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 多彩 Dock
 
+为程序坞图标选择与桌面相配的颜色。
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="塔霍码头显示多彩色图标在光和黑暗模式下,然后通过虹色 ⁇ 色进行自行车" width="830">
 </p>
@@ -147,6 +149,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### Quickbar
+
+从顶栏打开当前应用的菜单。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="开放的文件菜单在 Kate 中" width="830">
@@ -157,13 +161,17 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 自适应对比度
 
+文字颜色会随背景调整，让标签保持清晰。
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="自适应对比度 · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="自适应对比度 · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+搜索应用，或按类别浏览。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="默认Tahhoe预设1在光模式下,有集成的搜索和Tahhoe壁纸" width="415">
@@ -174,6 +182,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 控制中心
 
+在同一菜单中调节无线网络、音量和亮度。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="控制中心在光模式下" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="控制中心在黑暗模式下" width="415">
@@ -182,6 +192,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### 通知
+
+按应用查看最近的通知。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="预示标志在光模式下" width="48%">
@@ -197,6 +209,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### Finder
 
+在 Finder 风格的窗口中浏览文件。
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="专注于文件的太hoe轻型桌面" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="⁇ 黑桌面,文件集中" width="415"></a>
@@ -205,6 +219,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### 历日
+
+点击时钟即可查看月历。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="日历 · 光" width="328">
@@ -215,12 +231,16 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### Bluetooth
 
+连接已配对的设备并查看其剩余电量。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="轻微的蓝牙菜单,工作室耳机连接到82%和无线键盘断开" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="暗色蓝牙菜单,工作室耳机连接82%和无线键盘断开" width="48%">
 </p>
 
 ### Wi-Fi
+
+查看可用网络和连接状态。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="轻微的Wi-Fi菜单连接到港湾工作室,有园客和车间可用" width="48%">
@@ -231,6 +251,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 电池
 
+查看电池电量和充电状态。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="轻电池菜单显示没有内部电池" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="暗电池菜单显示没有内部电池" width="48%">
@@ -239,6 +261,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### 剪贴板历史记录
+
+再次使用之前复制的文字和图片。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="在轻模式下,塔霍发射机的剪辑板历史" width="415">
@@ -249,6 +273,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 系统信息
 
+查看硬件、软件和主题信息。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="灯系统信息窗口" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="黑暗系统信息窗口" width="415">
@@ -258,6 +284,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### Plasma 主题
 
+菜单和弹窗跟随浅色或深色主题。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="在光模式下桌面文本菜单" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="桌面背景菜单在暗模式下" width="415">
@@ -266,6 +294,8 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 <br>
 
 ### 启动画面
+
+启动时显示与主题相配的画面。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="普利 ⁇ 斯创业点击与进步行" width="415">

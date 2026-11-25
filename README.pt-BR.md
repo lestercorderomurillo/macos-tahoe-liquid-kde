@@ -140,6 +140,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ### Dock multicolorido
 
+Combine a cor dos ícones do Dock com sua área de trabalho.
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock mostrando ícones multicolores em modo claro e escuro, depois ciclando através de tons de arco-íris" width="830">
 </p>
@@ -147,6 +149,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 <br>
 
 ### Quickbar
+
+Acesse os menus do aplicativo ativo pela barra superior.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu de arquivo com um documento aberto em Kate" width="830">
@@ -157,13 +161,17 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ### Contraste adaptativo
 
+A cor do texto se adapta ao fundo para manter os rótulos legíveis.
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Contraste adaptativo · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Contraste adaptativo · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+Pesquise aplicativos ou navegue por categoria.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Tahoe predefinido 1 em modo de luz, com pesquisa integrada e papel de parede Tahoe" width="415">
@@ -174,6 +182,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ### Centro de Controle
 
+Ajuste o Wi-Fi, o som e o brilho em um só menu.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro de controlo em modo de luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centro de controlo em modo escuro" width="415">
@@ -182,6 +192,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 <br>
 
 ### Notificações
+
+Veja as notificações recentes agrupadas por aplicativo.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Bandeiras de notificação Tahoe em modo de luz" width="48%">
@@ -197,6 +209,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ### Finder
 
+Navegue pelos arquivos em uma janela no estilo Finder.
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe desktop leve com arquivos focados" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe desktop escuro com arquivos focados" width="415"></a>
@@ -205,6 +219,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 <br>
 
 ### Calendário
+
+Abra o relógio para ver o calendário do mês.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendário · Luz" width="328">
@@ -215,12 +231,16 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ### Bluetooth
 
+Conecte dispositivos pareados e confira o nível da bateria de cada um.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth leve com fones de ouvido de estúdio conectados em 82% e teclado sem fio desconectado" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu Bluetooth escuro com fones de ouvido de estúdio conectados em 82% e teclado sem fio desconectado" width="48%">
 </p>
 
 ### Wi-Fi
+
+Veja as redes disponíveis e o estado da conexão.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu de Wi-Fi ligado ao Harbor Studio, com Garden Guest e Workshop disponíveis" width="48%">
@@ -231,6 +251,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ### Bateria
 
+Confira o nível da bateria e o estado de carregamento.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Light Battery menu sem bateria interna" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Menu Bateria escura sem bateria interna" width="48%">
@@ -239,6 +261,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 <br>
 
 ### Histórico da área de transferência
+
+Reutilize textos e imagens que você copiou.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="História do clipboard no lançador tahoe em modo de luz" width="415">
@@ -249,6 +273,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ### Informações do sistema
 
+Confira os detalhes do hardware, do software e do tema.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Janela de informação do sistema de luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Janela de informação do sistema escuro" width="415">
@@ -258,6 +284,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 
 ### Tema Plasma
 
+Os menus e as janelas pop-up acompanham o tema claro ou escuro.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menu de contexto de desktop em modo de luz" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Menu de contexto no desktop em modo escuro" width="415">
@@ -266,6 +294,8 @@ Colaboradores de código e pessoas que relatam problemas no Tahoe e Golden Gate:
 <br>
 
 ### Tela de inicialização
+
+Uma tela que combina com o tema aparece na inicialização.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash com uma barra de progresso" width="415">

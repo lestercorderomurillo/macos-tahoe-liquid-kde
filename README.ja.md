@@ -143,6 +143,8 @@
 
 ### マルチカラードック
 
+Dock のアイコンをデスクトップに合う色に変更できます。
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="ライトとダークモードで多彩なアイコンを表示し,その後虹色をサイクリングする" width="830">
 </p>
@@ -150,6 +152,8 @@
 <br>
 
 ### Quickbar
+
+上部のバーから使用中のアプリのメニューを開けます。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kateで開いた文書のファイルメニュー" width="830">
@@ -160,13 +164,17 @@
 
 ### 適応コントラスト
 
+背景に合わせて文字色が変わり、ラベルが読みやすくなります。
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="適応コントラスト · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="適応コントラスト · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+アプリを検索したり、カテゴリ別に探したりできます。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="既定 Tahoe プリセット 1 ライトモードで,統合検索と Tahoe 壁紙" width="415">
@@ -177,6 +185,8 @@
 
 ### 制御センター
 
+Wi-Fi、音量、明るさをひとつのメニューで調整できます。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="制御センターがライトモード" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="暗黒モードの制御センター" width="415">
@@ -185,6 +195,8 @@
 <br>
 
 ### 通知
+
+最近の通知をアプリごとにまとめて確認できます。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="ライトモードのタホー通知バナー" width="48%">
@@ -200,6 +212,8 @@
 
 ### Finder
 
+Finder 風のウィンドウでファイルを閲覧できます。
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="ファイルを集中したタホライトデスクトップ" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="ファイルを集中したタホダークデスクトップ" width="415"></a>
@@ -208,6 +222,8 @@
 <br>
 
 ### カレンダー
+
+時計を開くと月間カレンダーが表示されます。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="カレンダー · 光" width="328">
@@ -218,12 +234,16 @@
 
 ### Bluetooth
 
+ペアリング済みの機器を接続し、電池残量を確認できます。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82%で接続されたスタジオヘッドフォンと無線キーボードが切断された軽いBluetoothメニュー" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="暗黒のBluetoothメニューで,スタジオヘッドホンが82%接続され,ワイヤレスキーボードは切断された" width="48%">
 </p>
 
 ### Wi-Fi
+
+利用可能なネットワークと接続状態を確認できます。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="ハーバー・スタジオに接続されたライトWi-Fiメニュー,ガーデンゲストとワークショップが利用可能" width="48%">
@@ -234,6 +254,8 @@
 
 ### バッテリー
 
+バッテリー残量と充電状態を確認できます。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="内部バッテリーがないライト バッテリーメニュー" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="内部バッテリーがないダークバッテリーメニュー" width="48%">
@@ -242,6 +264,8 @@
 <br>
 
 ### クリップボード履歴
+
+コピーしたテキストや画像を再利用できます。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="ライトモードのタホー発射機におけるクリップボード履歴" width="415">
@@ -252,6 +276,8 @@
 
 ### システム情報
 
+ハードウェア、ソフトウェア、テーマの詳細を確認できます。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="ライトシステム情報ウィンドウ" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="ダークシステム情報ウィンドウ" width="415">
@@ -261,6 +287,8 @@
 
 ### Plasma テーマ
 
+メニューやポップアップはライトテーマとダークテーマに対応します。
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="ライトモードでデスクトップコンテキストメニュー" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="ダークモードでデスクトップコンテキストメニュー" width="415">
@@ -269,6 +297,8 @@
 <br>
 
 ### 起動画面
+
+起動時にテーマに合わせた画面が表示されます。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="プライマススタートアップは,進捗バーでスプラッシュ" width="415">

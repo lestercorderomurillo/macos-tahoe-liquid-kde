@@ -143,6 +143,8 @@
 
 ### Dock متعدد الألوان
 
+اختر لأيقونات Dock لونًا يناسب سطح المكتب.
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="تاهو Dock يظهر رموز متعددة الألوان في وضع ضوء ومظلم ، ثم تتجول عبر ألوان قوس قزح" width="830">
 </p>
@@ -150,6 +152,8 @@
 <br>
 
 ### Quickbar
+
+افتح قوائم التطبيق النشط من الشريط العلوي.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="قائمة الملفات مع وثيقة مفتوحة في كيت" width="830">
@@ -160,13 +164,17 @@
 
 ### التباين التكيفي
 
+يتكيف لون النص مع الخلفية لتبقى التسميات مقروءة.
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="التباين التكيفي · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="التباين التكيفي · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+ابحث عن التطبيقات أو تصفحها حسب الفئة.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="تهيئة التهوه 1 في وضع الضوء ، مع البحث المتكامل ورق خلفية التهوه" width="415">
@@ -177,6 +185,8 @@
 
 ### مركز التحكم
 
+اضبط الشبكة اللاسلكية والصوت والسطوع من قائمة واحدة.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="مركز التحكم في وضع الضوء" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="مركز التحكم في وضع مظلم" width="415">
@@ -185,6 +195,8 @@
 <br>
 
 ### الإخطارات
+
+اطّلع على الإشعارات الأخيرة مجمّعة حسب التطبيق.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="لافتات الإخطار التهوي في وضع الضوء" width="48%">
@@ -200,6 +212,8 @@
 
 ### Finder
 
+تصفّح ملفاتك في نافذة على طراز Finder.
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="مكتب تاهو خفيف مع الملفات تركيز" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="مكتب تاهو المظلم مع تركيز الملفات" width="415"></a>
@@ -208,6 +222,8 @@
 <br>
 
 ### التقويم
+
+افتح الساعة لعرض تقويم الشهر.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="التقويم · الضوء" width="328">
@@ -218,12 +234,16 @@
 
 ### Bluetooth
 
+اتصل بالأجهزة المقترنة وتحقق من مستوى بطارياتها.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="قائمة Bluetooth خفيفة مع سماعات الاستوديو متصلة بنسبة 82% و لوحة المفاتيح اللاسلكية منفصلة" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="قائمة Bluetooth مظلمة مع سماعات الاستوديو متصلة بـ 82% و لوحة المفاتيح اللاسلكية منفصلة" width="48%">
 </p>
 
 ### Wi-Fi
+
+اعرض الشبكات المتاحة وحالة الاتصال.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="قائمة Wi-Fi خفيفة متصلة بـ Harbor Studio، مع Garden Guest و Workshop متاحة" width="48%">
@@ -234,6 +254,8 @@
 
 ### البطارية
 
+تحقق من مستوى البطارية وحالة الشحن.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="خيارات البطارية الخفيفة لا توجد بطارية داخلية" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="قائمة البطارية المظلمة لا تظهر بطارية داخلية" width="48%">
@@ -242,6 +264,8 @@
 <br>
 
 ### سجل الحافظة
+
+أعد استخدام النصوص والصور التي نسختها.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="تاريخ المقطع في جهاز إطلاق التهوه في وضع الضوء" width="415">
@@ -252,6 +276,8 @@
 
 ### معلومات النظام
 
+اطّلع على تفاصيل الأجهزة والبرامج والسمة.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="نافذة معلومات النظام الضوئي" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="نافذة معلومات النظام المظلم" width="415">
@@ -261,6 +287,8 @@
 
 ### سمة Plasma
 
+تتبع القوائم والنوافذ المنبثقة السمة الفاتحة أو الداكنة.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="قائمة السياق المكتبية في وضع الضوء" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="قائمة سياق المكتب في وضع مظلم" width="415">
@@ -269,6 +297,8 @@
 <br>
 
 ### شاشة الإقلاع
+
+تظهر عند بدء التشغيل شاشة تتوافق مع السمة.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="بليموث بدء البدء مع شريط التقدم" width="415">

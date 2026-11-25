@@ -143,6 +143,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ### Veelkleurig Dock
 
+Stem de kleur van de Dock-pictogrammen af op je bureaublad.
+
 <p align="center">
   <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock met veelkleurige icoons in licht- en donkere modus, dan door regenboogtinten" width="830">
 </p>
@@ -150,6 +152,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 <br>
 
 ### Quickbar
+
+Open de menu’s van de actieve app via de bovenbalk.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="File menu met een document in Kate geopend" width="830">
@@ -160,13 +164,17 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ### Adaptief contrast
 
+De tekstkleur past zich aan de achtergrond aan zodat labels leesbaar blijven.
+
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-contrast-preview-e1e4b3f2c81d.png" alt="Adaptief contrast · Tahoe" width="830">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Adaptief contrast · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
 
 ### Launchpad
+
+Zoek apps of blader per categorie.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Vooraf ingestelde Tahoe 1 in lichtmodus, met geïntegreerde zoek- en Tahoe behang" width="415">
@@ -177,6 +185,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ### Control Center
 
+Regel wifi, geluid en helderheid in één menu.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centrum van besturing in lichtmodus" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centrum in duister modus" width="415">
@@ -185,6 +195,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 <br>
 
 ### Meldingen
+
+Bekijk recente meldingen gegroepeerd per app.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe-meldingsbanner in lichtmodus" width="48%">
@@ -200,6 +212,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ### Finder
 
+Blader door bestanden in een venster in Finder-stijl.
+
 <p align="center">
   <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe licht desktop met bestanden gericht" width="415"></a>
   <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe donkere desktop met bestanden gericht" width="415"></a>
@@ -208,6 +222,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 <br>
 
 ### Kalender
+
+Open de klok om de maandkalender te bekijken.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Kalender · Licht" width="328">
@@ -218,12 +234,16 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ### Bluetooth
 
+Verbind gekoppelde apparaten en bekijk hun batterijniveau.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Licht Bluetooth menu met Studio headphones verbonden op 82% en draadloos toetsenbord afgesloten" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu met Studio headphones verbonden op 82% en Wireless Keyboard afgesloten" width="48%">
 </p>
 
 ### Wi-Fi
+
+Bekijk beschikbare netwerken en de verbindingsstatus.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Lichte Wi-Fi menu verbonden met Harbor Studio, met Garden Guest en Workshop beschikbaar" width="48%">
@@ -234,6 +254,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ### Batterij
 
+Controleer het batterijniveau en de laadstatus.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Lichte batterij menu zonder interne batterij" width="48%">
   <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Dark Battery menu zonder interne batterij" width="48%">
@@ -242,6 +264,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 <br>
 
 ### Klembordgeschiedenis
+
+Gebruik eerder gekopieerde tekst en afbeeldingen opnieuw.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="De geschiedenis van de clipboard in de tahoe-launcher in lichtmodus" width="415">
@@ -252,6 +276,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ### Systeminformatie
 
+Bekijk details over hardware, software en het thema.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Licht systeem informatievenster" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Duister systeeminformatievenster" width="415">
@@ -261,6 +287,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 
 ### Plasma-thema
 
+Menu’s en pop-ups volgen het lichte of donkere thema.
+
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in lichtmodus" width="415">
   <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Desktop contextmenu in donkere modus" width="415">
@@ -269,6 +297,8 @@ Code-medewerkers en journalisten in Tahoe en Golden Gate:
 <br>
 
 ### Opstartscherm
+
+Bij het opstarten verschijnt een scherm dat past bij het thema.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth start splash met een progressiebalk" width="415">
