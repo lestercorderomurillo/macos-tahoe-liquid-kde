@@ -21,6 +21,7 @@ that prevents recurrence. Extend an existing entry when the mistake repeats.
 | --- | --- | --- |
 | Treating a local installer as a published fix | After v0.84.32 restored the older installer, the agent provided a local fullscreen launcher and repeatedly explained the rollback. It treated the working candidate as the endpoint even though the user wanted the ordinary published installer. | Follow the release request through both publication workflows once the applicable approval is in hand. Verify each published tag contains or pins the fix and synchronize the ordinary checkouts. Give the user both release links. |
 | Documenting before repairing | When the user asked why the release was missing, the agent prioritized writing a rule while the requested deliverable was still missing. | Take the next authorized repair or delivery action first. If a decision genuinely blocks it, show the exact result and ask for that decision once. Record the lesson after advancing the repair. |
+| Linking outside the user's VS Code workspace | The installer video was linked from a scratch disk. The agent mistakenly assumed that its own filesystem access meant the user could open the same link in VS Code. | For every local deliverable, place a usable copy in the actual repository open in VS Code. Resolve the link target, verify it is a readable, nonempty file inside that checkout, and give the user the clickable link and repository-relative path. Keep temporary previews out of release assets. |
 
 ## Non-negotiable execution discipline
 
