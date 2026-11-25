@@ -529,11 +529,11 @@ Il plasma 6.6 ⁇ 6.8 è supportato gli effetti compilati utilizzano l'SDK host.
 
 ![Disclaimer](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Si tratta di una reimplementazione indipendente ispirata all'estetica di macOS. Non è affiliato o approvato da Apple o KDE. "macOS" e "Apple" sono marchi commerciali di Apple Inc.
+Questa reimplementazione indipendente si ispira all’estetica di macOS. Non è affiliata ad Apple o a KDE e non ha il loro avallo. «macOS» e «Apple» sono marchi di Apple Inc.
 
-L'emblema macOS, i wallpaper bundled, i suoni del sistema e i font SF Pro / SF Mono rimangono proprietà di Apple e non sono coperti dalla licenza di questo progetto. Altri componenti conservano le proprie licenze e le proprie notifiche sui diritti d'autore vedere l'indice di notifiche di terzi di seguito per l'ambito di applicazione e le lacune di provenienza note.
+L’emblema di macOS, gli sfondi inclusi, i suoni di sistema e i caratteri SF Pro e SF Mono sono di proprietà di Apple e non rientrano nella licenza del progetto. Gli altri componenti mantengono le rispettive licenze e note di copyright. L’indice delle note di terze parti specifica l’ambito e le lacune note nella documentazione della provenienza.
 
-Licenza [GPL-3.0](LICENSE) nel suo insieme restano applicabili le singole licenze dei componenti e i diritti di terzi. Vedi ? [Notifiche di diritto d'autore](NOTICE), [licenze e identità del progetto](LICENSING.md), e [notifiche di terzi](THIRD_PARTY_NOTICES.md).
+Il progetto nel suo insieme è distribuito con licenza [GPL-3.0](LICENSE). Restano validi i diritti di terzi e le licenze dei singoli componenti. Consulta le [note di copyright](NOTICE), le [licenze e l’identità del progetto](LICENSING.md) e le [note di terze parti](THIRD_PARTY_NOTICES.md).
 
 <br>
 

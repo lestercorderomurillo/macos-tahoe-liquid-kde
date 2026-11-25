@@ -529,11 +529,11 @@ Plasma 6.6 ⁇ 6.8 wordt ondersteund gecompileerde effecten gebruiken de host SD
 
 ![Verwijdering van aansprakelijkheid](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Dit is een onafhankelijke herimplementatie geïnspireerd op de macOS-esthetiek. "macOS" en "Apple" zijn handelsmerken van Apple Inc.
+Dit is een onafhankelijke herimplementatie, geïnspireerd op de vormgeving van macOS. Het project is niet verbonden aan Apple of KDE en wordt door geen van beide onderschreven. ‘macOS’ en ‘Apple’ zijn handelsmerken van Apple Inc.
 
-Het macOS-emblem, gebundelde behangpapers, systeemgeluiden en SF Pro / SF Mono-fonten blijven eigendom van Apple en vallen niet onder de licentie van dit project. Andere componenten behouden hun eigen licenties en auteursrechtelijke kennisgevingen Zie de onderstaande index van kennisgevingen van derden voor de omvang en bekende afkomstgappoorten.
+Het macOS-embleem, de meegeleverde achtergronden en systeemgeluiden en de lettertypen SF Pro en SF Mono zijn eigendom van Apple en vallen buiten de projectlicentie. Voor andere onderdelen blijven hun eigen licenties en auteursrechtvermeldingen van kracht. De lijst met vermeldingen van derden beschrijft de reikwijdte en bekende hiaten in de herkomstgegevens.
 
-Gelicentieerd [GPL-3.0](LICENSE) in het geheel individuele licenties voor componenten en rechten van derden blijven van toepassing. Zie je ? [berichten over auteursrechten](NOTICE), [licentie en identiteit van het project](LICENSING.md), en [kennisgevingen van derden](THIRD_PARTY_NOTICES.md).
+Het project als geheel valt onder de [GPL-3.0](LICENSE). De licenties van de afzonderlijke onderdelen en de rechten van derden blijven gelden. Zie de [auteursrechtvermeldingen](NOTICE), [licenties en projectidentiteit](LICENSING.md) en [vermeldingen van derden](THIRD_PARTY_NOTICES.md).
 
 <br>
 

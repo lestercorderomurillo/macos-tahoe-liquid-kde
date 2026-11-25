@@ -529,11 +529,11 @@ Plasma 6.6 ⁇ 6.8 desteklenir oluşturulan efektler host SDK'yi kullanır.
 
 ![Sorumluluk dışı bırakma](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Bu macOS estetikinden ilham alan bağımsız bir yeniden uygulanmadır. Apple veya KDE tarafından onaylanmamış veya bağlı değildir. "macOS" ve "Apple" Apple Inc'in ticari markasıdır.
+Bu proje, macOS tasarımından esinlenen bağımsız bir uygulamadır. Apple veya KDE ile bağlantılı değildir ve bu kuruluşlar tarafından onaylanmamıştır. “macOS” ve “Apple”, Apple Inc. şirketinin ticari markalarıdır.
 
-macOS emblemi, paketli duvar kağıtları, sistem sesleri ve SF Pro / SF Mono fontları Apple'ın mülkiyeti olarak kalır ve bu projenin lisansı altında değildir. Diğer bileşenlerin kendi lisansları ve telif hakkı bildirimleri vardır. Etkinlik kapsamı ve bilinen kaynak boşlukları için aşağıdaki üçüncü taraf bildirim endeksine bakın.
+macOS amblemi, paketle gelen duvar kâğıtları, sistem sesleri ve SF Pro ile SF Mono yazı tipleri Apple’a aittir ve proje lisansının kapsamı dışındadır. Diğer bileşenlerin kendi lisansları ve telif hakkı bildirimleri geçerlidir. Kapsam ve kaynak bilgisi eksik olan öğeler için üçüncü taraf bildirimlerine bakın.
 
-Lisanslı [GPL-3.0](LICENSE) Bir bütün olarak Bireysel bileşen lisansları ve üçüncü taraf hakları geçerli kalır. Gördün mü ? [Telif hakkı bildirimleri](NOTICE), [lisanslama ve proje kimliği](LICENSING.md)ve [Üçüncü taraf bildirimleri](THIRD_PARTY_NOTICES.md).
+Projenin bütünü [GPL-3.0](LICENSE) ile lisanslanmıştır. Bileşenlerin kendi lisansları ve üçüncü tarafların hakları geçerliliğini korur. [Telif hakkı bildirimlerine](NOTICE), [lisanslara ve proje kimliğine](LICENSING.md) ve [üçüncü taraf bildirimlerine](THIRD_PARTY_NOTICES.md) bakın.
 
 <br>
 

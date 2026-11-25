@@ -529,11 +529,11 @@ OpenRC와 dinit는 실행되는 크론 데이몬이 필요합니다. [데스크�
 
 ![면책](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-이것은 macOS의 미학에서 영감을 받은 독립적인 재 구현입니다. 애플이나 KDE가 승인하거나 인연을 맺지 않습니다. "macOS"와 "Apple"는 Apple Inc의 상표입니다.
+이 프로젝트는 macOS의 디자인에서 영감을 받아 독립적으로 재구현했습니다. Apple이나 KDE와 제휴 관계가 없으며 양측의 공식 승인을 받지 않았습니다. macOS와 Apple은 Apple Inc.의 상표입니다.
 
-macOS 엠블럼, 복합 벽화, 시스템 사운드 및 SF Pro / SF Mono 폰트는 여전히 애플의 소유물이며 이 프로젝트의 라이선스에 적용되지 않습니다. 다른 구성 요소들은 자신들의 라이센스와 저작권 공지사항을 유지합니다. 범주와 알려진 출산 격차에 대해서는 아래의 제3자 알림 인덱스를 참조하십시오.
+macOS 엠블럼과 함께 제공되는 배경 화면, 시스템 사운드, SF Pro 및 SF Mono 글꼴은 Apple의 소유이며 이 프로젝트의 라이선스 대상에서 제외됩니다. 다른 구성 요소에는 각각의 라이선스와 저작권 고지가 적용됩니다. 적용 범위와 출처 확인이 불완전한 항목은 제3자 고지 목록을 참고하세요.
 
-허가 [GPL-3.0](LICENSE) 전체적으로 개별 구성 요소 라이센스와 제3자의 권리가 여전히 적용됩니다. 보시다시피 [저작권 공표](NOTICE), [라이선스 및 프로젝트 신분](LICENSING.md), 그리고 [제3자 통지](THIRD_PARTY_NOTICES.md).
+프로젝트 전체에는 [GPL-3.0](LICENSE)이 적용됩니다. 개별 구성 요소의 라이선스와 제3자의 권리도 유효합니다. [저작권 고지](NOTICE), [라이선스 및 프로젝트 명칭](LICENSING.md), [제3자 고지](THIRD_PARTY_NOTICES.md)를 참고하세요.
 
 <br>
 

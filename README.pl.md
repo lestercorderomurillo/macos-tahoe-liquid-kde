@@ -529,11 +529,11 @@ Podtrzymywana jest plazma 6.6 ⁇ 6.8 Efekty kompilizowane wykorzystują host SD
 
 ![Odpowiedzialność](https://img.shields.io/badge/disclaimer-not%20affiliated%20with%20apple-6B6B6B?style=for-the-badge&logo=apple&logoColor=white)
 
-Jest to niezależne ponowne wdrożenie inspirowane estetyką macOS. "macOS" i "Apple" są znakami towarowymi Apple Inc.
+Projekt jest niezależną implementacją inspirowaną wyglądem macOS. Nie jest powiązany z Apple ani KDE i nie ma ich oficjalnego poparcia. „macOS” i „Apple” to znaki towarowe Apple Inc.
 
-Emblema macOS, pakiety tapet, dźwięki systemu i czcionki SF Pro / SF Mono pozostają własnością Apple i nie są objęte licencją tego projektu. Pozostałe elementy zachowują własne licencje i ogłoszenia dotyczące praw autorskich w poniższym indeksie zgłoszeń stron trzecich na temat zakresu i znanych luk w pochodzeniu.
+Emblemat macOS, dołączone tapety i dźwięki systemowe oraz fonty SF Pro i SF Mono pozostają własnością Apple i nie podlegają licencji projektu. Pozostałe składniki zachowują własne licencje i informacje o prawach autorskich. Wykaz informacji o składnikach zewnętrznych określa ich zakres i wskazuje znane luki w dokumentacji pochodzenia.
 
-Licencja [GPL-3.0](LICENSE) w całości Licencje poszczególnych komponentów i prawa osób trzecich pozostają obowiązujące. Widzisz? [Oświadczenia o uprawach autorskich](NOTICE), [licencjonowanie i tożsamość projektu](LICENSING.md), oraz [powiadomienia stron trzecich](THIRD_PARTY_NOTICES.md).
+Projekt jako całość jest dostępny na licencji [GPL-3.0](LICENSE). Nadal obowiązują licencje poszczególnych składników i prawa osób trzecich. Zobacz [informacje o prawach autorskich](NOTICE), [licencje i tożsamość projektu](LICENSING.md) oraz [informacje o składnikach zewnętrznych](THIRD_PARTY_NOTICES.md).
 
 <br>
 
