@@ -13,7 +13,7 @@ import subprocess
 import time
 
 from PyQt6 import sip
-from PyQt6.QtCore import QAbstractAnimation, QEasingCurve, QPropertyAnimation, QLibraryInfo, QLocale, QTranslator, Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
+from PyQt6.QtCore import QVariantAnimation, QAbstractAnimation, QEasingCurve, QPropertyAnimation, QLibraryInfo, QLocale, QTranslator, Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
 from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
@@ -785,6 +785,54 @@ class CheckOption(QCheckBox):
         painter.setPen(self.palette().text().color())
         painter.drawText(QRectF(0 if trailing else 26, 0, self.width()-26-2*self.content_margin, self.height()),
                          Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.text())
+
+
+class SettingsSwitch(QCheckBox):
+    def __init__(self, text):
+        super().__init__(text)
+        self.motion = QVariantAnimation(self)
+        self.motion.setDuration(140)
+        self.motion.valueChanged.connect(lambda _: self.update())
+        self.toggled.connect(self.slide)
+
+    def slide(self, checked):
+        start = (self.motion.currentValue() if self.motion.state() == QAbstractAnimation.State.Running
+                 else float(not checked))
+        self.motion.stop()
+        if self.isVisible():
+            self.motion.setStartValue(start)
+            self.motion.setEndValue(float(checked))
+            self.motion.start()
+        self.update()
+
+    def sizeHint(self):
+        return QSize(self.fontMetrics().horizontalAdvance(self.text()) + 52,
+                     max(30, self.fontMetrics().height() + 8))
+
+    def hitButton(self, point):
+        return self.rect().contains(point)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        if not self.isEnabled():
+            painter.setOpacity(.5)
+        painter.setPen(self.palette().text().color())
+        painter.drawText(self.rect().adjusted(0, 0, -48, 0),
+                         Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, self.text())
+        track = QRectF(self.width() - 39, (self.height() - 20) / 2, 36, 20)
+        painter.setPen(Qt.PenStyle.NoPen)
+        dark = self.palette().text().color().lightnessF() > .5
+        painter.setBrush(QColor("#34c759" if self.isChecked() else "#68686d" if dark else "#a5a5aa"))
+        painter.drawRoundedRect(track, 10, 10)
+        position = (self.motion.currentValue() if self.motion.state() == QAbstractAnimation.State.Running
+                    else float(self.isChecked()))
+        painter.setBrush(Qt.GlobalColor.white)
+        painter.drawEllipse(QRectF(track.x() + 2 + 16 * position, track.y() + 2, 16, 16))
+        if self.hasFocus():
+            painter.setBrush(Qt.BrushStyle.NoBrush)
+            painter.setPen(QPen(self.palette().highlight().color(), 1.5))
+            painter.drawRoundedRect(track.adjusted(-2, -2, 2, 2), 12, 12)
 
 
 class GlassCheckOption(CheckOption):
@@ -2366,7 +2414,7 @@ class InstallerWindow(OpaqueSurface):
             layout.setSpacing(6)
             if panel not in ("icons", "fonts") and (self.settings_mode or len(panels) > 1):
                 title = self.label(PANEL_LABELS[panel])
-                desktop_title = panel in ("wallpaper", "desktop_widgets")
+                desktop_title = panel == "wallpaper" or (panel == "desktop_widgets" and not self.settings_mode)
                 title.setFont(relative_font(self, .72 if desktop_title else .88,
                                             QFont.Weight.Medium if desktop_title else QFont.Weight.DemiBold))
                 title.setContentsMargins(4, 0, 0, 0)
@@ -3154,6 +3202,36 @@ class InstallerWindow(OpaqueSurface):
             self.select("wallpaper", "custom")
 
     def page_desktop_widgets(self):
+        if self.settings_mode:
+            from desktop_widget_settings import NAMES
+
+            switch = SettingsSwitch(self.t("Desktop widgets"))
+            switch.setFont(relative_font(self, .78, QFont.Weight.Medium))
+            switch.setObjectName("choice-desktop_widgets")
+            switch.setChecked(self.choices["desktop_widgets"])
+            switch.toggled.connect(lambda checked: self.select("desktop_widgets", checked))
+            self.body.addWidget(switch)
+            self.separator()
+            self.body.addWidget(self.label("Widgets to install"))
+            grid = QGridLayout()
+            grid.setHorizontalSpacing(28)
+            defaults = self.defaults["desktop_widget_selection"]
+            names = list(dict.fromkeys([*defaults, *NAMES]))
+            buttons = {}
+            def save_selection():
+                self.update_choice("desktop_widget_selection",
+                                   [name for name, button in buttons.items() if button.isChecked()])
+            for index, name in enumerate(names):
+                button = CheckOption(self.t(NAMES[name]))
+                buttons[name] = button
+                button.setFont(relative_font(self, .85))
+                button.setChecked(name in self.choices["desktop_widget_selection"])
+                button.setEnabled(switch.isChecked())
+                switch.toggled.connect(button.setEnabled)
+                button.toggled.connect(save_selection)
+                grid.addWidget(button, index // 2, index % 2)
+            self.body.addLayout(grid)
+            return
         from steps.plasmoids import WIDGETS_STATE
 
         removal = "Remove any widgets previously installed by this theme." if WIDGETS_STATE.is_file() else ""

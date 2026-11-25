@@ -8,6 +8,7 @@ import os
 import re
 from pathlib import Path
 
+from desktop_widget_settings import NAMES as DESKTOP_WIDGET_NAMES
 from accent_colors import COLORS
 from launcher_defaults import edition_name
 from theme_switch import WALLPAPER_PAIRS as WALLPAPERS
@@ -78,7 +79,7 @@ def defaults() -> dict:
         window_controls="glassy" if edition == "golden" else "flat", button_position="left",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
         oled_care=False, oled_interval=5, oled_max_shift=8,
-        desktop_widgets=True,
+        desktop_widgets=True, desktop_widget_selection=["calendar", "clock-analog", "photos"],
         dock_visibility=dock_visibility(), dock_appearance="auto", dock_apps=[], dock_apps_source="native", dock_add_flathub=False,
     )
 
@@ -98,6 +99,11 @@ def validate(value: object) -> dict:
     for key, maximum in (("oled_interval", 59), ("oled_max_shift", 16)):
         if type(result[key]) is not int or not 1 <= result[key] <= maximum:
             raise ValueError(f"Invalid range: {key}")
+    widgets = result["desktop_widget_selection"]
+    if (not isinstance(widgets, list)
+            or any(not isinstance(name, str) or name not in DESKTOP_WIDGET_NAMES for name in widgets)
+            or len(set(widgets)) != len(widgets)):
+        raise ValueError("Invalid desktop widgets")
     apps = result["dock_apps"]
     if (not isinstance(apps, list) or len(apps) > 6
             or any(not isinstance(app, str) or app not in

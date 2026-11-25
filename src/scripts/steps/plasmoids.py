@@ -8,6 +8,7 @@ from pathlib import Path
 
 from distro import qt6_plugins_dir, qt6_qml_dir
 from glass_surface_settings import atomic_write
+from desktop_widget_settings import NAMES, PREFIX
 from installer_choices import selected
 from utils import qdbus_cmd, run_user
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
@@ -23,8 +24,7 @@ DEST_DIR = DATA_HOME / "plasma/plasmoids"
 WIDGETS_ARCHIVE = offline("desktop-widgets", "liquidglass-kde-widgets.tar.zst")
 WIDGETS_STATE = DATA_HOME / "mac-tahoe-liquid-kde/desktop-widgets.list"
 WIDGET_ID = re.compile(r"com\.jaxparrow07\.macoswidgets\.[a-z0-9-]+")
-DESKTOP_STARTERS = tuple("com.jaxparrow07.macoswidgets." + name
-                         for name in ("calendar", "clock-analog", "timer"))
+
 
 TASKMANAGER_SRC = SRC_DIR / "org.kde.mac.tahoe.liquid.taskmanager"
 TASKMANAGER_BUILD = build_dir("plasmoids/org.kde.mac.tahoe.liquid.taskmanager")
@@ -196,7 +196,7 @@ def install() -> None:
     DEST_DIR.mkdir(parents=True, exist_ok=True)
     choices = selected()
     if choices:
-        install_desktop_widgets(choices["desktop_widgets"])
+        install_desktop_widgets(choices["desktop_widgets"], choices["desktop_widget_selection"])
 
     dest_qml = qt6_qml_dir() / _TASKMANAGER_QML_RELPATH
     for name in LEGACY_DIRS:
@@ -350,17 +350,18 @@ def _save_installed_widgets(names: set[str]) -> None:
         pending.unlink(missing_ok=True)
 
 
-def _remove_desktop_widgets() -> None:
-    _remove_placed_desktop_widgets()
-    remaining = set()
-    for name in sorted(_installed_widgets()):
+def _remove_desktop_widgets(keep=frozenset()) -> None:
+    _remove_placed_desktop_widgets(keep)
+    installed = _installed_widgets()
+    remaining = installed.intersection(keep)
+    for name in sorted(installed - keep):
         target = DEST_DIR / name
         if target.is_dir() and not target.is_symlink() and not remove_tree(target, name):
             remaining.add(name)
     _save_installed_widgets(remaining)
 
 
-def install_desktop_widgets(enabled: bool) -> None:
+def install_desktop_widgets(enabled: bool, selection=None) -> None:
     """Manage the optional widget pack without taking over user installations."""
     if not enabled:
         _remove_desktop_widgets()
@@ -374,10 +375,16 @@ def install_desktop_widgets(enabled: bool) -> None:
         if result.returncode != 0:
             warn(tr('Liquid Glass desktop widgets could not be unpacked: {error}', error=result.stderr.strip()))
             return
-        installed = _installed_widgets()
         from desktop_widget_settings import stage_configuration_route as stage_desktop_widget
         from weather_panel_settings import PLUGIN as WEATHER_PANEL, stage_configuration_route
+        # The panel weather plugin is shared with the panel settings.
+        wanted = None if selection is None else {WEATHER_PANEL, *(PREFIX + name for name in selection)}
+        if wanted is not None:
+            _remove_desktop_widgets(wanted)
+        installed = _installed_widgets()
         for entry in sorted(staging.iterdir()):
+            if wanted is not None and entry.name not in wanted:
+                continue
             name = entry.name
             if not WIDGET_ID.fullmatch(name) or not (entry / "metadata.json").is_file():
                 continue
@@ -405,10 +412,19 @@ def _run_widget_script(script: str) -> dict:
 
 def place_desktop_widgets() -> None:
     """Place the illustrated starter set once, after Plasma loads the packages."""
-    if not selected().get("desktop_widgets"):
+    choices = selected()
+    if not choices.get("desktop_widgets"):
         return
     placement = WIDGETS_STATE.with_suffix(".placed.json")
-    if placement.exists():
+    names = [PREFIX + name for name in choices["desktop_widget_selection"]]
+    history = WIDGETS_STATE.with_suffix(".selection.json")
+    existing = json.loads(placement.read_text()) if placement.exists() else {}
+    previous = (json.loads(history.read_text()) if history.exists() else
+                [PREFIX + name for name in ("calendar", "clock-analog", "timer")] if placement.exists() else [])
+    pending = [name for name in names if name not in previous]
+    if not pending:
+        if names != previous:
+            atomic_write(history, json.dumps(names).encode())
         return
     script = """
     (function () {
@@ -449,14 +465,17 @@ def place_desktop_widgets() -> None:
         }
         print(JSON.stringify(placed));
     })();
-    """.replace("NAMES", json.dumps(DESKTOP_STARTERS))
+    """.replace("NAMES", json.dumps(pending))
     placed = _run_widget_script(script)
     placement.parent.mkdir(parents=True, exist_ok=True)
-    atomic_write(placement, json.dumps(placed).encode("utf-8"))
+    atomic_write(placement, json.dumps(existing | placed).encode("utf-8"))
+    atomic_write(history, json.dumps(names).encode())
 
 
-def _remove_placed_desktop_widgets() -> None:
+def _remove_placed_desktop_widgets(keep=frozenset()) -> None:
     placement = WIDGETS_STATE.with_suffix(".placed.json")
+    if not keep:
+        WIDGETS_STATE.with_suffix(".selection.json").unlink(missing_ok=True)
     try:
         placed = json.loads(placement.read_text(encoding="utf-8"))
     except FileNotFoundError:
@@ -464,7 +483,7 @@ def _remove_placed_desktop_widgets() -> None:
     except (ValueError, UnicodeError):
         placed = None
     if not isinstance(placed, dict) or any(
-        not key.isdecimal() or value not in DESKTOP_STARTERS for key, value in placed.items()
+        not key.isdecimal() or value not in {PREFIX + name for name in NAMES} for key, value in placed.items()
     ):
         # A damaged record cannot authorize deleting live desktop applets.
         with tempfile.NamedTemporaryFile(dir=placement.parent, prefix=placement.name + ".invalid-",
@@ -473,7 +492,8 @@ def _remove_placed_desktop_widgets() -> None:
         placement.replace(backup_path)
         warn(f"{placement.name}: {backup_path}")
         return
-    if placed:
+    removed = {key: name for key, name in placed.items() if name not in keep}
+    if removed:
         _run_widget_script("""
         (function () {
             const placed = PLACED;
@@ -484,5 +504,9 @@ def _remove_placed_desktop_widgets() -> None:
             }
             print("{}");
         })();
-        """.replace("PLACED", json.dumps(placed)))
-    placement.unlink()
+        """.replace("PLACED", json.dumps(removed)))
+    if keep:
+        if removed:
+            atomic_write(placement, json.dumps({k: v for k, v in placed.items() if v in keep}).encode())
+    else:
+        placement.unlink()

@@ -773,6 +773,20 @@ QTest.qWait(50)
 assert set(window.panel_frames) == {'wallpaper'}
 window.navigate_settings('widgets')
 assert set(window.panel_frames) == {'desktop_widgets'}
+from wizard_window import SettingsSwitch
+panel = window.panel_frames['desktop_widgets']
+switch = panel.findChild(SettingsSwitch)
+options = {button.text(): button for button in panel.findChildren(CheckOption)}
+assert {name for name, button in options.items() if button.isChecked()} == {
+    window.t('Calendar'), window.t('Analog Clock'), window.t('Photos')}
+timer = options[window.t('Timer')]
+timer.click()
+assert 'timer' in window.choices['desktop_widget_selection']
+switch.click()
+assert not timer.isEnabled() and timer.isChecked()
+switch.click()
+assert timer.isEnabled() and timer.isChecked()
+timer.click()
 window.navigate_settings('applications')
 QTest.qWait(50)
 assert set(window.panel_frames) == {'launcher', 'files', 'firefox'}

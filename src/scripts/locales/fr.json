@@ -1,4 +1,5 @@
 {
+  "Widgets to install": "Widgets à installer",
   "Errors: {count}": "Erreurs : {count}",
   "Version {current} is up to date.": "La version {current} est à jour.",
   "Kvantum Qt 6 engine v{version}": "Moteur Kvantum pour Qt 6 (version {version})",
