@@ -723,8 +723,17 @@ assert 'desktop' in scrollable_steps
 assert not scrollable_steps.intersection({'windows', 'window_details', 'startup', 'summary'}), scrollable_steps
 window.previous()
 assert window.page == 'startup'
-window.page = 'done'
-window.open_installed_settings()
+def reopen_from_completion(old):
+    old.next.click()
+    assert not old.isVisible() and not old.settings_mode and old.page == 'done'
+    installer_choices.installed_choices = lambda: dict(old.choices)
+    new = InstallerWindow(bridge, mode='settings', section=old.reopen_settings_section)
+    new.show(); app.processEvents()
+    return new
+
+window.page = 'done'; window.render()
+window = reopen_from_completion(window)
+assert window.page == 'theme'
 assert window.sidebar.isVisible() and not window.dots.isVisible()
 assert list(window.section_buttons)[1:5] == ['theme', 'desktop', 'dock_bar', 'windows']
 assert window.section_buttons['dock_bar'].text() == 'Dock'
@@ -832,7 +841,7 @@ window.next.click()
 assert window.page == 'progress' and calls[-1][0] == 'install'
 assert not calls[-1][1]['reset_layout']
 bridge._running = False; bridge.finished.emit(0)
-window.next.click()
+window = reopen_from_completion(window)
 assert window.page == 'general' and window.settings_mode
 window.content.findChild(QPushButton, 'settingsUninstall').click()
 assert window.page == 'uninstall' and window.next.text() == window.t('Uninstall')

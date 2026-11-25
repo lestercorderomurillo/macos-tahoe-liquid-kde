@@ -887,9 +887,14 @@ def _launch_preview_pyqt(uninstall=False, *, mode="install", section="appearance
     wake.start(200)
     wake.timeout.connect(lambda: None)
     try:
-        return app.exec()
+        result = app.exec()
     finally:
         signal.signal(signal.SIGINT, prev_sigint)
+
+    if result == 0 and window.reopen_settings_section is not None:
+        os.execv(sys.executable, [sys.executable, str(REPO_ROOT / "installer"),
+                                  "--mode=settings", "--section", window.reopen_settings_section])
+    return result
 
 
 def launch_preview(uninstall=False, *, mode="install", section="appearance", widget=None) -> int:

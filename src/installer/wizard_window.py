@@ -1190,6 +1190,7 @@ class InstallerWindow(OpaqueSurface):
         self.settings_baseline = None
         self.reconfiguring = False
         self.reinstall_requested = False
+        self.reopen_settings_section = None
         self.appearance_process = None
         self.appearance_error = ""
         if self.settings_mode:
@@ -1554,9 +1555,9 @@ class InstallerWindow(OpaqueSurface):
             self.settings_baseline["appearance"] = self.choices["appearance"]
         self.render()
 
-    def load_settings_choices(self, applied=None):
+    def load_settings_choices(self):
         from installer_choices import installed_choices
-        saved = applied if applied is not None else installed_choices()
+        saved = installed_choices()
         self.choices = dict(self.defaults if saved is None else saved)
         self.choices.update(reset_layout=False, wallpaper_explicit=False)
         self.sync_appearance_choice()
@@ -1579,24 +1580,6 @@ class InstallerWindow(OpaqueSurface):
         self.settings_mode = False
         self.page = page
         self.configure_window_mode()
-        self.render()
-
-    def open_installed_settings(self):
-        self.settings_mode = True
-        if hasattr(self, "config_watcher") and self.appearance_state.parent.is_dir():
-            directory = str(self.appearance_state.parent)
-            if directory not in self.config_watcher.directories():
-                self.config_watcher.addPath(directory)
-        if not self.reconfiguring:
-            self.settings_history = [("theme", 0)]
-            self.settings_index = 0
-            self.rendered_settings_index = None
-        target, _ = self.settings_history[self.settings_index]
-        self.load_settings_choices(self.choices)
-        self.reconfiguring = False
-        self.reinstall_requested = False
-        self.configure_window_mode()
-        self.page = target
         self.render()
 
     def paintEvent(self, event):
@@ -3639,7 +3622,8 @@ class InstallerWindow(OpaqueSurface):
 
     def advance(self):
         if self.page == "done" and self.install_activated():
-            self.open_installed_settings()
+            self.reopen_settings_section = self.settings_history[self.settings_index][0] if self.reconfiguring else "theme"
+            self.close()
             return
         if self.editing:
             self.editing = False; self.page = "summary"
