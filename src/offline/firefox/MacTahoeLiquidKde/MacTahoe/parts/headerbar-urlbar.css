@@ -278,6 +278,12 @@ toolbarspring {
 	border-radius: 999px !important;
 }
 
+#urlbar #identity-box,
+#urlbar #identity-icon-box {
+	align-items: center !important;
+	align-self: center !important;
+}
+
 #identity-icon-box.identity-box-button {
 	max-width: calc(30px + 13em) !important;
 }
@@ -314,6 +320,19 @@ toolbarspring {
 .search-go-button[open="true"],
 .identity-box-button[open="true"] {
 	background: var(--gnome-headerbar-button-checked-background) !important;
+}
+
+/* Keep both halves of the search pill on the same vertical centerline. */
+#urlbar-searchmode-switcher,
+#searchmode-switcher-chicklet {
+	align-self: center !important;
+}
+
+/* Recent Firefox renders the labelled button inside a shadow root. Give
+   its host the same minimum height as the visible button face. */
+#urlbar[searchmode] .searchmode-switcher {
+	align-self: center !important;
+	min-block-size: 30px !important;
 }
 
 /* Search mode indicator */
@@ -398,6 +417,8 @@ toolbarspring {
 
 #urlbar-search-mode-indicator,
 #urlbar-label-box {
+	align-self: center !important;
+	align-items: center !important;
 	background: var(--gnome-headerbar-button-hover-background) !important;
 	border: none !important;
 	border-radius: 999px !important;

@@ -19,7 +19,7 @@ from paths import (
     read_version,
 )
 from log import (
-    banner, errors, fail, note, ok, progress_done, progress_reset, progress_event, step, warn,
+    banner, errors, fail, info, note, ok, progress_done, progress_reset, progress_event, step, warn,
 )
 from launcher_defaults import edition_name
 from preflight import run_preflight
@@ -415,8 +415,7 @@ def check_for_updates(verbose: bool = False, inline: bool = False) -> bool:
             time.sleep(_VERSION_CHECK_READ_PAUSE)
         return True
     if verbose or inline:
-        # Match ok() formatting exactly.
-        print(tr('  \x1b[0;32m✓\x1b[0m  On the latest version ({current})', current=current))
+        ok(tr('Version {current} is up to date.', current=current))
     if inline:
         time.sleep(_VERSION_CHECK_READ_PAUSE)
     return False
@@ -884,12 +883,10 @@ def _run_optional_downloads(feat: dict[str, object]) -> bool:
     if not downloads:
         ok(tr('no online components selected — skipping download phase'))
         return True
-    for i, feature in enumerate(downloads):
+    for feature in downloads:
         check_cancelled()
-        if i:
-            print()
         label = feature_label(feature)
-        print(tr('  \x1b[1mDownloading {label}\x1b[0m', label=label))
+        info(tr('Downloading {label}', label=label))
         before = len(errors)
         phase_ok = run_phase(feature, "download")
         mod = step_module(feature)
@@ -931,13 +928,10 @@ def _run_builds_or_abort(feat: dict[str, object]) -> bool:
         return True
 
     failed: list[str] = []
-    for i, feature in enumerate(builds):
+    for feature in builds:
         check_cancelled()
         label = feature_label(feature)
-        # note() already trails a blank line; skip the first leading blank.
-        if i:
-            print()
-        print(tr('  \x1b[1mBuilding {label}\x1b[0m', label=label))
+        info(tr('Building {label}', label=label))
         progress_event("build", id=feature, state="running")
         if not run_phase(feature, "build"):
             progress_event("build", id=feature, state="failed")
@@ -1024,14 +1018,14 @@ def _check_deps(feat: dict[str, object]) -> bool:
         if p not in missing:
             ok(p)
     if missing:
-        warn(tr('installing missing: {value1}', value1=', '.join(missing)))
+        note(tr('Installing required packages: {value1}', value1=', '.join(missing)))
         transaction_ok = pkg_sync_install(*missing)
         check_cancelled()
         if not transaction_ok:
-            fail(tr('dependency package transaction failed — refusing to continue'))
+            fail(tr('Installation stopped. The package manager could not install the required dependencies.'))
             return False
     else:
-        ok(tr('all dependencies present'))
+        ok(tr('All required packages are installed'))
     return True
 
 
@@ -1049,7 +1043,6 @@ def _flush_icon_cache_signal() -> None:
 
 def _print_done(verb: str) -> None:
     print()
-    print(tr('\x1b[0;32m\x1b[1m  ── Done\x1b[0m'))
     if not errors:
         ok(tr('MacTahoe Liquid KDE {verb} successfully', verb=tr(verb)).replace("MacTahoe", edition_name()))
         print(tr('  \x1b[0;90mReport bugs at: https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new\x1b[0m'))
@@ -1058,9 +1051,9 @@ def _print_done(verb: str) -> None:
     # Snapshot: fail() appends to errors, so iterating the live list while
     # calling fail() loops forever.
     issues = list(errors)
-    warn(tr('{value1} issue(s):', value1=len(issues)))
+    info(tr('Errors: {count}', count=len(issues)))
     for e in issues:
-        print(f"  \033[0;31m✗\033[0m  {e}", file=sys.stderr)
+        print(f"  [{tr('Error')}] {e}", file=sys.stderr)
     print(tr('  \x1b[0;90mReport bugs at: https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new\x1b[0m'))
     print()
 
@@ -1088,7 +1081,7 @@ def _run_install_steps(feat: dict[str, object]) -> int:
     preflight_ok = run_preflight("install")
     check_cancelled()
     if not preflight_ok:
-        fail(tr('preflight failed — refusing to install'))
+        fail(tr('Installation stopped. A system check failed.'))
         return 1
 
     step('Verification')
@@ -1169,14 +1162,19 @@ def _run_install_steps(feat: dict[str, object]) -> int:
         note(tr('Applies settings, flushes caches, restarts KWin'))
         run_phase("apply", "install")
 
-        # Layout runs after apply — the Plasma JS scripting API can't
-        # find the custom plasmoids by ID until their packages are on disk.
+        # Replace the shell before any layout script creates applets. A shell
+        # still mapping the previous native plugins can crash during teardown.
+        _flush_icon_cache_signal()
+        step('Restarting Plasma')
+        note(tr('Restarts Plasma shell to load all changes'))
+        if not run_phase("apply", "restart_plasma"):
+            progress_event("phase", id="apply", state="failed")
+            return 1
+
         if feat.get("layout", True) and step_exists("layout"):
             step('Installing Layout')
             note(tr(FEATURE_DESC["layout"]))
             run_phase("layout", "install")
-
-        _flush_icon_cache_signal()
 
         progress_event('phase', id='apply', state='failed' if errors else 'done')
         progress_event('phase', id='verify', state='running')
@@ -1186,10 +1184,6 @@ def _run_install_steps(feat: dict[str, object]) -> int:
 
         if not keep_layout and step_exists("layout"):
             run_phase("layout", "migrate_status_controls")
-
-        step('Restarting Plasma')
-        note(tr('Restarts Plasma shell to load all changes'))
-        run_phase("apply", "restart_plasma")
 
         if feat.get("layout", True) and step_exists("layout") and not _layout_is_installed():
             step('Retrying Layout')
@@ -1235,7 +1229,7 @@ def _run_uninstall_steps(feat: dict[str, object]) -> int:
     preflight_ok = run_preflight("uninstall")
     check_cancelled()
     if not preflight_ok:
-        fail(tr('preflight failed — refusing to uninstall'))
+        fail(tr('Removal stopped. A system check failed.'))
         return 1
 
     step('Verification')
@@ -1369,14 +1363,13 @@ def run_install(argv: list[str],
         return 0 if result else 1
 
     # Standalone --restart just kicks plasmashell. Combined with install
-    # flags it is implicit — the install already ends with restart_plasma.
+    # flags it is implicit in the activation phase.
     if (parsed.restart_only and not parsed.only_mode and not parsed.cli_overrides
             and not parsed.reset_wallpapers):
         banner(read_version())
         step('Restarting Plasma')
         note(tr('Restarts Plasma shell — no install, no config changes'))
-        run_phase("apply", "restart_plasma")
-        return 0
+        return 0 if run_phase("apply", "restart_plasma") else 1
 
     tracker = RunTracker("install", argv, str(feat.get("theme_mode", "auto")))
     tracker.start()
