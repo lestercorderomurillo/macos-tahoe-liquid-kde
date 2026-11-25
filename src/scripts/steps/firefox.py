@@ -593,8 +593,8 @@ def install() -> None:
     manifest = _load_manifest()
     _retire_profiles(manifest, set(profiles))
     if not profiles:
-        warn(tr('No initialized Firefox profiles found — run Firefox once, then reinstall'))
-        info(tr('Firefox theme: 0 profiles changed'))
+        warn(tr('Firefox theme skipped. Open Firefox to create a profile, then run the installer again.'))
+        info(tr('Firefox profiles modified: 0'))
         return
     changed = sum(_install_profile(profile, manifest) for profile in profiles)
     _save_manifest(manifest)

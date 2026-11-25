@@ -1269,7 +1269,7 @@ class InstallerWindow(OpaqueSurface):
         self.setPalette(installer_palette(dark))
         self.bridge = bridge
         self._display_family = display_family
-        self._log_font = QFont(ui_font)
+        self._log_font = QFontDatabase.systemFont(QFontDatabase.SystemFont.FixedFont)
         self._operation_started = None
         self._details_expanded = False
         self._eta_timer = QTimer(self)
@@ -3533,24 +3533,19 @@ class InstallerWindow(OpaqueSurface):
         self.requested_install_panel = page if page in PANEL_STEPS else None
         self.render()
 
-    def operation_text(self, message):
-        # Existing locales use the English diagnostic view.
-        from localization import effective_language
-        return self.t(message) if effective_language(self.bridge.language) == "it" else message
-
     def details(self):
-        self.details_toggle = QPushButton(self.operation_text("Show details"))
+        self.details_toggle = QPushButton(self.t("Show details"))
         self.details_toggle.setObjectName("detailsToggle")
         self.details_toggle.setCheckable(True)
         controls = QHBoxLayout()
         controls.setSpacing(18)
         controls.addWidget(self.details_toggle)
         controls.addStretch()
-        copy = QPushButton(self.operation_text("Copy diagnostic"))
+        copy = QPushButton(self.t("Copy diagnostic"))
         copy.setObjectName("copyInstallationLog")
         copy.clicked.connect(lambda: QApplication.clipboard().setText(self.bridge.logText()))
         controls.addWidget(copy)
-        save = QPushButton(self.operation_text("Save log…"))
+        save = QPushButton(self.t("Save log…"))
         save.setObjectName("saveInstallationLog")
         save.clicked.connect(self.save_log)
         controls.addWidget(save)
@@ -3559,13 +3554,13 @@ class InstallerWindow(OpaqueSurface):
             button.setFont(relative_font(self, .85))
             button.setStyleSheet(f"border:0; background:transparent; color:{self.accent}; padding:4px 0;")
         self.body.addLayout(controls)
-        self.full_output_toggle = QPushButton(self.operation_text("Show technical output"))
+        self.full_output_toggle = QPushButton(self.t("Show technical output"))
         self.full_output_toggle.setCheckable(True)
         self.full_output_toggle.setFlat(True)
         self.full_output_toggle.setFont(relative_font(self, .85))
         self.full_output_toggle.setStyleSheet(f"border:0; background:transparent; color:{self.accent}; padding:4px 0; text-align:left;")
         self.full_output_toggle.setObjectName("fullTechnicalOutput")
-        self.full_output_toggle.setToolTip(self.operation_text("Latest 2,000 lines. Copy or save includes the complete output."))
+        self.full_output_toggle.setToolTip(self.t("Latest 2,000 lines. Copy or save includes the complete output."))
         self.full_output_toggle.setChecked(False)
         self.full_output_toggle.toggled.connect(lambda _: self.refresh_log(force=True))
         self.body.addWidget(self.full_output_toggle)
@@ -3594,7 +3589,7 @@ class InstallerWindow(OpaqueSurface):
             self.log.setVisible(value)
             self.full_output_toggle.setVisible(value)
             self.refresh_log(force=True)
-            title = self.operation_text("Hide details" if value else "Show details")
+            title = self.t("Hide details" if value else "Show details")
             self.details_toggle.setText(title)
             self.details_toggle.setAccessibleName(title)
             self.details_toggle.setToolTip(title)
@@ -3604,13 +3599,13 @@ class InstallerWindow(OpaqueSurface):
         expanded(self._details_expanded)
 
     def save_log(self):
-        path, _ = QFileDialog.getSaveFileName(self, self.operation_text("Save installation log"), "installation.log", self.operation_text("Log files (*.log);;All files (*)"))
+        path, _ = QFileDialog.getSaveFileName(self, self.t("Save installation log"), "installation.log", self.t("Log files (*.log);;All files (*)"))
         if not path:
             return
         try:
             self.bridge.saveLog(path)
         except OSError as exc:
-            self.log.appendPlainText(self.operation_text("Couldn't save log: {error}").format(error=exc))
+            self.log.appendPlainText(self.t("Couldn't save log: {error}").format(error=exc))
             self.details_toggle.setChecked(True)
 
     def page_progress(self):
@@ -3622,7 +3617,7 @@ class InstallerWindow(OpaqueSurface):
         self.body.addWidget(self.operation_detail)
         row = QHBoxLayout()
         self.spinner = ProgressSpinner()
-        self.spinner.setAccessibleName(self.operation_text("Removing components" if self.action == "uninstall" else "Installing components"))
+        self.spinner.setAccessibleName(self.t("Removing components" if self.action == "uninstall" else "Installing components"))
         row.addWidget(self.spinner)
         self.progress = QProgressBar()
         self.progress.setRange(0, 1000)
@@ -3701,25 +3696,25 @@ class InstallerWindow(OpaqueSurface):
             self.progress.setValue(round(fraction * 1000))
         self.progress.setAccessibleDescription(self.bridge.currentStep)
         elapsed = time.monotonic() - self._operation_started if self._operation_started is not None else 0
-        self.remaining_label.setText(self.operation_text("Elapsed {duration}").format(duration=elapsed_text(elapsed, self.operation_text)))
+        self.remaining_label.setText(self.t("Elapsed {duration}").format(duration=elapsed_text(elapsed, self.t)))
         active = self.bridge.summary.phases.get(self.bridge.summary.active, {})
-        self.operation_detail.setText(self.operation_text('Cancelling…' if self.bridge.cancelRequested else active.get('label', 'Preparing…')))
+        self.operation_detail.setText(self.t('Cancelling…' if self.bridge.cancelRequested else active.get('label', 'Preparing…')))
         self.refresh_log()
 
     def refresh_log(self, force=False):
         if self.page not in ('progress', 'done', 'removed', 'error') or not hasattr(self, 'log'):
             return
-        self.full_output_toggle.setText(self.operation_text("Show summary" if self.full_output_toggle.isChecked() else "Show technical output"))
+        self.full_output_toggle.setText(self.t("Show summary" if self.full_output_toggle.isChecked() else "Show technical output"))
         if self.full_output_toggle.isChecked():
             if not force:
                 return
             text = self.bridge.logTail()
         else:
-            title = self.operation_text("Removing {edition}" if self.action == "uninstall" else "Installing {edition}").format(edition=self.edition)
-            context = self.operation_text("{appearance} appearance · {launcher} launcher").format(
-                appearance=self.operation_text(self.choices["appearance"].capitalize()),
+            title = self.t("Removing {edition}" if self.action == "uninstall" else "Installing {edition}").format(edition=self.edition)
+            context = self.t("{appearance} appearance · {launcher} launcher").format(
+                appearance=self.t(self.choices["appearance"].capitalize()),
                 launcher=self.choices["launcher"].replace("golden", "Golden Gate").replace("tahoe", "Tahoe"))
-            text = title + '\n' + context + '\n\n' + self.bridge.summary.text(self.operation_text)
+            text = title + '\n' + context + '\n\n' + self.bridge.summary.text(self.t)
             if self.bridge.statusMessage:
                 text += '\n\n' + self.bridge.statusMessage
         if self.log.toPlainText() != text:

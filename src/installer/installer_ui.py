@@ -483,7 +483,7 @@ def _make_installer_bridge():
             if self._log_failed:
                 return
             self._log_failed = True
-            message = "Full log storage is unavailable. Only the latest output is retained."
+            message = translate("Full log storage is unavailable. Only the latest output is retained.", self._language)
             self.summary.accept({'kind': 'warning', 'message': message})
             self.summaryChanged.emit()
             self._log_lines.append(message)
