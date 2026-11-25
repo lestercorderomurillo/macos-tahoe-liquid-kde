@@ -16,8 +16,10 @@ def step_module(feature: str) -> ModuleType | None:
     name = feature.replace("-", "_")
     try:
         return importlib.import_module(f"steps.{name}")
-    except ModuleNotFoundError:
-        return None
+    except ModuleNotFoundError as exc:
+        if exc.name == f"steps.{name}":
+            return None
+        raise
 
 
 def step_exists(feature: str) -> bool:

@@ -213,7 +213,7 @@ def download() -> None:
 
 
 def download_ready() -> bool:
-    """Let the orchestrator skip this optional feature after a soft failure."""
+    """Confirm that the selected source is ready to build."""
     return _DOWNLOAD_READY
 
 

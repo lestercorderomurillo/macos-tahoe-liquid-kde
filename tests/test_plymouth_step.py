@@ -633,6 +633,7 @@ def test_uninstall_falls_back_to_bgrt_without_snapshot(tmp_path, monkeypatch):
                         tmp_path / "state-missing/plymouth-previous-theme")
     monkeypatch.setattr(plymouth, "DEST", tmp_path / "dest/MacTahoeLiquidKde")
 
+    plymouth.DEST.mkdir(parents=True)
     calls = _stub(monkeypatch, have_bin=True)
     plymouth.uninstall()
 
@@ -1504,3 +1505,13 @@ def test_install_aborts_when_previous_theme_cannot_be_saved(tmp_path, monkeypatc
     plymouth.install()
     assert not calls['install_tree']
     assert not _activation_calls(calls)
+
+
+def test_uninstall_completed_retry_preserves_active_splash(tmp_path, monkeypatch):
+    monkeypatch.setattr(plymouth, "STATE_DIR", tmp_path)
+    monkeypatch.setattr(plymouth, "DEST", tmp_path / "removed-theme")
+    monkeypatch.setattr(plymouth, "PREV_THEME_FILE", tmp_path / "previous")
+    calls = _stub(monkeypatch)
+    plymouth.uninstall()
+    assert not calls["subprocess"]
+    assert not calls["remove"]
