@@ -220,11 +220,21 @@ def test_install_cannot_start_while_checkout_update_is_running(bridge):
 
 def test_log_export_is_private_and_failed_write_preserves_existing_file(bridge, tmp_path, monkeypatch):
     from PyQt6 import QtCore
+    import about_info
+    monkeypatch.setattr(about_info, 'collect', lambda: {
+        'os': 'Fedora Linux', 'graphics': 'AMD Radeon', 'serial': 'private-serial',
+        'network': 'private-address',
+    })
     bridge._append_log('Complete diagnostic')
     path = tmp_path / 'installation.log'
     bridge.saveLog(str(path))
-    assert path.read_text() == 'Complete diagnostic\n'
+    report = bridge.diagnosticText()
+    assert path.read_text() == report
 
+    assert report.startswith('About This Computer\n')
+    assert 'Operating system: Fedora Linux' in report and 'Graphics: AMD Radeon' in report
+    assert 'private-' not in report
+    assert report.endswith('\n\nComplete diagnostic\n')
     assert path.stat().st_mode & 0o777 == 0o600
     original = QtCore.QSaveFile
     def failed_output(name):
@@ -235,7 +245,20 @@ def test_log_export_is_private_and_failed_write_preserves_existing_file(bridge, 
     bridge._append_log('New output')
     with pytest.raises(OSError):
         bridge.saveLog(str(path))
-    assert path.read_text() == 'Complete diagnostic\n'
+    assert path.read_text() == report
+
+
+def test_diagnostic_export_survives_about_probe_failure(bridge, monkeypatch):
+    import about_info
+
+    def unavailable():
+        raise OSError('probe failed')
+
+    monkeypatch.setattr(about_info, 'collect', unavailable)
+    bridge._append_log('Backend failed before preflight')
+    report = bridge.diagnosticText()
+    assert 'Hardware information unavailable' in report
+    assert report.endswith('Backend failed before preflight\n')
 
 
 def test_cancel_during_channel_setup_prevents_backend_launch(bridge, monkeypatch):
