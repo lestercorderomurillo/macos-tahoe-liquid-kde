@@ -519,18 +519,28 @@ def test_finish_reset_only_removes_panels_retired_by_this_install(monkeypatch, t
     assert not layout._retired_panel_ids
 
 
-def test_live_dock_verification_fails_when_plasma_keeps_adaptive(monkeypatch):
+@pytest.mark.parametrize("restored", [True, False])
+def test_live_dock_verification_restores_saved_mode(monkeypatch, restored):
     import installer_choices
+    import steps.apply
 
     observed = []
     failures = []
+    writes, restarts = [], []
     monkeypatch.setattr(installer_choices, "selected", lambda: {"dock": True, "reset_layout": True})
     def transaction(script):
         observed.append(script)
-        return 'p.opacity = "translucent"' in script
+        return 'p.opacity = "translucent"' in script or (restored and bool(restarts))
 
     monkeypatch.setattr(layout, "evaluate_panel_transaction", transaction)
+    monkeypatch.setattr(layout, "qdbus_cmd", lambda: "qdbus6")
+    monkeypatch.setattr(layout, "run_user", lambda *a, **k: subprocess.CompletedProcess([], 0, "[32]"))
+    monkeypatch.setattr(layout, "kw_write", lambda *args: writes.append(args) or True)
+    monkeypatch.setattr(steps.apply, "restart_plasma", lambda: restarts.append(True))
     monkeypatch.setattr(layout.time, "sleep", lambda _: None)
     monkeypatch.setattr(layout, "fail", failures.append)
     layout.verify_dock_glass()
-    assert len(observed) == 8 and len(failures) == 1
+    assert writes == [("--file", "plasmashellrc", "--group", "PlasmaViews", "--group",
+                       "Panel 32", "--key", "panelOpacity", "2")]
+    assert restarts == [True]
+    assert bool(failures) == (not restored)
