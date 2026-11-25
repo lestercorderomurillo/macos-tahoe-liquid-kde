@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.84.19**. Copied and saved installer diagnostics include the computer's hardware, operating system, kernel, session type and installer version. [Evidence and coverage](release-evidence.json).
+**v0.84.20**. Russian installer support, seven preview languages, and fixes for mixed-language installer and clipboard controls. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

@@ -1,24 +1,28 @@
 {
-  "version": "0.84.19",
+  "version": "0.84.20",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Copied and saved installer diagnostics include the computer's hardware, operating system, kernel, session type and installer version.",
+  "scope": "Russian installer support, seven preview languages, and fixes for mixed-language installer and clipboard controls.",
+  "qualified_commit": "c81c8425563986d0291217bf0e0c637c5494b649",
   "checks": [
     {
-      "command": "python3 -m pytest -q tests/test_installer_progress.py tests/test_about_info.py (258 passed)",
+      "command": "Isolated pytest against b8a9ccbc, including localization, multilingual completeness, installer navigation under both edition defaults, clipboard, uninstall and component hashes (254 passed).",
       "result": "passed"
     },
     {
-      "command": "With QT_QPA_PLATFORM=offscreen, open the installer progress page under Tahoe and Golden Gate defaults. Click Copy diagnostic and Save log with a simulated failure and live About probes. Compare both outputs, private file permissions, edition, version and diagnostic fields.",
+      "command": "Isolated pytest on merged sources: tests/test_installer_progress.py, test_native_wizard_navigation_preserves_choices_and_waits_for_completion and test_every_python_message_has_a_complete_catalog.",
       "result": "passed"
     }
   ],
-  "qualified_commit": "72e84a6d55946bfcd98e210fa4dc94d07a03ad84",
-  "component_source_sha256": {
-    "src/installer/installer_ui.py": "31d7878c841bb8d6be526f33bac40b0768e691ab5f5a182a92fcb8d729ed14aa",
-    "src/installer/wizard_window.py": "9db35656838e5b3539cd515753be9df1632d010a326446f46782e2469f422e43",
-    "src/scripts/about_info.py": "e6721877ff6232ee55ffcb6454b1f2ece4c7bb40e8fe7e1d065d03c98de6fa99"
-  },
-  "coverage_limits": "Export was exercised in an offscreen Qt session. This change affects diagnostic export only. Installer lifecycle and desktop rendering were unchanged.",
-  "captures": [],
-  "source_sha256": "c9ec2c662c2d272dc11c311b2c20ca8da6a7331ed4a92b3d8124997d24a2de63"
+  "captures": [
+    {
+      "path": "docs/evidence/tahoe-ru-5474b866051a.png",
+      "sha256": "5474b866051a619e5a274542056ee3ba96fcc757bba3ec90fbe914929b97c6f3",
+      "reviewed": true,
+      "source_commit": "45c28b35d94a903c0f6ecc3caa15412977f4bee0",
+      "source_archive_sha256": "cf2d87225f141eebde4572a6a1a54da38bc773d9e09d54406f196a0612f50d50",
+      "environment": "Disposable KDE neon Plasma 6.8.1 VM. Actual installer welcome windows. Golden Gate defaults applied using bootstrap.apply_defaults."
+    }
+  ],
+  "coverage_limits": "The approved captures exercise the welcome screen. Seven new languages are machine-assisted previews pending native-speaker review.",
+  "source_sha256": "218944d17398bc175d5dd0af583b28709cd7f5e349191e08fb8898f3a6fb0364"
 }
