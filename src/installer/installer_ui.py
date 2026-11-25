@@ -846,12 +846,14 @@ def _make_installer_bridge():
 
 def _launch_preview_pyqt(uninstall=False, *, mode="install", section="appearance", widget=None) -> int:
     try:
-        from PyQt6.QtCore import QTimer
+        from PyQt6.QtCore import QLoggingCategory, QTimer
         from PyQt6.QtWidgets import QApplication
         from settings_launcher import DESKTOP_ENTRY
         from wizard_window import InstallerWindow
     except ImportError:
         return -1
+    # Font matching probes SF Pro before falling back for complex scripts.
+    QLoggingCategory.setFilterRules("qt.text.font.db.info=false")
     os.environ.setdefault("QT_NO_XDG_DESKTOP_PORTAL", "1")
     app = QApplication.instance() or QApplication(sys.argv[:1])
     app.setApplicationName("mac-tahoe-liquid-kde-installer")
