@@ -12,7 +12,15 @@
   <a href="README.pt-BR.md" lang="pt-BR" hreflang="pt-BR">🇧🇷 Português (Brasil)</a> ·
   <a href="README.de.md" lang="de" hreflang="de">🇩🇪 Deutsch</a> ·
   <a href="README.fr.md" lang="fr" hreflang="fr">🇫🇷 Français</a> ·
-  <a href="README.ru.md" lang="ru" hreflang="ru">🇷🇺 Русский</a>
+  <a href="README.it.md" lang="it" hreflang="it">🇮🇹 Italiano</a> ·
+  <a href="README.ja.md" lang="ja" hreflang="ja">🇯🇵 日本語</a> ·
+  <a href="README.ko.md" lang="ko" hreflang="ko">🇰🇷 한국어</a> ·
+  <a href="README.ru.md" lang="ru" hreflang="ru">🇷🇺 Русский</a> ·
+  <a href="README.ar.md" lang="ar" hreflang="ar">🇸🇦 العربية</a> ·
+  <a href="README.hi.md" lang="hi" hreflang="hi">🇮🇳 हिन्दी</a> ·
+  <a href="README.nl.md" lang="nl" hreflang="nl">🇳🇱 Nederlands</a> ·
+  <a href="README.pl.md" lang="pl" hreflang="pl">🇵🇱 Polski</a> ·
+  <a href="README.tr.md" lang="tr" hreflang="tr">🇹🇷 Türkçe</a>
 </p>
 
 <p align="center">
@@ -23,10 +31,6 @@
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="report a bug"></a>
 </p>
 
-
-<p align="center">
-  macOS Tahoe style for KDE Plasma 6.6, 6.7 and 6.8+.
-</p>
 
 <p align="center">
   <sub>Select a distro to view its testing status.</sub>
@@ -421,8 +425,14 @@ mac-tahoe-oled-care status
 
 </details>
 
+<br>
+
+![Compatibility](https://img.shields.io/badge/compatibility-system%20support-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
+
+Check support for your distribution, init system and Plasma version.
+
 <details>
-<summary><b>Test in a virtual machine</b></summary>
+<summary><b>Distro Testing</b></summary>
 
 Try the theme in an isolated Plasma desktop.
 
@@ -447,10 +457,23 @@ desktop. Log in as `tester` with password `tester`; SSH is available on
 `/home/tester/macos-tahoe-liquid-kde`; the host repository is mounted read-only.
 Use `./vm debian --clean` to rebuild the disposable guest from scratch.
 
-</details>
+All 11 distributions in this table passed live VM qualification. Select a status badge for reviewed screenshots and test results.
 
-<details>
-<summary><b>NixOS and Home Manager (testing)</b></summary>
+| | Name | Status |
+|:--:|------|---------|
+| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#cachyos) |
+| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#arch) |
+| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#endeavouros) |
+| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#fedora) |
+| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#manjaro) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Artix Linux (OpenRC) | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#artix) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#garuda) |
+| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#nobara) |
+| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#opensuse) |
+| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#neon) |
+| <img src="https://cdn.simpleicons.org/debian" alt="Debian" width="22"> | Debian testing / sid (Plasma 6.6+) | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#debian) |
+
+**NixOS and Home Manager (testing)**
 
 Use the flake modules, **not the graphical installer**. Live desktop validation is pending.
 
@@ -510,33 +533,6 @@ the modules, select Breeze. Removal leaves user settings in place.
 
 </details>
 
-<br>
-
-![Compatibility](https://img.shields.io/badge/compatibility-system%20support-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
-
-Check support for your distribution, init system and Plasma version.
-
-<details>
-<summary><b>Distributions</b></summary>
-
-All 11 distributions in this table passed live VM qualification. Select a status badge for reviewed screenshots and test results.
-
-| | Name | Status |
-|:--:|------|---------|
-| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#cachyos) |
-| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#arch) |
-| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#endeavouros) |
-| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#fedora) |
-| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#manjaro) |
-| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Artix Linux (OpenRC) | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#artix) |
-| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#garuda) |
-| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#nobara) |
-| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#opensuse) |
-| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#neon) |
-| <img src="https://cdn.simpleicons.org/debian" alt="Debian" width="22"> | Debian testing / sid (Plasma 6.6+) | [![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#debian) |
-
-</details>
-
 <details>
 <summary><b>Init systems</b></summary>
 
@@ -566,76 +562,6 @@ Plasma 6.6–6.8 is supported; compiled effects use the host SDK.
 | 6.8 | ![Supported](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
 
 </details>
-
-<br>
-
-![Roadmap](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
-
-What works now and what we plan to add.
-
-<details>
-<summary><b>Component status</b></summary>
-
-The current status of each component.
-
-| Component | Status |
-|-----------|--------|
-| Color Schemes | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Wallpapers | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Fonts | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Cursors | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Plasma Theme | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Kvantum Theme | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| GTK Theme | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Acrylic Glass | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| KDE Rounded Corners | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Auto Theme Switcher | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| OLED Care | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Installer UI | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Localization | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Aurorae Decorations | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Global Menu | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Dock | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Finder-style Nautilus | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Launchpad | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Shell | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Clipboard History | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| System Information | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Trash | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Sounds | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Boot Screen | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Shutdown Screen | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Firefox Theme | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Icons | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Multi-Distro Support | ![Supported](https://img.shields.io/badge/Supported-1A7F37) |
-| OpenRC Testing | ![VM verified](https://img.shields.io/badge/VM%20verified-1A7F37) |
-| Konsole Theme | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| Kate Theme | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| SDDM Theme | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| Calendar | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Control Center, Bluetooth, Wi-Fi, Battery and Notifications | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| System Preferences | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-| OS Selector | ![Planned](https://img.shields.io/badge/Planned-D4A017) |
-
-</details>
-
-<br>
-
-**[Report a bug](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)** or use **Apple menu → About This Computer → Report a Bug…**.
-
-Include:
-
-- Your Plasma version: `plasmashell --version`
-- Your distro: `grep PRETTY_NAME /etc/os-release`
-- The theme version: `cat VERSION`
-- A screenshot or recording for visual issues
-
-Keep pull requests focused and validate with `./vm`. See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-The shared [icon generation toolset](CONTRIBUTING.md#icon-generation-toolset)
-creates light, dark, monochrome and translucent glass appearances from our
-bundled icons, with any RGB tint. It builds, previews, verifies and packages
-icons offline for both editions without applying a desktop theme.
 
 <br>
 

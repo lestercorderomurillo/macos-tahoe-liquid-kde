@@ -12,7 +12,15 @@
   <a href="README.pt-BR.md" lang="pt-BR" hreflang="pt-BR">🇧🇷 Português (Brasil)</a> ·
   <a href="README.de.md" lang="de" hreflang="de">🇩🇪 Deutsch</a> ·
   <a href="README.fr.md" lang="fr" hreflang="fr">🇫🇷 Français</a> ·
-  <a href="README.ru.md" lang="ru" hreflang="ru">🇷🇺 Русский</a>
+  <a href="README.it.md" lang="it" hreflang="it">🇮🇹 Italiano</a> ·
+  <a href="README.ja.md" lang="ja" hreflang="ja">🇯🇵 日本語</a> ·
+  <a href="README.ko.md" lang="ko" hreflang="ko">🇰🇷 한국어</a> ·
+  <a href="README.ru.md" lang="ru" hreflang="ru">🇷🇺 Русский</a> ·
+  <a href="README.ar.md" lang="ar" hreflang="ar">🇸🇦 العربية</a> ·
+  <a href="README.hi.md" lang="hi" hreflang="hi">🇮🇳 हिन्दी</a> ·
+  <a href="README.nl.md" lang="nl" hreflang="nl">🇳🇱 Nederlands</a> ·
+  <a href="README.pl.md" lang="pl" hreflang="pl">🇵🇱 Polski</a> ·
+  <a href="README.tr.md" lang="tr" hreflang="tr">🇹🇷 Türkçe</a>
 </p>
 
 <p align="center">
@@ -23,10 +31,6 @@
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="report a bug"></a>
 </p>
 
-
-<p align="center">
-  macOS Tahoe estilo para KDE Plasma 6.6, 6.7 y 6.8+.
-</p>
 
 <p align="center">
   <sub>Selecciona una distribución para ver el estado de sus pruebas.</sub>
@@ -129,242 +133,163 @@ Colaboradores de código y personas que informan de errores en Tahoe y Golden Ga
 
 ![Funciones y capturas](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Finder (Alpha)
+### Dock con soporte multicolor (Alfa)
 
-Exploración de archivos al estilo Finder con el cristal de Tahoe.
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
-</p>
-
-<details>
-<summary><strong>Acentos rojos y azules en modo claro y oscuro</strong></summary>
-
-<table>
-<tr><th>Acento</th><th>Claro</th><th>Oscuro</th></tr>
-<tr><td>Azul</td><td><a href="src/screenshots/previews/readme-tahoe-light-finder-blue-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-blue-8b64ba8e3a8b.webp" alt="Finder con la selección de la barra lateral en azul, en modo claro" width="415"></a></td><td><a href="src/screenshots/previews/readme-tahoe-dark-finder-blue-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-blue-dd8777a43699.webp" alt="Finder con la selección de la barra lateral en azul, en modo oscuro" width="415"></a></td></tr>
-<tr><td>Rojo</td><td><a href="src/screenshots/previews/readme-tahoe-light-finder-red-67a385c4a31e.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-red-67a385c4a31e.webp" alt="Finder con la selección de la barra lateral en rojo, en modo claro" width="415"></a></td><td><a href="src/screenshots/previews/readme-tahoe-dark-finder-red-6587e895a835.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-red-6587e895a835.webp" alt="Finder con la selección de la barra lateral en rojo, en modo oscuro" width="415"></a></td></tr>
-</table>
-
-</details>
-
-<br>
-
-### Launchpad (Alpha)
-
-Encuentra aplicaciones, explora categorías y mantén tus favoritos al alcance.
+Refracción de vidrio, zoom de desplazamiento, burbujas rojas de cuenta de notificación y ocultación automática.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="Tahoe Dock mostrando iconos multicolores en modo claro y oscuro, luego recorriendo los tonos del arco iris" width="830">
 </p>
 
 <br>
 
-### Dock (Alpha)
+### Coherencia de la superficie
 
-Refracción del cristal, ampliación al pasar el cursor, burbujas rojas con el número de notificaciones y ocultación automática.
-
-<p align="center">
-  <strong>Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-regular-b26e1bcf62f0.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-regular-b26e1bcf62f0.webp" alt="Tahoe Dock icon appearance preview: Light" width="830"></a>
-</p>
+Archivos, Editar y otros menús de aplicación siguen la ventana activa. Abre el menú del sistema para configuraciones y controles de sesión.
 
 <p align="center">
-  <strong>Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-regular-959ef77a3b82.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-regular-959ef77a3b82.webp" alt="Tahoe Dock icon appearance preview: Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Clear Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-clear-056e74f82157.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-clear-056e74f82157.webp" alt="Tahoe Dock icon appearance preview: Clear Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Clear Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-clear-055a23a7ce53.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-clear-055a23a7ce53.webp" alt="Tahoe Dock icon appearance preview: Clear Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Blue Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-blue-95f703deef94.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-blue-95f703deef94.webp" alt="Tahoe Dock icon appearance preview: Blue Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Blue Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-blue-805922934d8a.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-blue-805922934d8a.webp" alt="Tahoe Dock icon appearance preview: Blue Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Purple Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-purple-b7b268963e86.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-purple-b7b268963e86.webp" alt="Tahoe Dock icon appearance preview: Purple Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Purple Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-purple-63b683011b4b.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-purple-63b683011b4b.webp" alt="Tahoe Dock icon appearance preview: Purple Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Pink Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-pink-ed33bb30f211.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-pink-ed33bb30f211.webp" alt="Tahoe Dock icon appearance preview: Pink Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Pink Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-pink-ed2c4b7071d2.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-pink-ed2c4b7071d2.webp" alt="Tahoe Dock icon appearance preview: Pink Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Red Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-red-798d2ad8fdda.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-red-798d2ad8fdda.webp" alt="Tahoe Dock icon appearance preview: Red Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Red Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-red-0de97e6f1bbf.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-red-0de97e6f1bbf.webp" alt="Tahoe Dock icon appearance preview: Red Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Orange Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-orange-b2ee9be7772e.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-orange-b2ee9be7772e.webp" alt="Tahoe Dock icon appearance preview: Orange Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Orange Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-orange-2a9cb5a740eb.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-orange-2a9cb5a740eb.webp" alt="Tahoe Dock icon appearance preview: Orange Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Yellow Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-yellow-986f332a82fb.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-yellow-986f332a82fb.webp" alt="Tahoe Dock icon appearance preview: Yellow Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Yellow Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-yellow-361509d7cc42.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-yellow-361509d7cc42.webp" alt="Tahoe Dock icon appearance preview: Yellow Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Green Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-green-5ebeb19cf5b0.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-green-5ebeb19cf5b0.webp" alt="Tahoe Dock icon appearance preview: Green Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Green Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-green-8f1be9d871f0.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-green-8f1be9d871f0.webp" alt="Tahoe Dock icon appearance preview: Green Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Gray Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-gray-5577fc6bb663.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-gray-5577fc6bb663.webp" alt="Tahoe Dock icon appearance preview: Gray Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Gray Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-gray-8867fd63aba7.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-gray-8867fd63aba7.webp" alt="Tahoe Dock icon appearance preview: Gray Dark" width="830"></a>
+  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menú de archivos con un documento abierto en Kate" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Menú de archivos con un documento abierto en Kate" width="830">
 </p>
 
 <br>
 
-### Shell (Alpha)
+### Vidrio acrílico 2.0 con contraste adaptativo
 
-File, Edit y los demás menús cambian con la ventana activa. El menú del sistema da acceso a los ajustes y a los controles de sesión.
+Contraste adaptativo muestra el fondo detrás de cada etiqueta. mantiene el color del tema cuando la diferencia es de al menos 33 puntos de ligereza perceptiva.
+
+<br>
+
+### La plataforma de lanzamiento (Alfa)
+
+Encuentra aplicaciones, busca categorías y mantén tus favoritos al alcance.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menú File con un documento abierto en Kate" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Menú File con un documento abierto en Kate" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Preconfigurado Tahoe 1 en modo de luz, con búsqueda integrada y papel pintado Tahoe" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Preconfigurado por defecto Tahoe 1 en modo oscuro, con búsqueda integrada y papel pintado Tahoe" width="415">
 </p>
 
 <br>
 
-### Calendario (Alpha)
+### Centro de control (Alfa)
 
-Abre el reloj de la barra para ver el mes sobre cristal. Usa la rueda o las flechas para cambiar de mes y pulsa Inicio para volver al mes actual.
+Wi-Fi, Bluetooth, sonido, brillo y notificaciones en un menú de vidrio. El botón de apariencia muestra un sol para Luz, una luna para Oscuridad y un círculo dividido para Automático.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Claro" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro de control en modo de luz" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centro de control en modo oscuro" width="415">
+</p>
+
+<br>
+
+### Notificaciones (Alfa)
+
+Banner de notificación de vidrio y historial agrupado con acciones de la aplicación y soporte de respuestas.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Carteles de notificación de Tahoe en modo ligero" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Carteles de notificación de Tahoe en modo oscuro" width="48%">
+</p>
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Historial de notificación de tahoe en modo ligero" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Historial de notificación de Tahoe en modo oscuro" width="48%">
+</p>
+
+<br>
+
+### Finder (Alfa)
+
+Browsing de archivos en estilo de buscador con vidrio Tahoe.
+
+<p align="center">
+  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Desktop de Tahoe con enfoque de archivos" width="415"></a>
+  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe escritorio oscuro con archivos enfocados" width="415"></a>
+</p>
+
+<br>
+
+### Calendario (Alfa)
+
+Abra el reloj del panel para ver el mes en vidrio. Desglose o use las teclas de flecha para navegar meses. Presione Inicio para volver al mes actual.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendario · Luz" width="328">
   <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Calendario · Oscuro" width="328">
 </p>
 
 <br>
 
-### Centro de control (Alpha)
+### Bluetooth (alfa)
 
-Wi-Fi, sonido, brillo y notificaciones en un menú de cristal. El botón de apariencia muestra un sol en modo claro, una luna en modo oscuro y un círculo bicolor en automático.
+Conecte los dispositivos emparejados y compruebe el nivel de batería desde la barra de menú.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Control Center in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Control Center in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menú Bluetooth ligero con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menú Bluetooth oscuro con auriculares de estudio conectados en 82% y teclado inalámbrico desconectado" width="48%">
 </p>
 
-<p align="center">
-  <strong>Wi-Fi</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Wi-Fi · Claro" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Wi-Fi · Oscuro" width="328">
-</p>
+### Wi-Fi (Alfa)
+
+Abre el menú Wi-Fi para ver las redes inalámbricas disponibles. Sin un adaptador Wi-Fi o con Wi-Fi apagado, el menú enumera las conexiones con cable seguidas de un único divisor y el enlace de configuración Wi-Fi.
 
 <p align="center">
-  <strong>Batería</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Batería · Claro" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Batería · Oscuro" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menú Wi-Fi ligero conectado a Harbor Studio, con Garden Guest y Workshop disponibles" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Menú Wi-Fi oscuro conectado a Harbor Studio, con Garden Guest y Workshop disponibles" width="48%">
 </p>
 
 <br>
 
-### Notificaciones (Alpha)
+### Batería (Alfa)
 
-Banners de cristal e historial agrupado con acciones de las aplicaciones y respuestas directas.
+Abre el menú de la batería para comprobar el nivel de carga y el estado de potencia.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Notificaciones en modo claro" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Notificaciones en modo claro" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Notificaciones en modo oscuro" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Notificaciones en modo oscuro" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menú de baterías ligeras sin batería interna" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Menú de baterías oscuras sin batería interna" width="48%">
 </p>
 
 <br>
 
-### Historial del portapapeles (Alpha)
+### Historia de la cinta (Alfa)
 
-Encuentra y reutiliza texto e imágenes copiados directamente desde Launchpad.
+Encuentra y reutilice texto e imágenes copiados directamente desde Launchpad.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Clipboard history in the tahoe launcher in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="Clipboard history in the tahoe launcher in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Historia de la cinta en el lanzador tahoe en modo ligero" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="Historia de la cinta en el lanzador tahoe en modo oscuro" width="415">
 </p>
 
 <br>
 
-### Información del sistema (Alpha)
+### Información del sistema (Alfa)
 
-Información de hardware, software y tema con tinte dinámico en el texto.
+Detalles de hardware, software y tema con contraste adaptativo.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Información del sistema en modo claro" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Información del sistema en modo oscuro" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Ventana de información del sistema de luz" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Ventana de información del sistema oscuro" width="415">
 </p>
 
 <br>
 
-### Tema Plasma (Alpha)
+### Tema de plasma (alfa)
 
-Menús y ventanas emergentes translúcidos con colores claros y oscuros coordinados.
+Menús y popups translúcidos con colores claros y oscuros iguales.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menú de contexto de escritorio en modo luz" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Menú de contexto del escritorio en modo oscuro" width="415">
 </p>
 
 <br>
 
-### Pantalla de inicio (Alpha)
+### El botín de la espalla (Alfa)
 
-Una apariencia coordinada desde el inicio hasta el apagado, con desbloqueo integrado de unidades cifradas con LUKS2.
+Un aspecto parecido desde el inicio hasta el cierre, con desbloqueo incorporado para unidades encriptadas LUKS2.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash with a progress bar" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth arranque salpicaduras con una barra de progreso" width="415">
 </p>
 
 <br>
@@ -474,8 +399,14 @@ mac-tahoe-oled-care status
 
 </details>
 
+<br>
+
+![Compatibilidad](https://img.shields.io/badge/compatibility-system%20support-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
+
+Comprueba el soporte de tu distribución, sistema de inicio y versión de Plasma.
+
 <details>
-<summary><b>Probar en una máquina virtual</b></summary>
+<summary><b>Pruebas de distribuciones</b></summary>
 
 Prueba el tema en un escritorio Plasma aislado.
 
@@ -491,10 +422,23 @@ Prueba el tema en un escritorio Plasma aislado.
 
 `./vm debian` utiliza la imagen de nube oficial de Debian testing (Forky), verifica su suma SHA-512 y prepara un escritorio Plasma. Inicia sesión como `tester` con contraseña `tester`; SSH está disponible en `127.0.0.1:2232`. El instalador se abre desde una copia escribible del invitado en `/home/tester/macos-tahoe-liquid-kde`; el repositorio del anfitrión se monta como solo lectura. Usa `./vm debian --clean` para reconstruir el invitado desechable desde cero.
 
-</details>
+Las 11 distribuciones de esta tabla pasaron la validación en VM en vivo. Selecciona una insignia de estado para ver capturas revisadas y resultados de pruebas.
 
-<details>
-<summary><b>NixOS y Home Manager (en pruebas)</b></summary>
+| | Nombre | Estado |
+|:--:|------|---------|
+| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#cachyos) |
+| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#arch) |
+| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#endeavouros) |
+| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#fedora) |
+| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#manjaro) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Artix Linux (OpenRC) | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#artix) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#garuda) |
+| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#nobara) |
+| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#opensuse) |
+| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#neon) |
+| <img src="https://cdn.simpleicons.org/debian" alt="Debian" width="22"> | Debian testing / sid (Plasma 6.6+) | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#debian) |
+
+**NixOS y Home Manager (en pruebas)**
 
 Usa los módulos flake, **no el instalador gráfico**. La validación del escritorio en vivo está pendiente.
 
@@ -542,33 +486,6 @@ Cierra sesión y vuelve a entrar después de activar. No se configuran los perfi
 
 </details>
 
-<br>
-
-![Compatibilidad](https://img.shields.io/badge/compatibility-system%20support-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
-
-Comprueba el soporte de tu distribución, sistema de inicio y versión de Plasma.
-
-<details>
-<summary><b>Distribuciones</b></summary>
-
-Las 11 distribuciones de esta tabla pasaron la validación en VM en vivo. Selecciona una insignia de estado para ver capturas revisadas y resultados de pruebas.
-
-| | Nombre | Estado |
-|:--:|------|---------|
-| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#cachyos) |
-| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#arch) |
-| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#endeavouros) |
-| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#fedora) |
-| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#manjaro) |
-| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Artix Linux (OpenRC) | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#artix) |
-| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#garuda) |
-| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#nobara) |
-| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#opensuse) |
-| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#neon) |
-| <img src="https://cdn.simpleicons.org/debian" alt="Debian" width="22"> | Debian testing / sid (Plasma 6.6+) | [![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#debian) |
-
-</details>
-
 <details>
 <summary><b>Sistemas de inicio</b></summary>
 
@@ -598,73 +515,6 @@ Plasma 6.6–6.8 está soportado; los efectos compilados utilizan el SDK del anf
 | 6.8 | ![Soportado](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
 
 </details>
-
-<br>
-
-![Hoja de ruta](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
-
-Lo que funciona ahora y lo que planeamos añadir.
-
-<details>
-<summary><b>Estado de componentes</b></summary>
-
-El estado actual de cada componente.
-
-| Componente | Estado |
-|-----------|--------|
-| Paletas de colores | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Fondos de pantalla | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Fuentes | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Cursores | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Tema Plasma | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Tema Kvantum | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Tema GTK | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Acrylic Glass | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| KDE Rounded Corners | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Cambiador automático de tema | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Protección OLED | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Interfaz del instalador | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Traducción | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Decoraciones Aurorae | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Menú global | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Dock | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Nautilus al estilo Finder | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Launchpad | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Shell | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Historial del portapapeles | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Información del sistema | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Papelera | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Sonidos | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Pantalla de inicio | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Pantalla de apagado | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Tema Firefox | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Iconos | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Soporte de múltiples distribuciones | ![Soportado](https://img.shields.io/badge/Supported-1A7F37) |
-| Pruebas de OpenRC | ![VM verificada](https://img.shields.io/badge/VM%20verified-1A7F37) |
-| Tema Konsole | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
-| Tema Kate | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
-| Tema SDDM | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
-| Calendario | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Centro de control, Wi-Fi, batería y notificaciones | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Preferencias del sistema | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
-| Selector de sistema operativo | ![Previsto](https://img.shields.io/badge/Planned-D4A017) |
-
-</details>
-
-<br>
-
-**[Informa de un error](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)** o usa **Menú Apple → Acerca de este equipo → Informar de un error…**.
-
-Incluye:
-
-- Tu versión de Plasma: `plasmashell --version`
-- Tu distribución: `grep PRETTY_NAME /etc/os-release`
-- La versión del tema: `cat VERSION`
-- Una captura o grabación para problemas visuales
-
-Mantén las solicitudes de cambios centradas y valida con `./vm`. Consulta [CONTRIBUTING.md](CONTRIBUTING.md).
-
-El [conjunto compartido de herramientas de generación de iconos](CONTRIBUTING.md#icon-generation-toolset) crea apariencias claras, oscuras, monocromas y de cristal translúcido a partir de nuestros iconos incluidos, con cualquier tinte RGB. Genera, previsualiza, verifica y empaqueta iconos sin conexión para ambas ediciones sin aplicar un tema de escritorio.
 
 <br>
 

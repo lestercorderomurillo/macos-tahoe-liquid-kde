@@ -12,7 +12,15 @@
   <a href="README.pt-BR.md" lang="pt-BR" hreflang="pt-BR">🇧🇷 Português (Brasil)</a> ·
   <a href="README.de.md" lang="de" hreflang="de">🇩🇪 Deutsch</a> ·
   <a href="README.fr.md" lang="fr" hreflang="fr">🇫🇷 Français</a> ·
-  <a href="README.ru.md" lang="ru" hreflang="ru">🇷🇺 Русский</a>
+  <a href="README.it.md" lang="it" hreflang="it">🇮🇹 Italiano</a> ·
+  <a href="README.ja.md" lang="ja" hreflang="ja">🇯🇵 日本語</a> ·
+  <a href="README.ko.md" lang="ko" hreflang="ko">🇰🇷 한국어</a> ·
+  <a href="README.ru.md" lang="ru" hreflang="ru">🇷🇺 Русский</a> ·
+  <a href="README.ar.md" lang="ar" hreflang="ar">🇸🇦 العربية</a> ·
+  <a href="README.hi.md" lang="hi" hreflang="hi">🇮🇳 हिन्दी</a> ·
+  <a href="README.nl.md" lang="nl" hreflang="nl">🇳🇱 Nederlands</a> ·
+  <a href="README.pl.md" lang="pl" hreflang="pl">🇵🇱 Polski</a> ·
+  <a href="README.tr.md" lang="tr" hreflang="tr">🇹🇷 Türkçe</a>
 </p>
 
 <p align="center">
@@ -23,10 +31,6 @@
   <a href="https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new"><img src="https://img.shields.io/badge/report-a%20bug-red?logo=github" alt="report a bug"></a>
 </p>
 
-
-<p align="center">
-  macOS Tahoe 风格，适用于 KDE Plasma 6.6、6.7 和 6.8+。
-</p>
 
 <p align="center">
   <sub>选择发行版以查看其测试状态。</sub>
@@ -129,242 +133,163 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ![功能与截图](https://img.shields.io/badge/features-%26%20screenshots-4B6B8A?style=for-the-badge&logo=kde&logoColor=white)
 
-### Finder (Alpha)
+### 具有多色支持的码头 (Alpha)
 
-采用 Tahoe 玻璃效果的 Finder 风格文件浏览。
-
-<p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
-</p>
-
-<details>
-<summary><strong>浅色和深色模式下的红色与蓝色强调色</strong></summary>
-
-<table>
-<tr><th>强调色</th><th>浅色</th><th>深色</th></tr>
-<tr><td>蓝色</td><td><a href="src/screenshots/previews/readme-tahoe-light-finder-blue-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-blue-8b64ba8e3a8b.webp" alt="Finder 在浅色模式下以蓝色突出显示侧边栏所选项" width="415"></a></td><td><a href="src/screenshots/previews/readme-tahoe-dark-finder-blue-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-blue-dd8777a43699.webp" alt="Finder 在深色模式下以蓝色突出显示侧边栏所选项" width="415"></a></td></tr>
-<tr><td>红色</td><td><a href="src/screenshots/previews/readme-tahoe-light-finder-red-67a385c4a31e.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-red-67a385c4a31e.webp" alt="Finder 在浅色模式下以红色突出显示侧边栏所选项" width="415"></a></td><td><a href="src/screenshots/previews/readme-tahoe-dark-finder-red-6587e895a835.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-red-6587e895a835.webp" alt="Finder 在深色模式下以红色突出显示侧边栏所选项" width="415"></a></td></tr>
-</table>
-
-</details>
-
-<br>
-
-### Launchpad (Alpha)
-
-查找应用、浏览分类，让收藏触手可及。
+玻璃 ⁇ ,浮动变焦,红色通知数量泡 ⁇ 和自动隐藏.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/previews/tahoe-dock-7a6a63313869.gif" alt="塔霍码头显示多彩色图标在光和黑暗模式下,然后通过虹色 ⁇ 色进行自行车" width="830">
 </p>
 
 <br>
 
-### Dock (Alpha)
+### ⁇  (阿尔法)
 
-玻璃折射、悬停放大、红色通知计数气泡和自动隐藏。
-
-<p align="center">
-  <strong>Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-regular-b26e1bcf62f0.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-regular-b26e1bcf62f0.webp" alt="Tahoe Dock icon appearance preview: Light" width="830"></a>
-</p>
+文件,编辑和其他应用程序菜单遵循主动窗口. 打开系统菜单设置和会议控制.
 
 <p align="center">
-  <strong>Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-regular-959ef77a3b82.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-regular-959ef77a3b82.webp" alt="Tahoe Dock icon appearance preview: Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Clear Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-clear-056e74f82157.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-clear-056e74f82157.webp" alt="Tahoe Dock icon appearance preview: Clear Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Clear Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-clear-055a23a7ce53.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-clear-055a23a7ce53.webp" alt="Tahoe Dock icon appearance preview: Clear Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Blue Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-blue-95f703deef94.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-blue-95f703deef94.webp" alt="Tahoe Dock icon appearance preview: Blue Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Blue Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-blue-805922934d8a.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-blue-805922934d8a.webp" alt="Tahoe Dock icon appearance preview: Blue Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Purple Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-purple-b7b268963e86.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-purple-b7b268963e86.webp" alt="Tahoe Dock icon appearance preview: Purple Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Purple Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-purple-63b683011b4b.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-purple-63b683011b4b.webp" alt="Tahoe Dock icon appearance preview: Purple Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Pink Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-pink-ed33bb30f211.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-pink-ed33bb30f211.webp" alt="Tahoe Dock icon appearance preview: Pink Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Pink Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-pink-ed2c4b7071d2.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-pink-ed2c4b7071d2.webp" alt="Tahoe Dock icon appearance preview: Pink Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Red Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-red-798d2ad8fdda.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-red-798d2ad8fdda.webp" alt="Tahoe Dock icon appearance preview: Red Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Red Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-red-0de97e6f1bbf.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-red-0de97e6f1bbf.webp" alt="Tahoe Dock icon appearance preview: Red Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Orange Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-orange-b2ee9be7772e.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-orange-b2ee9be7772e.webp" alt="Tahoe Dock icon appearance preview: Orange Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Orange Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-orange-2a9cb5a740eb.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-orange-2a9cb5a740eb.webp" alt="Tahoe Dock icon appearance preview: Orange Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Yellow Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-yellow-986f332a82fb.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-yellow-986f332a82fb.webp" alt="Tahoe Dock icon appearance preview: Yellow Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Yellow Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-yellow-361509d7cc42.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-yellow-361509d7cc42.webp" alt="Tahoe Dock icon appearance preview: Yellow Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Green Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-green-5ebeb19cf5b0.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-green-5ebeb19cf5b0.webp" alt="Tahoe Dock icon appearance preview: Green Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Green Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-green-8f1be9d871f0.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-green-8f1be9d871f0.webp" alt="Tahoe Dock icon appearance preview: Green Dark" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Gray Light</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-light-dock-gray-5577fc6bb663.webp"><img src="src/screenshots/previews/readme-tahoe-light-dock-gray-5577fc6bb663.webp" alt="Tahoe Dock icon appearance preview: Gray Light" width="830"></a>
-</p>
-
-<p align="center">
-  <strong>Gray Dark</strong><br>
-  <a href="src/screenshots/previews/readme-tahoe-dark-dock-gray-8867fd63aba7.webp"><img src="src/screenshots/previews/readme-tahoe-dark-dock-gray-8867fd63aba7.webp" alt="Tahoe Dock icon appearance preview: Gray Dark" width="830"></a>
+  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="开放的文件菜单在 Kate 中" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="开放的文件菜单在 Kate 中" width="830">
 </p>
 
 <br>
 
-### Shell (Alpha)
+### ⁇ 烯基玻璃2.0具有适应性对比
 
-文件、编辑等菜单随当前窗口切换。系统菜单可打开设置和会话控制。
+适应对比采样每个标签背后的背景.它保持主题颜色,当差异至少33个感知光度点.在目标以下,它应用最小的纠正,高达40%的RGB尺度,同时保持轻文本光和暗文本黑暗.关闭它使用主题颜色.
+
+<br>
+
+### 发射板 (Alpha)
+
+找应用程序,浏览类别,
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kate 打开文档时的文件菜单" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Kate 打开文档时的文件菜单" width="830">
+  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="默认Tahhoe预设1在光模式下,有集成的搜索和Tahhoe壁纸" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="默认Tahhoe预设1在暗模式下,有集成的搜索和Tahhoe壁纸" width="415">
 </p>
 
 <br>
 
-### 日历 (Alpha)
+### 控制中心 (阿尔法)
 
-点击面板时钟即可打开玻璃背景的月历。滚动鼠标滚轮或使用方向键切换月份，按 Home 键返回本月。
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="日历 · 浅色" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="日历 · 深色" width="328">
-</p>
-
-<br>
-
-### 控制中心 (Alpha)
-
-Wi-Fi、声音、亮度和通知集中在一个玻璃菜单中。外观按钮用太阳表示浅色模式，用月亮表示深色模式，用双色圆形表示自动模式。
+在一个玻璃菜单中,可提供 Wi-Fi,蓝牙,声音,亮度和通知. 显示按 ⁇ 显示光的太阳,黑暗的月亮和自动的分圆.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Control Center in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Control Center in dark mode" width="415">
-</p>
-
-<p align="center">
-  <strong>Wi-Fi</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Wi-Fi · 浅色" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Wi-Fi · 深色" width="328">
-</p>
-
-<p align="center">
-  <strong>电池</strong><br>
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="电池 · 浅色" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="电池 · 深色" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="控制中心在光模式下" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="控制中心在黑暗模式下" width="415">
 </p>
 
 <br>
 
 ### 通知 (Alpha)
 
-玻璃质感的通知横幅和分组历史记录，支持应用操作和直接回复。
+玻璃通知标志和组合历史记录,应用程序操作和回复支持.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="通知 （浅色模式）" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="通知 （浅色模式）" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="通知 （深色模式）" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="通知 （深色模式）" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="预示标志在光模式下" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="黑色模式的塔霍通知标志" width="48%">
+</p>
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="预测时间:" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="黑色模式的塔霍通知历史记录" width="48%">
 </p>
 
 <br>
 
-### 剪贴板历史 (Alpha)
+### 搜索器 (Alpha)
 
-直接在 Launchpad 中查找并复用复制的文字和图片。
+通过塔霍玻璃浏览文件.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Clipboard history in the tahoe launcher in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="Clipboard history in the tahoe launcher in dark mode" width="415">
+  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="专注于文件的太hoe轻型桌面" width="415"></a>
+  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="⁇ 黑桌面,文件集中" width="415"></a>
+</p>
+
+<br>
+
+### 历日 (阿尔法)
+
+打开表盘钟,以显示月份在玻璃上.滚动或使用箭头键浏览月份.按Home返回当前月份.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="日历 · 光" width="328">
+  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="日历 · 黑暗" width="328">
+</p>
+
+<br>
+
+### 蓝牙 (阿尔法)
+
+连接配对设备,从菜单 ⁇ 查看它们的电池水平.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="轻微的蓝牙菜单,工作室耳机连接到82%和无线键盘断开" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="暗色蓝牙菜单,工作室耳机连接82%和无线键盘断开" width="48%">
+</p>
+
+### 无线电 (Alpha)
+
+打开Wi-Fi菜单,可查看可用的无线网络.没有Wi-Fi适配器或没有Wi-Fi,菜单列出您的有线连接,然后单个分区和Wi-Fi设置链接.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="轻微的Wi-Fi菜单连接到港湾工作室,有园客和车间可用" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="黑色Wi-Fi菜单连接到港湾工作室,有园客和车间可用" width="48%">
+</p>
+
+<br>
+
+### 电池 (阿尔法)
+
+打开电池菜单查看电荷水平和电源状态.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="轻电池菜单显示没有内部电池" width="48%">
+  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="暗电池菜单显示没有内部电池" width="48%">
+</p>
+
+<br>
+
+### 剪辑板历史 (阿尔法)
+
+直接从启动板中找到和重复使用复制的文本和图像.
+
+<p align="center">
+  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="在轻模式下,塔霍发射机的剪辑板历史" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="黑色模式中的塔霍发射机的剪辑板历史" width="415">
 </p>
 
 <br>
 
 ### 系统信息 (Alpha)
 
-硬件、软件和主题信息，文字颜色随背景调整。
+配备适应对比的硬件,软件和主题细节.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="浅色模式的系统信息窗口" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="深色模式的系统信息窗口" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="灯系统信息窗口" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="黑暗系统信息窗口" width="415">
 </p>
 
 <br>
 
-### Plasma 主题 (Alpha)
+### 激光主题 (阿尔法)
 
-采用协调浅色和深色配色的半透明菜单与弹出窗口。
+透明菜单和弹出窗口,有相应的光色和暗色.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="在光模式下桌面文本菜单" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="桌面背景菜单在暗模式下" width="415">
 </p>
 
 <br>
 
-### 启动画面 (Alpha)
+### ⁇ 片 (阿尔法)
 
-从启动到关机保持一致外观，内置 LUKS2 加密磁盘解锁功能。
+启动到关闭的相匹配外观,
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash with a progress bar" width="415">
+  <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="普利 ⁇ 斯创业点击与进步行" width="415">
 </p>
 
 <br>
@@ -474,8 +399,14 @@ mac-tahoe-oled-care status
 
 </details>
 
+<br>
+
+![兼容性](https://img.shields.io/badge/compatibility-system%20support-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
+
+检查你的发行版、初始化系统和 Plasma 版本的支持情况。
+
 <details>
-<summary><b>在虚拟机中测试</b></summary>
+<summary><b>发行版测试</b></summary>
 
 在隔离的 Plasma 桌面中试用主题。
 
@@ -491,10 +422,23 @@ mac-tahoe-oled-care status
 
 `./vm debian` 使用官方 Debian testing（Forky）云镜像，验证 SHA-512 校验和并配置 Plasma 桌面。以 `tester` 登录，密码为 `tester`；SSH 位于 `127.0.0.1:2232`。安装程序从来宾内可写副本 `/home/tester/macos-tahoe-liquid-kde` 打开；宿主仓库以只读方式挂载。使用 `./vm debian --clean` 从头重建一次性来宾。
 
-</details>
+此表中的全部 11 个发行版均通过实际虚拟机验证。选择状态徽章以查看已审阅截图和测试结果。
 
-<details>
-<summary><b>NixOS 和 Home Manager（测试中）</b></summary>
+| | 名称 | 状态 |
+|:--:|------|---------|
+| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#cachyos) |
+| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#arch) |
+| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#endeavouros) |
+| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#fedora) |
+| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#manjaro) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Artix Linux (OpenRC) | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#artix) |
+| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#garuda) |
+| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#nobara) |
+| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#opensuse) |
+| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#neon) |
+| <img src="https://cdn.simpleicons.org/debian" alt="Debian" width="22"> | Debian testing / sid (Plasma 6.6+) | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#debian) |
+
+**NixOS 和 Home Manager（测试中）**
 
 使用 flake 模块，**不要使用图形安装程序**。实际桌面验证尚未完成。
 
@@ -542,33 +486,6 @@ nixpkgs.config.allowUnfreePredicate = pkg:
 
 </details>
 
-<br>
-
-![兼容性](https://img.shields.io/badge/compatibility-system%20support-4B6B8A?style=for-the-badge&logo=linux&logoColor=white)
-
-检查你的发行版、初始化系统和 Plasma 版本的支持情况。
-
-<details>
-<summary><b>发行版</b></summary>
-
-此表中的全部 11 个发行版均通过实际虚拟机验证。选择状态徽章以查看已审阅截图和测试结果。
-
-| | 名称 | 状态 |
-|:--:|------|---------|
-| <img src="https://cdn.simpleicons.org/cachyos" alt="CachyOS" width="22"> | CachyOS | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#cachyos) |
-| <img src="https://cdn.simpleicons.org/archlinux" alt="Arch Linux" width="22"> | Arch Linux | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#arch) |
-| <img src="https://cdn.simpleicons.org/endeavouros" alt="EndeavourOS" width="22"> | EndeavourOS | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#endeavouros) |
-| <img src="https://cdn.simpleicons.org/fedora" alt="Fedora" width="22"> | Fedora | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#fedora) |
-| <img src="https://cdn.simpleicons.org/manjaro" alt="Manjaro" width="22"> | Manjaro | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#manjaro) |
-| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Artix Linux (OpenRC) | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#artix) |
-| <img src="https://cdn.simpleicons.org/linux" alt="Linux" width="22"> | Garuda Linux | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#garuda) |
-| <img src="https://cdn.simpleicons.org/nobaralinux" alt="Nobara" width="22"> | Nobara | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#nobara) |
-| <img src="https://cdn.simpleicons.org/opensuse" alt="openSUSE" width="22"> | openSUSE Tumbleweed | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#opensuse) |
-| <img src="https://cdn.simpleicons.org/kde" alt="KDE" width="22"> | KDE neon | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#neon) |
-| <img src="https://cdn.simpleicons.org/debian" alt="Debian" width="22"> | Debian testing / sid (Plasma 6.6+) | [![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37)](tests/vm/PROOF.md#debian) |
-
-</details>
-
 <details>
 <summary><b>初始化系统</b></summary>
 
@@ -598,73 +515,6 @@ OpenRC 和 dinit 需要运行中的 cron 守护进程。
 | 6.8 | ![支持](https://img.shields.io/badge/Supported-1A7F37) | v0.54.1 |
 
 </details>
-
-<br>
-
-![路线图](https://img.shields.io/badge/project-roadmap-6B4B8A?style=for-the-badge&logo=github&logoColor=white)
-
-目前可用的功能和计划添加的内容。
-
-<details>
-<summary><b>组件状态</b></summary>
-
-各组件的当前状态。
-
-| 组件 | 状态 |
-|-----------|--------|
-| 配色方案 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 壁纸 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 字体 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 光标 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Plasma 主题 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Kvantum 主题 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| GTK 主题 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Acrylic Glass | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| KDE Rounded Corners | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 自动主题切换器 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| OLED 保护 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 安装程序界面 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 本地化 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Aurorae 装饰 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 全局菜单 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Dock | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Finder 风格 Nautilus | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Launchpad | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Shell | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 剪贴板历史 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 系统信息 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 回收站 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 声音 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 启动画面 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 关机画面 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| Firefox 主题 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 图标 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 多发行版支持 | ![支持](https://img.shields.io/badge/Supported-1A7F37) |
-| OpenRC 测试 | ![虚拟机已验证](https://img.shields.io/badge/VM%20verified-1A7F37) |
-| Konsole 主题 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| Kate 主题 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| SDDM 主题 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| 日历 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 控制中心、Wi-Fi、电池和通知 | ![Alpha](https://img.shields.io/badge/Alpha-D4A017) |
-| 系统偏好设置 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-| 操作系统选择器 | ![计划中](https://img.shields.io/badge/Planned-D4A017) |
-
-</details>
-
-<br>
-
-**[报告错误](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/new)**，或使用 **Apple 菜单 → 关于本机 → 报告错误…**。
-
-请提供：
-
-- 你的 Plasma 版本： `plasmashell --version`
-- 你的发行版： `grep PRETTY_NAME /etc/os-release`
-- 主题版本： `cat VERSION`
-- 显示问题的截图或录屏
-
-请保持拉取请求范围集中，并使用 `./vm` 验证。参阅 [CONTRIBUTING.md](CONTRIBUTING.md)。
-
-共享的[图标生成工具集](CONTRIBUTING.md#icon-generation-toolset)基于随附图标创建浅色、深色、单色和半透明玻璃外观，支持任意 RGB 色调。它为两个版本离线生成、预览、验证和打包图标，无需应用桌面主题。
 
 <br>
 
