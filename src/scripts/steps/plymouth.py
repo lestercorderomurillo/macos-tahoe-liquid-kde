@@ -512,25 +512,17 @@ def uninstall() -> None:
 
     # Restore the renderer policy before -R rebuilds the previous theme into
     # the initramfs.
-    simpledrm_restored = _restore_previous_simpledrm()
-    if not simpledrm_restored:
+    if not all(have(tool) for tool in plymouth_tools()):
+        fail(tr('{PLYMOUTH_BIN} not available — skipping splash restore', PLYMOUTH_BIN=", ".join(plymouth_tools())))
+        return
+    if not _restore_previous_simpledrm():
         fail(tr('could not read previous UseSimpledrm setting ({exc})', exc=_previous_simpledrm_file()))
         return
     ok(tr('Previous UseSimpledrm setting restored'))
 
-    if all(have(tool) for tool in plymouth_tools()):
-        if _activate(previous):
-            ok(tr('Boot splash restored to {previous}', previous=previous))
-        else:
-            if plymouth_uses_alternatives():
-                return
-            warn(tr('could not restore boot splash to {previous} — continuing cleanup', previous=previous))
-    else:
-        message = tr('{PLYMOUTH_BIN} not available — skipping splash restore', PLYMOUTH_BIN=", ".join(plymouth_tools()))
-        if plymouth_uses_alternatives():
-            fail(message)
-            return
-        warn(message)
+    if not _activate(previous):
+        return
+    ok(tr('Boot splash restored to {previous}', previous=previous))
 
     for command in plymouth_cleanup_commands(THEME_NAME):
         try:
@@ -551,7 +543,5 @@ def uninstall() -> None:
         if previous_simpledrm.is_file():
             previous_simpledrm.unlink()
         ok(tr('Plymouth state cleared'))
-    except OSError:
-        pass
-    if not simpledrm_restored:
-        warn(tr('Plymouth renderer recovery state retained because restoration failed'))
+    except OSError as exc:
+        fail(f'{STATE_DIR}: {exc}')
