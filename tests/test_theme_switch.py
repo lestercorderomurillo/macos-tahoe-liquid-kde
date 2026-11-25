@@ -358,11 +358,11 @@ def test_apply_no_warn_for_user_disabled_effect(monkeypatch, tmp_path, capsys):
     watch — its absence from the loaded set is expected, not a failure. No
     warning, and obviously no re-enabling."""
     ts, kwinrc = _prep_effect_warn_case(
-        monkeypatch, tmp_path, "[Plugins]\nshapecornersEnabled=false\n")
+        monkeypatch, tmp_path, "[Plugins]\nshapecornersEnabled=true\nkwin4_effect_shapecornersEnabled=false\n")
     monkeypatch.setattr(ts, "_kwin_loaded_effects", lambda: {"liquidglass"})
     assert ts.apply("dark") is True
     assert "shapecorners" not in capsys.readouterr().err
-    assert ts._parse_ini(kwinrc)["Plugins"]["shapecornersEnabled"] == "false"
+    assert ts._parse_ini(kwinrc)["Plugins"]["kwin4_effect_shapecornersEnabled"] == "false"
 
 
 @pytest.mark.parametrize("enabled", [True, False])

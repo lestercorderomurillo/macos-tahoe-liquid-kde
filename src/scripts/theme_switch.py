@@ -1653,6 +1653,10 @@ def _snapshot_foreign_effects() -> list[str]:
     runtime-load failure, not a config loss -- we can't fix their binary, but we
     must not let it happen SILENTLY (#46)."""
     plugins = _parse_ini(_kwinrc_path()).get("Plugins", {})
+    # Older installers wrote the short alias. An explicit KWin plugin-ID
+    # setting takes precedence, including when the user disables the effect.
+    if "kwin4_effect_shapecornersEnabled" in plugins:
+        plugins.pop("shapecornersEnabled", None)
     return [
         _effect_id_for_key(key)
         for key, value in plugins.items()

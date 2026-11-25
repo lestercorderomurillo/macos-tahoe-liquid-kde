@@ -246,21 +246,52 @@ def build() -> None:
     cmake_build(SOURCE, BUILD, "KDE Rounded Corners")
 
 
-def _effect_active() -> bool:
+def _effect_active() -> bool | None:
     qdbus = qdbus_cmd()
     if not qdbus:
-        return False
+        return None
     try:
         result = run_user(
             [qdbus, "org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadedEffects"],
             check=False,
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=2,
         )
     except (OSError, subprocess.TimeoutExpired):
-        return False
-    return result.returncode == 0 and EFFECT_ID in (result.stdout or "").splitlines()
+        return None
+    if result.returncode:
+        return None
+    return EFFECT_ID in (result.stdout or "").replace(",", " ").split()
+
+
+def _settled_effect_active() -> bool | None:
+    # Workspace::reconfigure schedules a 200 ms timer. Most explicit loads
+    # finish immediately. Only a successful query reporting absence needs a recheck.
+    active = _effect_active()
+    if active is False:
+        time.sleep(0.3)
+        active = _effect_active()
+    return active
+
+
+def _report_activation(active: bool | None, matches: bool | None, since: int) -> None:
+    state = {True: "loaded", False: "absent", None: "query unavailable"}[active]
+    identity = {True: "current", False: "stale", None: "unverified"}[matches]
+    note(f"KWin {EFFECT_ID}: loadedEffects={state}, plugin mapping={identity}")
+    try:
+        result = run_user(
+            ["journalctl", "--user", "-b", "--since", f"@{since}", "--no-pager",
+             "-o", "cat", "-n", "5", "--grep", EFFECT_ID + "|shapecorners",
+             "_COMM=kwin_wayland", "_COMM=kwin_x11"],
+            check=False, capture_output=True, text=True, timeout=2,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return
+    if result.returncode == 0:
+        for line in result.stdout.splitlines():
+            if "shapecorners" in line.lower():
+                note(line[:512])
 
 
 def _same_contents(source: Path, destination: Path) -> bool:
@@ -580,16 +611,18 @@ def install() -> None:
     if not _replace_distro_packages():
         return
 
-    kw_write(
+    started = int(time.time())
+    if not kw_write(
         "--file", "kwinrc", "--group", "Plugins",
-        "--key", "shapecornersEnabled", "false",
-    )
+        "--key", "kwin4_effect_shapecornersEnabled", "false",
+    ):
+        fail("Could not disable KDE Rounded Corners before replacing its plugin")
+        return
     qdbus_call(
         "org.kde.KWin", "/Effects",
         "org.kde.kwin.Effects.unloadEffect", EFFECT_ID,
     )
-    qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
-    time.sleep(1)
+    # Explicit unload is synchronous. Reconfigure only after the files are ready.
 
     plugin_dir = _plugin_dir()
     destinations = (
@@ -636,7 +669,7 @@ def install() -> None:
 
     if not kw_write(
         "--file", "kwinrc", "--group", "Plugins",
-        "--key", "shapecornersEnabled", "true",
+        "--key", "kwin4_effect_shapecornersEnabled", "true",
     ):
         fail(tr('KDE Rounded Corners could not be enabled — kwriteconfig6 failed'))
         return
@@ -646,7 +679,9 @@ def install() -> None:
         "org.kde.kwin.Effects.loadEffect", EFFECT_ID,
     )
     plugin = destinations[0][1]
-    if running_kwin_plugin_matches(plugin.resolve()) is False or not _effect_active():
+    matches = running_kwin_plugin_matches(plugin.resolve())
+    active = _settled_effect_active()
+    if matches is False or active is False:
         library = _install_distinct_build(effect, plugin)
         if library is None:
             return
@@ -654,9 +689,16 @@ def install() -> None:
         qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.loadEffect", EFFECT_ID)
         # The installed files are ready for the next KWin session even if
         # this compositor cannot load or identify the new library in place.
-        if not _effect_active() or running_kwin_plugin_matches(library) is not True:
+        active = _settled_effect_active()
+        matches = running_kwin_plugin_matches(library)
+        if matches is not True or active is not True:
+            _report_activation(active, matches, started)
             warn(tr('KDE Rounded Corners installed (log out and back in to activate)'))
             return
+    elif active is None:
+        _report_activation(active, matches, started)
+        warn(tr('KDE Rounded Corners installed (log out and back in to activate)'))
+        return
     ok(tr('KDE Rounded Corners loaded'))
     info(tr('KDE Rounded Corners v{UPSTREAM_VERSION} installed from verified upstream source', UPSTREAM_VERSION=UPSTREAM_VERSION))
 
@@ -676,7 +718,7 @@ def uninstall() -> None:
     )
     kw_write(
         "--file", "kwinrc", "--group", "Plugins",
-        "--key", "shapecornersEnabled", "false",
+        "--key", "kwin4_effect_shapecornersEnabled", "false",
     )
     qdbus_call("org.kde.KWin", "/KWin", "org.kde.KWin.reconfigure")
 

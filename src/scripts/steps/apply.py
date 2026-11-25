@@ -326,7 +326,7 @@ def install() -> None:
     from installer_choices import selected
     choices = selected()
     for choice, plugin in (("acrylic_glass", "liquidglassEnabled"),
-                           ("rounded_corners", "shapecornersEnabled")):
+                           ("rounded_corners", "kwin4_effect_shapecornersEnabled")):
         if choices and not choices[choice]:
             if not kw_write("--file", "kwinrc", "--group", "Plugins", "--key", plugin, "false"):
                 fail("Could not disable the selected window effect")

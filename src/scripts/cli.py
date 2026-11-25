@@ -790,7 +790,7 @@ _VERIFY_CHECKS = [
      "MacTahoeLiquidKde", "Plasma theme"),
     ("window_decorations", "kwinrc", "org.kde.kdecoration2", "theme",
      "__aurorae__svg__MacTahoeLiquidKde", "Window decorations"),
-    ("rounded_corners", "kwinrc", "Plugins", "shapecornersEnabled",
+    ("rounded_corners", "kwinrc", "Plugins", "kwin4_effect_shapecornersEnabled",
      "true", "KDE Rounded Corners"),
     ("rounded_corners", "kwinrc", "Round-Corners", "Size",
      "28", "KDE Rounded Corners active radius"),

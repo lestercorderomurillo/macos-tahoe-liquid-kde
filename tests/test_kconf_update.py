@@ -152,7 +152,7 @@ def test_v038_border_sync_rollback_is_exact_and_preserves_effect_state(monkeypat
     monkeypatch.setattr(kc, "ok", lambda _message: None)
 
     assert kc.rollback_v038_border_sync() is True
-    assert not any("shapecornersEnabled" in write for write in writes)
+    assert not any("kwin4_effect_shapecornersEnabled" in write for write in writes)
     deleted = [write for write in writes if "--delete" in write]
     assert len(deleted) == len(kc._V038_ROUNDED_CORNERS_PRESET)
     assert not any(
@@ -163,7 +163,7 @@ def test_v038_border_sync_rollback_is_exact_and_preserves_effect_state(monkeypat
     writes.clear()
     values["Size"] = "24"
     assert kc.rollback_v038_border_sync() is False
-    assert not any("shapecornersEnabled" in write for write in writes)
+    assert not any("kwin4_effect_shapecornersEnabled" in write for write in writes)
     assert not any("--delete" in write for write in writes)
 
 

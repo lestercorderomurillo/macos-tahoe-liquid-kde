@@ -286,7 +286,7 @@ def test_install_places_artifacts_and_enables_effect(monkeypatch, tmp_path):
     assert shaders / "shapecorners.frag" in destinations
     assert shaders / "shapecorners_core.frag" in destinations
     assert license_file in destinations
-    plugin_writes = [write for write in writes if "shapecornersEnabled" in write]
+    plugin_writes = [write for write in writes if "kwin4_effect_shapecornersEnabled" in write]
     assert plugin_writes
     assert "false" in plugin_writes[0]
     assert "true" in plugin_writes[-1]
@@ -332,7 +332,7 @@ def test_uninstall_disables_effect_and_removes_owned_files(monkeypatch, tmp_path
     assert shaders / "shapecorners.frag" in removed
     assert shaders / "shapecorners_core.frag" in removed
     assert license_file in removed
-    assert any("shapecornersEnabled" in write and "false" in write for write in writes)
+    assert any("kwin4_effect_shapecornersEnabled" in write and "false" in write for write in writes)
     assert not rounded.WORK.exists()
     # No pre-install snapshot or project-specific ownership marker exists.
     # The keys may belong to an independent install, so leave them untouched.
@@ -857,7 +857,7 @@ def test_install_keeps_package_files_when_removal_fails(monkeypatch, tmp_path):
 
     assert any("kwin-effect-rounded-corners" in message for message in failures)
     # The working package build stays enabled; nothing was half-replaced.
-    assert not any("shapecornersEnabled" in write for write in writes)
+    assert not any("kwin4_effect_shapecornersEnabled" in write for write in writes)
     assert not rounded.REPLACED_PACKAGES_FILE.exists()
 
 
@@ -912,11 +912,30 @@ def test_install_activates_previous_build_replacement(monkeypatch, tmp_path, act
     monkeypatch.setattr(rounded, "warn", notices.append)
     monkeypatch.setattr(rounded, "ok", successes.append)
     monkeypatch.setattr(rounded, "fail", pytest.fail)
+    messages = []
+    monkeypatch.setattr(rounded, "note", messages.append)
+    monkeypatch.setattr(rounded, "run_user", lambda *a, **kw: SimpleNamespace(
+        returncode=0, stdout="Effect kwin4_effect_shapecorners was built for a different version"))
     rounded.install()
-    assert checked == ([plugin, plugin.resolve()] if active else [plugin])
+    assert checked == [plugin, plugin.resolve()]
     assert plugin.is_symlink() and plugin.resolve().name == plugin.name
     assert ("KDE Rounded Corners loaded" in successes) == loaded
     assert any("log out and back in" in msg for msg in notices) == (not loaded)
+
+    assert any("built for a different version" in message for message in messages) == (not loaded)
+
+
+@pytest.mark.parametrize("answers, expected, waits", [
+    ([True], True, []), ([None], None, []), ([False, True], True, [0.3]),
+    ([False, False], False, [0.3]),
+])
+def test_effect_confirmation_waits_only_for_absence(monkeypatch, answers, expected, waits):
+    states = iter(answers)
+    sleeps = []
+    monkeypatch.setattr(rounded, "_effect_active", lambda: next(states))
+    monkeypatch.setattr(rounded.time, "sleep", sleeps.append)
+    assert rounded._settled_effect_active() is expected
+    assert sleeps == waits
 
 
 def test_uninstall_leaves_distro_package_files_and_reports_replacement(
