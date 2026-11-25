@@ -1,14 +1,29 @@
 {
-  "version": "0.84.28",
-  "scope": "Restore the v0.84.26 installer and desktop implementation.",
+  "version": "0.84.30",
+  "scope": "Installed Settings groups wallpaper, widgets, launcher selection and app preferences in their respective sections.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_commit": "8c1904ca43f250ad3ac473212b234a5bae62b61d",
+  "qualified_commit": "e679f85c32782bb2f94460debff483b4b03ea466",
   "checks": [
     {
-      "command": "QT_QPA_PLATFORM=offscreen MAC_TAHOE_NO_UPDATE_CHECK=true: launched _launch_preview_pyqt using shared Tahoe source and Golden Gate --prepare output. Checked the visible language selector, Hindi glyph run in Noto Sans Devanagari, disabled qt.text.font.db info and enabled category warnings and unrelated info.",
+      "command": "python3 -m pytest -q tests/test_installer_wizard.py -k 'native_wizard_navigation or wizard_catalogs' (3 passed)",
+      "result": "passed"
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_multilanguage.py -k every_python_message_has_a_complete_catalog (14 passed)",
+      "result": "passed"
+    },
+    {
+      "command": "Opened installed Settings with --mode=settings --section for desktop, widgets, applications and preferences in an isolated KDE neon Plasma VM. Captured the active Settings window using spectacle. User approved the four-section layout.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Qt 6.11.2 on CachyOS. The original informational message did not recur during baseline runs. Checked its logging level and actual glyph shaping. No backend installation was run.",
-  "source_sha256": "a9367560de23d1d0032ff0850bfc438a574c083f02ef65fd6ea34b9589112235"
+  "coverage_limits": "Focused Settings navigation and catalog checks. Golden Gate was captured in dark mode and Tahoe in light mode. The installer flow and desktop lifecycle were outside this change.",
+  "source_sha256": "c92b0f1dadebf32d9b1f29bf6e7e55867bb31c2fd3bf84482c55bacb95870112",
+  "reviewed_frames": {
+    "tahoe-applications": "c5b693d864f0aeae2fb6e25640f3907b21cde196f1b4251f605428f88a4a3853",
+    "tahoe-before": "5fd642982ee9450ef215a264a5eb9cb41a7c67ea9f0bc556ff133ab2d570b5f0",
+    "tahoe-desktop": "d8813214fb5115b121b9a0201218e38a1f67e8d07600051b2c530e4af9cb3bdf",
+    "tahoe-preferences": "c8509e85a3b504d9c0ae323e0d20708a0e30f7c3064e85250c334e383178f901",
+    "tahoe-widgets": "b7514989c6d6fdfa3a7a2995e1c136ab9c183bf43d5cd5f696c593738b2497b8"
+  }
 }
