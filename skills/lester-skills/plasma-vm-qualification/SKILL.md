@@ -25,12 +25,13 @@ prepared base for the relevant distro and backend before provisioning.
 
 Before starting a guest, identify the changed component, visible difference,
 required scenarios/frames and exact SDK/backend coverage from `AGENTS.md`.
-Check the scratch filesystem with `df -h` before booting. For Tahoe's `./vm`,
-set `VM_RUN_DIR` to a task-owned directory on the secondary project disk and
-point `VM_CACHE_DIR` at the reusable image cache there. Verify the mount with
-`findmnt -T` before creating files. On this workstation `/var/tmp` shares
-the root device. Budget for guest writes across all concurrent guests, and
-run them sequentially when space is tight.
+Check the active checkout's ignored build directory with `df -h` before booting.
+For Tahoe's `./vm`, set `VM_RUN_DIR` to `build/<task>/vm/run` and
+`VM_CACHE_DIR` to `build/<task>/vm/cache`, using absolute paths rooted in the
+active checkout. Use existing external base images read-only, with overlays,
+captures and seed files under that task directory. Check resolved paths and
+space before allocating. If space is insufficient, choose a smaller check or
+report the limitation. Run guests sequentially when space is tight.
 
 Inspect the existing VM inventory and harness options in Tahoe:
 

@@ -1,5 +1,22 @@
 # AGENTS.md
 
+## Repository write boundary
+
+Write only inside the active repository. Filesystem access is not permission
+to write elsewhere. An exception requires the user's explicit instruction to
+change a specific external location (for example, a host configuration).
+A request to test, debug, build, capture, or release does not grant that permission.
+
+Keep all agent-created temporary files in the repository's existing
+`build/<task>/`. If the repository uses `temporal/` instead, use that.
+Ensure Git ignores the directory before writing. Put test homes, temporary
+directories, caches, logs, downloads, VM overlays, worktrees, and previews
+there. Configure tool output paths, including `TMPDIR` and tool-specific
+cache paths, before running tools. Resolve paths and symlinks before writing.
+External prepared images and tools may be read in place. If a tool needs an
+external write, choose a repository-local method or stop and identify the
+required location. Never move scratch work to another disk for extra space.
+
 ## No lazy mode
 
 When the user reports a problem or corrects an earlier answer, take the next
@@ -22,6 +39,7 @@ that prevents recurrence. Extend an existing entry when the mistake repeats.
 | Treating a local installer as a published fix | After v0.84.32 restored the older installer, the agent provided a local fullscreen launcher and repeatedly explained the rollback. It treated the working candidate as the endpoint even though the user wanted the ordinary published installer. | Follow the release request through both publication workflows once the applicable approval is in hand. Verify each published tag contains or pins the fix and synchronize the ordinary checkouts. Give the user both release links. |
 | Documenting before repairing | When the user asked why the release was missing, the agent prioritized writing a rule while the requested deliverable was still missing. | Take the next authorized repair or delivery action first. If a decision genuinely blocks it, show the exact result and ask for that decision once. Record the lesson after advancing the repair. |
 | Linking outside the user's VS Code workspace | The installer video was linked from a scratch disk. The agent mistakenly assumed that its own filesystem access meant the user could open the same link in VS Code. | For every local deliverable, place a usable copy in the actual repository open in VS Code. Resolve the link target, verify it is a readable, nonempty file inside that checkout, and give the user the clickable link and repository-relative path. Keep temporary previews out of release assets. |
+| Leaving scratch directories on other disks | Test worktrees, VM overlays and captures accumulated outside the checkout because free space was treated as authorization. | Resolve every output path under the active repository’s ignored build directory before starting the tool. |
 
 ## Non-negotiable execution discipline
 
@@ -235,7 +253,7 @@ Dock icon qualification includes Apps, every pinned application, and both empty/
 
 Before allocating qualification or capture disks, use the
 [Plasma VM qualification skill](skills/lester-skills/plasma-vm-qualification/SKILL.md)
-to select a scratch filesystem with enough space and plan per-guest cleanup.
+to check available space under the active checkout’s ignored build directory and plan per-guest cleanup.
 
 Disposable development VM overlays, capture working copies and source archives
 must be removed once the requested qualification is complete and its reviewed
