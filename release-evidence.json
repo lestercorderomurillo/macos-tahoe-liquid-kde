@@ -1,39 +1,19 @@
 {
-  "version": "0.85.3",
-  "scope": "Settings groups 16 sidebar sections, integrates Control Center controls, expands widget and glass preferences, and organizes wallpapers into four categories.",
+  "version": "0.85.5",
+  "scope": "Settings runtime warnings in Battery, Notifications and font selection.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
+  "approved_candidate": "df6ad3228a08b22d6ff014f5d5e6ee57e5969b41",
+  "approved_preview_sha256": {
+    "golden-gate-notifications.png": "ec75b328bb9d2d8ecfd2cc6cf7ce15a038044ea4a97cbfb1c27aaa68be4fa8e6",
+    "tahoe-notifications.png": "1db09fba4dbc247d21028e9e6fa7b2367d5449208345bed5aa8fed4f0e398821"
+  },
+  "approved_candidate_patch_sha256": "1d6bba44a70354329ff7ee77249369f6afc8836a92a7ba099970040b0ef94f74",
   "checks": [
     {
-      "command": "pytest tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion tests/test_desktop_widgets.py::test_shared_widget_editors_preserve_values_and_save_only_the_selected_instance tests/test_installer_wizard.py::test_wizard_catalogs_have_the_same_translated_messages (4 passed)",
-      "result": "passed"
-    },
-    {
-      "command": "KDE neon Wayland disposable overlays in both editions: opened Settings, searched the five merged names in Spanish and navigated to their 4 destinations. Verified 16 sidebar entries, loaded live controls and enabled actions. Prior focused captures checked wallpaper paging and selection, acrylic sliders, System Menu groups, sidebar scrolling, volume and Focus.",
+      "command": "KDE neon Plasma 6.8.1 Wayland, Qt 6.11.1, both editions: ./installer --mode=settings with --section=battery, general and notifications. Verified selector cursor geometry and notification settings action. Plasma retained notification service ownership.",
       "result": "passed"
     }
   ],
-  "approved_candidate_patch_sha256": "f1ceb9955706b8fa5f27fb69efc7668e36be77bbff8af7a3443108f59add446b",
-  "approved_preview_sha256": {
-    "golden-gate-display.png": "4c9202049c839ce1074f68076921f19425e058c165b718d42ca6ff0f433a5298",
-    "golden-gate-notifications.png": "5ccf0d97455cb8c087a47d5350ad41131840eeae737551a197722fbe6f1b0fcc",
-    "golden-gate-volume.png": "86ae90a9a220728e340dbb7e68f6cbda07844da72743b0700486e1423c6c1c2a",
-    "golden-gate-windows.png": "cc222456ee698549ec8cbe9a0427e452489282393fc0eb34ffb26b2eb7a93a66",
-    "golden-gate.png": "a94b7f2a412b16162ede8dc8cfbb14039e941d371d8ef6a388e1f3a9208a27e0",
-    "tahoe-display.png": "357e887b7e5119f0c4f15f8f8d2c1519562acf9a47e10eb407563ac20308ef91",
-    "tahoe-notifications.png": "a101e03f7e89660c02a69620def6abf497446d169a2ad531cf4b8ebc64f98c9d",
-    "tahoe-volume.png": "df76f3ee3e0485c5ffc328422ea1520c99bae46b87d9c61e8e2592a5b10ca335",
-    "tahoe-windows.png": "fa7fe008029b963ac24772b753a683317143bdbb040d48b46a3007c6a425419c",
-    "tahoe.png": "cd1ad031b838222a2471a3400f365d1b249585c72c33e984fe2253f317d7582f"
-  },
-  "integrated_settings_sha256": {
-    "acrylic_glass_editor.py": "dcce0584d241b1cddfab998ce90bdb1ef8bfaaaa401450935053d68f1405360b",
-    "calendar_provider_settings.py": "4ba2cfa0f78bf44c7b79e7c3677f8d853c8fac9bc7d611d128e459769f7a4004",
-    "control_settings.py": "c00e28f40ea0e6ff3e6fc16f028b9f97a0898152e9ae0438855b61780e8d6bed",
-    "desktop_widget_editor.py": "3f258a03e0953bc081f008bace3cee8b8c8c261d5f0b516c90290e44af11f7eb",
-    "installer_ui.py": "3072c349bd5e132a4220147ba50343ec8bb0322aad1af004cfe8a0d15ac090e7",
-    "wizard_translations.py": "10c3eb7eceae0b4cf7613156be7d1efedda43564d101e9a1906221519eedae5f",
-    "wizard_window.py": "a71361dc532178561a4c3a7bd11468bb0884710824c8b935fb3cd045aa25b63b"
-  },
-  "coverage_limits": "Physical Bluetooth hardware, pairing and transfers to another device were not exercised in the virtual machines.",
-  "source_sha256": "ded038a45da8f3ca007a7634893ca98304fc8013e1d74cb04241e9a1a66066b4"
+  "coverage_limits": "The guest reproduced the original Battery font-size and ComboBox warnings. The old KWin and D-Bus warnings were not independently reproduced. Golden Gate Volume also reported guest audio diagnostics.",
+  "source_sha256": "87864191b1345d009fcb67429559dbc207207764da486c4a52618709dcb7729a"
 }

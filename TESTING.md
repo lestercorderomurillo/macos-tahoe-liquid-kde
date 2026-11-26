@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.3**. Settings navigation and controls were checked in disposable KDE neon Wayland sessions for both editions. [Evidence and coverage](release-evidence.json).
+**v0.85.5**. Battery, General and Notifications passed focused Settings checks in disposable KDE neon Wayland sessions for both editions. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

@@ -16,7 +16,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.leftMargin: 12; Layout.rightMargin: 13
         spacing: 6
-        ControlIconButton { font.family: "SF Pro Text"; font.pixelSize: 13;
+        ControlIconButton { font: Qt.font({family: "SF Pro Text", pixelSize: 13});
             icon.source: Style.symbol(view.sink && view.sink.muted ? "audio-volume-muted" : "mac-speaker-low")
             icon.width: 16; icon.height: 16; padding: 0; implicitWidth: 22; implicitHeight: 22
             objectName: "muteButton"

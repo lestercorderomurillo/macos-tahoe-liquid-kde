@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
+import QtQuick.Templates as T
 import QtQuick.Layouts
 import QtQuick.Controls as QQC
 import org.kde.kirigami as Kirigami
@@ -73,16 +74,28 @@ Page {
             source: Style.symbol("mac-menu-chevron"); isMask: true; color: Kirigami.Theme.textColor
             width: 12; height: 12; opacity: 0.65
         }
-        contentItem: ControlLabel {
+        // The KDE style queries cursor geometry on the content item.
+        contentItem: T.TextField {
             text: profile.displayText
+            readOnly: true
+            activeFocusOnPress: false
+            focusPolicy: Qt.NoFocus
+            enabled: false
             leftPadding: 34; rightPadding: 20
             verticalAlignment: Text.AlignVCenter
+            font: Qt.font({family: Style.family, pixelSize: Style.body})
+            color: Style.foreground(this, Window.window, profile.Kirigami.Theme.textColor)
+            Binding on renderType {
+                when: !!profile.Window.window && typeof profile.Window.window.foregroundFor === "function"
+                    && profile.GraphicsInfo.api !== GraphicsInfo.Software
+                value: Text.CurveRendering
+            }
         }
         delegate: QQC.ItemDelegate {
             required property string modelData
             width: profile.width
             text: view.profileLabel(modelData)
-            font.family: Style.family; font.pixelSize: Style.body
+            font: Qt.font({family: Style.family, pixelSize: Style.body})
             highlighted: profile.currentText === modelData
         }
     }

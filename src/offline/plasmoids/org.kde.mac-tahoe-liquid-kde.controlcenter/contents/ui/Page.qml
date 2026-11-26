@@ -11,5 +11,5 @@ ColumnLayout {
     Layout.maximumWidth: 400
     Layout.minimumHeight: implicitHeight
     Layout.maximumHeight: implicitHeight
-    Kirigami.Heading { visible: text.length > 0; text: page.title; level: 4; font.family: "SF Pro Text"; font.pixelSize: 14; font.weight: Font.DemiBold; Layout.fillWidth: true }
+    Kirigami.Heading { visible: text.length > 0; text: page.title; level: 4; font: Qt.font({family: "SF Pro Text", pixelSize: 14, weight: Font.DemiBold}); Layout.fillWidth: true }
 }

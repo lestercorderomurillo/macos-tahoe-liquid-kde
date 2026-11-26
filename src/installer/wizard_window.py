@@ -14,7 +14,7 @@ import time
 
 from PyQt6 import sip
 from PyQt6.QtCore import QVariantAnimation, QAbstractAnimation, QEasingCurve, QPropertyAnimation, QLibraryInfo, QLocale, QTranslator, Qt, QEvent, QFileSystemWatcher, QSettings, QStandardPaths, QPoint, QPointF, QProcess, QRectF, QSize, QTimer, QUrl
-from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
+from PyQt6.QtGui import QColor, QFont, QFontDatabase, QFontMetrics, QIcon, QKeySequence, QPainter, QPainterPath, QLinearGradient, QPalette, QPen, QPixmap, QPolygonF, QRegion, QShortcut
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
     QGraphicsDropShadowEffect, QGraphicsOpacityEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
@@ -406,8 +406,12 @@ class GlassComboBox(QComboBox):
         super().focusInEvent(event)
         self.update()
 
+    def item_font(self, index):
+        override = self.itemData(index, Qt.ItemDataRole.FontRole)
+        return override.resolve(self.font()) if isinstance(override, QFont) else self.font()
+
     def sizeHint(self):
-        content_width = max((self.fontMetrics().horizontalAdvance(self.itemText(i))
+        content_width = max((QFontMetrics(self.item_font(i), self).horizontalAdvance(self.itemText(i))
                              + (22 if not self.itemIcon(i).isNull() else 0)
                              for i in range(self.count())), default=0)
         return QSize(content_width + 42, 32)
@@ -424,7 +428,8 @@ class GlassComboBox(QComboBox):
         if not artwork.isNull():
             artwork.paint(painter, left, (self.height()-16)//2, 16, 16)
             left += 22
-        text = self.fontMetrics().elidedText(self.currentText(), Qt.TextElideMode.ElideRight, self.width()-24-left)
+        painter.setFont(self.item_font(self.currentIndex()))
+        text = painter.fontMetrics().elidedText(self.currentText(), Qt.TextElideMode.ElideRight, self.width()-24-left)
         painter.drawText(QRectF(left, 0, self.width()-24-left, self.height()),
                          Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, text)
         x, y = self.width()-15, self.height()/2
@@ -2075,6 +2080,11 @@ class InstallerWindow(OpaqueSurface):
         control.setFont(relative_font(self, .86))
         for item in self.bridge.languages:
             control.addItem(item["label"], item["code"])
+            if item["code"] == "hi":
+                families = QFontDatabase.families(QFontDatabase.WritingSystem.Devanagari)
+                if families:
+                    family = "Noto Sans Devanagari" if "Noto Sans Devanagari" in families else families[0]
+                    control.setItemData(control.count() - 1, QFont(family), Qt.ItemDataRole.FontRole)
         control.setCurrentIndex(max(0, control.findData(self.draft_language or self.bridge.language)))
         control.currentIndexChanged.connect(control.updateGeometry)
         control.currentIndexChanged.connect(lambda: self.change_language(control.currentData()))

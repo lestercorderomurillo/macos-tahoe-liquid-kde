@@ -16,7 +16,5 @@ QQC.Label {
         when: !!label.Window.window && typeof label.Window.window.foregroundFor === "function"
         value: when ? label.Window.window.foregroundFor(label, label.baseForeground) : label.baseForeground
     }
-    font.family: Style.family
-    font.pixelSize: Style.body
-    font.weight: Font.Normal
+    font: Qt.font({family: Style.family, pixelSize: Style.body, weight: Font.Normal})
 }

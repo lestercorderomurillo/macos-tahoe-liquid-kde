@@ -7,6 +7,10 @@
 #include <QDBusInterface>
 #include <QDBusVariant>
 #include <QMenu>
+#include <QFileDialog>
+#include <QScopeGuard>
+#include <KConfig>
+#include <KConfigGroup>
 #include <QMouseEvent>
 #include <abstracttasksmodel.h>
 #include <QProcess>
@@ -248,6 +252,72 @@ private Q_SLOTS:
         QCOMPARE(requested.count(), count);
         QCOMPARE(about.count(), 1);
     }
+    void idleFinderTitleAndNavigation()
+    {
+        AppMenuModel model;
+        QTRY_COMPARE(model.activeAppName(), QStringLiteral("Finder"));
+        QQuickWindow window;
+        QQuickItem anchor(window.contentItem());
+        anchor.setSize({100, 24});
+        window.show();
+        AppMenuApplet applet(nullptr, KPluginMetaData(), {});
+        applet.setModel(&model);
+        connect(&applet, &AppMenuApplet::requestActivateIndex, &applet, [&](int index) {
+            if (index == -2) applet.triggerWindowMenu(&anchor);
+            else if (index == -3) applet.triggerSystemMenu(&anchor);
+            else applet.trigger(&anchor, index);
+        });
+        auto *file = model.index(0).data(AppMenuModel::ActionRole).value<QAction*>()->menu();
+        auto *newWindow = file->actions().first();
+        applet.triggerWindowMenu(&anchor);
+        auto *popup = qobject_cast<QMenu*>(QApplication::activePopupWidget());
+        QVERIFY(popup);
+        QCOMPARE(popup->actions(), QList<QAction*>{newWindow});
+        QCOMPARE(applet.currentIndex(), -2);
+        QTest::keyClick(popup, Qt::Key_Right);
+        QCOMPARE(applet.currentIndex(), 0);
+        QTest::keyClick(popup, Qt::Key_Left);
+        QCOMPARE(applet.currentIndex(), -2);
+        QTest::keyClick(popup, Qt::Key_Left);
+        QCOMPARE(applet.currentIndex(), -3);
+        QTest::keyClick(popup, Qt::Key_Right);
+        QCOMPARE(applet.currentIndex(), -2);
+        QCOMPARE(popup->actions(), QList<QAction*>{newWindow});
+        popup->hide();
+        QCOMPARE(file->actions().first(), newWindow);
+        model.setEnableGenericMenu(false);
+        applet.triggerWindowMenu(&anchor);
+        QCOMPARE(applet.currentIndex(), -1);
+    }
+
+    void idleFinderWithoutInstalledHandler()
+    {
+        QTemporaryDir config;
+        QVERIFY(config.isValid());
+        const QByteArray previous = qgetenv("XDG_CONFIG_HOME");
+        qputenv("XDG_CONFIG_HOME", config.path().toUtf8());
+        const auto restore = qScopeGuard([&] {
+            if (previous.isNull()) qunsetenv("XDG_CONFIG_HOME");
+            else qputenv("XDG_CONFIG_HOME", previous);
+        });
+        KConfig mimeApps(QStringLiteral("mimeapps.list"), KConfig::SimpleConfig);
+        mimeApps.group("Default Applications").writeXdgListEntry("inode/directory",
+            QStringList{QStringLiteral("removed-file-manager.desktop")});
+        QVERIFY(mimeApps.sync());
+        AppMenuModel model;
+        QTRY_COMPARE(model.activeAppName(), QStringLiteral("Finder"));
+        model.finderTitleMenu()->actions().first()->trigger();
+        QFileDialog *browser = nullptr;
+        for (auto *widget : QApplication::topLevelWidgets()) {
+            if ((browser = qobject_cast<QFileDialog*>(widget))) break;
+        }
+        QVERIFY(browser);
+        QVERIFY(browser->isVisible());
+        QCOMPARE(browser->directoryUrl(), QUrl::fromLocalFile(QDir::homePath()));
+        QCOMPARE(browser->fileMode(), QFileDialog::ExistingFile);
+        browser->close();
+    }
+
     void mouseAcrossEntireBar_data()
     {
         QTest::addColumn<bool>("exported");

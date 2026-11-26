@@ -50,7 +50,8 @@ bool MenuShortcutSender::available() const
 #if QT_CONFIG(xcb)
     if (auto *x11 = qGuiApp->nativeInterface<QNativeInterface::QX11Application>()) {
         int event, error, major, minor;
-        return XTestQueryExtension(x11->display(), &event, &error, &major, &minor);
+        Display *display = x11->display();
+        return display && XTestQueryExtension(display, &event, &error, &major, &minor);
     }
 #endif
     return false;
