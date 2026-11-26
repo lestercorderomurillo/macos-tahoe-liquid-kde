@@ -156,17 +156,7 @@ Tint the Dock icons to match your desktop.
 Use the active app’s menus from the top bar.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Light and dark modes" width="830">
-</p>
-
-<br>
-
-### Adaptive Contrast
-
-Text adjusts to the background so labels stay readable.
-
-<p align="center">
-  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Adaptive Contrast · Tahoe · OFF / ON" width="900">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif" alt="Quickbar · Light and dark modes" width="830">
 </p>
 
 <br>
@@ -176,7 +166,7 @@ Text adjusts to the background so labels stay readable.
 Search for apps or browse them by category.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Light and dark modes" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Light and dark modes" width="830">
 </p>
 
 <br>
@@ -186,7 +176,7 @@ Search for apps or browse them by category.
 Adjust Wi-Fi, sound and brightness in one menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Control Center · Light and dark modes" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Control Center · Light and dark modes" width="360">
 </p>
 
 <br>
@@ -196,7 +186,7 @@ Adjust Wi-Fi, sound and brightness in one menu.
 Read recent alerts grouped by app.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Notifications · Light and dark modes" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Notifications · Light and dark modes" width="620">
 </p>
 
 <br>
@@ -206,7 +196,7 @@ Read recent alerts grouped by app.
 Browse files in a Finder-style window.
 
 <p align="center">
-  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Light and dark modes" width="830"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif" alt="Finder · Light and dark modes" width="830"></a>
 </p>
 
 <br>
@@ -216,7 +206,7 @@ Browse files in a Finder-style window.
 Open the clock to browse the month.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Calendar · Light and dark modes" width="620">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif" alt="Calendar · Light and dark modes" width="620">
 </p>
 
 <br>
@@ -226,7 +216,7 @@ Open the clock to browse the month.
 Connect paired devices and check their battery levels.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Light and dark modes" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Light and dark modes" width="620">
 </p>
 
 ### Wi-Fi
@@ -234,7 +224,7 @@ Connect paired devices and check their battery levels.
 View available networks and connection status.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Light and dark modes" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Light and dark modes" width="328">
 </p>
 
 <br>
@@ -244,7 +234,7 @@ View available networks and connection status.
 Check the battery level and charging status.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Battery · Light and dark modes" width="620">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif" alt="Battery · Light and dark modes" width="620">
 </p>
 
 <br>
@@ -254,7 +244,7 @@ Check the battery level and charging status.
 Reuse text and images you copied earlier.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Clipboard History · Light and dark modes" width="830">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Clipboard History · Light and dark modes" width="830">
 </p>
 
 <br>
@@ -264,7 +254,7 @@ Reuse text and images you copied earlier.
 View hardware, software and theme details.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="System Information · Light and dark modes" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="System Information · Light and dark modes" width="830">
 </p>
 
 <br>
@@ -274,7 +264,7 @@ View hardware, software and theme details.
 Menus and popups follow the light or dark theme.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma Theme · Light and dark modes" width="453">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif" alt="Plasma Theme · Light and dark modes" width="453">
 </p>
 
 <br>
@@ -285,6 +275,16 @@ A themed splash screen appears at startup.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash with a progress bar" width="415">
+</p>
+
+<br>
+
+### Adaptive Contrast
+
+Text adjusts to the background so labels stay readable.
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Adaptive Contrast · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
@@ -336,13 +336,13 @@ To free disk space while keeping your Git checkout and local work:
 | 🇫🇷 French | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italian | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Russian | ![Available](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanese | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Korean | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Arabic | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Hindi | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Dutch | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polish | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Turkish | ![Preview](https://img.shields.io/badge/Preview-D4A017) |
+| 🇯🇵 Japanese | ![Available](https://img.shields.io/badge/Available-1A7F37) |
+| 🇰🇷 Korean | ![Available](https://img.shields.io/badge/Available-1A7F37) |
+| 🇸🇦 Arabic | ![Available](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇳 Hindi | ![Available](https://img.shields.io/badge/Available-1A7F37) |
+| 🇳🇱 Dutch | ![Available](https://img.shields.io/badge/Available-1A7F37) |
+| 🇵🇱 Polish | ![Available](https://img.shields.io/badge/Available-1A7F37) |
+| 🇹🇷 Turkish | ![Available](https://img.shields.io/badge/Available-1A7F37) |
 
 <details>
 <summary><b>Requirements</b></summary>

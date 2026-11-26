@@ -156,17 +156,7 @@ Dopasuj kolor ikon Docka do pulpitu.
 Otwieraj menu aktywnej aplikacji z górnego paska.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Tryb jasny i ciemny" width="830">
-</p>
-
-<br>
-
-### Kontrast adaptacyjny
-
-Kolor tekstu dostosowuje się do tła, by etykiety pozostały czytelne.
-
-<p align="center">
-  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Kontrast adaptacyjny · Tahoe · OFF / ON" width="900">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif" alt="Quickbar · Tryb jasny i ciemny" width="830">
 </p>
 
 <br>
@@ -176,7 +166,7 @@ Kolor tekstu dostosowuje się do tła, by etykiety pozostały czytelne.
 Szukaj aplikacji lub przeglądaj je według kategorii.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Tryb jasny i ciemny" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Tryb jasny i ciemny" width="830">
 </p>
 
 <br>
@@ -186,7 +176,7 @@ Szukaj aplikacji lub przeglądaj je według kategorii.
 Steruj siecią Wi-Fi, dźwiękiem i jasnością z jednego menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Centrum sterowania · Tryb jasny i ciemny" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Centrum sterowania · Tryb jasny i ciemny" width="360">
 </p>
 
 <br>
@@ -196,7 +186,7 @@ Steruj siecią Wi-Fi, dźwiękiem i jasnością z jednego menu.
 Czytaj ostatnie powiadomienia pogrupowane według aplikacji.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Powiadomienia · Tryb jasny i ciemny" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Powiadomienia · Tryb jasny i ciemny" width="620">
 </p>
 
 <br>
@@ -206,7 +196,7 @@ Czytaj ostatnie powiadomienia pogrupowane według aplikacji.
 Przeglądaj pliki w oknie w stylu Findera.
 
 <p align="center">
-  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Tryb jasny i ciemny" width="830"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif" alt="Finder · Tryb jasny i ciemny" width="830"></a>
 </p>
 
 <br>
@@ -216,7 +206,7 @@ Przeglądaj pliki w oknie w stylu Findera.
 Otwórz zegar, aby wyświetlić kalendarz miesięczny.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Kalendarz · Tryb jasny i ciemny" width="620">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif" alt="Kalendarz · Tryb jasny i ciemny" width="620">
 </p>
 
 <br>
@@ -226,7 +216,7 @@ Otwórz zegar, aby wyświetlić kalendarz miesięczny.
 Łącz się ze sparowanymi urządzeniami i sprawdzaj poziom ich baterii.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Tryb jasny i ciemny" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Tryb jasny i ciemny" width="620">
 </p>
 
 ### Wi-Fi
@@ -234,7 +224,7 @@ Otwórz zegar, aby wyświetlić kalendarz miesięczny.
 Sprawdź dostępne sieci i stan połączenia.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Tryb jasny i ciemny" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Tryb jasny i ciemny" width="328">
 </p>
 
 <br>
@@ -244,7 +234,7 @@ Sprawdź dostępne sieci i stan połączenia.
 Sprawdź poziom baterii i stan ładowania.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Bateria · Tryb jasny i ciemny" width="620">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif" alt="Bateria · Tryb jasny i ciemny" width="620">
 </p>
 
 <br>
@@ -254,7 +244,7 @@ Sprawdź poziom baterii i stan ładowania.
 Użyj ponownie skopiowanego tekstu i obrazów.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Historia schowka · Tryb jasny i ciemny" width="830">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Historia schowka · Tryb jasny i ciemny" width="830">
 </p>
 
 <br>
@@ -264,7 +254,7 @@ Użyj ponownie skopiowanego tekstu i obrazów.
 Sprawdź szczegóły sprzętu, oprogramowania i motywu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Informacje o systemie · Tryb jasny i ciemny" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="Informacje o systemie · Tryb jasny i ciemny" width="830">
 </p>
 
 <br>
@@ -274,7 +264,7 @@ Sprawdź szczegóły sprzętu, oprogramowania i motywu.
 Menu i wyskakujące okna dopasowują się do jasnego lub ciemnego motywu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Motyw Plasma · Tryb jasny i ciemny" width="453">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif" alt="Motyw Plasma · Tryb jasny i ciemny" width="453">
 </p>
 
 <br>
@@ -285,6 +275,16 @@ Podczas uruchamiania pojawia się ekran zgodny z motywem.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth startup splash z paskiem postępu" width="415">
+</p>
+
+<br>
+
+### Kontrast adaptacyjny
+
+Kolor tekstu dostosowuje się do tła, by etykiety pozostały czytelne.
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Kontrast adaptacyjny · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
@@ -336,13 +336,13 @@ Aby zwolnić miejsce na dysku i zachować kopię roboczą Git oraz zmiany lokaln
 | 🇫🇷 Français | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italiano | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Русский | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 日本語 | ![Wersja testowa](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 한국어 | ![Wersja testowa](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 العربية | ![Wersja testowa](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 हिन्दी | ![Wersja testowa](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Nederlands | ![Wersja testowa](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polski | ![Wersja testowa](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Türkçe | ![Wersja testowa](https://img.shields.io/badge/Preview-D4A017) |
+| 🇯🇵 日本語 | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
+| 🇰🇷 한국어 | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
+| 🇸🇦 العربية | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇳 हिन्दी | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
+| 🇳🇱 Nederlands | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
+| 🇵🇱 Polski | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
+| 🇹🇷 Türkçe | ![Dostępne](https://img.shields.io/badge/Available-1A7F37) |
 
 <details>
 <summary><b>Wymogi</b></summary>

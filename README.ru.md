@@ -153,17 +153,7 @@
 Открывайте меню активного приложения с верхней панели.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Светлый и тёмный режимы" width="830">
-</p>
-
-<br>
-
-### Адаптивный контраст
-
-Цвет текста подстраивается под фон, чтобы надписи оставались разборчивыми.
-
-<p align="center">
-  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Адаптивный контраст · Tahoe · OFF / ON" width="900">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif" alt="Quickbar · Светлый и тёмный режимы" width="830">
 </p>
 
 <br>
@@ -173,7 +163,7 @@
 Ищите приложения или просматривайте их по категориям.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Светлый и тёмный режимы" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Светлый и тёмный режимы" width="830">
 </p>
 
 <br>
@@ -183,7 +173,7 @@
 Настраивайте Wi-Fi, звук и яркость в одном меню.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Центр управления · Светлый и тёмный режимы" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Центр управления · Светлый и тёмный режимы" width="360">
 </p>
 
 <br>
@@ -193,7 +183,7 @@
 Просматривайте недавние уведомления, сгруппированные по приложениям.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Уведомления · Светлый и тёмный режимы" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Уведомления · Светлый и тёмный режимы" width="620">
 </p>
 
 <br>
@@ -203,7 +193,7 @@
 Просматривайте файлы в окне в стиле Finder.
 
 <p align="center">
-  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Светлый и тёмный режимы" width="830"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif" alt="Finder · Светлый и тёмный режимы" width="830"></a>
 </p>
 
 <br>
@@ -213,7 +203,7 @@
 Нажмите на часы, чтобы открыть календарь на месяц.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Календарь · Светлый и тёмный режимы" width="620">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif" alt="Календарь · Светлый и тёмный режимы" width="620">
 </p>
 
 <br>
@@ -223,7 +213,7 @@
 Подключайте сопряжённые устройства и проверяйте их заряд.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Светлый и тёмный режимы" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Светлый и тёмный режимы" width="620">
 </p>
 
 ### Wi-Fi
@@ -231,7 +221,7 @@
 Просматривайте доступные сети и состояние подключения.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Светлый и тёмный режимы" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Светлый и тёмный режимы" width="328">
 </p>
 
 <br>
@@ -241,7 +231,7 @@
 Проверяйте уровень заряда батареи и состояние зарядки.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Батарея · Светлый и тёмный режимы" width="620">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif" alt="Батарея · Светлый и тёмный режимы" width="620">
 </p>
 
 <br>
@@ -251,7 +241,7 @@
 Повторно используйте скопированные текст и изображения.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="История буфера обмена · Светлый и тёмный режимы" width="830">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="История буфера обмена · Светлый и тёмный режимы" width="830">
 </p>
 
 <br>
@@ -261,7 +251,7 @@
 Просматривайте сведения об оборудовании, программах и теме оформления.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Информационная система · Светлый и тёмный режимы" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="Информационная система · Светлый и тёмный режимы" width="830">
 </p>
 
 <br>
@@ -271,7 +261,7 @@
 Меню и всплывающие окна используют светлую или тёмную тему.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Тема Plasma · Светлый и тёмный режимы" width="453">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif" alt="Тема Plasma · Светлый и тёмный режимы" width="453">
 </p>
 
 <br>
@@ -282,6 +272,16 @@
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Плимутский стартап с прогрессным панелем" width="415">
+</p>
+
+<br>
+
+### Адаптивный контраст
+
+Цвет текста подстраивается под фон, чтобы надписи оставались разборчивыми.
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Адаптивный контраст · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
@@ -333,13 +333,13 @@ cd macos-tahoe-liquid-kde
 | 🇫🇷 Французский | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Итальянский | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Русский | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Японский | ![Предварительная версия](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Корейский | ![Предварительная версия](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Арабский | ![Предварительная версия](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Хинди | ![Предварительная версия](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Нидерландский | ![Предварительная версия](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Польский | ![Предварительная версия](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Турецкий | ![Предварительная версия](https://img.shields.io/badge/Preview-D4A017) |
+| 🇯🇵 Японский | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
+| 🇰🇷 Корейский | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
+| 🇸🇦 Арабский | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇳 Хинди | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
+| 🇳🇱 Нидерландский | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
+| 🇵🇱 Польский | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
+| 🇹🇷 Турецкий | ![Доступен](https://img.shields.io/badge/Available-1A7F37) |
 
 <details>
 <summary><b>Требования</b></summary>

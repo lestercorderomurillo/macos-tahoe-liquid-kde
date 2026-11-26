@@ -1,0 +1,683 @@
+{
+  "edition": "tahoe",
+  "tahoe_source": "01bc7e73285712c9959adbd9569cd2fea7b3d75b",
+  "capture_profile_sha256": "2a3bd2d31ca0dfdd65c45a09a3c8c2bbe35a122ab2ca7961f1c33edf8b9a3b09",
+  "display": {
+    "session": "Plasma 6.8.1 Wayland",
+    "pixels": [
+      3840,
+      2160
+    ],
+    "scale": 2
+  },
+  "control_center_crop_inset_px": [
+    340,
+    0,
+    0,
+    340
+  ],
+  "frame_durations_ms": [
+    2500,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    2500,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60
+  ],
+  "frames": {
+    "battery": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "battery",
+          "window": "mttkde-battery",
+          "geometry": {
+            "x": 1575,
+            "y": 30,
+            "width": 328,
+            "height": 168
+          },
+          "crop": [
+            3150,
+            60,
+            3806,
+            396
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "f6e444f4b693436b1d7dabc43665f69cdcc39c546d1367a945fa595e67a38997"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "battery",
+          "window": "mttkde-battery",
+          "geometry": {
+            "x": 1575,
+            "y": 30,
+            "width": 328,
+            "height": 168
+          },
+          "crop": [
+            3150,
+            60,
+            3806,
+            396
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "f95d529d07eda326790809da7adc12eedece057af3057a51a5a5f36d78d7b279"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-battery-light-9dbfc37266b2.webp",
+        "src/screenshots/previews/tahoe-battery-dark-47be9e534f3a.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif",
+      "dimensions": [
+        656,
+        336
+      ]
+    },
+    "bluetooth": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "bluetooth",
+          "window": "mttkde-bluetooth",
+          "geometry": {
+            "x": 1507,
+            "y": 30,
+            "width": 328,
+            "height": 196
+          },
+          "crop": [
+            3014,
+            60,
+            3670,
+            452
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "17a2a5d1a5131e8cddafba086699a169087b12309f84721bcdadf0787f11cf55"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "bluetooth",
+          "window": "mttkde-bluetooth",
+          "geometry": {
+            "x": 1507,
+            "y": 30,
+            "width": 328,
+            "height": 196
+          },
+          "crop": [
+            3014,
+            60,
+            3670,
+            452
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "2af6d1ca6721ee9f5963d66dd5e893b639e09625a21bf639c8492c605a87853f"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-bluetooth-light-7864e59c82a4.webp",
+        "src/screenshots/previews/tahoe-bluetooth-dark-cbf4909b04cf.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif",
+      "dimensions": [
+        656,
+        392
+      ]
+    },
+    "calendar": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "calendar",
+          "window": "mttkde-calendar",
+          "geometry": {
+            "x": 1592,
+            "y": 30,
+            "width": 328,
+            "height": 328
+          },
+          "crop": [
+            3184,
+            60,
+            3840,
+            716
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "cb0234f0eb5f81e5f5f1b6bd137422d92aa910b54dd77fb992eb149e8754fdd8"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "calendar",
+          "window": "mttkde-calendar",
+          "geometry": {
+            "x": 1592,
+            "y": 30,
+            "width": 328,
+            "height": 328
+          },
+          "crop": [
+            3184,
+            60,
+            3840,
+            716
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "9df2923cd402c0b0ec594f0ad937e7be87bd25a508b01c82e05e28076e4122b5"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-calendar-light-2b4a81714aea.webp",
+        "src/screenshots/previews/tahoe-calendar-dark-0d70672b9d29.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif",
+      "dimensions": [
+        656,
+        656
+      ]
+    },
+    "clipboard-history": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "clipboard-history",
+          "window": "mttkde-apps",
+          "geometry": {
+            "x": 652,
+            "y": 451,
+            "width": 616,
+            "height": 178
+          },
+          "crop": [
+            1296,
+            894,
+            2544,
+            1266
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "be52b07e53fa7813b75205708fd90a89bbd0a84a434e7e9a8bd04b0eedae3b5a"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "clipboard-history",
+          "window": "mttkde-apps",
+          "geometry": {
+            "x": 652,
+            "y": 451,
+            "width": 616,
+            "height": 178
+          },
+          "crop": [
+            1296,
+            894,
+            2544,
+            1266
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "c6210b41adeb2757fe635d94c5c38b81c7e092374b4464d622100587b1ae6f3d"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-clipboard-history-light-e950ba323c41.webp",
+        "src/screenshots/previews/tahoe-clipboard-history-dark-10fbed127191.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif",
+      "dimensions": [
+        1000,
+        298
+      ]
+    },
+    "control-center": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "control-center",
+          "window": "mttkde-control-center",
+          "geometry": {
+            "x": 1434,
+            "y": 30,
+            "width": 486,
+            "height": 679
+          },
+          "crop": [
+            2868,
+            60,
+            3840,
+            1418
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "57d5994355946efd3b6f555e0d3e031792a37f148cef18785465c58572c9fcb6"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "control-center",
+          "window": "mttkde-control-center",
+          "geometry": {
+            "x": 1434,
+            "y": 30,
+            "width": 486,
+            "height": 679
+          },
+          "crop": [
+            2868,
+            60,
+            3840,
+            1418
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "dfb8e75297c7984e637417f6c6ffe27517af01f0a83f38670784094072e128b3"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-control-center-light-42ada65625b6.webp",
+        "src/screenshots/previews/tahoe-control-center-dark-669ce1af10f3.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif",
+      "dimensions": [
+        632,
+        1018
+      ]
+    },
+    "finder": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "finder",
+          "window": "Documents",
+          "geometry": {
+            "x": 450,
+            "y": 185,
+            "width": 1000,
+            "height": 620
+          },
+          "crop": [
+            800,
+            295,
+            3000,
+            1685
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "32b47b716ef4c3e8de57b0f7fb895f8bfef81abc3ad464e46153b7d8913a34f8"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "finder",
+          "window": "Documents",
+          "geometry": {
+            "x": 450,
+            "y": 185,
+            "width": 1000,
+            "height": 620
+          },
+          "crop": [
+            800,
+            295,
+            3000,
+            1685
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "82503925904cd7adeb461c48f6c2870bc0ba55dedf418e0c21e1d071fe6114e7"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-finder-light-ae81261b2c36.webp",
+        "src/screenshots/previews/tahoe-finder-dark-81ebc9b9d223.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif",
+      "dimensions": [
+        1000,
+        632
+      ]
+    },
+    "launchpad": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "launchpad",
+          "window": "mttkde-apps",
+          "geometry": {
+            "x": 642,
+            "y": 267,
+            "width": 636,
+            "height": 545
+          },
+          "crop": [
+            1220,
+            470,
+            2620,
+            1688
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "c2effbbabe7e64eb1d438945fd679761fe23396cfc95e530afb994ac43838aa0"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "launchpad",
+          "window": "mttkde-apps",
+          "geometry": {
+            "x": 642,
+            "y": 267,
+            "width": 636,
+            "height": 545
+          },
+          "crop": [
+            1220,
+            470,
+            2620,
+            1688
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "23b3c9457e368bc9ccd0efcb7ae847437edda39fe3a657ff8937173762357b73"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-launchpad-light-ac25e20921f0.webp",
+        "src/screenshots/previews/tahoe-launchpad-dark-a34b7cdcd900.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif",
+      "dimensions": [
+        1000,
+        870
+      ]
+    },
+    "notifications": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "notifications",
+          "window": "mttkde-notifications",
+          "geometry": {
+            "x": 1550,
+            "y": 36,
+            "width": 364,
+            "height": 128
+          },
+          "crop": [
+            3100,
+            72,
+            3828,
+            328
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "e95db059f8d8835f18625174efb1d7c433544f5ae9d5eef63c32edd1d561f215"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "notifications",
+          "window": "mttkde-notifications",
+          "geometry": {
+            "x": 1550,
+            "y": 36,
+            "width": 364,
+            "height": 128
+          },
+          "crop": [
+            3100,
+            72,
+            3828,
+            328
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "1e23008657ba43c59de62e5e448e9c757ba01fdfd54734f88c6a3556b2b522e5"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-notifications-light-e8bdd3c35e88.webp",
+        "src/screenshots/previews/tahoe-notifications-dark-61b56592e8f0.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif",
+      "dimensions": [
+        728,
+        256
+      ]
+    },
+    "plasma-theme": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "plasma-theme",
+          "window": "",
+          "geometry": {
+            "x": 1297,
+            "y": 486,
+            "width": 353,
+            "height": 206
+          },
+          "crop": [
+            2554,
+            932,
+            3340,
+            1424
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "4b7148c43733e1ac76739da246e7cecd189ab35efbfd119e3bf9afa465d56318"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "plasma-theme",
+          "window": "",
+          "geometry": {
+            "x": 1297,
+            "y": 486,
+            "width": 353,
+            "height": 206
+          },
+          "crop": [
+            2554,
+            932,
+            3340,
+            1424
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "83b96e09cc58c12e35816f2cab0ebe25ca25b888a732c6e906a08c3ce908d58a"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-plasma-theme-light-bd8a5784120b.webp",
+        "src/screenshots/previews/tahoe-plasma-theme-dark-92dab9fa0bc1.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif",
+      "dimensions": [
+        786,
+        492
+      ]
+    },
+    "quickbar": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "quickbar",
+          "window": "",
+          "geometry": {
+            "x": 90,
+            "y": 30,
+            "width": 310,
+            "height": 574
+          },
+          "crop": [
+            0,
+            0,
+            3200,
+            1820
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "3c0bbb9787f53a10f7515123ea6348a37feea8127819b8053241c7245a11db91"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "quickbar",
+          "window": "",
+          "geometry": {
+            "x": 90,
+            "y": 30,
+            "width": 310,
+            "height": 574
+          },
+          "crop": [
+            0,
+            0,
+            3200,
+            1820
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "00c44b483a90c8c17925a736e0aed658f6f13dbc7d69992a3b0084b193c47ae4"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-quickbar-light-c4d7dcf72544.webp",
+        "src/screenshots/previews/tahoe-quickbar-dark-ca2ad58a9ae4.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif",
+      "dimensions": [
+        1000,
+        569
+      ]
+    },
+    "system-information": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "system-information",
+          "window": "About This Computer (preview)",
+          "geometry": {
+            "x": 780,
+            "y": 205,
+            "width": 360,
+            "height": 700
+          },
+          "crop": [
+            1525,
+            375,
+            2315,
+            1845
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "d933283c69389f18927d0f85a7fe31f9122abaed2261c4f6ad61677cc034c1c7"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "system-information",
+          "window": "About This Computer (preview)",
+          "geometry": {
+            "x": 780,
+            "y": 205,
+            "width": 360,
+            "height": 700
+          },
+          "crop": [
+            1525,
+            375,
+            2315,
+            1845
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "46f954dd8c0c813e22769c5669aa8fe53130880b44c6708fa718afb55e652ef4"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-system-information-light-2346b6991e1e.webp",
+        "src/screenshots/previews/tahoe-system-information-dark-2955211d7f76.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif",
+      "dimensions": [
+        591,
+        1100
+      ]
+    },
+    "wi-fi": {
+      "captures": [
+        {
+          "edition": "tahoe",
+          "mode": "light",
+          "case": "wi-fi",
+          "window": "mttkde-wifi",
+          "geometry": {
+            "x": 1541,
+            "y": 30,
+            "width": 328,
+            "height": 335
+          },
+          "crop": [
+            3082,
+            60,
+            3738,
+            730
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "bb10bda5c40369ffeeb33725860763e78190058d01af0d4aadf7abbf7f38fcd7"
+        },
+        {
+          "edition": "tahoe",
+          "mode": "dark",
+          "case": "wi-fi",
+          "window": "mttkde-wifi",
+          "geometry": {
+            "x": 1541,
+            "y": 30,
+            "width": 328,
+            "height": 335
+          },
+          "crop": [
+            3082,
+            60,
+            3738,
+            730
+          ],
+          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+          "sha256": "5094633945a36fd763db20fa0c9885be1c277274764f8a474382c56e634e9a1a"
+        }
+      ],
+      "sources": [
+        "src/screenshots/previews/tahoe-wi-fi-light-adf1be302ea7.webp",
+        "src/screenshots/previews/tahoe-wi-fi-dark-8f58f63136f5.webp"
+      ],
+      "gif": "src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif",
+      "dimensions": [
+        656,
+        670
+      ]
+    }
+  }
+}

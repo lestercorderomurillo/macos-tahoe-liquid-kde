@@ -156,17 +156,7 @@ Dock のアイコンをデスクトップに合う色に変更できます。
 上部のバーから使用中のアプリのメニューを開けます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · ライトモードとダークモード" width="830">
-</p>
-
-<br>
-
-### 適応コントラスト
-
-背景に合わせて文字色が変わり、ラベルが読みやすくなります。
-
-<p align="center">
-  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="適応コントラスト · Tahoe · OFF / ON" width="900">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif" alt="Quickbar · ライトモードとダークモード" width="830">
 </p>
 
 <br>
@@ -176,7 +166,7 @@ Dock のアイコンをデスクトップに合う色に変更できます。
 アプリを検索したり、カテゴリ別に探したりできます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · ライトモードとダークモード" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · ライトモードとダークモード" width="830">
 </p>
 
 <br>
@@ -186,7 +176,7 @@ Dock のアイコンをデスクトップに合う色に変更できます。
 Wi-Fi、音量、明るさをひとつのメニューで調整できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="制御センター · ライトモードとダークモード" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="制御センター · ライトモードとダークモード" width="360">
 </p>
 
 <br>
@@ -196,7 +186,7 @@ Wi-Fi、音量、明るさをひとつのメニューで調整できます。
 最近の通知をアプリごとにまとめて確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="通知 · ライトモードとダークモード" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="通知 · ライトモードとダークモード" width="620">
 </p>
 
 <br>
@@ -206,7 +196,7 @@ Wi-Fi、音量、明るさをひとつのメニューで調整できます。
 Finder 風のウィンドウでファイルを閲覧できます。
 
 <p align="center">
-  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · ライトモードとダークモード" width="830"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif" alt="Finder · ライトモードとダークモード" width="830"></a>
 </p>
 
 <br>
@@ -216,7 +206,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 時計を開くと月間カレンダーが表示されます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="カレンダー · ライトモードとダークモード" width="620">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif" alt="カレンダー · ライトモードとダークモード" width="620">
 </p>
 
 <br>
@@ -226,7 +216,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 ペアリング済みの機器を接続し、電池残量を確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · ライトモードとダークモード" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · ライトモードとダークモード" width="620">
 </p>
 
 ### Wi-Fi
@@ -234,7 +224,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 利用可能なネットワークと接続状態を確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · ライトモードとダークモード" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · ライトモードとダークモード" width="328">
 </p>
 
 <br>
@@ -244,7 +234,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 バッテリー残量と充電状態を確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="バッテリー · ライトモードとダークモード" width="620">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif" alt="バッテリー · ライトモードとダークモード" width="620">
 </p>
 
 <br>
@@ -254,7 +244,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 コピーしたテキストや画像を再利用できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="クリップボード履歴 · ライトモードとダークモード" width="830">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="クリップボード履歴 · ライトモードとダークモード" width="830">
 </p>
 
 <br>
@@ -264,7 +254,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 ハードウェア、ソフトウェア、テーマの詳細を確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="システム情報 · ライトモードとダークモード" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="システム情報 · ライトモードとダークモード" width="830">
 </p>
 
 <br>
@@ -274,7 +264,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 メニューやポップアップはライトテーマとダークテーマに対応します。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma テーマ · ライトモードとダークモード" width="453">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif" alt="Plasma テーマ · ライトモードとダークモード" width="453">
 </p>
 
 <br>
@@ -285,6 +275,16 @@ Finder 風のウィンドウでファイルを閲覧できます。
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="プライマススタートアップは,進捗バーでスプラッシュ" width="415">
+</p>
+
+<br>
+
+### 適応コントラスト
+
+背景に合わせて文字色が変わり、ラベルが読みやすくなります。
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="適応コントラスト · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
@@ -336,13 +336,13 @@ Git の作業コピーとローカルの変更を残したままディスク容�
 | 🇫🇷 Français | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italiano | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Русский | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 日本語 | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 한국어 | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 العربية | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 हिन्दी | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Nederlands | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polski | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Türkçe | ![プレビュー](https://img.shields.io/badge/Preview-D4A017) |
+| 🇯🇵 日本語 | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇰🇷 한국어 | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇸🇦 العربية | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇳 हिन्दी | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇳🇱 Nederlands | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇵🇱 Polski | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
+| 🇹🇷 Türkçe | ![入手可能](https://img.shields.io/badge/Available-1A7F37) |
 
 <details>
 <summary><b>要求</b></summary>

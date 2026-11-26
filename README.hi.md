@@ -156,17 +156,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 ऊपरी पट्टी से सक्रिय ऐप के मेन्यू खोलें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · लाइट और डार्क मोड" width="830">
-</p>
-
-<br>
-
-### अनुकूली कंट्रास्ट
-
-पृष्ठभूमि के अनुसार अक्षरों का रंग बदलता है ताकि लेबल पढ़ने में आसान रहें।
-
-<p align="center">
-  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="अनुकूली कंट्रास्ट · Tahoe · OFF / ON" width="900">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif" alt="Quickbar · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>
@@ -176,7 +166,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 ऐप खोजें या उन्हें श्रेणी के अनुसार देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · लाइट और डार्क मोड" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>
@@ -186,7 +176,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 एक ही मेन्यू से वाई-फ़ाई, आवाज़ और चमक नियंत्रित करें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="नियंत्रण केंद्र · लाइट और डार्क मोड" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="नियंत्रण केंद्र · लाइट और डार्क मोड" width="360">
 </p>
 
 <br>
@@ -196,7 +186,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 हाल की सूचनाएँ ऐप के अनुसार समूहों में देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="सूचनाएं · लाइट और डार्क मोड" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="सूचनाएं · लाइट और डार्क मोड" width="620">
 </p>
 
 <br>
@@ -206,7 +196,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 Finder जैसी विंडो में अपनी फ़ाइलें देखें।
 
 <p align="center">
-  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · लाइट और डार्क मोड" width="830"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif" alt="Finder · लाइट और डार्क मोड" width="830"></a>
 </p>
 
 <br>
@@ -216,7 +206,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 महीने का कैलेंडर देखने के लिए घड़ी खोलें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="कैलेंडर · लाइट और डार्क मोड" width="620">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif" alt="कैलेंडर · लाइट और डार्क मोड" width="620">
 </p>
 
 <br>
@@ -226,7 +216,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 पेयर किए गए डिवाइस जोड़ें और उनकी बैटरी का स्तर देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · लाइट और डार्क मोड" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · लाइट और डार्क मोड" width="620">
 </p>
 
 ### Wi-Fi
@@ -234,7 +224,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 उपलब्ध नेटवर्क और कनेक्शन की स्थिति देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · लाइट और डार्क मोड" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · लाइट और डार्क मोड" width="328">
 </p>
 
 <br>
@@ -244,7 +234,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 बैटरी का स्तर और चार्जिंग की स्थिति जाँचें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="बैटरी · लाइट और डार्क मोड" width="620">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif" alt="बैटरी · लाइट और डार्क मोड" width="620">
 </p>
 
 <br>
@@ -254,7 +244,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 पहले कॉपी किए गए टेक्स्ट और चित्रों का फिर से उपयोग करें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="क्लिपबोर्ड इतिहास · लाइट और डार्क मोड" width="830">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="क्लिपबोर्ड इतिहास · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>
@@ -264,7 +254,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 हार्डवेयर, सॉफ़्टवेयर और थीम का विवरण देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="सिस्टम सूचना · लाइट और डार्क मोड" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="सिस्टम सूचना · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>
@@ -274,7 +264,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 मेन्यू और पॉप-अप चुनी हुई लाइट या डार्क थीम अपनाते हैं।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma थीम · लाइट और डार्क मोड" width="453">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif" alt="Plasma थीम · लाइट और डार्क मोड" width="453">
 </p>
 
 <br>
@@ -285,6 +275,16 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="प्रगति पट्टी के साथ प्लीमाउथ स्टार्टअप स्प्लैश" width="415">
+</p>
+
+<br>
+
+### अनुकूली कंट्रास्ट
+
+पृष्ठभूमि के अनुसार अक्षरों का रंग बदलता है ताकि लेबल पढ़ने में आसान रहें।
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="अनुकूली कंट्रास्ट · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
@@ -336,13 +336,13 @@ Git की कार्यशील प्रति और अपने स्�
 | 🇫🇷 Français | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italiano | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Русский | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 日本語 | ![पूर्वावलोकन](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 한국어 | ![पूर्वावलोकन](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 العربية | ![पूर्वावलोकन](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 हिन्दी | ![पूर्वावलोकन](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Nederlands | ![पूर्वावलोकन](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polski | ![पूर्वावलोकन](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Türkçe | ![पूर्वावलोकन](https://img.shields.io/badge/Preview-D4A017) |
+| 🇯🇵 日本語 | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
+| 🇰🇷 한국어 | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
+| 🇸🇦 العربية | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇳 हिन्दी | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
+| 🇳🇱 Nederlands | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
+| 🇵🇱 Polski | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
+| 🇹🇷 Türkçe | ![उपलब्ध](https://img.shields.io/badge/Available-1A7F37) |
 
 <details>
 <summary><b>आवश्यकताएँ</b></summary>

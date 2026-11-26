@@ -153,17 +153,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 从顶栏打开当前应用的菜单。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · 浅色与深色模式" width="830">
-</p>
-
-<br>
-
-### 自适应对比度
-
-文字颜色会随背景调整，让标签保持清晰。
-
-<p align="center">
-  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="自适应对比度 · Tahoe · OFF / ON" width="900">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif" alt="Quickbar · 浅色与深色模式" width="830">
 </p>
 
 <br>
@@ -173,7 +163,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 搜索应用，或按类别浏览。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · 浅色与深色模式" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · 浅色与深色模式" width="830">
 </p>
 
 <br>
@@ -183,7 +173,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 在同一菜单中调节无线网络、音量和亮度。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="控制中心 · 浅色与深色模式" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="控制中心 · 浅色与深色模式" width="360">
 </p>
 
 <br>
@@ -193,7 +183,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 按应用查看最近的通知。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="通知 · 浅色与深色模式" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="通知 · 浅色与深色模式" width="620">
 </p>
 
 <br>
@@ -203,7 +193,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 在 Finder 风格的窗口中浏览文件。
 
 <p align="center">
-  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · 浅色与深色模式" width="830"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif" alt="Finder · 浅色与深色模式" width="830"></a>
 </p>
 
 <br>
@@ -213,7 +203,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 点击时钟即可查看月历。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="历日 · 浅色与深色模式" width="620">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif" alt="历日 · 浅色与深色模式" width="620">
 </p>
 
 <br>
@@ -223,7 +213,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 连接已配对的设备并查看其剩余电量。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · 浅色与深色模式" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · 浅色与深色模式" width="620">
 </p>
 
 ### Wi-Fi
@@ -231,7 +221,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 查看可用网络和连接状态。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · 浅色与深色模式" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · 浅色与深色模式" width="328">
 </p>
 
 <br>
@@ -241,7 +231,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 查看电池电量和充电状态。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="电池 · 浅色与深色模式" width="620">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif" alt="电池 · 浅色与深色模式" width="620">
 </p>
 
 <br>
@@ -251,7 +241,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 再次使用之前复制的文字和图片。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="剪贴板历史记录 · 浅色与深色模式" width="830">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="剪贴板历史记录 · 浅色与深色模式" width="830">
 </p>
 
 <br>
@@ -261,7 +251,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 查看硬件、软件和主题信息。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="系统信息 · 浅色与深色模式" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="系统信息 · 浅色与深色模式" width="830">
 </p>
 
 <br>
@@ -271,7 +261,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 菜单和弹窗跟随浅色或深色主题。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma 主题 · 浅色与深色模式" width="453">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif" alt="Plasma 主题 · 浅色与深色模式" width="453">
 </p>
 
 <br>
@@ -282,6 +272,16 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="普利 ⁇ 斯创业点击与进步行" width="415">
+</p>
+
+<br>
+
+### 自适应对比度
+
+文字颜色会随背景调整，让标签保持清晰。
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="自适应对比度 · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
@@ -333,13 +333,13 @@ cd macos-tahoe-liquid-kde
 | 🇫🇷 法语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 意大利语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 俄语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 日语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 韩语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 阿拉伯语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 印地语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 荷兰语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 波兰语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 土耳其语 | ![预览](https://img.shields.io/badge/Preview-D4A017) |
+| 🇯🇵 日语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
+| 🇰🇷 韩语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
+| 🇸🇦 阿拉伯语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇳 印地语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
+| 🇳🇱 荷兰语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
+| 🇵🇱 波兰语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
+| 🇹🇷 土耳其语 | ![可用](https://img.shields.io/badge/Available-1A7F37) |
 
 <details>
 <summary><b>系统要求</b></summary>

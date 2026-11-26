@@ -153,17 +153,7 @@ Passe die Farbe der Dock-Symbole an deinen Desktop an.
 Greife über die obere Leiste auf die Menüs der aktiven App zu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Heller und dunkler Modus" width="830">
-</p>
-
-<br>
-
-### Adaptiver Kontrast
-
-Die Textfarbe passt sich dem Hintergrund an, damit Beschriftungen lesbar bleiben.
-
-<p align="center">
-  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Adaptiver Kontrast · Tahoe · OFF / ON" width="900">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif" alt="Quickbar · Heller und dunkler Modus" width="830">
 </p>
 
 <br>
@@ -173,7 +163,7 @@ Die Textfarbe passt sich dem Hintergrund an, damit Beschriftungen lesbar bleiben
 Suche Apps oder durchstöbere sie nach Kategorie.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Heller und dunkler Modus" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Heller und dunkler Modus" width="830">
 </p>
 
 <br>
@@ -183,7 +173,7 @@ Suche Apps oder durchstöbere sie nach Kategorie.
 Steuere WLAN, Lautstärke und Helligkeit in einem Menü.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Kontrollzentrum · Heller und dunkler Modus" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Kontrollzentrum · Heller und dunkler Modus" width="360">
 </p>
 
 <br>
@@ -193,7 +183,7 @@ Steuere WLAN, Lautstärke und Helligkeit in einem Menü.
 Lies aktuelle Meldungen nach App gruppiert.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Mitteilungen · Heller und dunkler Modus" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Mitteilungen · Heller und dunkler Modus" width="620">
 </p>
 
 <br>
@@ -203,7 +193,7 @@ Lies aktuelle Meldungen nach App gruppiert.
 Durchsuche Dateien in einem Fenster im Finder-Stil.
 
 <p align="center">
-  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Heller und dunkler Modus" width="830"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif" alt="Finder · Heller und dunkler Modus" width="830"></a>
 </p>
 
 <br>
@@ -213,7 +203,7 @@ Durchsuche Dateien in einem Fenster im Finder-Stil.
 Öffne die Uhr für die Monatsansicht.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Kalender · Heller und dunkler Modus" width="620">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif" alt="Kalender · Heller und dunkler Modus" width="620">
 </p>
 
 <br>
@@ -223,7 +213,7 @@ Durchsuche Dateien in einem Fenster im Finder-Stil.
 Verbinde gekoppelte Geräte und prüfe ihren Akkustand.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Heller und dunkler Modus" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Heller und dunkler Modus" width="620">
 </p>
 
 ### Wi-Fi
@@ -231,7 +221,7 @@ Verbinde gekoppelte Geräte und prüfe ihren Akkustand.
 Sieh verfügbare Netzwerke und den Verbindungsstatus.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Heller und dunkler Modus" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Heller und dunkler Modus" width="328">
 </p>
 
 <br>
@@ -241,7 +231,7 @@ Sieh verfügbare Netzwerke und den Verbindungsstatus.
 Prüfe den Akkustand und den Ladestatus.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Batterie · Heller und dunkler Modus" width="620">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif" alt="Batterie · Heller und dunkler Modus" width="620">
 </p>
 
 <br>
@@ -251,7 +241,7 @@ Prüfe den Akkustand und den Ladestatus.
 Verwende kopierte Texte und Bilder erneut.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Zwischenablageverlauf · Heller und dunkler Modus" width="830">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Zwischenablageverlauf · Heller und dunkler Modus" width="830">
 </p>
 
 <br>
@@ -261,7 +251,7 @@ Verwende kopierte Texte und Bilder erneut.
 Sieh dir Details zu Hardware, Software und Design an.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Systeminformationen · Heller und dunkler Modus" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="Systeminformationen · Heller und dunkler Modus" width="830">
 </p>
 
 <br>
@@ -271,7 +261,7 @@ Sieh dir Details zu Hardware, Software und Design an.
 Menüs und Pop-ups übernehmen das helle oder dunkle Design.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma-Design · Heller und dunkler Modus" width="453">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif" alt="Plasma-Design · Heller und dunkler Modus" width="453">
 </p>
 
 <br>
@@ -282,6 +272,16 @@ Beim Start erscheint ein zum Design passender Bildschirm.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="Plymouth Startup-Spritz mit einer Progressleiste" width="415">
+</p>
+
+<br>
+
+### Adaptiver Kontrast
+
+Die Textfarbe passt sich dem Hintergrund an, damit Beschriftungen lesbar bleiben.
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="Adaptiver Kontrast · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
@@ -333,13 +333,13 @@ Speicherplatz freigeben und dabei Git-Arbeitskopie und lokale Arbeit erhalten:
 | 🇫🇷 Französisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italienisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Russisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 Japanisch | ![Vorschau](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 Koreanisch | ![Vorschau](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 Arabisch | ![Vorschau](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 Hindi | ![Vorschau](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Niederländisch | ![Vorschau](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polnisch | ![Vorschau](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Türkisch | ![Vorschau](https://img.shields.io/badge/Preview-D4A017) |
+| 🇯🇵 Japanisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇰🇷 Koreanisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇸🇦 Arabisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇳 Hindi | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇳🇱 Niederländisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇵🇱 Polnisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
+| 🇹🇷 Türkisch | ![Verfügbar](https://img.shields.io/badge/Available-1A7F37) |
 
 <details>
 <summary><b>Voraussetzungen</b></summary>

@@ -156,17 +156,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 상단 막대에서 현재 앱의 메뉴를 열 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · 밝은 모드와 어두운 모드" width="830">
-</p>
-
-<br>
-
-### 적응형 대비
-
-글자색이 배경에 맞춰 바뀌어 레이블을 읽기 쉽습니다.
-
-<p align="center">
-  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="적응형 대비 · Tahoe · OFF / ON" width="900">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-93a568560a33.gif" alt="Quickbar · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
@@ -176,7 +166,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 앱을 검색하거나 카테고리별로 찾아볼 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · 밝은 모드와 어두운 모드" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
@@ -186,7 +176,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 한 메뉴에서 Wi-Fi, 음량, 밝기를 조절할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="제어 센터 · 밝은 모드와 어두운 모드" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="제어 센터 · 밝은 모드와 어두운 모드" width="360">
 </p>
 
 <br>
@@ -196,7 +186,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 최근 알림을 앱별로 모아 볼 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="통지 · 밝은 모드와 어두운 모드" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="통지 · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 <br>
@@ -206,7 +196,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 
 <p align="center">
-  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · 밝은 모드와 어두운 모드" width="830"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-21d755ca3c50.gif" alt="Finder · 밝은 모드와 어두운 모드" width="830"></a>
 </p>
 
 <br>
@@ -216,7 +206,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 시계를 열면 월간 달력이 표시됩니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="달력 · 밝은 모드와 어두운 모드" width="620">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-969f0fa02557.gif" alt="달력 · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 <br>
@@ -226,7 +216,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 페어링된 기기를 연결하고 배터리 잔량을 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · 밝은 모드와 어두운 모드" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 ### Wi-Fi
@@ -234,7 +224,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 사용 가능한 네트워크와 연결 상태를 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · 밝은 모드와 어두운 모드" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · 밝은 모드와 어두운 모드" width="328">
 </p>
 
 <br>
@@ -244,7 +234,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 배터리 잔량과 충전 상태를 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="배터리 · 밝은 모드와 어두운 모드" width="620">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-9f9dc31907a4.gif" alt="배터리 · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 <br>
@@ -254,7 +244,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 복사한 텍스트와 이미지를 다시 사용할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="클립보드 기록 · 밝은 모드와 어두운 모드" width="830">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="클립보드 기록 · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
@@ -264,7 +254,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 하드웨어, 소프트웨어 및 테마 정보를 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="시스템 정보 · 밝은 모드와 어두운 모드" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="시스템 정보 · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
@@ -274,7 +264,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 메뉴와 팝업에 밝은 테마 또는 어두운 테마가 적용됩니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma 테마 · 밝은 모드와 어두운 모드" width="453">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-6f2816142832.gif" alt="Plasma 테마 · 밝은 모드와 어두운 모드" width="453">
 </p>
 
 <br>
@@ -285,6 +275,16 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 
 <p align="center">
   <img src="src/screenshots/previews/readme-tahoe-light-boot-6d6f3b7d649e.webp" alt="플리머스 스타트업 스프래시" width="415">
+</p>
+
+<br>
+
+### 적응형 대비
+
+글자색이 배경에 맞춰 바뀌어 레이블을 읽기 쉽습니다.
+
+<p align="center">
+  <img src="src/screenshots/previews/tahoe-adaptive-contrast-off-on-442477246a8a.png" alt="적응형 대비 · Tahoe · OFF / ON" width="900">
 </p>
 
 <br>
@@ -336,13 +336,13 @@ Git 작업 사본과 로컬 변경 사항을 유지하면서 디스크 공간을
 | 🇫🇷 Français | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
 | 🇮🇹 Italiano | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
 | 🇷🇺 Русский | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
-| 🇯🇵 日本語 | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇰🇷 한국어 | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇸🇦 العربية | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇮🇳 हिन्दी | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇳🇱 Nederlands | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇵🇱 Polski | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
-| 🇹🇷 Türkçe | ![미리 보기](https://img.shields.io/badge/Preview-D4A017) |
+| 🇯🇵 日本語 | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇰🇷 한국어 | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇸🇦 العربية | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇮🇳 हिन्दी | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇳🇱 Nederlands | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇵🇱 Polski | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
+| 🇹🇷 Türkçe | ![사용 가능](https://img.shields.io/badge/Available-1A7F37) |
 
 <details>
 <summary><b>요구 사항</b></summary>
