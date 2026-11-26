@@ -406,6 +406,9 @@ void AppMenuApplet::triggerWindowMenu(QQuickItem* ctx)
     auto* tasks = appModel->tasksModel();
     const QPersistentModelIndex activeTask(tasks->activeTask());
     if (!activeTask.isValid()) {
+        if (auto *menu = appModel->finderTitleMenu()) {
+            showMenu(ctx, menu, WINDOW_MENU_INDEX);
+        }
         return;
     }
 

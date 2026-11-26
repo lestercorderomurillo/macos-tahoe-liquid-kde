@@ -102,6 +102,7 @@ public:
     void updateApplicationMenu(const QString& serviceName, const QString& menuObjectPath);
 
     QString activeAppName() const;
+    QMenu *finderTitleMenu() const;
     bool enableGenericMenu() const;
     void setEnableGenericMenu(bool enabled);
     bool enableMenuSearch() const;
@@ -169,6 +170,7 @@ private:
     QPersistentModelIndex m_genericTarget;
     // Shown while no window is active, like the Finder menu on macOS (#159).
     std::unique_ptr<QMenu> m_finderMenu;
+    std::unique_ptr<QMenu> m_finderTitleMenu;
     void updateFinderMenu();
     bool showingFinder() const;
     MenuShortcutSender *m_shortcutSender;

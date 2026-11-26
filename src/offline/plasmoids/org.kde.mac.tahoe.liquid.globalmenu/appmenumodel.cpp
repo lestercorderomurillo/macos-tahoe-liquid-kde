@@ -14,6 +14,8 @@
 #include <QDBusConnectionInterface>
 #include <QDBusServiceWatcher>
 #include <QDesktopServices>
+#include <QFileDialog>
+#include <KIO/ApplicationLauncherJob>
 #include <QGuiApplication>
 #include <QMenu>
 #include <QProcess>
@@ -309,7 +311,24 @@ bool AppMenuModel::showingFinder() const
     return m_finderMenu && m_menu == m_finderMenu.get();
 }
 
+QMenu *AppMenuModel::finderTitleMenu() const
+{
+    return showingFinder() ? m_finderTitleMenu.get() : nullptr;
+}
+
 namespace {
+void browseFinderLocation(const QUrl &location)
+{
+    auto *browser = new QFileDialog(nullptr, i18n("Finder"));
+    browser->setAttribute(Qt::WA_DeleteOnClose);
+    browser->setFileMode(QFileDialog::ExistingFile);
+    browser->setDirectoryUrl(location);
+    QObject::connect(browser, &QFileDialog::urlSelected, browser, [](const QUrl &file) {
+        QDesktopServices::openUrl(file);
+    });
+    browser->show();
+}
+
 QString preferredFileManager()
 {
     const auto mimeType = QStringLiteral("inode/directory");
@@ -341,7 +360,18 @@ void openFinderLocation(const QUrl &location, bool newWindow = false)
         const auto program = nautilus ? QStringLiteral("nautilus") : QStringLiteral("dolphin");
         if (QProcess::startDetached(program, arguments)) return;
     }
-    QDesktopServices::openUrl(location);
+    if (!nautilus && !dolphin && !desktopId.isEmpty()) {
+        if (const auto service = KService::serviceByStorageId(desktopId)) {
+            auto *job = new KIO::ApplicationLauncherJob(service);
+            job->setUrls({location});
+            QObject::connect(job, &KJob::result, job, [location](KJob *result) {
+                if (result->error()) browseFinderLocation(location);
+            });
+            job->start();
+            return;
+        }
+    }
+    browseFinderLocation(location);
 }
 }
 
@@ -356,6 +386,8 @@ void AppMenuModel::updateFinderMenu()
         };
         auto *file = m_finderMenu->addMenu(i18n("&File"));
         auto *window = file->addAction(i18n("New Finder Window"));
+        m_finderTitleMenu = std::make_unique<QMenu>();
+        m_finderTitleMenu->addAction(window);
         window->setShortcut(QKeySequence::New);
         connect(window, &QAction::triggered, this, [folder] {
             openFinderLocation(folder(QStandardPaths::HomeLocation), true);
