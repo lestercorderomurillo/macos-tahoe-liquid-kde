@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.7**. Install and update preserved two customized panels in a Golden Gate KDE neon Wayland guest. Resets with missing applets or a missing shared QML file stopped before replacement. [Evidence and coverage](release-evidence.json).
+**v0.85.8**. Qt resolved 15,928 icon names in each base theme. A KDE neon Wayland guest verified the installed icons and Dock resources after reboot. [Evidence and distro coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

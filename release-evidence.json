@@ -1,38 +1,35 @@
 {
-  "version": "0.85.7",
-  "scope": "Protect customized Plasma layouts during install and update, check widget dependencies before reset, and report component and desktop load failures.",
+  "version": "0.85.8",
+  "scope": "Restore symbolic emote lookup and require installed icon, Dock, GTK and Kvantum runtime coverage in distro CI.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "checks": [
     {
-      "command": "pytest tests/test_cli.py tests/test_layout_step.py tests/test_dock_defaults.py tests/test_launcher_presets.py::test_panel_rebuild_preserves_explicit_presets_per_screen tests/test_state.py tests/test_installer_progress.py tests/test_transparency.py tests/test_theme_switch.py::test_patch_dock_transparency_reasserts_panel_opacity tests/test_component_cache.py::test_committed_component_hashes_match_sources (231 passed before final completion-status edit)",
+      "command": "python3 tests/containers/installed_icons.py --materials; staged Golden Gate on KDE neon, Qt 6.11.1, Plasma 6.8.1. Both base themes resolved 15,928 names each, 18,753 distinct files decoded. Verified regular, dark, clear and red/blue glass Dock materials.",
       "result": "passed"
     },
     {
-      "command": "pytest tests/test_cli.py tests/test_installer_progress.py (95 passed following completion-status edit) and tests/test_cli.py::test_project_qml_load_failure_overrides_successful_install (1 passed)",
+      "command": "Guest.installed_icons() after actual reboot of isolated KDE neon guest; Wayland theme lookup and installed Dock plugin embedded resource checks.",
       "result": "passed"
     },
     {
-      "command": "Golden Gate KDE neon 24.04, Plasma/KWin 6.8.1 Wayland, QEMU virgl. installer_backend.py install --only --global-theme --apply-theme --light, then reinstall: both activated the theme and preserved two custom side panels. Explicit --layout failed before replacement with missing applets or missing shared SettingsEntry.qml. Compared panel IDs, widget order, visibility, height and pins.",
-      "result": "passed"
-    },
-    {
-      "command": "Golden Gate full wizard-backend update with reset_layout=false retained both customized panels. Final focused --only --apply-theme --light activation completed on coherent packages.",
-      "result": "passed"
-    },
-    {
-      "command": "pytest tests/test_edition_transition.py tests/test_static.py::test_init_specific_user_manager_calls_stay_in_distro_layer: verified both edition transitions and init portability after the v0.85.6 shard failure.",
+      "command": "pytest tests/test_ci_selection.py tests/test_container_images.py tests/test_component_cache.py::test_committed_component_hashes_match_sources (11 passed)",
       "result": "passed"
     }
   ],
-  "vm_panel_snapshot_sha256": {
-    "final-before.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1",
-    "final-first.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1",
-    "final-upgrade.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1",
-    "final-failure.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1",
-    "mixed-version.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1"
+  "approved_preview": {
+    "filename": "neon-icon-lookup.png",
+    "sha256": "4542b1206e2315d2c2b2723fd3faa605f615c348aba2c9dd2f0a3dc0a960f247"
   },
-  "candidate_patch_sha256": "3e859aa26828e0f9beea69b8d49d68f93be3935556ff3bad46138ee67b425a57",
-  "local_evidence_archive_sha256": "5fb68360f7bd6bd675bd4dbb81a01a0122bc73f0a4cada6051efeaca48c082a0",
-  "coverage_limits": "Golden Gate supplied the Wayland VM evidence for the shared implementation. The full update preceded the final logging and failure-status changes. The reporter\u2019s Alt+F4 symptom and VMware/X11 were not reproduced. A late runtime error can follow a layout replacement.",
-  "source_sha256": "b3cf0e01c6ac3eba3185b20ddeea4100a0d7f7a332a77a25328b61838f81b605"
+  "candidate_commits": {
+    "tahoe": "851fca51dbd236a2b8757d02bdb5c73b2b8b9244",
+    "golden_gate": "02eaa97387814f5d99a80c5ba7f844a02b61c8a7"
+  },
+  "verified_icon_source_sha256": "6e8ffb9c4ee58a9921ae06abd8c3575742a26275340ebd365bd5c0d1442e33e6",
+  "qualification_runs": [
+    "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/45803702581",
+    "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/actions/runs/45803971709",
+    "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/45805422866"
+  ],
+  "coverage_limits": "EndeavourOS and Garuda use Arch SDK simulations; Nobara uses a Fedora SDK simulation. Artix native dinit userspace is covered. No new full desktop lifecycle qualification on those four distributions. Nix package checks cover the built output. Kubuntu live qualification remains pending.",
+  "source_sha256": "1a100a3b0a37d9cde3323660a8a1d860ac3fe1b70992c09b6f45741c87ffaeb4"
 }
