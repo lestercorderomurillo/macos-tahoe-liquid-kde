@@ -1,53 +1,8 @@
-"""Cross-distro test runner. Lives inside each per-distro container.
+"""Exercise Qt paths, package metadata, native builds and platform runtime tests.
 
-Tier 1 — Qt6 path discovery + pytest suite:
-  * qmake6 is on PATH and returns a non-empty plugin / QML directory.
-  * distro.qt6_plugins_dir() / qt6_qml_dir() return exactly what
-    qmake6 reports — no hardcoded assumption sneaked back in.
-  * distro.current_distro() resolves to a sensible /etc/os-release id.
-  * Platform-sensitive tests pass against this distro's real Python +
-    Qt6 layout. Platform-independent tests run once in the primary suite.
-
-Tier 2 — the dep layer (per-distro package mapping):
-  * distro.package_manager_install_cmd() returns a real binary that
-    exists on PATH (proves the table covers this distro).
-  * distro.package_for(...) translates EVERY base/step dependency and direct
-    package token to a package that exists in the distro's real repo metadata.
-    Tokens are collected from cli._BASE_DEPS and steps/*.py — see
-    _collect_dep_tokens below — so adding a dependency automatically extends
-    this coverage. A hardcoded token list leaves gaps: a runtime tool missing
-    from one distro's repo (e.g. qdbus6 on Fedora) sails through unnoticed.
-    This probe exercises qdbus6, kwriteconfig6, dbus-send,
-    update-desktop-database, kvantummanager, plymouth-set-default-theme,
-    plymouth-script-plugin, fc-cache, nautilus, etc.
-
-Tier 3 — cmake configure and build for every compiled component:
-  * For each step that ships a CMakeLists.txt under src/offline (the
-    dock taskmanager, the globalmenu, the acrylic-glass KWin effect),
-    run ``cmake -S <src> -B <build>`` and compile with no manual hints. The
-    configure step must succeed using ONLY packages discoverable via
-    ``deps()``. This catches the class of regression where deps() is
-    silent on the KF6 / Plasma / KWin frameworks that the CMakeLists
-    actually requires: preflight passes, the installer auto-
-    installs only Qt6, then cmake explodes for the user. The Dockerfile
-    for each distro installs the union of all step deps() before this
-    runs so a missing token surfaces as a hard FAIL here.
-  * KDE Rounded Corners is not downloaded in the matrix: its online
-    phase is intentionally best-effort. Supply-chain/extraction behavior
-    is unit-tested, and release validation performs one real pinned-source
-    build against the maintainer's installed KWin SDK.
-
-What this still does NOT prove:
-  * The full ``sudo ./install`` pipeline (needs plasmashell + KWin
-    running on the host — out of scope for any container).
-  * Live theme-switch DBus round-trips.
-
-If both tiers pass, the install on this distro will: (a) land .so /
-QML artefacts where Qt6 actually scans for them, and (b) know how
-to install every missing build/runtime dep via the right package
-manager. Whether the resulting plasmoid loads in a live Plasma
-session is a maintainer-on-bare-metal check, documented in
-tests/conftest.py.
+The matrix installs the shipped icon themes in a disposable home, loads the built
+Dock module and resolves the icons using the distro's own Qt. Debian also loads
+the X11 effect. Full Plasma session lifecycle checks live under tests/vm.
 """
 
 from __future__ import annotations
@@ -61,6 +16,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+from unittest.mock import patch
 
 REPO = Path("/repo")
 sys.path.insert(0, str(REPO / "src/scripts"))
@@ -147,8 +103,11 @@ def _collect_dep_tokens() -> list[tuple[str, str]]:
         deps_fn = getattr(mod, "deps", None)
         if deps_fn is None:
             continue
-        tokens = deps_fn()
-        for tok in tokens or ():
+        tokens = list(deps_fn())
+        # The wizard activates extra icon renderer and desktop widget dependencies.
+        with patch.dict(os.environ, {"MTTKDE_WIZARD_OPTIONS": '{"desktop_widgets":true}'}):
+            tokens.extend(deps_fn())
+        for tok in tokens:
             if isinstance(tok, tuple) and len(tok) == 2:
                 cmd, arch_pkg = tok
                 if not isinstance(cmd, str) or not isinstance(arch_pkg, str):
@@ -180,7 +139,7 @@ def _collect_dep_tokens() -> list[tuple[str, str]]:
 def _q(label: str, cmd: list[str]) -> str | None:
     print(f"  ── {label}")
     if not shutil.which(cmd[0]):
-        print(f"     SKIP: {cmd[0]} not on PATH")
+        print(f"     FAIL: {cmd[0]} not on PATH")
         return None
     res = subprocess.run(cmd, check=False, capture_output=True, text=True)
     if res.returncode != 0:
@@ -188,6 +147,9 @@ def _q(label: str, cmd: list[str]) -> str | None:
         print(f"           {res.stderr.strip()}")
         return None
     out = res.stdout.strip()
+    if not Path(out).is_absolute() or not Path(out).is_dir():
+        print(f"     FAIL: {label} returned an invalid directory: {out!r}")
+        return None
     print(f"     {out}")
     return out
 
@@ -336,6 +298,7 @@ def step_preflight_destinations() -> bool:
 
 _CMAKE_COMPONENTS = (
     # (label, source path under repo)
+    ("menu-style", "src/offline/menu-style"),
     ("clipboard", "src/offline/clipboard/clipd"),
     ("dock-taskmanager",
      "src/offline/plasmoids/org.kde.mac.tahoe.liquid.taskmanager"),
@@ -568,8 +531,10 @@ def main() -> int:
     install_engine = kvantum._bundled_engine_required()
     try:
         kvantum_ok = step_bundled_kvantum_build()
+        dock_build = REPO / "build/container-cmake/dock-taskmanager"
+        dock_plugin, = dock_build.rglob("org.kde.mac.tahoe.liquid.taskmanager.so")
         icons_ok = subprocess.run([
-            sys.executable, str(REPO / "tests/containers/installed_icons.py"),
+            sys.executable, str(REPO / "tests/containers/installed_icons.py"), "--dock-plugin", str(dock_plugin), "--materials",
         ], check=False).returncode == 0
         tests_ok = step_pytest()
     finally:

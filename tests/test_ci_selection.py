@@ -38,3 +38,15 @@ def test_package_queries_are_deduplicated_without_hiding_failure(monkeypatch):
     assert sorted(calls) == ['found', 'missing']
     assert result['found'].returncode == 0
     assert result['missing'].returncode == 1
+
+
+@pytest.mark.parametrize("skip", [False, True])
+def test_platform_gate_requires_every_selected_case_to_run(tmp_path, monkeypatch, skip):
+    runner = load('tests/containers/run_in_container.py')
+    source = tmp_path / 'test_platform_probe.py'
+    source.write_text('import pytest\ndef test_runtime():\n    ' +
+                      ('pytest.skip("missing runtime")' if skip else 'assert 2 + 2 == 4') + '\n')
+    monkeypatch.setattr(runner, 'REPO', tmp_path)
+    monkeypatch.setattr(runner, 'PLATFORM_TESTS', (source.name,))
+    monkeypatch.setenv('MTTKDE_X11_PLUGIN', 'required')
+    assert runner.step_pytest() is (not skip)

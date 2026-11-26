@@ -53,7 +53,8 @@ def test_every_matrix_image_installs_suite_dependencies(repo):
     import re
 
     workflow = (repo / '.github/workflows/test.yml').read_text()
-    matrix = workflow.split('        distro:', 1)[1].split('    steps:', 1)[0]
+    cross_distro = workflow.split('\n  cross-distro:\n', 1)[1]
+    matrix = cross_distro.split('        distro:\n', 1)[1].split('    steps:', 1)[0]
     distros = re.findall(r'^          - ([a-z-]+)$', matrix, re.MULTILINE)
     assert distros
     for distro in distros:

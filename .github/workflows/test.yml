@@ -100,10 +100,10 @@ jobs:
     container: artixlinux/artixlinux:base-dinit@sha256:83532660def626d61e016d5f394ac20dfa6567a0f22c36c4fd5f2682ab4c182d
     steps:
       - name: Install native Artix icon runtime
-        run: pacman -Syu --noconfirm --needed git python python-pillow python-pyqt6 qt6-svg zstd
+        run: pacman -Syu --noconfirm --needed git python python-pillow python-pyqt6 qt6-svg librsvg zstd
       - uses: actions/checkout@v5
       - name: Verify the installed icon themes on Artix
-        run: python3 tests/containers/installed_icons.py
+        run: python3 tests/containers/installed_icons.py --materials
 
   # Cross-distro matrix — proves the qmake6-driven path discovery
   # works on every distro the README claims support for. Each leg

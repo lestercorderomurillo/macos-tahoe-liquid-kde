@@ -39,16 +39,22 @@ APPLICATION_ALIASES = {
 
 def _index_symbolic_emotes(index: Path) -> None:
     original = index.read_text()
-    text = original
-    # Upstream ships symbolic emoticons but indexes only its 22px directory.
-    for prefix in ("emotes", "emotes@2x"):
+    lines = original.splitlines()
+    # Both icon loaders consult the directory lists before the individual sections.
+    for key, prefix, scale in (("Directories", "emotes", ""), ("ScaledDirectories", "emotes@2x", "Scale=2")):
         symbolic = f"{prefix}/symbolic"
-        if f"[{symbolic}]" in text:
-            continue
-        text = text.replace(f"{prefix}/22,", f"{prefix}/22,{symbolic},")
-        scale = "Scale=2\n" if prefix.endswith("@2x") else ""
-        text += (f"\n[{symbolic}]\nSize=16\n{scale}Context=Emotes\n"
-                 "MinSize=16\nMaxSize=512\nType=Scalable\n")
+        for i, line in enumerate(lines):
+            if line.startswith(key + "="):
+                entries = line[len(key) + 1:].split(",")
+                if symbolic not in entries:
+                    lines[i] = line + "," + symbolic
+                break
+        if f"[{symbolic}]" not in lines:
+            lines.extend(["", f"[{symbolic}]", "Size=16"])
+            if scale:
+                lines.append(scale)
+            lines.extend(["Context=Emotes", "MinSize=16", "MaxSize=512", "Type=Scalable"])
+    text = "\n".join(lines) + "\n"
     if text != original:
         index.write_text(text)
 

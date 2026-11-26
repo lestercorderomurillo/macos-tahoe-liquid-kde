@@ -41,13 +41,14 @@
             modules = { home = self.homeManagerModules.default; system = self.nixosModules.default; };
           };
           installed-icons = pkgs.runCommand "mac-tahoe-installed-icons" {
-            nativeBuildInputs = [ (pkgs.python3.withPackages (ps: [ ps.pyqt6 ps.pillow ])) ];
+            nativeBuildInputs = [ pkgs.zstd (pkgs.python3.withPackages (ps: [ ps.pyqt6 ps.pillow ])) ];
           } ''
             export HOME="$TMPDIR" XDG_DATA_DIRS="$TMPDIR" XDG_CONFIG_DIRS="$TMPDIR"
             export QT_QPA_PLATFORM=offscreen QT_QPA_PLATFORMTHEME=generic
             export QT_PLUGIN_PATH="${pkgs.kdePackages.qtsvg}/${pkgs.kdePackages.qtbase.qtPluginPrefix}:${pkgs.kdePackages.qtbase}/${pkgs.kdePackages.qtbase.qtPluginPrefix}"
             PYTHONPATH=${./src/scripts} python ${./tests/containers/installed_icons.py} \
-              --theme-root ${packages.theme-assets}/share/icons
+              --theme-root ${packages.theme-assets}/share/icons \
+              --archive ${./src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst}
             touch "$out"
           '';
           installed-artifacts = pkgs.runCommand "mac-tahoe-installed-artifacts" { } ''
