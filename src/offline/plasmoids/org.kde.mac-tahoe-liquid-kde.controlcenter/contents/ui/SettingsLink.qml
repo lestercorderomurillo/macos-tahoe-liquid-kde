@@ -2,7 +2,7 @@
 import QtQuick
 import QtQuick.Controls as QQC
 import org.kde.plasma.plasma5support as Support
-QQC.Button { font.family: "SF Pro Text"; font.pixelSize: 13;
+QQC.Button { font: Qt.font({family: "SF Pro Text", pixelSize: 13});
     id: button
     property string module
     flat: true

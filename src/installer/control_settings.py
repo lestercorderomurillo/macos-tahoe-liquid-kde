@@ -10,9 +10,10 @@ VIEWS = {
     "focus": ("Focus", "moon", "FocusSwitch"),
     "battery": ("Battery", "battery", "BatteryView"),
     "media": ("Now Playing", "music", "MediaView"),
-    "notifications": ("Notifications", "bell", "NotificationsView"),
 }
 ACTIONS = {
+    # Notification history and job tracking belong to the running Plasma shell.
+    "notifications": ("Notifications", "bell", "Notification Settings…", ("systemsettings", "kcm_notifications")),
     "sharing": ("File Sharing", "airdrop-off", "KDE Connect", ("kdeconnect-app",)),
     "overview": ("Overview", "stage-manager", "Overview", (
         "qdbus6", "org.kde.kglobalaccel", "/component/kwin",
@@ -76,7 +77,8 @@ def add_controls(window, page):
         window.control_engine.rootContext().setContextObject(SettingsTranslations(window.t, window.control_engine))
     view = QQuickWidget(window.control_engine, panel)
     view.setResizeMode(QQuickWidget.ResizeMode.SizeRootObjectToView)
-    view.setClearColor(Qt.GlobalColor.transparent)
+    panel.ensurePolished()
+    view.setClearColor(panel.palette().window().color())
     source = "DisplayView" if page == "display" else VIEWS[page][2]
     view.setSource(QUrl.fromLocalFile(str(CONTROL_SYMBOLS.parent / (source + ".qml"))))
     root = view.rootObject()
