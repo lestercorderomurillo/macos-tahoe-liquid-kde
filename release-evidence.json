@@ -1,32 +1,19 @@
 {
-  "version": "0.85.4",
-  "scope": "Idle Finder title activation, keyboard navigation, alternate file managers and folder browsing without an installed file manager.",
+  "version": "0.85.5",
+  "scope": "Settings runtime warnings in Battery, Notifications and font selection.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
+  "approved_candidate": "df6ad3228a08b22d6ff014f5d5e6ee57e5969b41",
+  "approved_preview_sha256": {
+    "golden-gate-notifications.png": "ec75b328bb9d2d8ecfd2cc6cf7ce15a038044ea4a97cbfb1c27aaa68be4fa8e6",
+    "tahoe-notifications.png": "1db09fba4dbc247d21028e9e6fa7b2367d5449208345bed5aa8fed4f0e398821"
+  },
+  "approved_candidate_patch_sha256": "1d6bba44a70354329ff7ee77249369f6afc8836a92a7ba099970040b0ef94f74",
   "checks": [
     {
-      "command": "pytest -q tests/test_globalmenu_model.py in a private Xvfb and D-Bus session (1 passed, model, popup, and QML composition).",
-      "result": "passed"
-    },
-    {
-      "command": "VM: clicked idle Finder and selected New Finder Window with Nautilus and Dolphin executables and desktop entries moved aside. Opened a text file from the fallback chooser, observed Kate running with /home/tester/proof.txt.",
-      "result": "passed"
-    },
-    {
-      "command": "VM: selected a third-party desktop-entry recorder as the directory handler and verified it received /home/tester.",
-      "result": "passed"
-    },
-    {
-      "command": "VM: cleared explicit directory association with both known managers absent. Final candidate opened the file chooser at Home instead of launching the project editor.",
+      "command": "KDE neon Plasma 6.8.1 Wayland, Qt 6.11.1, both editions: ./installer --mode=settings with --section=battery, general and notifications. Verified selector cursor geometry and notification settings action. Plasma retained notification service ownership.",
       "result": "passed"
     }
   ],
-  "candidate": "ba6aad8d502647c2a399bb0bbd8b73974301153b",
-  "environment": "Golden Gate, KDE neon User Edition 24.04, Plasma 6.8.1, Wayland, disposable QEMU overlay",
-  "installed_plugin_sha256": "9d329a9b55534064afb6dbf43af545a2c95cb16fff8b098615cb7668d4e604b2",
-  "approved_preview_sha256": {
-    "final-menu-small.png": "bf35afad17c6a6056a79718a5df55297dd35f553c37ec7f02ee5a2d1f9236d79",
-    "fresh-install-final-small.png": "4ab096890056e1fb49a809c14586fcd6b103e0090e3be6a517f204659e366192"
-  },
-  "coverage_limits": "Desktop capture on Golden Gate with Plasma 6.8.1 Wayland. Alternate handler routing used a desktop-entry recorder.",
-  "source_sha256": "a579cce4a4989e3998da680fe4ebe5274ffa57a0b271e7af7e389a1e3fc251f0"
+  "coverage_limits": "The guest reproduced the original Battery font-size and ComboBox warnings. The old KWin and D-Bus warnings were not independently reproduced. Golden Gate Volume also reported guest audio diagnostics.",
+  "source_sha256": "87864191b1345d009fcb67429559dbc207207764da486c4a52618709dcb7729a"
 }
