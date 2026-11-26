@@ -236,7 +236,7 @@ def step_package_manager_layer() -> bool:
         "fedora":   ["dnf", "info", "--quiet"],
         "rhel":     ["dnf", "info", "--quiet"],
         "centos":   ["dnf", "info", "--quiet"],
-        "opensuse": ["zypper", "--non-interactive", "info"],
+        "opensuse": ["zypper", "--non-interactive", "search", "--type", "package", "--provides", "--match-exact"],
         "debian":   ["apt", "show"],
         "ubuntu":   ["apt", "show"],
     }
@@ -270,9 +270,8 @@ def step_package_manager_layer() -> bool:
             print(f"     PASS")
             continue
 
-        stderr = (res.stderr or "").strip()
         print(f"     FAIL: probe returned {res.returncode}")
-        print(f"           stderr: {stderr[:200]}")
+        print((res.stdout + res.stderr).strip()[-600:])
         ok = False
     return ok
 
