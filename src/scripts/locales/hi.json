@@ -1,4 +1,5 @@
 {
+  "If your mirrors no longer have the required package versions, complete a normal system update and retry the installer.": "यदि आपके मिरर पर पैकेज के आवश्यक संस्करण अब उपलब्ध नहीं हैं, तो सामान्य तरीके से सिस्टम अपडेट पूरा करें और इंस्टॉलर दोबारा चलाएँ।",
   "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "KWin चलने के दौरान अपडेट हुआ। इफ़ेक्ट इंस्टॉल करने के लिए लॉग आउट करें, फिर लॉग इन करके इंस्टॉलर दोबारा चलाएँ।",
   "Widgets to install": "इंस्टॉल करने के लिए विजेट",
   "Screen Configuration": "स्क्रीन कॉन्फ़िगरेशन",

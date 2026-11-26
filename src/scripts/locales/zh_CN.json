@@ -1,4 +1,5 @@
 {
+  "If your mirrors no longer have the required package versions, complete a normal system update and retry the installer.": "如果镜像站已不再提供所需的软件包版本，请按常规方式更新系统，然后重新运行安装程序。",
   "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "KWin 在运行期间已更新。请注销并重新登录，然后再次运行安装程序以安装特效。",
   "Widgets to install": "要安装的部件",
   "Screen Configuration": "屏幕配置",

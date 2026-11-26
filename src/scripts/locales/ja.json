@@ -1,4 +1,5 @@
 {
+  "If your mirrors no longer have the required package versions, complete a normal system update and retry the installer.": "ミラーに必要なバージョンのパッケージがなくなった場合は、通常の手順でシステムを更新してから、インストーラーを再実行してください。",
   "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "実行中に KWin が更新されました。エフェクトをインストールするには、一度ログアウトしてからログインし直し、インストーラーを再実行してください。",
   "Widgets to install": "インストールするウィジェット",
   "Screen Configuration": "画面設定",

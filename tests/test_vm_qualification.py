@@ -20,14 +20,37 @@ probe = load('desktop_probe')
 qualify = load('qualify')
 
 
-@pytest.mark.parametrize('panels', [[], [{'widgets': [], 'hiding': 'autohide'}], [
-    {'widgets': ['org.kde.mac-tahoe-liquid-kde.launcher',
-                 'org.kde.mac-tahoe-liquid-kde.trashcan',
-                 'org.kde.mac.tahoe.liquid.globalmenu'], 'hiding': 'none'},
-    {'widgets': ['org.kde.mac.tahoe.liquid.icontasks'], 'hiding': 'none'}]])
-def test_missing_or_non_autohiding_dock_cannot_pass(panels):
-    with pytest.raises(RuntimeError):
+@pytest.mark.parametrize('panels', [[], [{'widgets': [], 'hiding': 'autohide'}]])
+def test_missing_dock_cannot_pass(panels):
+    with pytest.raises(RuntimeError, match='Missing themed panels/widgets'):
         probe.verify_panels(panels, installed=True)
+
+
+@pytest.mark.parametrize(('saved', 'live', 'accepted'), [
+    ('3', 'windowsgobelow', True),
+    ('3', 'none', True),
+    ('0', 'none', False),
+    ('3', 'autohide', False),
+])
+def test_dock_visibility_checks_saved_and_live_modes(monkeypatch, saved, live, accepted):
+    panels = [
+        {'id': 5, 'widgets': ['org.kde.mac-tahoe-liquid-kde.launcher',
+                              'org.kde.mac-tahoe-liquid-kde.trashcan',
+                              'org.kde.mac.tahoe.liquid.globalmenu'], 'hiding': 'none'},
+        {'id': 8, 'widgets': ['org.kde.mac.tahoe.liquid.icontasks'], 'hiding': live},
+    ]
+
+    def read_setting(*args):
+        assert args == ('kreadconfig6', '--file', 'plasmashellrc', '--group', 'PlasmaViews',
+                        '--group', 'Panel 8', '--key', 'panelVisibility')
+        return saved
+
+    monkeypatch.setattr(probe, 'run', read_setting)
+    if accepted:
+        probe.verify_panels(panels, installed=True)
+    else:
+        with pytest.raises(RuntimeError, match='Unexpected fresh Dock visibility'):
+            probe.verify_panels(panels, installed=True)
 
 
 def test_uninstall_rejects_remaining_project_widget():

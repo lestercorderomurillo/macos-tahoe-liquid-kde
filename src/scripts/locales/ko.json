@@ -1,4 +1,5 @@
 {
+  "If your mirrors no longer have the required package versions, complete a normal system update and retry the installer.": "미러에 필요한 버전의 패키지가 더 이상 없으면 일반적인 방법으로 시스템을 업데이트한 다음 설치 프로그램을 다시 실행하세요.",
   "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "실행 중인 KWin이 업데이트되었습니다. 효과를 설치하려면 로그아웃한 뒤 다시 로그인하고 설치 프로그램을 다시 실행하세요.",
   "Widgets to install": "설치할 위젯",
   "Screen Configuration": "화면 설정",
