@@ -2,7 +2,34 @@
 // Top menu bar (flush) + bottom dock (floating, large icons)
 // Each display gets a menu bar. One shared Dock starts on the primary display.
 
-// ── remove existing panels ──────────────────────
+// Plasma can create placeholder applets for missing packages. Check the live
+// registry before modifying any existing containment.
+if (screenCount < 1) throw new Error("Layout reset: Plasma reports no screens");
+var requiredWidgets = [];
+if (typeof mttkdeTopPanel === "undefined" || mttkdeTopPanel) requiredWidgets.push(
+    "org.kde.mac.tahoe.liquid.globalmenu",
+    "org.kde.plasma.panelspacer",
+    "org.kde.plasma.systemtray",
+    "org.kde.mac-tahoe-liquid-kde.acrylicglass",
+    "org.kde.mac-tahoe-liquid-kde.notifications",
+    "org.kde.mac-tahoe-liquid-kde.bluetooth",
+    "org.kde.mac-tahoe-liquid-kde.wifi",
+    "org.kde.mac-tahoe-liquid-kde.battery",
+    "org.kde.mac-tahoe-liquid-kde.controlcenter",
+    "org.kde.plasma.marginsseparator",
+    "org.kde.plasma.digitalclock"
+);
+if (typeof mttkdeDock === "undefined" || mttkdeDock) requiredWidgets.push(
+    "org.kde.mac.tahoe.liquid.icontasks",
+    "org.kde.mac-tahoe-liquid-kde.dockseparator",
+    "org.kde.mac-tahoe-liquid-kde.downloads",
+    "org.kde.mac-tahoe-liquid-kde.trashcan"
+);
+if (typeof userLauncherTypes === "undefined" && (typeof mttkdeDock === "undefined" || mttkdeDock))
+    requiredWidgets.push("org.kde.mac-tahoe-liquid-kde.launcher");
+var missingWidgets = requiredWidgets.filter(id => !knownWidgetTypes.includes(id));
+if (missingWidgets.length) throw new Error("Layout reset: unavailable widgets: " + missingWidgets.join(", "));
+
 var old = panels();
 var launcherPresets = {};
 var userLaunchers = {};
@@ -45,9 +72,7 @@ for (var s in dockPresetCategories) {
     if (typeof list === "string") list = list ? list.split(",") : [];
     for (var c = 0; c < list.length; c++) if (knownDockCategories.indexOf(list[c]) === -1) knownDockCategories.push(list[c]);
 }
-if (typeof userLauncherTypes === "undefined") {
-    for (var i = 0; i < old.length; i++) old[i].remove();
-}
+
 
 for (var screen = 0; screen < screenCount; screen++) {
     // ── top menu bar ────────────────────────────────
@@ -206,6 +231,4 @@ for (var screen = 0; screen < screenCount; screen++) {
     trash.writeConfig("showSeparator", false);
 }
 }
-if (typeof userLauncherTypes !== "undefined") {
-    for (var i = 0; i < old.length; i++) old[i].remove();
-}
+for (var i = 0; i < old.length; i++) old[i].remove();

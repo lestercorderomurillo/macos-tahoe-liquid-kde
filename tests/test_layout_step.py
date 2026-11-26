@@ -278,6 +278,8 @@ def test_patch_plasmashellrc_forces_translucent_on_non_floating_top_bar(
         "floating=1\n"
         "shell=org.kde.plasma.desktop\n",
     )
+    _write_appletsrc(tmp_path, "[Containments][238][Applets][3]\nplugin=org.kde.mac.tahoe.liquid.globalmenu\n"
+                     "[Containments][259][Applets][6]\nplugin=org.kde.mac.tahoe.liquid.icontasks\n")
     layout._patch_plasmashellrc()
     text = (tmp_path / ".config/plasmashellrc").read_text()
     top_section, dock_section = text.split("[PlasmaViews][Panel 259]")
@@ -296,6 +298,8 @@ def test_patch_plasmashellrc_overwrites_stale_opacity_value(
         "panelOpacity=1\n"
         "shell=org.kde.plasma.desktop\n",
     )
+    _write_appletsrc(tmp_path, "[Containments][238][Applets][3]\nplugin=org.kde.mac.tahoe.liquid.globalmenu\n"
+                     "[Containments][259][Applets][6]\nplugin=org.kde.mac.tahoe.liquid.icontasks\n")
     layout._patch_plasmashellrc()
     text = (tmp_path / ".config/plasmashellrc").read_text()
     assert "panelOpacity=2" in text
@@ -544,3 +548,22 @@ def test_live_dock_verification_restores_saved_mode(monkeypatch, restored):
                        "Panel 32", "--key", "panelOpacity", "2")]
     assert restarts == [True]
     assert bool(failures) == (not restored)
+
+
+def test_layout_rejects_incomplete_sibling_qml_before_plasma_edit(monkeypatch, tmp_path):
+    packages = tmp_path / "share/plasma/plasmoids"
+    name = "org.kde.mac-tahoe-liquid-kde.downloads"
+    main = packages / name / "contents/ui/main.qml"
+    main.parent.mkdir(parents=True)
+    (packages / name / "metadata.json").write_text("{}")
+    main.write_text("Controls.SettingsEntry { }")
+    monkeypatch.setenv("XDG_DATA_DIRS", str(tmp_path / "system"))
+    messages = []
+    monkeypatch.setattr(layout, "warn", messages.append)
+    monkeypatch.setattr(layout, "evaluate_panel_transaction", lambda _: pytest.fail("edited Plasma"))
+    assert not layout._evaluate_layout_with_launchers(layout.LAYOUT_SCRIPT, [], layout.MAC_TASKS_ID)
+    assert name in messages[0] and "SettingsEntry.qml" in messages[0]
+    helper = packages / "org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/SettingsEntry.qml"
+    helper.parent.mkdir(parents=True)
+    helper.write_text("import QtQuick\nItem {}")
+    assert not layout._missing_settings_entries()

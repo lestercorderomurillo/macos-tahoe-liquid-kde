@@ -21,6 +21,7 @@ APPS = [
 HARNESS = '''
 var created = [];
 var screenCount = 2;
+var knownWidgetTypes = { includes: () => true };
 function userDataPath(type) { return "/home/tester/Downloads"; }
 function panels() { return created.slice(); }
 function applicationExists(id) { return installed.indexOf(id) !== -1; }
@@ -434,3 +435,22 @@ JSON.stringify([updated, original.config.customDateFormat]);
                             capture_output=True, text=True, check=True)
     assert json.loads(result.stdout) == [
         [['ddd MMM d', 1], ['yyyy-MM-dd', 1], ['ddd MMM d', 2]], "ddd d ' | '"]
+
+@pytest.mark.parametrize("relative", LAYOUTS)
+def test_missing_registered_widget_preserves_existing_panels(offline, relative):
+    script = (offline / relative).read_text()
+    scenario = """
+    var original = new Panel();
+    original.location = "bottom";
+    original.addWidget("custom.clock").writeConfig("timezone", "America/Costa_Rica");
+    knownWidgetTypes.includes = id => id !== "org.kde.mac.tahoe.liquid.icontasks";
+    try {
+    """ + script + """
+    } catch (err) {
+        if (!String(err).includes("org.kde.mac.tahoe.liquid.icontasks")) throw err;
+    }
+    if (created.length !== 1 || created[0] !== original ||
+        original.widgetById(0).readConfig("timezone") !== "America/Costa_Rica")
+        throw Error("Layout changed on failed preflight");
+    """
+    assert execute(scenario, []) == [[{"type": "custom.clock"}]]

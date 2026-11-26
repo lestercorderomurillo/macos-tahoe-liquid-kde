@@ -1,6 +1,7 @@
 from localization import tr
 from log import fail
 import json
+import os
 import re
 import subprocess
 import time
@@ -196,7 +197,6 @@ def _layout_script_with_launchers(
 
 
 def user_launcher_script() -> str:
-    import os
     launchers = {"org.kde.plasma.kickoff", "org.kde.plasma.kicker", "org.kde.plasma.kickerdash"}
     roots = [DATA_HOME, *map(Path, os.environ.get("XDG_DATA_DIRS", "/usr/local/share:/usr/share").split(":"))]
     for root in roots:
@@ -382,8 +382,41 @@ def migrate_dock_preset() -> None:
         warn(tr('Dock preset update failed'))
 
 
+def _missing_settings_entries() -> list[str]:
+    """Check the sibling import beside each effective installed QML consumer."""
+    from installer_choices import selected
+    choices = selected()
+    components = []
+    if choices.get("panel", True):
+        components.extend(("acrylicglass", "notifications", "bluetooth", "wifi", "battery"))
+    if choices.get("dock", True):
+        components.extend(("downloads", "dockseparator"))
+    roots = [DATA_HOME, *map(Path, (os.environ.get("XDG_DATA_DIRS") or "/usr/local/share:/usr/share").split(":"))]
+    errors = []
+    for component in components:
+        package = "org.kde.mac-tahoe-liquid-kde." + component
+        for root in roots:
+            packages = root / "plasma/plasmoids"
+            if not (packages / package / "metadata.json").is_file():
+                continue
+            main = packages / package / "contents/ui/main.qml"
+            dependency = packages / "org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/SettingsEntry.qml"
+            if not main.is_file():
+                errors.append(f"{package}: missing {main}")
+            elif not dependency.is_file() and "Controls.SettingsEntry" in main.read_text():
+                errors.append(f"{package}: missing {dependency}")
+            break
+    return errors
+
+
 def _evaluate_layout_with_launchers(
         script_path: Path, pins: list[str], widget_type: str) -> bool:
+    if script_path == LAYOUT_SCRIPT:
+        missing = _missing_settings_entries()
+        if missing:
+            for message in missing:
+                warn(message)
+            return False
     script = _layout_script_with_launchers(script_path, pins, widget_type)
     if script is None:
         return False
@@ -410,9 +443,14 @@ def evaluate_panel_transaction(script: str) -> bool:
         command = [qdbus, service, "/PlasmaShell", method, script]
     try:
         result = run_user(command, capture_output=True, text=True, timeout=125)
-    except (OSError, subprocess.SubprocessError):
+    except (OSError, subprocess.SubprocessError) as exc:
+        warn(f"Plasma layout transaction: {type(exc).__name__}")
         return False
-    return result.returncode == 0 and result.stdout.rstrip().endswith("layout-complete")
+    if result.returncode == 0 and result.stdout.rstrip().endswith("layout-complete"):
+        return True
+    detail = (result.stderr.strip() or result.stdout.strip() or "missing completion marker")
+    warn(f"Plasma layout transaction exit={result.returncode}: {detail[:1200]}")
+    return False
 
 
 def _restore_pins(pins: list[str], widget_type: str) -> bool:
@@ -557,33 +595,8 @@ _PRC_PANEL_RE = re.compile(
 
 
 def _patch_plasmashellrc() -> None:
-    prc = HOME / ".config/plasmashellrc"
-    if not prc.is_file():
-        return
-    text = prc.read_text()
-
-    def fix(m: re.Match) -> str:
-        section = m.group(0)
-        # Force Translucent (2) on every panel so the top bar doesn't fall
-        # back to Plasma's Adaptive default, which turns opaque whenever a
-        # window touches the screen edge under it — defeating the glass look
-        # on the one panel that isn't floating.
-        if "panelOpacity=" in section:
-            section = re.sub(r"panelOpacity=\d+", "panelOpacity=2", section)
-        else:
-            section = section.rstrip() + "\npanelOpacity=2\n"
-        if "floating=0" in section:
-            # Keep the top bar applets-only floating while Panel Colorizer
-            # hides the continuous native panel background (see mac-tahoe.js).
-            if "floatingApplets=" in section:
-                section = re.sub(r"floatingApplets=\d+", "floatingApplets=1", section)
-            else:
-                section = section.rstrip() + "\nfloatingApplets=1\n"
-        return section
-
-    new_text = _PRC_PANEL_RE.sub(fix, text)
-    if new_text != text:
-        prc.write_text(new_text)
+    from theme_switch import patch_dock_transparency
+    if patch_dock_transparency(Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config")):
         ok(tr('Panel glass forced translucent'))
 
 
@@ -622,7 +635,8 @@ def _reset_plasmashellrc() -> bool:
 
 
 def _saved_panel_ids() -> set[int]:
-    appletsrc = HOME / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    config_home = Path(os.environ.get("XDG_CONFIG_HOME") or HOME / ".config")
+    appletsrc = config_home / "plasma-org.kde.plasma.desktop-appletsrc"
     try:
         config = appletsrc.read_text(encoding="utf-8")
     except OSError:
@@ -679,7 +693,7 @@ def install() -> None:
     remember_installed_edition(HOME, DATA_HOME / "plasma/plasmoids" / LAUNCHER_ID)
     _ensure_panel_colorizer()
     if not LAYOUT_SCRIPT.is_file():
-        warn(tr('Layout script not found — skipping'))
+        fail(tr('Layout script not found — skipping'))
         return
     pins = _capture_pinned_launchers()
     previous_panels = _saved_panel_ids()
@@ -693,7 +707,7 @@ def install() -> None:
         ok(tr("Layout installed (kept {count} pinned apps)", count=len(pins)) if pins
            else tr("Layout installed"))
     else:
-        warn(tr('layout failed — set layout manually'))
+        fail(tr('layout failed — set layout manually'))
         return
     time.sleep(3)
     _patch_plasmashellrc()

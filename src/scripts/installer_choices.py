@@ -141,7 +141,8 @@ def selected() -> dict:
 
 
 def keep_panel_layout() -> bool:
-    return selected().get("reset_layout") is False
+    choices = selected()
+    return not choices["reset_layout"] if choices else os.environ.get("MTTKDE_PRESERVE_LAYOUT") == "true"
 
 
 def features(choices: dict, baseline: dict, *, existing_install: bool = False) -> dict:

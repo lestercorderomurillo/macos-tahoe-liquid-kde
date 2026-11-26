@@ -1,19 +1,34 @@
 {
-  "version": "0.85.5",
-  "scope": "Settings runtime warnings in Battery, Notifications and font selection.",
+  "version": "0.85.6",
+  "scope": "Protect customized Plasma layouts during install and update, check widget dependencies before reset, and report component and desktop load failures.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "approved_candidate": "df6ad3228a08b22d6ff014f5d5e6ee57e5969b41",
-  "approved_preview_sha256": {
-    "golden-gate-notifications.png": "ec75b328bb9d2d8ecfd2cc6cf7ce15a038044ea4a97cbfb1c27aaa68be4fa8e6",
-    "tahoe-notifications.png": "1db09fba4dbc247d21028e9e6fa7b2367d5449208345bed5aa8fed4f0e398821"
-  },
-  "approved_candidate_patch_sha256": "1d6bba44a70354329ff7ee77249369f6afc8836a92a7ba099970040b0ef94f74",
   "checks": [
     {
-      "command": "KDE neon Plasma 6.8.1 Wayland, Qt 6.11.1, both editions: ./installer --mode=settings with --section=battery, general and notifications. Verified selector cursor geometry and notification settings action. Plasma retained notification service ownership.",
+      "command": "pytest tests/test_cli.py tests/test_layout_step.py tests/test_dock_defaults.py tests/test_launcher_presets.py::test_panel_rebuild_preserves_explicit_presets_per_screen tests/test_state.py tests/test_installer_progress.py tests/test_transparency.py tests/test_theme_switch.py::test_patch_dock_transparency_reasserts_panel_opacity tests/test_component_cache.py::test_committed_component_hashes_match_sources (231 passed before final completion-status edit)",
+      "result": "passed"
+    },
+    {
+      "command": "pytest tests/test_cli.py tests/test_installer_progress.py (95 passed following completion-status edit) and tests/test_cli.py::test_project_qml_load_failure_overrides_successful_install (1 passed)",
+      "result": "passed"
+    },
+    {
+      "command": "Golden Gate KDE neon 24.04, Plasma/KWin 6.8.1 Wayland, QEMU virgl. installer_backend.py install --only --global-theme --apply-theme --light, then reinstall: both activated the theme and preserved two custom side panels. Explicit --layout failed before replacement with missing applets or missing shared SettingsEntry.qml. Compared panel IDs, widget order, visibility, height and pins.",
+      "result": "passed"
+    },
+    {
+      "command": "Golden Gate full wizard-backend update with reset_layout=false retained both customized panels. Final focused --only --apply-theme --light activation completed on coherent packages.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The guest reproduced the original Battery font-size and ComboBox warnings. The old KWin and D-Bus warnings were not independently reproduced. Golden Gate Volume also reported guest audio diagnostics.",
-  "source_sha256": "87864191b1345d009fcb67429559dbc207207764da486c4a52618709dcb7729a"
+  "vm_panel_snapshot_sha256": {
+    "final-before.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1",
+    "final-first.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1",
+    "final-upgrade.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1",
+    "final-failure.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1",
+    "mixed-version.json": "bd8d13bbd7e0cec6222aa234ad4496523ea9df9676f967e17a5fdce8473dd0a1"
+  },
+  "candidate_patch_sha256": "3e859aa26828e0f9beea69b8d49d68f93be3935556ff3bad46138ee67b425a57",
+  "local_evidence_archive_sha256": "5fb68360f7bd6bd675bd4dbb81a01a0122bc73f0a4cada6051efeaca48c082a0",
+  "coverage_limits": "Golden Gate supplied the Wayland VM evidence for the shared implementation. The full update preceded the final logging and failure-status changes. The reporter\u2019s Alt+F4 symptom and VMware/X11 were not reproduced. A late runtime error can follow a layout replacement.",
+  "source_sha256": "d3e71f3849e450dbcc6e3e6eba674d2674976a044e9a9225830f779f31b01b39"
 }

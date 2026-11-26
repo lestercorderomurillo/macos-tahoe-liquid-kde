@@ -3,6 +3,7 @@
 from localization import tr
 
 import importlib
+import time
 from types import ModuleType
 
 from log import errors, fail, warnings
@@ -48,6 +49,8 @@ def step_deps(feature: str) -> list[tuple[str, str]]:
 
 def run_phase(feature: str, phase: str) -> bool:
     check_cancelled()
+    started = time.monotonic()
+    print(f"[component] {feature}.{phase} started", flush=True)
     record_component(feature, phase, "running")
     before = len(errors)
     warning_count = len(warnings)
@@ -71,4 +74,6 @@ def run_phase(feature: str, phase: str) -> bool:
     messages = warnings[warning_count:] + errors[before:]
     status = "failed" if failed else "warning" if messages else "completed"
     record_component(feature, phase, status, code or int(failed), messages)
+    print(f"[component] {feature}.{phase} {status} exit={code or int(failed)} "
+          f"elapsed={time.monotonic() - started:.2f}s", flush=True)
     return not failed
