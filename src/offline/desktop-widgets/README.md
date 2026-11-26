@@ -24,4 +24,5 @@ faces they use for the clock styles.
 
 To rebuild: merge the two branches onto upstream `master`, run
 `./package.sh -a`, unzip each `.plasmoid` into a directory named after its
-`KPlugin.Id`, then `tar -cf - . | zstd -19 --long=27`.
+`KPlugin.Id`, apply `patch -p0 < calendar-providers.patch` from the unpacked widget directory,
+then `tar -cf - . | zstd -19 --long=27`.

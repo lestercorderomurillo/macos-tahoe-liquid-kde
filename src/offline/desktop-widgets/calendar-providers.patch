@@ -1,0 +1,19 @@
+--- ./com.jaxparrow07.macoswidgets.calendar/contents/ui/main.qml
++++ ./com.jaxparrow07.macoswidgets.calendar/contents/ui/main.qml
+@@ -150,7 +150,15 @@
+     // --- Plasma Calendar backends ---
+     PlasmaCalendar.EventPluginsManager {
+         id: eventPluginsManager
+-        enabledPlugins: plasmoid.configuration.enabledCalendarPlugins
++        property var installedProviderIds: []
++        Component.onCompleted: {
++            const ids = [];
++            for (let row = 0; row < model.rowCount(); ++row)
++                ids.push(model.get(row, "pluginId"));
++            installedProviderIds = ids;
++        }
++        enabledPlugins: plasmoid.configuration.enabledCalendarPlugins.filter(
++            id => installedProviderIds.includes(id))
+         onPluginsChanged: {
+             // Plugins take a moment to load and push data into the backends.
+             // Use the longer initialLoadTimer so we don't query before data arrives.

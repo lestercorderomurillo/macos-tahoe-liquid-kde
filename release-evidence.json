@@ -1,35 +1,17 @@
 {
-  "version": "0.85.8",
-  "scope": "Restore symbolic emote lookup and require installed icon, Dock, GTK and Kvantum runtime coverage in distro CI.",
+  "version": "0.85.9",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
+  "scope": "Calendar event provider discovery in the shared desktop widget.",
   "checks": [
     {
-      "command": "python3 tests/containers/installed_icons.py --materials; staged Golden Gate on KDE neon, Qt 6.11.1, Plasma 6.8.1. Both base themes resolved 15,928 names each, 18,753 distinct files decoded. Verified regular, dark, clear and red/blue glass Dock materials.",
+      "command": "Qt 6 offscreen execution of the staged calendar EventPluginsManager with pimevents absent. Requested default, changed and empty selections produced holidaysevents, astronomicalevents and an empty list respectively.",
       "result": "passed"
     },
     {
-      "command": "Guest.installed_icons() after actual reboot of isolated KDE neon guest; Wayland theme lookup and installed Dock plugin embedded resource checks.",
-      "result": "passed"
-    },
-    {
-      "command": "pytest tests/test_ci_selection.py tests/test_container_images.py tests/test_component_cache.py::test_committed_component_hashes_match_sources (11 passed)",
+      "command": "python3 -m pytest tests/test_desktop_widgets.py tests/test_component_cache.py::test_committed_component_hashes_match_sources (9 passed)",
       "result": "passed"
     }
   ],
-  "approved_preview": {
-    "filename": "neon-icon-lookup.png",
-    "sha256": "4542b1206e2315d2c2b2723fd3faa605f615c348aba2c9dd2f0a3dc0a960f247"
-  },
-  "candidate_commits": {
-    "tahoe": "851fca51dbd236a2b8757d02bdb5c73b2b8b9244",
-    "golden_gate": "02eaa97387814f5d99a80c5ba7f844a02b61c8a7"
-  },
-  "verified_icon_source_sha256": "6e8ffb9c4ee58a9921ae06abd8c3575742a26275340ebd365bd5c0d1442e33e6",
-  "qualification_runs": [
-    "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/45803702581",
-    "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/actions/runs/45803971709",
-    "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/actions/runs/45805422866"
-  ],
-  "coverage_limits": "EndeavourOS and Garuda use Arch SDK simulations; Nobara uses a Fedora SDK simulation. Artix native dinit userspace is covered. No new full desktop lifecycle qualification on those four distributions. Nix package checks cover the built output. Kubuntu live qualification remains pending.",
-  "source_sha256": "1a100a3b0a37d9cde3323660a8a1d860ac3fe1b70992c09b6f45741c87ffaeb4"
+  "coverage_limits": "Runtime check used installed Plasma calendar plugins on one distribution. PIM Events was absent. No full desktop lifecycle rerun for this widget-only fix.",
+  "source_sha256": "1fcd2ebe0643ebbe80c8b4b51eeb8f0e977838224a172901b87007ab86602f5f"
 }
