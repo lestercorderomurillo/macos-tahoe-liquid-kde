@@ -56,6 +56,7 @@ const previous = PRESETS.map((preset, screen) => ({screen, widgetIds: [1],
 function panels() { return created.length ? created : previous; }
 function userDataPath(type) { return "/home/tester/Downloads"; }
 function applicationExists(id) { return false; }
+function ConfigFile() { return {writeEntry: function() { return true; }}; }
 function Panel() {
     this.items = [];
     this.widgetIds = [];

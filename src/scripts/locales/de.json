@@ -1,4 +1,5 @@
 {
+  "Cannot read the saved options in {path}. Correct the file or reset the options with --reset.": "Die gespeicherten Optionen in {path} können nicht gelesen werden. Korrigieren Sie die Datei oder setzen Sie die Optionen mit --reset zurück.",
   "If your mirrors no longer have the required package versions, complete a normal system update and retry the installer.": "Falls Ihre Paketspiegel die benötigten Paketversionen nicht mehr anbieten, aktualisieren Sie das System wie gewohnt und starten Sie das Installationsprogramm erneut.",
   "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "KWin wurde im laufenden Betrieb aktualisiert. Melde dich ab und wieder an und starte das Installationsprogramm erneut, um die Effekte zu installieren.",
   "Widgets to install": "Zu installierende Widgets",

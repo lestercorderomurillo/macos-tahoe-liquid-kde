@@ -1,4 +1,5 @@
 {
+  "Cannot read the saved options in {path}. Correct the file or reset the options with --reset.": "{path} içindeki kayıtlı seçenekler okunamadı. Dosyayı düzeltin veya --reset ile seçenekleri sıfırlayın.",
   "If your mirrors no longer have the required package versions, complete a normal system update and retry the installer.": "Yansı sunucularınızda gerekli paket sürümleri artık yoksa normal bir sistem güncellemesi yapın ve yükleyiciyi yeniden çalıştırın.",
   "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "KWin çalışırken güncellendi. Efektleri kurmak için oturumu kapatıp yeniden açın ve kurucuyu tekrar çalıştırın.",
   "Widgets to install": "Kurulacak araç takımları",

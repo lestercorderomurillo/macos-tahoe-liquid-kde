@@ -95,6 +95,7 @@ const existing = saved.map((preset, screen) => {
 function panels() { return existing; }
 function userDataPath(type) { return "/home/tester/Downloads"; }
 function applicationExists(id) { return false; }
+function ConfigFile() { return {writeEntry: function() { return true; }}; }
 function Panel() {
     this.items = [];
     this.addWidget = function(type) { const item = makeWidget(type); this.items.push(item); return item; };

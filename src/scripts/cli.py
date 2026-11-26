@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -229,12 +230,16 @@ def _coerce_int(value: object, default: int, lo: int, hi: int) -> int:
 
 
 def load_features() -> dict[str, object]:
-    if not CONFIG_FILE.is_file():
-        return dict(DEFAULT_FEATURES)
     try:
-        data = json.loads(CONFIG_FILE.read_text())
-    except (OSError, json.JSONDecodeError):
+        data = json.loads(CONFIG_FILE.read_text(encoding="utf-8"))
+        if not isinstance(data, dict) or any(
+            not isinstance(value, bool) for name, value in data.items() if name in ALL_FEATURES
+        ):
+            raise ValueError("invalid feature selection")
+    except FileNotFoundError:
         return dict(DEFAULT_FEATURES)
+    except (OSError, ValueError) as exc:
+        raise ValueError(tr('Cannot read the saved options in {path}. Correct the file or reset the options with --reset.', path=CONFIG_FILE)) from exc
     out = dict(DEFAULT_FEATURES)
     for k, v in data.items():
         if k in DEFAULT_FEATURES:
@@ -255,7 +260,22 @@ def save_features(feat: dict[str, object]) -> None:
                  f"{_coerce_int(feat.get('oled_max_shift'), 8, 1, 16)},")
     lines.append(f'  "theme_mode":'.ljust(24) + f'"{feat.get("theme_mode", "auto")}"')
     lines.append("}")
-    CONFIG_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    destination = CONFIG_FILE.resolve()
+    fd, temporary = tempfile.mkstemp(dir=destination.parent, prefix=".features-", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write("\n".join(lines) + "\n")
+            stream.flush()
+            if destination.exists():
+                previous = destination.stat()
+                current = os.fstat(stream.fileno())
+                if (current.st_uid, current.st_gid) != (previous.st_uid, previous.st_gid):
+                    os.fchown(stream.fileno(), previous.st_uid, previous.st_gid)
+                os.fchmod(stream.fileno(), previous.st_mode & 0o777)
+            os.fsync(stream.fileno())
+        os.replace(temporary, destination)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
 
 
 class ParsedArgs:
@@ -1443,14 +1463,16 @@ def run_install(argv: list[str],
     check_cancelled()
 
     existing_install = _theme_is_already_installed()
-    feat = apply_overrides(load_features(), parsed)
     if parsed.wizard_options is not None:
+        if parsed.do_reset or parsed.do_save:
+            apply_overrides({} if parsed.do_reset else load_features(), parsed)
         from installer_choices import features
         feat = features(parsed.wizard_options, DEFAULT_FEATURES,
                         existing_install=existing_install)
         os.environ["MTTKDE_WIZARD_OPTIONS"] = json.dumps(parsed.wizard_options)
         feat["_preserve_layout"] = not parsed.wizard_options["reset_layout"]
     else:
+        feat = apply_overrides({} if parsed.do_reset else load_features(), parsed)
         preserve = not default_layout_reset(existing_install) and "layout" not in parsed.cli_overrides
         if preserve:
             feat["layout"] = False
@@ -1554,7 +1576,7 @@ def run_uninstall(argv: list[str],
     check_cancelled()
 
     feat = (dict(DEFAULT_FEATURES) if parsed.wizard_options is not None
-            else apply_overrides(load_features(), parsed))
+            else apply_overrides({} if parsed.do_reset else load_features(), parsed))
     export_env(feat)
 
     tracker = RunTracker("uninstall", argv, str(feat.get("theme_mode", "auto")))

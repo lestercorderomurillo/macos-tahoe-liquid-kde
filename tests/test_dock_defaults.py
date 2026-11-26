@@ -25,6 +25,7 @@ var knownWidgetTypes = { includes: () => true };
 function userDataPath(type) { return "/home/tester/Downloads"; }
 function panels() { return created.slice(); }
 function applicationExists(id) { return installed.indexOf(id) !== -1; }
+function ConfigFile() { return {writeEntry: function() { return true; }}; }
 function Panel() {
     this.widgetIds = [];
     this.widgetsById = {};

@@ -164,6 +164,10 @@ for (var screen = 0; screen < screenCount; screen++) {
     }
     if (screen === 0 && (typeof mttkdeDock === "undefined" || mttkdeDock)) {
     var dock = new Panel("org.kde.panel");
+    // Set the new PanelView mode before assigning its edge. Older Plasma
+    // scripting setters only change the window opacity once the view exists.
+    var dockView = ConfigFile(ConfigFile("plasmashellrc", "PlasmaViews"), "Panel " + dock.id);
+    dockView.writeEntry("panelOpacity", 2);
     dock.location = "bottom";
     dock.screen = screen;
     dock.alignment = "center";

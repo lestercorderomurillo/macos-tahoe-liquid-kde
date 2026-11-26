@@ -23,6 +23,32 @@ def cli_module():
     return cli
 
 
+@pytest.mark.parametrize("content", [b"[]", b'{"layout":', b'{"layout":"false"}', b"\xff"])
+def test_invalid_saved_features_require_explicit_recovery(cli_module, monkeypatch, tmp_path, content):
+    config = tmp_path / "features.json"
+    config.write_bytes(content)
+    monkeypatch.setattr(cli_module, "CONFIG_FILE", config)
+
+    with pytest.raises(ValueError, match="--reset"):
+        cli_module.load_features()
+    assert config.read_bytes() == content
+
+
+def test_failed_features_save_preserves_previous_selection(cli_module, monkeypatch, tmp_path):
+    config = tmp_path / "features.json"
+    config.write_text('{"layout":false}', encoding="utf-8")
+    monkeypatch.setattr(cli_module, "CONFIG_FILE", config)
+
+    def no_space(fd):
+        raise OSError("No space left on device")
+
+    monkeypatch.setattr(os, "fsync", no_space)
+    with pytest.raises(OSError, match="No space"):
+        cli_module.save_features(cli_module.DEFAULT_FEATURES)
+    assert list(tmp_path.iterdir()) == [config]
+    assert cli_module.load_features()["layout"] is False
+
+
 def test_cancellable_entrypoint_does_not_print_aborted_twice(
         cli_module, monkeypatch, capsys):
     checks = {"count": 0}
