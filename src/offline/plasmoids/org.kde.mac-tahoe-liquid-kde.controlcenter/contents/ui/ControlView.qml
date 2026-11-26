@@ -190,7 +190,7 @@ Item {
         id: edit
         // Center on whole logical pixels so the compositor can recover this capsule from its mask.
         width: Math.min(291, 2 * Math.ceil((editMetrics.width + 22) / 2)); height: 22
-        x: grid.x + (grid.width - width) / 2; y: grid.y + grid.height + 17
+        x: grid.x + Math.round((grid.width - width) / 2); y: grid.y + grid.height + 17
         visible: view.section === ""
         padding: 0
         contentItem: QQC.AbstractButton {
