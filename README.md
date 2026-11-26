@@ -156,8 +156,7 @@ Tint the Dock icons to match your desktop.
 Use the active app’s menus from the top bar.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="File menu with a document open in Kate" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="File menu with a document open in Kate" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Light and dark modes" width="830">
 </p>
 
 <br>
@@ -177,8 +176,7 @@ Text adjusts to the background so labels stay readable.
 Search for apps or browse them by category.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Default Tahoe preset 1 in light mode, with integrated search and Tahoe wallpaper" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Default Tahoe preset 1 in dark mode, with integrated search and Tahoe wallpaper" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Light and dark modes" width="830">
 </p>
 
 <br>
@@ -188,8 +186,7 @@ Search for apps or browse them by category.
 Adjust Wi-Fi, sound and brightness in one menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Control Center in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Control Center in dark mode" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Control Center · Light and dark modes" width="360">
 </p>
 
 <br>
@@ -199,13 +196,7 @@ Adjust Wi-Fi, sound and brightness in one menu.
 Read recent alerts grouped by app.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe notification banners in light mode" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Tahoe notification banners in dark mode" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Tahoe notification history in light mode" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Tahoe notification history in dark mode" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Notifications · Light and dark modes" width="620">
 </p>
 
 <br>
@@ -215,8 +206,7 @@ Read recent alerts grouped by app.
 Browse files in a Finder-style window.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe light desktop with Files focused" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe dark desktop with Files focused" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Light and dark modes" width="830"></a>
 </p>
 
 <br>
@@ -226,8 +216,7 @@ Browse files in a Finder-style window.
 Open the clock to browse the month.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendar · Light" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Calendar · Dark" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Calendar · Light and dark modes" width="620">
 </p>
 
 <br>
@@ -237,8 +226,7 @@ Open the clock to browse the month.
 Connect paired devices and check their battery levels.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Light Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu with Studio Headphones connected at 82% and Wireless Keyboard disconnected" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Light and dark modes" width="620">
 </p>
 
 ### Wi-Fi
@@ -246,8 +234,7 @@ Connect paired devices and check their battery levels.
 View available networks and connection status.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Light Wi-Fi menu connected to Harbor Studio, with Garden Guest and Workshop available" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Dark Wi-Fi menu connected to Harbor Studio, with Garden Guest and Workshop available" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Light and dark modes" width="328">
 </p>
 
 <br>
@@ -257,8 +244,7 @@ View available networks and connection status.
 Check the battery level and charging status.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Light Battery menu showing no internal battery" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Dark Battery menu showing no internal battery" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Battery · Light and dark modes" width="620">
 </p>
 
 <br>
@@ -268,8 +254,7 @@ Check the battery level and charging status.
 Reuse text and images you copied earlier.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Clipboard history in the tahoe launcher in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="Clipboard history in the tahoe launcher in dark mode" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Clipboard History · Light and dark modes" width="830">
 </p>
 
 <br>
@@ -279,8 +264,7 @@ Reuse text and images you copied earlier.
 View hardware, software and theme details.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Light system information window" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Dark system information window" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="System Information · Light and dark modes" width="830">
 </p>
 
 <br>
@@ -290,8 +274,7 @@ View hardware, software and theme details.
 Menus and popups follow the light or dark theme.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in light mode" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Desktop context menu in dark mode" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma Theme · Light and dark modes" width="453">
 </p>
 
 <br>

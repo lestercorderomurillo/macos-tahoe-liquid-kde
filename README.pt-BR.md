@@ -153,8 +153,7 @@ Combine a cor dos ícones do Dock com sua área de trabalho.
 Acesse os menus do aplicativo ativo pela barra superior.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu de arquivo com um documento aberto em Kate" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Menu de arquivo com um documento aberto em Kate" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Modos claro e escuro" width="830">
 </p>
 
 <br>
@@ -174,8 +173,7 @@ A cor do texto se adapta ao fundo para manter os rótulos legíveis.
 Pesquise aplicativos ou navegue por categoria.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Tahoe predefinido 1 em modo de luz, com pesquisa integrada e papel de parede Tahoe" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Tahoe predefinido por defeito 1 em modo escuro, com pesquisa integrada e papel de parede Tahoe" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Modos claro e escuro" width="830">
 </p>
 
 <br>
@@ -185,8 +183,7 @@ Pesquise aplicativos ou navegue por categoria.
 Ajuste o Wi-Fi, o som e o brilho em um só menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centro de controlo em modo de luz" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centro de controlo em modo escuro" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Centro de Controle · Modos claro e escuro" width="360">
 </p>
 
 <br>
@@ -196,13 +193,7 @@ Ajuste o Wi-Fi, o som e o brilho em um só menu.
 Veja as notificações recentes agrupadas por aplicativo.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Bandeiras de notificação Tahoe em modo de luz" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Bandeiras de notificação de Tahoe em modo escuro" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="História de notificação de Tahoe em modo de luz" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="História de notificação de Tahoe em modo escuro" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Notificações · Modos claro e escuro" width="620">
 </p>
 
 <br>
@@ -212,8 +203,7 @@ Veja as notificações recentes agrupadas por aplicativo.
 Navegue pelos arquivos em uma janela no estilo Finder.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe desktop leve com arquivos focados" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe desktop escuro com arquivos focados" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Modos claro e escuro" width="830"></a>
 </p>
 
 <br>
@@ -223,8 +213,7 @@ Navegue pelos arquivos em uma janela no estilo Finder.
 Abra o relógio para ver o calendário do mês.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendário · Luz" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Calendário · Escuro" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Calendário · Modos claro e escuro" width="620">
 </p>
 
 <br>
@@ -234,8 +223,7 @@ Abra o relógio para ver o calendário do mês.
 Conecte dispositivos pareados e confira o nível da bateria de cada um.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth leve com fones de ouvido de estúdio conectados em 82% e teclado sem fio desconectado" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu Bluetooth escuro com fones de ouvido de estúdio conectados em 82% e teclado sem fio desconectado" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Modos claro e escuro" width="620">
 </p>
 
 ### Wi-Fi
@@ -243,8 +231,7 @@ Conecte dispositivos pareados e confira o nível da bateria de cada um.
 Veja as redes disponíveis e o estado da conexão.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu de Wi-Fi ligado ao Harbor Studio, com Garden Guest e Workshop disponíveis" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Menú Wi-Fi escuro conectado ao Harbor Studio, com Garden Guest e Workshop disponíveis" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Modos claro e escuro" width="328">
 </p>
 
 <br>
@@ -254,8 +241,7 @@ Veja as redes disponíveis e o estado da conexão.
 Confira o nível da bateria e o estado de carregamento.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Light Battery menu sem bateria interna" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Menu Bateria escura sem bateria interna" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Bateria · Modos claro e escuro" width="620">
 </p>
 
 <br>
@@ -265,8 +251,7 @@ Confira o nível da bateria e o estado de carregamento.
 Reutilize textos e imagens que você copiou.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="História do clipboard no lançador tahoe em modo de luz" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="História do clipboard no lançador tahoe em modo escuro" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Histórico da área de transferência · Modos claro e escuro" width="830">
 </p>
 
 <br>
@@ -276,8 +261,7 @@ Reutilize textos e imagens que você copiou.
 Confira os detalhes do hardware, do software e do tema.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Janela de informação do sistema de luz" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Janela de informação do sistema escuro" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Informações do sistema · Modos claro e escuro" width="830">
 </p>
 
 <br>
@@ -287,8 +271,7 @@ Confira os detalhes do hardware, do software e do tema.
 Os menus e as janelas pop-up acompanham o tema claro ou escuro.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menu de contexto de desktop em modo de luz" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Menu de contexto no desktop em modo escuro" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Tema Plasma · Modos claro e escuro" width="453">
 </p>
 
 <br>

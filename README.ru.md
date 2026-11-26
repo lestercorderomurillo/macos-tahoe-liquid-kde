@@ -153,8 +153,7 @@
 Открывайте меню активного приложения с верхней панели.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Меню файлов с открытым документом в Kate" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Меню файлов с открытым документом в Kate" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Светлый и тёмный режимы" width="830">
 </p>
 
 <br>
@@ -174,8 +173,7 @@
 Ищите приложения или просматривайте их по категориям.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="По умолчанию Tahoe 1 в световом режиме с интегрированным поиском и обоев Tahoe" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="По умолчанию Tahoe предустановлен 1 в темном режиме, с интегрированным поиском и обоев Tahoe" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Светлый и тёмный режимы" width="830">
 </p>
 
 <br>
@@ -185,8 +183,7 @@
 Настраивайте Wi-Fi, звук и яркость в одном меню.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Центр управления в световом режиме" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Центр управления в темном режиме" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Центр управления · Светлый и тёмный режимы" width="360">
 </p>
 
 <br>
@@ -196,13 +193,7 @@
 Просматривайте недавние уведомления, сгруппированные по приложениям.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Значки уведомления о тахо в световом режиме" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Баннеры уведомления о тахе в темном режиме" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="История уведомлений о тахе в световом режиме" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="История уведомлений о тахе в темном режиме" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Уведомления · Светлый и тёмный режимы" width="620">
 </p>
 
 <br>
@@ -212,8 +203,7 @@
 Просматривайте файлы в окне в стиле Finder.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe легкий рабочий стол с файлами сосредоточенными" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Тэхо темный рабочий стол с файлами сосредоточенными" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Светлый и тёмный режимы" width="830"></a>
 </p>
 
 <br>
@@ -223,8 +213,7 @@
 Нажмите на часы, чтобы открыть календарь на месяц.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Календарь · Свет" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Календарь · Темный" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Календарь · Светлый и тёмный режимы" width="620">
 </p>
 
 <br>
@@ -234,8 +223,7 @@
 Подключайте сопряжённые устройства и проверяйте их заряд.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Легкое меню Bluetooth с Studio Headphones подключенными на 82% и беспроводной клавиатуры отключенной" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Темное меню Bluetooth с Studio Headphones подключенными на 82% и беспроводной клавиатуры отключенной" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Светлый и тёмный режимы" width="620">
 </p>
 
 ### Wi-Fi
@@ -243,8 +231,7 @@
 Просматривайте доступные сети и состояние подключения.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Меню Wi-Fi подключено к Harbor Studio, с доступными Garden Guest и Workshop" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Место Dark Wi-Fi подключено к Harbor Studio, с доступными Garden Guest и Workshop" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Светлый и тёмный режимы" width="328">
 </p>
 
 <br>
@@ -254,8 +241,7 @@
 Проверяйте уровень заряда батареи и состояние зарядки.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Меню Light Battery без внутренней батареи" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Меню &quot; Темные батареи &quot; без внутренней батареи" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Батарея · Светлый и тёмный режимы" width="620">
 </p>
 
 <br>
@@ -265,8 +251,7 @@
 Повторно используйте скопированные текст и изображения.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="История клипборда в пусковике тахо в световом режиме" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="История клипборда в пусковике тахо в темном режиме" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="История буфера обмена · Светлый и тёмный режимы" width="830">
 </p>
 
 <br>
@@ -276,8 +261,7 @@
 Просматривайте сведения об оборудовании, программах и теме оформления.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Окно информации о световой системе" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Темное окно информации системы" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Информационная система · Светлый и тёмный режимы" width="830">
 </p>
 
 <br>
@@ -287,8 +271,7 @@
 Меню и всплывающие окна используют светлую или тёмную тему.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Контекстный меню рабочего стола в световом режиме" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Контекстный меню рабочего стола в темном режиме" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Тема Plasma · Светлый и тёмный режимы" width="453">
 </p>
 
 <br>

@@ -153,8 +153,7 @@ Accordez la teinte des icônes du Dock à votre bureau.
 Accédez aux menus de l’application active depuis la barre du haut.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu de fichiers avec un document ouvert en Kate" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Menu de fichiers avec un document ouvert en Kate" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Modes clair et sombre" width="830">
 </p>
 
 <br>
@@ -174,8 +173,7 @@ La couleur du texte s’adapte au fond pour garder les libellés lisibles.
 Recherchez des applications ou parcourez-les par catégorie.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Par défaut Tahoe préconfiguré 1 en mode lumière, avec recherche intégrée et papier peint Tahoe" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Tahoe prédéfini par défaut 1 en mode noir, avec recherche intégrée et papier peint Tahoe" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Modes clair et sombre" width="830">
 </p>
 
 <br>
@@ -185,8 +183,7 @@ Recherchez des applications ou parcourez-les par catégorie.
 Réglez le Wi-Fi, le son et la luminosité dans un seul menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centre de contrôle en mode lumière" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centre de contrôle en mode noir" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Centre de contrôle · Modes clair et sombre" width="360">
 </p>
 
 <br>
@@ -196,13 +193,7 @@ Réglez le Wi-Fi, le son et la luminosité dans un seul menu.
 Retrouvez les notifications récentes regroupées par application.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Panneaux de notification Tahoe en mode lumière" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Panneaux de notification Tahoe en mode noir" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Historique de notification de tahoe en mode lumière" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Historique de notification de Tahoe en mode noir" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Les notifications · Modes clair et sombre" width="620">
 </p>
 
 <br>
@@ -212,8 +203,7 @@ Retrouvez les notifications récentes regroupées par application.
 Parcourez vos fichiers dans une fenêtre de style Finder.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe de bureau léger avec les fichiers concentrés" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe bureau sombre avec les fichiers concentrés" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Modes clair et sombre" width="830"></a>
 </p>
 
 <br>
@@ -223,8 +213,7 @@ Parcourez vos fichiers dans une fenêtre de style Finder.
 Ouvrez l’horloge pour afficher le calendrier du mois.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Calendrier · Lumière" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Calendrier · Noir" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Calendrier · Modes clair et sombre" width="620">
 </p>
 
 <br>
@@ -234,8 +223,7 @@ Ouvrez l’horloge pour afficher le calendrier du mois.
 Connectez vos appareils associés et vérifiez leur batterie.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth léger avec écouteurs de studio connectés à 82% et clavier sans fil déconnecté" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Menu Bluetooth sombre avec écouteurs de studio connectés à 82% et clavier sans fil déconnecté" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Modes clair et sombre" width="620">
 </p>
 
 ### Wi-Fi
@@ -243,8 +231,7 @@ Connectez vos appareils associés et vérifiez leur batterie.
 Consultez les réseaux disponibles et l’état de la connexion.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu Wi-Fi léger connecté à Harbor Studio, avec Garden Guest et Workshop disponibles" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Menu Wi-Fi sombre connecté à Harbor Studio, avec Garden Guest et Workshop disponibles" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Modes clair et sombre" width="328">
 </p>
 
 <br>
@@ -254,8 +241,7 @@ Consultez les réseaux disponibles et l’état de la connexion.
 Vérifiez le niveau de la batterie et son état de charge.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menu de batterie légère sans batterie interne" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Menu batterie noire sans batterie interne" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Batterie · Modes clair et sombre" width="620">
 </p>
 
 <br>
@@ -265,8 +251,7 @@ Vérifiez le niveau de la batterie et son état de charge.
 Réutilisez le texte et les images que vous avez copiés.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="L&#x27;historique de la planche à rouleaux dans le lanceur tahoe en mode lumière" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="Historique du clipboard dans le lanceur tahoe en mode noir" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Historique du presse-papiers · Modes clair et sombre" width="830">
 </p>
 
 <br>
@@ -276,8 +261,7 @@ Réutilisez le texte et les images que vous avez copiés.
 Consultez les détails du matériel, des logiciels et du thème.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Fenêtre d&#x27;information du système de lumière" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Fenêtre d&#x27;information du système sombre" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Informations sur le système · Modes clair et sombre" width="830">
 </p>
 
 <br>
@@ -287,8 +271,7 @@ Consultez les détails du matériel, des logiciels et du thème.
 Les menus et les fenêtres contextuelles suivent le thème clair ou sombre.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menu de contexte de bureau en mode lumière" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Menu de contexte du bureau en mode sombre" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Thème Plasma · Modes clair et sombre" width="453">
 </p>
 
 <br>

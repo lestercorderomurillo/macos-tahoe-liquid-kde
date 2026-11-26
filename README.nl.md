@@ -156,8 +156,7 @@ Stem de kleur van de Dock-pictogrammen af op je bureaublad.
 Open de menu’s van de actieve app via de bovenbalk.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="File menu met een document in Kate geopend" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="File menu met een document in Kate geopend" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Lichte en donkere modus" width="830">
 </p>
 
 <br>
@@ -177,8 +176,7 @@ De tekstkleur past zich aan de achtergrond aan zodat labels leesbaar blijven.
 Zoek apps of blader per categorie.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Vooraf ingestelde Tahoe 1 in lichtmodus, met geïntegreerde zoek- en Tahoe behang" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Tahoe 1 standaard voorgesteld in donkere modus, met geïntegreerde zoek- en Tahoe behang" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Lichte en donkere modus" width="830">
 </p>
 
 <br>
@@ -188,8 +186,7 @@ Zoek apps of blader per categorie.
 Regel wifi, geluid en helderheid in één menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centrum van besturing in lichtmodus" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centrum in duister modus" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Control Center · Lichte en donkere modus" width="360">
 </p>
 
 <br>
@@ -199,13 +196,7 @@ Regel wifi, geluid en helderheid in één menu.
 Bekijk recente meldingen gegroepeerd per app.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe-meldingsbanner in lichtmodus" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Tahoe-meldingsbanner in donkere modus" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Tahoe-meldingsgeschiedenis in lichtmodus" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Tahoe-meldingsgeschiedenis in donkere modus" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Meldingen · Lichte en donkere modus" width="620">
 </p>
 
 <br>
@@ -215,8 +206,7 @@ Bekijk recente meldingen gegroepeerd per app.
 Blader door bestanden in een venster in Finder-stijl.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe licht desktop met bestanden gericht" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe donkere desktop met bestanden gericht" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Lichte en donkere modus" width="830"></a>
 </p>
 
 <br>
@@ -226,8 +216,7 @@ Blader door bestanden in een venster in Finder-stijl.
 Open de klok om de maandkalender te bekijken.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Kalender · Licht" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Kalender · Duister" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Kalender · Lichte en donkere modus" width="620">
 </p>
 
 <br>
@@ -237,8 +226,7 @@ Open de klok om de maandkalender te bekijken.
 Verbind gekoppelde apparaten en bekijk hun batterijniveau.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Licht Bluetooth menu met Studio headphones verbonden op 82% en draadloos toetsenbord afgesloten" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Dark Bluetooth menu met Studio headphones verbonden op 82% en Wireless Keyboard afgesloten" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Lichte en donkere modus" width="620">
 </p>
 
 ### Wi-Fi
@@ -246,8 +234,7 @@ Verbind gekoppelde apparaten en bekijk hun batterijniveau.
 Bekijk beschikbare netwerken en de verbindingsstatus.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Lichte Wi-Fi menu verbonden met Harbor Studio, met Garden Guest en Workshop beschikbaar" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Dark Wi-Fi menu verbonden met Harbor Studio, met Garden Guest en Workshop beschikbaar" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Lichte en donkere modus" width="328">
 </p>
 
 <br>
@@ -257,8 +244,7 @@ Bekijk beschikbare netwerken en de verbindingsstatus.
 Controleer het batterijniveau en de laadstatus.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Lichte batterij menu zonder interne batterij" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Dark Battery menu zonder interne batterij" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Batterij · Lichte en donkere modus" width="620">
 </p>
 
 <br>
@@ -268,8 +254,7 @@ Controleer het batterijniveau en de laadstatus.
 Gebruik eerder gekopieerde tekst en afbeeldingen opnieuw.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="De geschiedenis van de clipboard in de tahoe-launcher in lichtmodus" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="Clipboard geschiedenis in de tahoe lancer in donkere modus" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Klembordgeschiedenis · Lichte en donkere modus" width="830">
 </p>
 
 <br>
@@ -279,8 +264,7 @@ Gebruik eerder gekopieerde tekst en afbeeldingen opnieuw.
 Bekijk details over hardware, software en het thema.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Licht systeem informatievenster" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Duister systeeminformatievenster" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Systeminformatie · Lichte en donkere modus" width="830">
 </p>
 
 <br>
@@ -290,8 +274,7 @@ Bekijk details over hardware, software en het thema.
 Menu’s en pop-ups volgen het lichte of donkere thema.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Desktop context menu in lichtmodus" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Desktop contextmenu in donkere modus" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma-thema · Lichte en donkere modus" width="453">
 </p>
 
 <br>

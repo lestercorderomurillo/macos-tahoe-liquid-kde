@@ -156,8 +156,7 @@ Dopasuj kolor ikon Docka do pulpitu.
 Otwieraj menu aktywnej aplikacji z górnego paska.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Menu plików z otwartym dokumentem w Kate" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Menu plików z otwartym dokumentem w Kate" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Tryb jasny i ciemny" width="830">
 </p>
 
 <br>
@@ -177,8 +176,7 @@ Kolor tekstu dostosowuje się do tła, by etykiety pozostały czytelne.
 Szukaj aplikacji lub przeglądaj je według kategorii.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Domyślne ustawienie Tahoe 1 w trybie światła, z zintegrowanym wyszukiwaniem i tapetą Tahoe" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Domyślna ustawienie Tahoe 1 w trybie ciemnym, z zintegrowanym wyszukiwaniem i tapetą Tahoe" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Tryb jasny i ciemny" width="830">
 </p>
 
 <br>
@@ -188,8 +186,7 @@ Szukaj aplikacji lub przeglądaj je według kategorii.
 Steruj siecią Wi-Fi, dźwiękiem i jasnością z jednego menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Centrum sterowania w trybie światła" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Centrum sterowania w trybie ciemnym" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Centrum sterowania · Tryb jasny i ciemny" width="360">
 </p>
 
 <br>
@@ -199,13 +196,7 @@ Steruj siecią Wi-Fi, dźwiękiem i jasnością z jednego menu.
 Czytaj ostatnie powiadomienia pogrupowane według aplikacji.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Plakaty powiadomienia o tahoe w trybie światła" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Plakaty powiadomienia o tahoe w trybie ciemnym" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Historia powiadomienia o tahoe w trybie światła" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Historia powiadomienia o tahoe w trybie ciemnym" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="Powiadomienia · Tryb jasny i ciemny" width="620">
 </p>
 
 <br>
@@ -215,8 +206,7 @@ Czytaj ostatnie powiadomienia pogrupowane według aplikacji.
 Przeglądaj pliki w oknie w stylu Findera.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Tahoe lekki biurko z skoncentrowanymi plikami" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Tahoe ciemny biurko z skoncentrowanymi plikami" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Tryb jasny i ciemny" width="830"></a>
 </p>
 
 <br>
@@ -226,8 +216,7 @@ Przeglądaj pliki w oknie w stylu Findera.
 Otwórz zegar, aby wyświetlić kalendarz miesięczny.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Kalendarz · Światło" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Kalendarz · ciemny" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Kalendarz · Tryb jasny i ciemny" width="620">
 </p>
 
 <br>
@@ -237,8 +226,7 @@ Otwórz zegar, aby wyświetlić kalendarz miesięczny.
 Łącz się ze sparowanymi urządzeniami i sprawdzaj poziom ich baterii.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Menu Bluetooth oświetlony z słuchawkami Studio podłączonymi na 82% i nieprzełączoną klawiaturą bezprzewodową" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Męso Bluetooth z słuchawkami w studio podłączonymi na 82% i bezprzewodową klawiaturą odłączoną" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Tryb jasny i ciemny" width="620">
 </p>
 
 ### Wi-Fi
@@ -246,8 +234,7 @@ Otwórz zegar, aby wyświetlić kalendarz miesięczny.
 Sprawdź dostępne sieci i stan połączenia.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Menu Wi-Fi połączone z Harbor Studio, z dostępem Garden Guest i Workshop" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Menu ciemnego Wi-Fi podłączonego do Harbour Studio, z dostępem Garden Guest i Workshop" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Tryb jasny i ciemny" width="328">
 </p>
 
 <br>
@@ -257,8 +244,7 @@ Sprawdź dostępne sieci i stan połączenia.
 Sprawdź poziom baterii i stan ładowania.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Menu Battery Light bez wewnętrznych baterii" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Menu Battery Dark nie zawiera baterii wewnętrznych" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Bateria · Tryb jasny i ciemny" width="620">
 </p>
 
 <br>
@@ -268,8 +254,7 @@ Sprawdź poziom baterii i stan ładowania.
 Użyj ponownie skopiowanego tekstu i obrazów.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Historia płyty nagrywającej w starcie tahoe w trybie światła" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="Historia płyty nagraniowej w startowisku tahoe w trybie ciemnym" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Historia schowka · Tryb jasny i ciemny" width="830">
 </p>
 
 <br>
@@ -279,8 +264,7 @@ Użyj ponownie skopiowanego tekstu i obrazów.
 Sprawdź szczegóły sprzętu, oprogramowania i motywu.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Okno informacji o świetle systemu" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="/Mroczne okno informacji systemu" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Informacje o systemie · Tryb jasny i ciemny" width="830">
 </p>
 
 <br>
@@ -290,8 +274,7 @@ Sprawdź szczegóły sprzętu, oprogramowania i motywu.
 Menu i wyskakujące okna dopasowują się do jasnego lub ciemnego motywu.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Menu kontekstowe w trybie światła" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Menu kontekstowe w trybie ciemnym" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Motyw Plasma · Tryb jasny i ciemny" width="453">
 </p>
 
 <br>

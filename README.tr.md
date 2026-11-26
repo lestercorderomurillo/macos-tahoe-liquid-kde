@@ -156,8 +156,7 @@ Dock simgelerinin rengini masaüstünüze uydurun.
 Etkin uygulamanın menülerine üst çubuktan erişin.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kate&#x27;de açılmış bir belge ile dosya menüsü" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Kate&#x27;de açılmış bir belge ile dosya menüsü" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · Açık ve koyu modlar" width="830">
 </p>
 
 <br>
@@ -177,8 +176,7 @@ Metin rengi arka plana uyum sağlayarak etiketlerin okunaklı kalmasını sağla
 Uygulamaları arayın veya kategoriye göre gözden geçirin.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="Öntanımlı Tahoe ön ayar 1 ışık modunda, entegre arama ve Tahoe duvar kağıdı ile" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="Öntanımlı Tahoe ön ayar 1 karanlık modda, entegre arama ve Tahoe duvar kağıdı ile" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · Açık ve koyu modlar" width="830">
 </p>
 
 <br>
@@ -188,8 +186,7 @@ Uygulamaları arayın veya kategoriye göre gözden geçirin.
 Wi-Fi, ses ve parlaklığı tek menüden ayarlayın.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="Kontrol Merkezi ışık modunda" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="Kontrol Merkezi karanlık modda" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="Kontrol Merkezi · Açık ve koyu modlar" width="360">
 </p>
 
 <br>
@@ -199,13 +196,7 @@ Wi-Fi, ses ve parlaklığı tek menüden ayarlayın.
 Son bildirimleri uygulamaya göre gruplanmış olarak görün.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="Tahoe bildirim pankartları ışık modunda" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="Tahoe bildirim pankartları karanlık modda" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="Tahoe bildirim tarihi ışık modunda" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="Tahoe bildirim tarihi karanlık modda" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="İletişimler · Açık ve koyu modlar" width="620">
 </p>
 
 <br>
@@ -215,8 +206,7 @@ Son bildirimleri uygulamaya göre gruplanmış olarak görün.
 Dosyalarınızı Finder tarzı bir pencerede inceleyin.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="Dosya odaklı Tahoe ışık masaüstü" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="Dosya odaklı Tahoe karanlık masaüstü" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · Açık ve koyu modlar" width="830"></a>
 </p>
 
 <br>
@@ -226,8 +216,7 @@ Dosyalarınızı Finder tarzı bir pencerede inceleyin.
 Aylık takvimi görmek için saati açın.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="Takvim · Işık" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="Takvim · Karanlık" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="Takvim · Açık ve koyu modlar" width="620">
 </p>
 
 <br>
@@ -237,8 +226,7 @@ Aylık takvimi görmek için saati açın.
 Eşleştirilmiş cihazları bağlayın ve pil düzeylerini kontrol edin.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="Studio kulaklıkları % 82&#x27;ye bağlı ve kablosuz klavyesi bağlantısız olan hafif Bluetooth menüsü" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="Karanlık Bluetooth menüsü , 82% bağlı Studio kulaklıkları ve kablosuz klavyeleri ile bağlantı kesilmiş" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · Açık ve koyu modlar" width="620">
 </p>
 
 ### Wi-Fi
@@ -246,8 +234,7 @@ Eşleştirilmiş cihazları bağlayın ve pil düzeylerini kontrol edin.
 Kullanılabilir ağları ve bağlantı durumunu görün.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="Harbor Studio&#x27;ya bağlı hafif Wi-Fi menüsü, Garden Guest ve Workshop mevcuttur" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="Karanlık Wi-Fi menüsü, Harbor Studio&#x27;ya bağlanmış ve Garden Guest ve Workshop mevcut" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · Açık ve koyu modlar" width="328">
 </p>
 
 <br>
@@ -257,8 +244,7 @@ Kullanılabilir ağları ve bağlantı durumunu görün.
 Pil düzeyini ve şarj durumunu kontrol edin.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="Işık Akü menüsü iç akü göstermiyor" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="Karar batarya göstermeyen karanlık pil menüsü" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="Batarya · Açık ve koyu modlar" width="620">
 </p>
 
 <br>
@@ -268,8 +254,7 @@ Pil düzeyini ve şarj durumunu kontrol edin.
 Kopyaladığınız metinleri ve görselleri yeniden kullanın.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="Tahoe fırlatıcısındaki kaset tablosunun geçmişi hafif modunda" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="Tahoe fırlatıcısındaki klipboard tarihi karanlık modda" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="Pano geçmişi · Açık ve koyu modlar" width="830">
 </p>
 
 <br>
@@ -279,8 +264,7 @@ Kopyaladığınız metinleri ve görselleri yeniden kullanın.
 Donanım, yazılım ve tema ayrıntılarını görüntüleyin.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="Işık sistem bilgisi penceresi" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="Karanlık Sistem Bilgi Penceresi" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="Sistem Bilgisi · Açık ve koyu modlar" width="830">
 </p>
 
 <br>
@@ -290,8 +274,7 @@ Donanım, yazılım ve tema ayrıntılarını görüntüleyin.
 Menüler ve açılır pencereler açık veya koyu temayı izler.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="Açık modunda masaüstü bağlam menüsü" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="Karanlık modunda masaüstü bağlam menüsü" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma teması · Açık ve koyu modlar" width="453">
 </p>
 
 <br>

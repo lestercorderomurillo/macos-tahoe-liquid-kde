@@ -156,8 +156,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 ऊपरी पट्टी से सक्रिय ऐप के मेन्यू खोलें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="Kate में एक दस्तावेज़ खोले गए फ़ाइल मेनू" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="Kate में एक दस्तावेज़ खोले गए फ़ाइल मेनू" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>
@@ -177,8 +176,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 ऐप खोजें या उन्हें श्रेणी के अनुसार देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="डिफ़ॉल्ट ताहो प्रकाश मोड में पूर्व निर्धारित 1, एकीकृत खोज और ताहो वॉलपेपर के साथ" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="डिफ़ॉल्ट ताहो अंधेरे मोड में पूर्व निर्धारित 1, एकीकृत खोज और ताहो वॉलपेपर के साथ" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>
@@ -188,8 +186,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 एक ही मेन्यू से वाई-फ़ाई, आवाज़ और चमक नियंत्रित करें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="नियंत्रण केंद्र प्रकाश मोड में" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="अंधेरे मोड में नियंत्रण केंद्र" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="नियंत्रण केंद्र · लाइट और डार्क मोड" width="360">
 </p>
 
 <br>
@@ -199,13 +196,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 हाल की सूचनाएँ ऐप के अनुसार समूहों में देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="प्रकाश मोड में ताहो सूचना बैनर" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="अंधेरे मोड में ताहो सूचना बैनर" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="प्रकाश मोड में ताहो सूचना इतिहास" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="अंधेरे मोड में ताहो सूचना इतिहास" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="सूचनाएं · लाइट और डार्क मोड" width="620">
 </p>
 
 <br>
@@ -215,8 +206,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 Finder जैसी विंडो में अपनी फ़ाइलें देखें।
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="फ़ाइलों को केंद्रित के साथ ताहो लाइट डेस्कटॉप" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="फ़ाइलों को केंद्रित के साथ ताहो डार्क डेस्कटॉप" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · लाइट और डार्क मोड" width="830"></a>
 </p>
 
 <br>
@@ -226,8 +216,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 महीने का कैलेंडर देखने के लिए घड़ी खोलें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="कैलेंडर · प्रकाश" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="कैलेंडर · अंधेरा" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="कैलेंडर · लाइट और डार्क मोड" width="620">
 </p>
 
 <br>
@@ -237,8 +226,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 पेयर किए गए डिवाइस जोड़ें और उनकी बैटरी का स्तर देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82% पर स्टूडियो हेडफोन कनेक्ट और वायरलेस कीबोर्ड डिस्कनेक्ट के साथ हल्का ब्लूटूथ मेनू" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="82% पर कनेक्ट स्टूडियो हेडफोन और वायरलेस कीबोर्ड से डिस्कनेक्ट के साथ डार्क ब्लूटूथ मेनू" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · लाइट और डार्क मोड" width="620">
 </p>
 
 ### Wi-Fi
@@ -246,8 +234,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 उपलब्ध नेटवर्क और कनेक्शन की स्थिति देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="हार्बर स्टूडियो से कनेक्ट लाइट वाई-फाई मेनू, गार्डन गेस्ट और वर्कशॉप उपलब्ध" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="हार्बर स्टूडियो से जुड़े डार्क वाई-फाई मेनू, गार्डन गेस्ट और वर्कशॉप उपलब्ध" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · लाइट और डार्क मोड" width="328">
 </p>
 
 <br>
@@ -257,8 +244,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 बैटरी का स्तर और चार्जिंग की स्थिति जाँचें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="कोई आंतरिक बैटरी नहीं दिखाने वाला हल्का बैटरी मेनू" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="आंतरिक बैटरी नहीं दिखाने वाला डार्क बैटरी मेनू" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="बैटरी · लाइट और डार्क मोड" width="620">
 </p>
 
 <br>
@@ -268,8 +254,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 पहले कॉपी किए गए टेक्स्ट और चित्रों का फिर से उपयोग करें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="प्रकाश मोड में ताहू लांचर में क्लिपबोर्ड इतिहास" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="डार्क मोड में ताहू लांचर में क्लिपबोर्ड इतिहास" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="क्लिपबोर्ड इतिहास · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>
@@ -279,8 +264,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 हार्डवेयर, सॉफ़्टवेयर और थीम का विवरण देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="प्रकाश प्रणाली सूचना विंडो" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="अंधेरी प्रणाली सूचना विंडो" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="सिस्टम सूचना · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>
@@ -290,8 +274,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 मेन्यू और पॉप-अप चुनी हुई लाइट या डार्क थीम अपनाते हैं।
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="प्रकाश मोड में डेस्कटॉप संदर्भ मेनू" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="अंधेरे मोड में डेस्कटॉप संदर्भ मेनू" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma थीम · लाइट और डार्क मोड" width="453">
 </p>
 
 <br>

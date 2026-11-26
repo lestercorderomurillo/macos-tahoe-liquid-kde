@@ -156,8 +156,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 상단 막대에서 현재 앱의 메뉴를 열 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-menu-f7567315f726.webp" alt="케이트에서 문서가 열리는 파일 메뉴" width="830">
-  <img src="src/screenshots/previews/readme-tahoe-dark-menu-4afbc738548e.webp" alt="케이트에서 문서가 열리는 파일 메뉴" width="830">
+  <img src="src/screenshots/previews/tahoe-quickbar-light-dark-1edd584e39a5.gif" alt="Quickbar · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
@@ -177,8 +176,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 앱을 검색하거나 카테고리별로 찾아볼 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-launcher-e9e005b8c0a7.webp" alt="기본 타호가 전제 설정된 1 라이트 모드, 통합 검색 및 타호 벽화" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-launcher-48f5a12fe6a9.webp" alt="기본 타호가 1을 암흑 모드로 설정하고, 통합 검색 및 타호 벽화로" width="415">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-fc20ad7b917b.gif" alt="Launchpad · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
@@ -188,8 +186,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 한 메뉴에서 Wi-Fi, 음량, 밝기를 조절할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-control-5f066f7e22f2.webp" alt="제어 센터 가 빛 모드" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-control-176530068a4d.webp" alt="어두운 모드에서 제어 센터" width="415">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0361a44959ac.gif" alt="제어 센터 · 밝은 모드와 어두운 모드" width="360">
 </p>
 
 <br>
@@ -199,13 +196,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 최근 알림을 앱별로 모아 볼 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notifications-0be9825c63c2.webp" alt="라이트 모드에서 타호에 대한 알림 표지판" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notifications-3bdf43d58e1e.webp" alt="다크 모드에서 타호 알림 표지판" width="48%">
-</p>
-
-<p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-notification-history-5f40a7a2616e.webp" alt="라이트 모드에서 타호에 대한 통지 역사" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-notification-history-34db79c1db88.webp" alt="다크 모드에서 타호 알림 역사" width="48%">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-37b55450476b.gif" alt="통지 · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 <br>
@@ -215,8 +206,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 
 <p align="center">
-  <a href="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp"><img src="src/screenshots/previews/readme-tahoe-light-finder-8b64ba8e3a8b.webp" alt="파일 중점을 가진 타호 라이트 데스크톱" width="415"></a>
-  <a href="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp"><img src="src/screenshots/previews/readme-tahoe-dark-finder-dd8777a43699.webp" alt="파일 중점을 가진 타호 어두운 데스크톱" width="415"></a>
+  <a href="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif"><img src="src/screenshots/previews/tahoe-finder-light-dark-cc3aa8aa5673.gif" alt="Finder · 밝은 모드와 어두운 모드" width="830"></a>
 </p>
 
 <br>
@@ -226,8 +216,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 시계를 열면 월간 달력이 표시됩니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-calendar-b917d2025bca.webp" alt="달력 · 빛" width="328">
-  <img src="src/screenshots/previews/readme-tahoe-dark-calendar-1267abeca5d4.webp" alt="달력 · 어두운" width="328">
+  <img src="src/screenshots/previews/tahoe-calendar-light-dark-117484320656.gif" alt="달력 · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 <br>
@@ -237,8 +226,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 페어링된 기기를 연결하고 배터리 잔량을 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-bluetooth-58ccf877c692.webp" alt="82%에 연결된 스튜디오 헤드폰과 무선 키보드가 끊어지는 가벼운 블루투스 메뉴" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-bluetooth-ddab9443c80d.webp" alt="82%에 연결된 스튜디오 헤드폰과 무선 키보드가 끊어지는 어두운 블루투스 메뉴" width="48%">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-f8d4b1298759.gif" alt="Bluetooth · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 ### Wi-Fi
@@ -246,8 +234,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 사용 가능한 네트워크와 연결 상태를 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-wifi-d55cc1382c4f.webp" alt="하버 스튜디오에 연결된 라이트 와이파이 메뉴, 가든 게스트와 워크샵이 제공됩니다" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-wifi-41d18810df8b.webp" alt="하버 스튜디오에 연결된 어두운 와이파이 메뉴, 가든 게스트와 워크샵이 제공됩니다" width="48%">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-e9d58187d09b.gif" alt="Wi-Fi · 밝은 모드와 어두운 모드" width="328">
 </p>
 
 <br>
@@ -257,8 +244,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 배터리 잔량과 충전 상태를 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-battery-a1636d3884e6.webp" alt="내장 배터리 없는 라이트 배터리 메뉴" width="48%">
-  <img src="src/screenshots/previews/readme-tahoe-dark-battery-e328f9c5c963.webp" alt="내부 배터리가 없는 어두운 배터리 메뉴" width="48%">
+  <img src="src/screenshots/previews/tahoe-battery-light-dark-090bfa8629c0.gif" alt="배터리 · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 <br>
@@ -268,8 +254,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 복사한 텍스트와 이미지를 다시 사용할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-clipboard-251b75189974.webp" alt="라이트 모드에서 타호 발사기의 클립보드 역사" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-clipboard-8d5f7445bc51.webp" alt="어두운 모드에서 태호 발사기에서 클리프보드 역사" width="415">
+  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-a16bfa65e2b4.gif" alt="클립보드 기록 · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
@@ -279,8 +264,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 하드웨어, 소프트웨어 및 테마 정보를 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-about-46901764dde1.webp" alt="빛 시스템 정보 창" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-about-5f1088d764fc.webp" alt="어두운 시스템 정보 창" width="415">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-6db87530d291.gif" alt="시스템 정보 · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
@@ -290,8 +274,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 메뉴와 팝업에 밝은 테마 또는 어두운 테마가 적용됩니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/readme-tahoe-light-context-077fb632954a.webp" alt="라이트 모드에서 데스크톱 컨텍스트 메뉴" width="415">
-  <img src="src/screenshots/previews/readme-tahoe-dark-context-d44452161288.webp" alt="어두운 모드에서 데스크톱 컨텍스트 메뉴" width="415">
+  <img src="src/screenshots/previews/tahoe-plasma-theme-light-dark-e75872ae6004.gif" alt="Plasma 테마 · 밝은 모드와 어두운 모드" width="453">
 </p>
 
 <br>
