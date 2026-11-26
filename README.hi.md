@@ -135,6 +135,8 @@
   <a href="https://github.com/Leon-Swains"><img src="src/screenshots/contributors/Leon-Swains-4e422e08f4af.svg" width="40" height="40" alt="@Leon-Swains" title="@Leon-Swains"></a>
   <a href="https://github.com/LucipurrsDad"><img src="src/screenshots/contributors/LucipurrsDad-673ba01c9c16.svg" width="40" height="40" alt="@LucipurrsDad" title="@LucipurrsDad"></a>
   <a href="https://github.com/SinglerGold2"><img src="src/screenshots/contributors/SinglerGold2-5a612bf1fdcf.svg" width="40" height="40" alt="@SinglerGold2" title="@SinglerGold2"></a>
+  <a href="https://github.com/CiderGuru"><img src="src/screenshots/contributors/CiderGuru-5d553f4b5a4d.svg" width="40" height="40" alt="@CiderGuru" title="@CiderGuru"></a>
+  <a href="https://github.com/soumyadeep70"><img src="src/screenshots/contributors/soumyadeep70-627c30fbef2c.svg" width="40" height="40" alt="@soumyadeep70" title="@soumyadeep70"></a>
 </p>
 
 <br>
