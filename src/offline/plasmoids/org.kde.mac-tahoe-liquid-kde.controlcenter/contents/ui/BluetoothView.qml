@@ -16,6 +16,7 @@ ColumnLayout {
         if (/headset|headphone|audio-head/.test(icon)) return "audio-headphones-symbolic";
         if (/phone/.test(icon)) return "phone-symbolic";
         if (/mouse/.test(icon)) return "input-mouse-symbolic";
+        if (icon === "input-tablet" || icon === "printer") return icon + "-symbolic";
         if (/keyboard/.test(icon)) return "input-keyboard-symbolic";
         if (/speaker|audio-card|multimedia/.test(icon)) return "audio-speakers-symbolic";
         return icon || "preferences-system-bluetooth";
