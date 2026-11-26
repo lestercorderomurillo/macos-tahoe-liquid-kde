@@ -1,5 +1,5 @@
 {
-  "version": "0.85.15",
+  "version": "0.85.16",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "qualified_candidate": "1d6887a9d33a8479a32a52aa23167c6c48091269",
   "scope": "Restore the reviewed Control Center optics and align the Edit Controls capsule.",
@@ -15,6 +15,10 @@
       "result": "passed"
     },
     {
+      "command": "pytest tests/test_glass_presets.py::test_native_material_preset_controls: all 10 native cases passed for the four reviewed material choices.",
+      "result": "passed"
+    },
+    {
       "command": "KDE neon Wayland: same popup and lens depth, 0 recognized tiles before alignment and 12 after. Dark-mode on/off lens pixel comparisons passed on both edition wallpapers.",
       "result": "passed"
     }
@@ -26,5 +30,5 @@
     "final-tahoe-light.png": "3a88bf89b89151df4730d73e70e7b7751c6dda069fee800582f37cd5cbe5ea2e"
   },
   "coverage_limits": "Wayland compositor lens pixels were exercised on KDE neon 6.8.1. The X11 check exercised the popup and published mask on Xvfb.",
-  "source_sha256": "9077b6ff92772c7a30e2eba131d20b139d50e63e250a51e4a4874c323d257dec"
+  "source_sha256": "4496d30f1eee553aeeece290ab6ce7a6cbbdcccbfbe59a8bd67459a03accb567"
 }
