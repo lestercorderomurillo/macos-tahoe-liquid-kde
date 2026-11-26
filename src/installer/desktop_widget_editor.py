@@ -7,7 +7,7 @@ from PyQt6.QtDBus import QDBusConnection, QDBusInterface, QDBusVariant
 from PyQt6.QtGui import QColor, QFont, QKeySequence
 from PyQt6.QtWidgets import (
     QApplication, QCheckBox, QColorDialog, QComboBox, QDoubleSpinBox, QFileDialog, QHBoxLayout,
-    QKeySequenceEdit, QLabel, QLineEdit, QListWidget, QListWidgetItem, QSpinBox, QTabWidget, QVBoxLayout, QWidget,
+    QKeySequenceEdit, QLabel, QLineEdit, QListWidget, QListWidgetItem, QSpinBox, QVBoxLayout, QWidget,
 )
 
 from desktop_widget_settings import (
@@ -139,9 +139,8 @@ class DesktopWidgetEditor(QWidget):
         self.shortcut.setClearButtonEnabled(True)
         shortcut.addWidget(self.shortcut)
         layout.addLayout(shortcut)
-        self.tabs = QTabWidget()
-        self.tabs.setObjectName("widgetPreferenceTabs")
-        layout.addWidget(self.tabs)
+        self.sections = QVBoxLayout()
+        layout.addLayout(self.sections)
         self.status = QLabel()
         self.status.setObjectName("saveStatus")
         self.status.setWordWrap(True)
@@ -150,15 +149,20 @@ class DesktopWidgetEditor(QWidget):
         self.picker.currentIndexChanged.connect(self.build)
         self.build()
 
+    def add_section(self, title, page):
+        from wizard_window import section_heading
+        self.sections.addWidget(section_heading(self, self.t(title)))
+        self.sections.addWidget(page)
+
     def build(self):
         from wizard_window import CheckOption, GlassButton, GlassComboBox
 
         self.plugin, self.defaults, values = self.widgets[self.picker.currentData()]
         self.shortcut.setKeySequence(QKeySequence.fromString(values.get("activationShortcut", "")))
-        while self.tabs.count():
-            page = self.tabs.widget(0)
-            self.tabs.removeTab(0)
-            page.deleteLater()
+        while self.sections.count():
+            widget = self.sections.takeAt(0).widget()
+            widget.hide()
+            widget.deleteLater()
         self.fields = {}
         self.rows = {}
         self.glass_pages = []
@@ -166,9 +170,9 @@ class DesktopWidgetEditor(QWidget):
         self.calendar_providers = {}
         self.status.hide()
         if all(key in self.defaults for key in WEATHER_FIELDS):
-            self.weather = WeatherForm(self.t, self.tabs)
+            self.weather = WeatherForm(self.t, self)
             self.weather.load(values)
-            self.tabs.addTab(self.weather, self.t("Weather"))
+            self.add_section("Weather", self.weather)
         for title, fields in PAGES.items():
             present = {key: label for key, label in fields.items() if key in self.defaults}
             if not present:
@@ -272,16 +276,15 @@ class DesktopWidgetEditor(QWidget):
                 reset.clicked.connect(lambda _, keys=tuple(present): self.set_values(
                     {key: self.defaults[key] for key in keys}))
                 layout.addWidget(reset, alignment=Qt.AlignmentFlag.AlignLeft)
-            layout.addStretch()
-            self.tabs.addTab(page, self.t(title).replace("&", "&&"))
+            self.add_section(title, page)
         if "enabledCalendarPlugins" in self.fields:
             from calendar_provider_settings import provider_settings
 
-            self.calendar_providers = provider_settings(self.t, installed_package(self.plugin), self.tabs)
+            self.calendar_providers = provider_settings(self.t, installed_package(self.plugin), self)
             for source, page in self.calendar_providers.items():
-                self.tabs.addTab(page, self.t(CALENDAR_SOURCES[source]))
+                self.add_section(CALENDAR_SOURCES[source], page)
             self.fields["enabledCalendarPlugins"].itemChanged.connect(self.update_dependencies)
-        self.tabs.addTab(weather_about(self.t, self.tabs), self.t("About"))
+        self.add_section("About", weather_about(self.t, self))
         self.set_values({key: values[key] for key in self.fields})
         self.baseline = self.values()
         self.shortcut_baseline = self.shortcut.keySequence().toString()
@@ -341,9 +344,7 @@ class DesktopWidgetEditor(QWidget):
         if "autoHideTimeout" in self.rows:
             self.rows["autoHideTimeout"].setEnabled(values["autoHideEnabled"])
         for source, page in self.calendar_providers.items():
-            index = self.tabs.indexOf(page)
-            if index >= 0:
-                self.tabs.setTabVisible(index, source in values["enabledCalendarPlugins"])
+            page.setEnabled(source in values["enabledCalendarPlugins"])
 
     def choose_color(self):
         field = self.fields["textColor"]

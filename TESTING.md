@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.2**. Settings shares one Save or Review changes action across pages. Acrylic Glass uses the Settings controls and a gradient color palette. [Evidence and coverage](release-evidence.json).
+**v0.85.3**. Settings navigation and controls were checked in disposable KDE neon Wayland sessions for both editions. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

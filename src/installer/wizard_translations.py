@@ -390,6 +390,9 @@ General|General|通用|Geral|Allgemein
 Restoration|Restauración|恢复|Restauração|Wiederherstellung
 Reinstall|Reinstalar|重新安装|Reinstalar|Neu installieren
 Review your reinstallation|Revisa la reinstalación|检查重新安装选项|Revise a reinstalação|Neuinstallation überprüfen
+Editions|Ediciones|版本|Edições|Editionen
+Nature|Naturaleza|自然|Natureza|Natur
+Anime|Anime|动漫|Anime|Anime
 Language|Idioma|语言|Idioma|Sprache
 Search|Buscar|搜索|Buscar|Suchen
 Search settings|Buscar ajustes|搜索设置|Buscar ajustes|Einstellungen suchen

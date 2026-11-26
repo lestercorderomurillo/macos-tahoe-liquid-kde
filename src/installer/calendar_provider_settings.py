@@ -6,14 +6,19 @@ from pathlib import Path
 from PyQt6.QtCore import QLibraryInfo, QMetaObject, QObject, QUrl, pyqtSlot
 
 
-class _Translations(QObject):
+class SettingsTranslations(QObject):
     def __init__(self, translate, parent):
         super().__init__(parent)
         self.translate = translate
 
     @pyqtSlot(str, result=str)
-    def i18n(self, message):
-        return self.translate(message)
+    @pyqtSlot(str, "QVariant", result=str)
+    @pyqtSlot(str, "QVariant", "QVariant", result=str)
+    def i18n(self, message, *args):
+        text = self.translate(message)
+        for index, value in enumerate(args, 1):
+            text = text.replace(f"%{index}", str(value))
+        return text
 
     @pyqtSlot(str, str, result=str)
     def i18nd(self, domain, message):
@@ -43,7 +48,7 @@ def provider_settings(translate, widget_package, parent):
         view.setResizeMode(QQuickWidget.ResizeMode.SizeRootObjectToView)
         view.setMinimumHeight(240)
         view.setClearColor(parent.palette().window().color())
-        view.rootContext().setContextObject(_Translations(translate, view))
+        view.rootContext().setContextObject(SettingsTranslations(translate, view))
         view.setSource(QUrl.fromLocalFile(str(source)))
         if view.status() != QQuickWidget.Status.Ready:
             view.deleteLater()

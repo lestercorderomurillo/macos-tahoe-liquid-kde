@@ -18,10 +18,11 @@ from PyQt6.QtGui import QColor, QFont, QFontDatabase, QIcon, QKeySequence, QPain
 from PyQt6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QComboBox, QDialog, QDialogButtonBox, QFileDialog, QFrame,
     QGraphicsDropShadowEffect, QGraphicsOpacityEffect, QGridLayout, QHBoxLayout, QKeySequenceEdit, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
-    QMessageBox, QAbstractButton, QDoubleSpinBox, QListWidget, QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QStyle, QStyleOptionSpinBox, QTabWidget, QToolButton,
+    QMessageBox, QAbstractButton, QDoubleSpinBox, QListWidget, QRadioButton, QScrollArea, QSizePolicy, QSpinBox, QStyle, QStyleOptionSpinBox, QToolButton,
     QVBoxLayout, QWidget,
 )
 
+from control_settings import CONTROLS, MERGED, PAGES as CONTROL_PAGES, add_page_controls
 from installer_choices import COLORS, GLASS_PRESETS, defaults, validate
 from localization import effective_language
 from window_controls import button_svg
@@ -110,8 +111,9 @@ SECTIONS = {
 SETTINGS_PAGES = {
     "general": ("General", "settings", ()),
     **SECTIONS,
+    **CONTROL_PAGES,
 }
-SECTION_ALIASES = {"appearance": "theme", "acrylic_glass": "theme", "weather_panel": "widgets", "desktop_widget": "widgets"}
+SECTION_ALIASES = {**MERGED, "appearance": "theme", "acrylic_glass": "theme", "weather_panel": "widgets", "desktop_widget": "widgets"}
 PANEL_SECTIONS = {panel: section for section, (_, _, panels) in SUMMARY_SECTIONS.items() for panel in panels}
 PANEL_STEPS = {panel: step for step, (_, panels) in INSTALL_SECTIONS.items() for panel in panels}
 
@@ -275,6 +277,15 @@ def add_surface_shadow(widget, *, radius, offset, opacity):
     shadow.setOffset(0, offset)
     shadow.setColor(QColor(0, 0, 0, opacity))
     widget.setGraphicsEffect(shadow)
+
+
+def section_heading(parent, text):
+    label = QLabel(text, parent)
+    label.setWordWrap(True)
+    label.setTextFormat(Qt.TextFormat.PlainText)
+    label.setFont(relative_font(parent, .88, QFont.Weight.DemiBold))
+    label.setContentsMargins(4, 8, 0, 0)
+    return label
 
 
 class ColorSwatch(QPushButton):
@@ -632,7 +643,8 @@ class SettingsSearch(QLineEdit):
     def __init__(self):
         super().__init__()
         self.setObjectName("settingsSearch")
-        self.setTextMargins(19, 0, 0, 0)
+        self.setMinimumHeight(34)
+        self.setTextMargins(23, 0, 0, 0)
         glyph = QPixmap()
         glyph.loadFromData(b'<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 16 16">'
                            b'<circle cx="8" cy="8" r="6" fill="#818b97"/>'
@@ -657,8 +669,8 @@ class SettingsSearch(QLineEdit):
         painter.setPen(QPen(self.palette().placeholderText().color(), 1.25,
                             Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
         y = self.height() / 2 - 1
-        painter.drawEllipse(QPointF(12, y), 3.5, 3.5)
-        painter.drawLine(QPointF(14.5, y + 2.5), QPointF(17, y + 5))
+        painter.drawEllipse(QPointF(14, y), 3.5, 3.5)
+        painter.drawLine(QPointF(16.5, y + 2.5), QPointF(19, y + 5))
 
 
 def finder_window_size():
@@ -1164,6 +1176,19 @@ class WallpaperStrip(QScrollArea):
         self.viewport().setAutoFillBackground(False)
         self.horizontalScrollBar().setSingleStep(36)
 
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self.horizontalScrollBarPolicy() != Qt.ScrollBarPolicy.ScrollBarAlwaysOff or not self.widget():
+            return
+        grid = self.widget().layout().itemAt(0).layout()
+        gap = grid.horizontalSpacing()
+        width = max(166, (self.viewport().width() - gap * (self.columns - 1)) // self.columns)
+        for index in range(grid.count()):
+            card = grid.itemAt(index).widget()
+            if card.width() != width:
+                card.setFixedWidth(width)
+        self.setFixedHeight(6 + round((width - 6) * 96 / 170))
+
     def wheelEvent(self, event):
         pixels = event.pixelDelta()
         angle = event.angleDelta()
@@ -1459,11 +1484,36 @@ class InstallerWindow(OpaqueSurface):
         self.search.setFont(relative_font(self))
         self.search.textChanged.connect(self.filter_settings)
         self.search.returnPressed.connect(self.open_search_result)
+        sidebar.addSpacing(4)
         sidebar.addWidget(self.search)
-        sidebar.addSpacing(8)
+        sidebar.addSpacing(12)
         self.section_list = QVBoxLayout()
         self.section_list.setSpacing(3)
-        sidebar.addLayout(self.section_list)
+        section_scroll = QScrollArea()
+        section_scroll.setWidgetResizable(True)
+        section_scroll.setFrameShape(QFrame.Shape.NoFrame)
+        section_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        section_scroll.setStyleSheet("QScrollArea { background: transparent; }")
+        section_scroll.verticalScrollBar().setStyleSheet("""
+            QScrollBar:vertical { background: transparent; width: 10px; margin: 2px 0; border: none; }
+            QScrollBar::handle:vertical {
+                background: rgba(128, 128, 128, 100); margin: 0 3px 0 4px;
+                min-height: 28px; border-radius: 1px;
+            }
+            QScrollBar::handle:vertical:hover, QScrollBar::handle:vertical:pressed {
+                background: rgba(128, 128, 128, 190);
+            }
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; background: transparent; }
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical { background: transparent; }
+        """)
+        links = QWidget()
+        links.setLayout(self.section_list)
+        self.section_list.setContentsMargins(0, 0, 0, 0)
+        self.section_list.setAlignment(Qt.AlignmentFlag.AlignTop)
+        section_scroll.setWidget(links)
+        links.setAutoFillBackground(False)
+        section_scroll.viewport().setAutoFillBackground(False)
+        sidebar.addWidget(section_scroll, 1)
         self.section_buttons = {}
         for page in SETTINGS_PAGES:
             button = QPushButton()
@@ -1481,7 +1531,6 @@ class InstallerWindow(OpaqueSurface):
         self.no_results.setWordWrap(True)
         self.no_results.setContentsMargins(6, 4, 6, 4)
         sidebar.addWidget(self.no_results)
-        sidebar.addStretch()
         self.main_row.addWidget(self.sidebar)
         self.find_shortcut = QShortcut(QKeySequence(QKeySequence.StandardKey.Find), self)
         self.find_shortcut.activated.connect(self.focus_search)
@@ -1683,6 +1732,7 @@ class InstallerWindow(OpaqueSurface):
         for page, button in self.section_buttons.items():
             title, _, panels = SETTINGS_PAGES[page]
             terms = (title, *(PANEL_LABELS[panel] for panel in panels))
+            terms += tuple(CONTROLS[key][0] for key, parent in MERGED.items() if parent == page)
             if page == "general":
                 terms += ("Language", "Restoration", "Reinstall", "Uninstall")
             elif page == "theme":
@@ -2326,17 +2376,6 @@ class InstallerWindow(OpaqueSurface):
             QFrame#settingsOptionPanel {{
                 background: {panel_surface}; border: none; border-radius: 8px;
             }}
-            QTabWidget#widgetPreferenceTabs::pane, QWidget#acrylicGlassEditor QTabWidget::pane {{ border: 0; }}
-            QTabWidget#widgetPreferenceTabs QTabBar::tab, QWidget#acrylicGlassEditor QTabBar::tab {{
-                background: {field_surface}; color: {muted}; padding: 5px 12px;
-                border: 1px solid {separator}; border-radius: 6px;
-                margin-right: 4px;
-            }}
-            QTabWidget#widgetPreferenceTabs QTabBar::tab:selected, QWidget#acrylicGlassEditor QTabBar::tab:selected {{
-                background: {hover}; color: {foreground};
-            }}
-            QTabWidget#widgetPreferenceTabs QTabBar::tab:focus {{ border-color: {self.accent}; }}
-            QWidget#acrylicGlassEditor QTabBar::tab:focus {{ border-color: {self.accent}; }}
             QWidget#acrylicGlassEditor QComboBox, QWidget#acrylicGlassEditor QAbstractSpinBox,
             QWidget#acrylicGlassEditor QPlainTextEdit, QWidget#acrylicGlassEditor QPushButton {{
                 background: {field_surface}; color: {foreground};
@@ -2374,7 +2413,7 @@ class InstallerWindow(OpaqueSurface):
             QToolButton[iconStyleChoice="true"]:focus:!checked {{ border-color: {muted}; }}
             QLineEdit#settingsSearch {{
                 background: {search_surface}; color: {foreground};
-                border: 1px solid transparent; border-radius: 7px; padding: 2px 5px;
+                border: 1px solid transparent; border-radius: 7px; padding: 4px 6px;
             }}
             QLineEdit#settingsSearch:focus {{ background: {search_focus}; border-color: {self.accent}; }}
             QLineEdit#widgetSettingField {{
@@ -2433,7 +2472,11 @@ class InstallerWindow(OpaqueSurface):
         if self.page in titles and titles[self.page]:
             self.body.addWidget(self.label(titles[self.page], heading=True))
             self.body.addSpacing(4 if compact else 10)
-        if self.page in sections:
+        if self.settings_mode and self.page in CONTROL_PAGES:
+            add_page_controls(self, self.page)
+        elif self.page in sections:
+            if self.settings_mode and self.page in MERGED.values():
+                add_page_controls(self, self.page)
             self.page_section(compact=compact)
         else:
             getattr(self, "page_" + self.page)()
@@ -2623,12 +2666,11 @@ class InstallerWindow(OpaqueSurface):
         shortcut.setClearButtonEnabled(True)
         shortcut_row.addWidget(shortcut)
         column.addLayout(shortcut_row)
-        tabs = QTabWidget()
-        tabs.setObjectName("widgetPreferenceTabs")
-        general = WeatherForm(self.t, tabs)
-        tabs.addTab(general, self.t("Weather"))
-        tabs.addTab(weather_about(self.t, tabs), self.t("About"))
-        column.addWidget(tabs)
+        general = WeatherForm(self.t, panel)
+        column.addWidget(section_heading(self, self.t("Weather")))
+        column.addWidget(general)
+        column.addWidget(section_heading(self, self.t("About")))
+        column.addWidget(weather_about(self.t, panel))
         result = self.label("")
         result.setObjectName("detail")
         result.hide()
@@ -2749,20 +2791,13 @@ class InstallerWindow(OpaqueSurface):
         displayed = {}
         typed = TYPED_PREFERENCES.get(kind)
         if typed is not None:
-            if not launcher:
-                tabs = QTabWidget()
-                tabs.setObjectName("widgetPreferenceTabs")
-                tabs.setFont(relative_font(self, .76))
             pages = ({"Appearance": dock_preferences.APPEARANCE, "Behavior": dock_preferences.BEHAVIOR}
                      if kind == "dock" else typed.FORMS)
             for label, labels in pages.items():
-                if launcher:
-                    section_title = self.label(label)
-                    section_title.setFont(relative_font(self, .88, QFont.Weight.DemiBold))
-                    section_title.setContentsMargins(4, 8, 0, 0)
-                    column.addWidget(section_title)
-                tab = self.option_card() if launcher else QWidget()
-                form = QVBoxLayout(tab)
+                column.addWidget(section_heading(self, self.t(label)))
+                section = self.option_card() if launcher else QWidget()
+                column.addWidget(section)
+                form = QVBoxLayout(section)
                 if launcher:
                     form.setContentsMargins(12, 8, 12, 8)
                 else:
@@ -2878,26 +2913,12 @@ class InstallerWindow(OpaqueSurface):
                     icon_preview.addStretch()
                     icon_preview.addWidget(reset_icon)
                     form.insertLayout(0, icon_preview)
-                if launcher:
-                    column.addWidget(tab)
-                else:
-                    form.addStretch()
-                    tabs.addTab(tab, self.t(label))
             if kind == "system_menu":
-                def fit_menu_tab(index, target=tabs):
-                    form = target.widget(index).layout()
-                    target.setFixedHeight(target.tabBar().sizeHint().height() + form.sizeHint().height() + 4)
-
-                def update_custom_icon(*_, target=rows["menuIcon"], selector=controls["menuIconPreset"],
-                                       pages=tabs, fit=fit_menu_tab):
-                    target.setVisible(selector.currentData() == "custom")
-                    fit(pages.currentIndex())
+                def update_custom_icon(*_):
+                    rows["menuIcon"].setVisible(controls["menuIconPreset"].currentData() == "custom")
 
                 controls["menuIconPreset"].currentIndexChanged.connect(update_custom_icon)
-                tabs.currentChanged.connect(fit_menu_tab)
-                fit_menu_tab(tabs.currentIndex())
-            if not launcher:
-                column.addWidget(tabs)
+                update_custom_icon()
         elif kind == "control_center":
             grid = QGridLayout()
             for index, (key, label) in enumerate(CONTROL_CENTER_FIELDS.items()):
@@ -2945,7 +2966,7 @@ class InstallerWindow(OpaqueSurface):
                 shortcut_layout.addLayout(shortcut_row)
                 column.insertWidget(1, shortcut_card)
             elif typed is not None:
-                column.insertLayout(column.indexOf(tabs), shortcut_row)
+                column.insertLayout(1, shortcut_row)
             else:
                 column.addLayout(shortcut_row)
             controls["activationShortcut"] = shortcut
@@ -3146,7 +3167,7 @@ class InstallerWindow(OpaqueSurface):
         layout = self.body
         if self.settings_mode:
             layout = QHBoxLayout()
-            layout.addWidget(self.label("Appearance"), 1)
+            layout.addWidget(self.label("Appearance"), 1, Qt.AlignmentFlag.AlignTop)
             self.body.addLayout(layout)
         group = self.cards("appearance", [
             ("auto", "Auto", "", picture(stem+"light.jpg", 232, 131, stem+"dark.jpg")),
@@ -3182,7 +3203,8 @@ class InstallerWindow(OpaqueSurface):
         )
         for label in (icons_label, appearance_label, color_label):
             label.setFont(relative_font(self, .78, QFont.Weight.Medium))
-        rows.addWidget(icons_label, 0, 0)
+        icons_alignment = Qt.AlignmentFlag.AlignTop if self.settings_mode else Qt.AlignmentFlag(0)
+        rows.addWidget(icons_label, 0, 0, alignment=icons_alignment)
         rows.addWidget(color_label, 3, 0)
 
         group = QButtonGroup(self.content)
@@ -3294,7 +3316,17 @@ class InstallerWindow(OpaqueSurface):
             self.keep_wallpaper.clicked.connect(lambda _: self.select("wallpaper", "keep"))
             self.use_theme_wallpaper.clicked.connect(lambda _: self.select("wallpaper", self.theme_wallpaper))
 
-        self.wallpaper_strip()
+        if self.settings_mode:
+            categories = (
+                ("Editions", ("tahoe", "golden", "exuma", "prism", "iridescence")),
+                ("Nature", ("landscape", "landscape-evening", "beach-dawn", "beach-day", "beach-night")),
+                ("Anime", ("anime-coast", "anime-village", "anime-city", "anime-meadow", "anime-moon")),
+                ("macOS", ("big-sur", "macos", "ventura", "sonoma", "sequoia")),
+            )
+            for category, keys in categories:
+                self.wallpaper_strip(category, keys)
+        else:
+            self.wallpaper_strip()
         row = QHBoxLayout()
         self.custom_wallpaper = self.label("Custom file")
         self.custom_wallpaper.setFont(relative_font(self, .72))
@@ -3308,23 +3340,53 @@ class InstallerWindow(OpaqueSurface):
         self.body.addLayout(row)
         self.refresh_wallpaper_controls()
 
-    def wallpaper_strip(self):
-        columns = (len(WALLPAPER_TITLES) + 1) // 2
+    def wallpaper_strip(self, category=None, keys=None):
+        keys = WALLPAPER_TITLES if keys is None else keys
+        columns = len(keys) if category else (len(keys) + 1) // 2
         strip = WallpaperStrip(columns)
         strip.setAccessibleName(self.t("Wallpaper"))
+        if category:
+            strip.setAccessibleName(self.t(category))
+            strip.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+            header = QHBoxLayout()
+            title = self.label(category)
+            title.setFont(relative_font(self, .88, QFont.Weight.DemiBold))
+            header.addWidget(title)
+            header.addStretch()
+            bar = strip.horizontalScrollBar()
+            for direction, action in ((-1, "Back"), (1, "Next")):
+                button = HistoryButton(direction)
+                button.setAccessibleName(f"{title.text()} · {self.t(action)}")
+                button.setToolTip(button.accessibleName())
+                button.clicked.connect(lambda _, step=direction: bar.setValue(
+                    bar.value() + step * max(166, strip.viewport().width() // 180 * 180)))
+                def update_navigation(*_, button=button, direction=direction):
+                    button.setVisible(bar.maximum() > bar.minimum())
+                    button.setEnabled(bar.value() > bar.minimum() if direction < 0 else bar.value() < bar.maximum())
+                bar.rangeChanged.connect(update_navigation)
+                bar.valueChanged.connect(update_navigation)
+                update_navigation()
+                header.addWidget(button)
+            self.body.addLayout(header)
         content = QWidget()
         content.setObjectName("wallpaperStripContent")
         layout = QVBoxLayout(content)
         layout.setContentsMargins(0, 0, 0, 0)
+        if category:
+            layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         items = []
-        for key, label in WALLPAPER_TITLES.items():
-            preview = picture(f"{key}.jpg", 170, 96, f"{key}-dark.jpg", cover=True)
+        for key in keys:
+            label = WALLPAPER_TITLES[key]
+            size = (340, 192) if category else (170, 96)
+            preview = picture(f"{key}.jpg", *size, f"{key}-dark.jpg", cover=True)
             items.append((key, label, "", preview))
         group = self.cards("wallpaper", items, columns=columns, compact=True, layout=layout, fixed_width=166)
         strip.setWidget(content)
         content.setAutoFillBackground(False)
-        strip.setFixedHeight(layout.sizeHint().height() + strip.horizontalScrollBar().sizeHint().height())
+        strip.setFixedHeight(layout.sizeHint().height() + (0 if category else strip.horizontalScrollBar().sizeHint().height()))
         for card in group.buttons():
+            if category:
+                card.setToolTip(card.accessibleName())
             card.installEventFilter(strip)
         selected = group.checkedButton()
         if selected:

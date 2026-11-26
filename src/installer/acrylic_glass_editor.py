@@ -11,11 +11,11 @@ from PyQt6.QtGui import QColor, QFont
 from PyQt6.QtWidgets import (
     QCheckBox, QColorDialog, QComboBox, QDialogButtonBox, QDoubleSpinBox, QFormLayout,
     QGridLayout, QGroupBox, QHBoxLayout, QLabel, QMenu, QPlainTextEdit, QPushButton,
-    QRadioButton, QSpinBox, QTabWidget, QVBoxLayout, QWidget, QWidgetAction,
+    QRadioButton, QSlider, QSpinBox, QStyle, QStyleOptionSlider, QTabWidget, QVBoxLayout, QWidget, QWidgetAction,
 )
 
 from accent_colors import COLORS
-from wizard_window import ColorSwatch, GlassButton, GlassComboBox, GlassDoubleSpinBox, GlassSpinBox, SettingsSwitch, relative_font
+from wizard_window import ColorSwatch, GlassButton, GlassComboBox, SettingsSwitch, relative_font
 
 
 @cache
@@ -74,6 +74,26 @@ class GradientSwatch(ColorSwatch):
             self.editor.refresh()
 
 
+class MaterialSlider(QSlider):
+    """A track click picks a value and starts a normal Qt drag."""
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            option = QStyleOptionSlider()
+            self.initStyleOption(option)
+            style = self.style()
+            handle = style.subControlRect(QStyle.ComplexControl.CC_Slider, option,
+                                          QStyle.SubControl.SC_SliderHandle, self)
+            if not handle.contains(event.position().toPoint()):
+                groove = style.subControlRect(QStyle.ComplexControl.CC_Slider, option,
+                                              QStyle.SubControl.SC_SliderGroove, self)
+                pos = round(event.position().x()) - groove.left() - handle.width() // 2
+                self.setValue(QStyle.sliderValueFromPosition(
+                    self.minimum(), self.maximum(), pos, groove.width() - handle.width(),
+                    option.upsideDown))
+        super().mousePressEvent(event)
+
+
 class EmbeddedEditor(QWidget):
     def __init__(self, host, attach):
         super().__init__(host)
@@ -87,30 +107,23 @@ class EmbeddedEditor(QWidget):
         self.buttons = self.module.findChild(QDialogButtonBox, "glassEditorButtons")
         self.apply_button = self.buttons.button(QDialogButtonBox.StandardButton.Apply)
         self.bindings = []
-        self.pages = []
         self.body = QVBoxLayout(self)
         self.body.setContentsMargins(0, 0, 0, 0)
         self.body.setSpacing(7)
         tabs = self.module.findChild(QTabWidget, "settingsTabs")
-        section = GlassComboBox()
-        section.setObjectName("glassCategory")
-        for index in range(tabs.count()):
-            section.addItem(tabs.tabText(index))
-        self.add_row(self.card(self.body), host.t("Options"), section)
         groups = (("presetGroup", "surfaceGroup", "gradientGroup"), ("opticsGroup",),
                   ("groupCornerRadius",), ("groupForceBlurList", "groupMatchMode"))
         for index, group_names in enumerate(groups):
-            page = QWidget()
-            column = QVBoxLayout(page)
-            column.setContentsMargins(0, 0, 0, 0)
-            column.setSpacing(7)
+            title = host.label(tabs.tabText(index), heading=True)
+            title.setContentsMargins(4, 10, 0, 0)
+            self.body.addWidget(title)
             for name in group_names:
                 group = self.module.findChild(QGroupBox, name)
                 heading = host.label(group.title())
                 heading.setFont(relative_font(host, .88, QFont.Weight.DemiBold))
                 heading.setContentsMargins(4, 7, 0, 0)
-                column.addWidget(heading)
-                card = self.card(column)
+                self.body.addWidget(heading)
+                card = self.card(self.body)
                 if name == "gradientGroup":
                     self.gradient(card, group)
                 elif name == "groupMatchMode":
@@ -127,20 +140,12 @@ class EmbeddedEditor(QWidget):
             for control in tabs.widget(index).findChildren(QCheckBox):
                 if not any(group.isAncestorOf(control) for group in tabs.widget(index).findChildren(QGroupBox)):
                     self.add_field(card, control.text(), control)
-            self.pages.append(page)
-            self.body.addWidget(page)
-        section.currentIndexChanged.connect(self.show_page)
-        self.show_page(0)
         actions = QHBoxLayout()
         actions.addStretch()
         for role in (QDialogButtonBox.StandardButton.Reset, QDialogButtonBox.StandardButton.RestoreDefaults):
             self.action(actions, self.buttons.button(role))
         self.body.addLayout(actions)
         self.refresh()
-
-    def show_page(self, selected):
-        for index, page in enumerate(self.pages):
-            page.setVisible(index == selected)
 
     def card(self, column):
         frame = self.host.option_card()
@@ -156,7 +161,7 @@ class EmbeddedEditor(QWidget):
         label.setBuddy(field)
         row.addWidget(label, 1)
         row.addWidget(field)
-        field.setAccessibleName(label.text())
+        (field.focusProxy() or field).setAccessibleName(label.text())
         column.addLayout(row)
 
     def action(self, row, original):
@@ -238,15 +243,7 @@ class EmbeddedEditor(QWidget):
             control.activated.connect(activate)
             sync = lambda: control.setCurrentIndex(field.currentIndex())
         elif isinstance(field, (QSpinBox, QDoubleSpinBox)):
-            control = GlassDoubleSpinBox() if isinstance(field, QDoubleSpinBox) else GlassSpinBox()
-            if isinstance(field, QDoubleSpinBox):
-                control.setDecimals(field.decimals())
-            control.setRange(field.minimum(), field.maximum())
-            control.setSingleStep(field.singleStep())
-            control.setSuffix(field.suffix())
-            control.setFixedWidth(100)
-            control.valueChanged.connect(field.setValue)
-            sync = lambda: control.setValue(field.value())
+            return self.number_slider(field)
         elif isinstance(field, QPlainTextEdit):
             control = QPlainTextEdit()
             control.setPlaceholderText(field.placeholderText())
@@ -271,6 +268,44 @@ class EmbeddedEditor(QWidget):
             signal = control.toggled if isinstance(control, SettingsSwitch) else control.activated
             signal.connect(self.refresh)
         return control
+
+    def number_slider(self, field):
+        container = QWidget()
+        row = QHBoxLayout(container)
+        row.setContentsMargins(0, 0, 0, 0)
+        slider = MaterialSlider(Qt.Orientation.Horizontal)
+        slider.setObjectName("glass-" + field.objectName().removeprefix("kcfg_"))
+        slider.setFixedSize(124, 22)
+        slider.setStyleSheet("""
+            QSlider::groove:horizontal { height: 4px; border-radius: 2px; background: palette(mid); }
+            QSlider::sub-page:horizontal { background: palette(window-text); border-radius: 2px; }
+            QSlider::handle:horizontal { width: 16px; margin: -4px 0; border-radius: 6px;
+                                         background: palette(window-text); }
+        """)
+        decimals = field.decimals() if isinstance(field, QDoubleSpinBox) else 0
+        scale = 10 ** decimals
+        slider.setRange(round(field.minimum() * scale), round(field.maximum() * scale))
+        slider.setSingleStep(round(field.singleStep() * scale))
+        slider.setPageStep(max(slider.singleStep(), (slider.maximum() - slider.minimum()) // 10))
+        readout = QLabel()
+        readout.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        maximum_text = field.locale().toString(float(field.maximum()), "f", decimals) + field.suffix()
+        readout.setMinimumWidth(readout.fontMetrics().horizontalAdvance(maximum_text))
+        row.addWidget(slider)
+        row.addWidget(readout)
+        container.setFocusProxy(slider)
+        container.setToolTip(field.toolTip())
+        slider.setAccessibleName(field.accessibleName())
+        def sync():
+            with QSignalBlocker(slider):
+                slider.setValue(round(field.value() * scale))
+            readout.setText(field.text())
+            slider.setAccessibleDescription(field.text())
+            container.setEnabled(field.isEnabled())
+        slider.valueChanged.connect(lambda value: field.setValue(value / scale if decimals else value))
+        field.valueChanged.connect(sync)
+        self.bindings.append(sync)
+        return container
 
     def refresh(self, *_):
         for update in self.bindings:
