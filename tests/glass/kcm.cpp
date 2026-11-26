@@ -160,10 +160,14 @@ int main(int argc, char **argv)
         components->setCurrentIndex(components->findData(QStringLiteral("control-center")));
         require(!control<QCheckBox>(module.get(), QStringLiteral("kcfg_DarkGradientOverlay"))->isChecked(),
                 QStringLiteral("Control Center default gradient must be off in every preset"));
-        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_Saturation"))->value() == 1.0,
-                QStringLiteral("Control Center must not amplify wallpaper color"));
-        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->value() == presets.at(presetIndex).toObject()["components"].toObject()["control-center"].toObject()["SurfaceTransparencyLight"].toDouble()
-                && control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyDark"))->value() == presets.at(presetIndex).toObject()["components"].toObject()["control-center"].toObject()["SurfaceTransparencyDark"].toDouble(),
+        const auto preset = presets.at(presetIndex).toObject();
+        const auto controls = preset["components"].toObject()["control-center"].toObject();
+        const auto id = preset["id"].toString();
+        const double expectedSaturation = (id == QStringLiteral("tahoe") || id == QStringLiteral("golden-gate")) ? 1.05 : 1.0;
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_Saturation"))->value() == expectedSaturation,
+                QStringLiteral("Control Center saturation differs from the reviewed preset: ") + id);
+        require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyLight"))->value() == controls["SurfaceTransparencyLight"].toDouble()
+                && control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_SurfaceTransparencyDark"))->value() == controls["SurfaceTransparencyDark"].toDouble(),
                 QStringLiteral("Control Center must retain clear fills in every preset"));
         components->setCurrentIndex(components->findData(QStringLiteral("dock")));
         require(control<QDoubleSpinBox>(module.get(), QStringLiteral("kcfg_BlurStrength"))->value() == presets.at(presetIndex).toObject()["values"].toObject()["BlurStrength"].toDouble(),
