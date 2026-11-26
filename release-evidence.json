@@ -1,31 +1,22 @@
 {
-  "version": "0.85.13",
+  "version": "0.85.14",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Resolve the crontab client for scheduler cleanup during pinned-mode installation on OpenRC and dinit.",
-  "qualified_candidate": "d7ed697fbb774b3e038914fef19a95e14ed31fda",
-  "matrix": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/blob/v0.85.13/docs/installer-safety-plan.md",
+  "scope": "A successful installation restores the maximized ready window. Both edition previews were approved after exercising completion from a minimized wizard in a disposable KDE neon session.",
+  "qualified_candidate": "4858a0d3a1b776ce3cff219ec2f02b02b0db4387",
   "checks": [
     {
-      "command": "577 passed: tests/test_distro_packages.py, tests/test_utils_deps.py, tests/test_openrc_scheduler.py, tests/test_cli.py and the committed component hash regression. The package mapping checks cover all supported distributions.",
+      "command": "pytest tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion (2 passed)",
       "result": "passed"
     },
     {
-      "command": "Artix OpenRC 6.6.5: reproduced the partial v0.85.12 installation without crontab. Applied the candidate to that same checkout. Pacman installed signed cronie before the pinned-mode installer proceeded. Dark and light desktop probes passed.",
-      "result": "passed"
-    },
-    {
-      "command": "Artix OpenRC 6.6.5: ordinary reinstall retained a personal cron entry. The VM rebooted to a distinct kernel boot ID, passed the dark desktop check, uninstalled and passed the restored desktop check. The exact user cron entry remained.",
-      "result": "passed"
-    },
-    {
-      "command": "Staged Golden Gate source matched the three installer source SHA-256 values and component manifest. All 62 selected CLI dependency and scheduler cases passed.",
-      "result": "passed"
-    },
-    {
-      "command": "Ordinary staged Golden Gate install, reinstall and uninstall on the restored Artix 6.6.5 guest. Light desktop and uninstalled probes passed, and the unrelated cron entry remained byte-for-byte identical.",
+      "command": "Disposable KDE neon Plasma VM, simulated successful completion after minimizing the wizard with the fullscreen apply overlay visible. Tahoe and Golden Gate both reported done, maximized, active and no remaining overlay.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The ordinary installer lifecycle was exercised on an installed Artix OpenRC 6.6.5 virtual desktop. Dinit and systemd dependency selection were exercised by automated regressions. The detailed matrix names earlier sources, rendering checks and remaining distro gaps.",
-  "source_sha256": "0f4e88891df3d70d75dcb94b0bf60e0a869e9c6ce9cba42b07c10b1f773d0471"
+  "approved_previews": {
+    "tahoe": "623580a87a2af40331dbfc1625449a9a84191ce38057d84af869b10e4f66f3e1",
+    "golden-gate": "d12f438185fd067c0c392b923f480d5e998b464ba5fe71363fc5f91a662a98bb"
+  },
+  "coverage_limits": "Window behavior at successful completion was exercised using representative installer events.",
+  "source_sha256": "61511daedfd4f992ad7b879533e6874dcde254d97361e04fde6bb2ca7a928061"
 }
