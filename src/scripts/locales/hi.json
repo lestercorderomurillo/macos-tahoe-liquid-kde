@@ -1,4 +1,5 @@
 {
+  "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "KWin चलने के दौरान अपडेट हुआ। इफ़ेक्ट इंस्टॉल करने के लिए लॉग आउट करें, फिर लॉग इन करके इंस्टॉलर दोबारा चलाएँ।",
   "Widgets to install": "इंस्टॉल करने के लिए विजेट",
   "Screen Configuration": "स्क्रीन कॉन्फ़िगरेशन",
   "Preferences": "प्राथमिकताएँ",
@@ -1790,5 +1791,6 @@
   "Version {current} is up to date.": "नवीनतम संस्करण पर ({current})",
   "View logs": "लॉग देखें",
   "Warning": "चेतावनी",
+  "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "अपने पीसी पर इंस्टॉलर चलाने से पहले उसे उसी वितरण और Plasma संस्करण वाली वर्चुअल मशीन में जाँचें।",
   "kded6 service (optional)": "kded6 स्वास्थ्य (मौखिक)"
 }

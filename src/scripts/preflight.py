@@ -250,6 +250,12 @@ def _probe_plasma_version() -> tuple[re.Match[str] | None, str | None]:
             last_error = tr('{label} failed: {exc}', label=label, exc=exc)
             continue
         out = (res.stdout or res.stderr or "").strip()
+        if res.returncode:
+            last_error = tr('{label} failed: {exc}', label=label, exc=out or str(res.returncode))
+            # An execution or loader failure cannot be recovered from a package version.
+            if res.returncode in (126, 127):
+                return None, last_error
+            continue
         if not out:
             last_error = tr('{label} returned nothing', label=label)
             continue
@@ -268,6 +274,8 @@ def _probe_plasma_version() -> tuple[re.Match[str] | None, str | None]:
                 timeout=10,
             )
         except (subprocess.TimeoutExpired, OSError):
+            continue
+        if res.returncode != 0:
             continue
         out = "\n".join(part.strip() for part in (res.stdout, res.stderr) if part).strip()
         if not out:

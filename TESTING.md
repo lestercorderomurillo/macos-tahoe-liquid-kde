@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.9**. The calendar loaded installed event providers, skipped an absent provider and responded to settings changes in an isolated Qt session. [Validation and coverage](release-evidence.json).
+**v0.85.10**. The installer blocked a broken Plasma shell on KDE neon and passed install, reinstall and uninstall on a healthy neon desktop. The broader qualification covered Plasma 6.6–6.8. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

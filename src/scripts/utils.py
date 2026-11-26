@@ -18,7 +18,7 @@ import urllib.request
 from pathlib import Path
 from typing import Iterable, Iterator
 
-from log import fail
+from log import fail, note
 
 
 class CancellationRequested(KeyboardInterrupt):
@@ -693,7 +693,7 @@ def pkg_remove(*pkgs: str) -> bool:
 
 
 def pkg_sync_install(*pkgs: str) -> bool:
-    """Refresh the package db, then install every package in one shot.
+    """Refresh when required by the distro, then install the packages.
     --needed lets the package manager skip what's already current."""
     from distro import (
         UnsupportedDistroError, package_manager_install_cmd,
@@ -708,7 +708,10 @@ def pkg_sync_install(*pkgs: str) -> bool:
         return False
     if sync is not None and not _run_pkg_cmd(sync):
         return False
-    return _run_pkg_cmd(install, *pkgs)
+    installed = _run_pkg_cmd(install, *pkgs)
+    if not installed and install[0] == "pacman":
+        note(tr("If your mirrors no longer have the required package versions, complete a normal system update and retry the installer."))
+    return installed
 
 
 _QDBUS_CACHE: list[str] | None = None

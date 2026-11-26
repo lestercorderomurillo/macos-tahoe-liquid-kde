@@ -312,7 +312,7 @@ Metin rengi arka plana uyum sağlayarak etiketlerin okunaklı kalmasını sağla
 
 ![Başlamak](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-Kurulucu indir ve aç:
+**Yükleyiciyi bilgisayarınızda çalıştırmadan önce aynı dağıtımı ve Plasma sürümünü kullanan bir sanal makinede deneyin.**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

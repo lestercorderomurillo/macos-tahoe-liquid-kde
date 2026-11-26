@@ -53,7 +53,7 @@ def test_artix_without_arch_id_like_resolves_packages(tmp_path, monkeypatch, id_
     assert distro.package_manager_install_cmd() == [
         "pacman", "-S", "--noconfirm", "--needed",
     ]
-    assert distro.package_manager_sync_cmd() == ["pacman", "-Sy", "--noconfirm"]
+    assert distro.package_manager_sync_cmd() is None
     for cmd, fallbacks in _declared_dependency_tokens().items():
         fallback, = fallbacks
         assert distro.package_for(cmd, fallback) == distro._PACKAGE_MAP.get(
@@ -1005,9 +1005,9 @@ def test_vulkan_headers_package_per_distro(
     ("nobara",              ("fedora",),   ["dnf", "install", "-y"]),
     ("rhel",                (),            ["dnf", "install", "-y"]),
     ("opensuse-tumbleweed", ("opensuse",), ["zypper", "--non-interactive", "install", "--no-recommends"]),
-    ("debian",              (),            ["apt-get", "install", "-y", "--no-install-recommends"]),
-    ("ubuntu",              (),            ["apt-get", "install", "-y", "--no-install-recommends"]),
-    ("neon",                ("ubuntu", "debian"), ["apt-get", "install", "-y", "--no-install-recommends"]),
+    ("debian",              (),            ["apt-get", "install", "-y", "--no-install-recommends", "--no-remove"]),
+    ("ubuntu",              (),            ["apt-get", "install", "-y", "--no-install-recommends", "--no-remove"]),
+    ("neon",                ("ubuntu", "debian"), ["apt-get", "install", "-y", "--no-install-recommends", "--no-remove"]),
 ])
 def test_install_cmd_for_supported_families(monkeypatch, distro_id, id_like, expected):
     _force_distro(monkeypatch, distro_id, id_like)
@@ -1040,12 +1040,10 @@ def test_install_cmd_is_always_non_interactive(monkeypatch, distro_id, id_like):
         f"flag {flag!r} — it would re-prompt [Y/n] mid-install")
 
 
-# Sync refreshes the db before install, else a stale db 404s when mirrors
-# rotate past the version it knows. Arch needs -Sy; dnf/zypper refresh on
-# install, so their sync is None.
+# APT refreshes metadata separately. Arch must preserve its current database.
 @pytest.mark.parametrize("distro_id, id_like, expected", [
-    ("arch",                (),            ["pacman", "-Sy", "--noconfirm"]),
-    ("cachyos",             ("arch",),     ["pacman", "-Sy", "--noconfirm"]),
+    ("arch",                (),            None),
+    ("cachyos",             ("arch",),     None),
     ("fedora",              (),            None),
     ("opensuse-tumbleweed", ("opensuse",), None),
     ("debian",              (),            ["apt-get", "update"]),

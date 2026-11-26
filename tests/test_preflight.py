@@ -6,6 +6,7 @@ the layout JS, the metadata IDs, or the install destinations gets
 caught here before it ships."""
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -407,6 +408,20 @@ def test_plasma_version_accepts_6_6(monkeypatch):
         ),
     )
     assert preflight._check_plasma_version() is True
+
+
+@pytest.mark.parametrize("status", [126, 127])
+def test_plasma_version_rejects_unrunnable_shell(monkeypatch, status):
+    monkeypatch.setattr(preflight.shutil, "which", lambda cmd: f"/usr/bin/{cmd}")
+
+    def probe(command, **kwargs):
+        assert command == ["plasmashell", "--version"]
+        return subprocess.CompletedProcess(
+            command, status, "", "error while loading shared libraries: libQt6Core.so.6.7"
+        )
+
+    monkeypatch.setattr(preflight, "run_user", probe)
+    assert not preflight._check_plasma_version()
 
 
 def test_plasma_version_accepts_future_majors(monkeypatch):

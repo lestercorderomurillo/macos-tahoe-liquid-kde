@@ -1,4 +1,5 @@
 {
+  "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "실행 중인 KWin이 업데이트되었습니다. 효과를 설치하려면 로그아웃한 뒤 다시 로그인하고 설치 프로그램을 다시 실행하세요.",
   "Widgets to install": "설치할 위젯",
   "Screen Configuration": "화면 설정",
   "Preferences": "환경 설정",
@@ -1790,5 +1791,6 @@
   "Version {current} is up to date.": "최신 버전 ({current})",
   "View logs": "로그 보기",
   "Warning": "경고",
+  "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "PC에서 설치 프로그램을 실행하기 전에 같은 배포판과 Plasma 버전을 사용하는 가상 머신에서 먼저 테스트하세요.",
   "kded6 service (optional)": "kded6 건강 (무연)"
 }

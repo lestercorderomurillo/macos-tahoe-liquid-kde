@@ -73,6 +73,14 @@ def test_native_globalmenu_recovers_across_focus_and_service_changes(repo, tmp_p
         (applications / (desktop + ".desktop")).write_text(
             f"[Desktop Entry]\nType=Application\nName={command}\nExec={executable} %U\nMimeType=inode/directory;\n"
         )
+    # Index the private desktop entries even when the distribution uses a
+    # prefixed applications menu outside this test's XDG_CONFIG_DIRS.
+    menus = tmp_path / "system-config" / "menus"
+    menus.mkdir(parents=True)
+    (menus / "applications.menu").write_text(
+        "<Menu><Name>Applications</Name><DefaultAppDirs/><Include><All/></Include></Menu>"
+    )
+    env["XDG_MENU_PREFIX"] = ""
     env["PATH"] = str(programs) + os.pathsep + env["PATH"]
     env["MTTKDE_FINDER_LAUNCH_LOG"] = str(tmp_path / "finder-launch.log")
     read_fd, write_fd = os.pipe()

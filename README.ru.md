@@ -309,7 +309,7 @@
 
 ![Начало работы](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-Скачайте и откройте установщик:
+**Прежде чем запускать установщик на своём ПК, проверьте его в виртуальной машине с тем же дистрибутивом и той же версией Plasma.**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

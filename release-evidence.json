@@ -1,17 +1,24 @@
 {
-  "version": "0.85.9",
+  "version": "0.85.10",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Calendar event provider discovery in the shared desktop widget.",
+  "scope": "Installer safety, VM-first guidance, native Plasma compatibility and recovery.",
+  "qualified_candidate": "cb89f3f92bb05bef3f569f2cc573021f3578b5f1",
+  "matrix": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/blob/v0.85.10/docs/installer-safety-plan.md",
+  "matrix_results_sha256": "8c609c9f72ebc765215a13cefcb552e331c29fafddd99dabfba2ca0632d6661c",
   "checks": [
     {
-      "command": "Qt 6 offscreen execution of the staged calendar EventPluginsManager with pimevents absent. Requested default, changed and empty selections produced holidaysevents, astronomicalevents and an empty list respectively.",
+      "command": "Prepared neon 6.8.1 VM, candidate cb89f3f9: preflight, install, desktop probe, ordinary reinstall, desktop probe and uninstall. On neon 6.7.5 the patched preflight rejected an unloadable shell. After native library repair the guest passed install, light/dark rendering, reboot and uninstall.",
       "result": "passed"
     },
     {
-      "command": "python3 -m pytest tests/test_desktop_widgets.py tests/test_component_cache.py::test_committed_component_hashes_match_sources (9 passed)",
+      "command": "Final integrated Tahoe tree: python3 -m pytest tests/test_preflight.py tests/test_component_cache.py::test_committed_component_hashes_match_sources tests/test_cli.py tests/test_distro_packages.py tests/test_utils_deps.py (567 passed).",
+      "result": "passed"
+    },
+    {
+      "command": "Golden Gate ./install --prepare: checked the wizard and preflight sources against Tahoe, then ran tests/test_preflight.py and tests/test_desktop_widgets.py in the staged edition (57 passed).",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Runtime check used installed Plasma calendar plugins on one distribution. PIM Events was absent. No full desktop lifecycle rerun for this widget-only fix.",
-  "source_sha256": "1fcd2ebe0643ebbe80c8b4b51eeb8f0e977838224a172901b87007ab86602f5f"
+  "coverage_limits": "The matrix contains 21 full lifecycle runs across 12 distributions on the identified candidate revisions. Native SDK checks, targeted reinstalls and NixOS checks have separate evidence. Historical package gaps and mixed Artix SDK inputs are documented. The integrated v0.85.10 tree retains the separately released v0.85.9 calendar change.",
+  "source_sha256": "8ed8bedc4105cfe5fe63e127bd2eac75a41d07b8a5ed4f2fedab28ee449733d0"
 }

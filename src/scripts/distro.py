@@ -1402,9 +1402,9 @@ _PACKAGE_MANAGER_INSTALL: dict[str, list[str]] = {
     # Root, NON-INTERACTIVE — every entry carries its assume-yes flag.
     "arch":     ["pacman", "-S", "--noconfirm", "--needed"],
     # Nautilus recommends a GNOME session and display manager on Debian.
-    # Install declared dependencies without replacing the user's KDE login.
-    "debian":   ["apt-get", "install", "-y", "--no-install-recommends"],
-    "ubuntu":   ["apt-get", "install", "-y", "--no-install-recommends"],
+    # Skip recommendations and abort if a dependency would remove installed packages.
+    "debian":   ["apt-get", "install", "-y", "--no-install-recommends", "--no-remove"],
+    "ubuntu":   ["apt-get", "install", "-y", "--no-install-recommends", "--no-remove"],
     "fedora":   ["dnf", "install", "-y"],
     "rhel":     ["dnf", "install", "-y"],
     "centos":   ["dnf", "install", "-y"],
@@ -1424,10 +1424,10 @@ _PACKAGE_MANAGER_REMOVE: dict[str, list[str]] = {
     "opensuse": ["zypper", "--non-interactive", "remove"],
 }
 
-# Sync the db first or a stale db 404s on rotated mirrors. None = the
-# install command refreshes on its own.
+# APT refreshes separately. Keep the existing pacman database to avoid
+# pulling newer libraries into a partially upgraded system.
 _PACKAGE_MANAGER_SYNC: dict[str, list[str] | None] = {
-    "arch":     ["pacman", "-Sy", "--noconfirm"],
+    "arch":     None,
     "debian":   ["apt-get", "update"],
     "ubuntu":   ["apt-get", "update"],
     "fedora":   None,
@@ -1445,8 +1445,7 @@ def _reject_retired_distro() -> None:
 
 
 def package_manager_sync_cmd() -> list[str] | None:
-    """Db-refresh command for this distro, or None if install refreshes
-    on its own. Raises UnsupportedDistroError like the install variant."""
+    """Db-refresh command for this distro, or None to skip a separate refresh. Raises UnsupportedDistroError like the install variant."""
     _reject_retired_distro()
     distro = current_distro()
     for name in (distro, *_compatibility_parents()):

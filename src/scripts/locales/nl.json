@@ -1,4 +1,5 @@
 {
+  "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "KWin is tijdens het gebruik bijgewerkt. Meld je af en weer aan en voer het installatieprogramma opnieuw uit om de effecten te installeren.",
   "Widgets to install": "Te installeren widgets",
   "Screen Configuration": "Schermconfiguratie",
   "Preferences": "Voorkeuren",
@@ -1790,5 +1791,6 @@
   "Version {current} is up to date.": "Op de laatste versie ({current})",
   "View logs": "Logboek tonen",
   "Warning": "Waarschuwing",
+  "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "Test het installatieprogramma eerst in een virtuele machine met dezelfde distributie en Plasma-versie voordat je het op je pc uitvoert.",
   "kded6 service (optional)": "kded6 gezondheid (zacht)"
 }

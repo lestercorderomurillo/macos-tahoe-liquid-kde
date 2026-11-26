@@ -193,18 +193,27 @@ def test_pkg_install_fails_gracefully_on_unsupported_distro(monkeypatch):
     assert utils.pkg_install("cmake") is False
 
 
-def test_pkg_sync_install_syncs_then_installs(monkeypatch, _record_run):
+def test_arch_missing_packages_use_existing_database(monkeypatch, _record_run):
     import distro
-    monkeypatch.setattr(distro, "package_manager_sync_cmd",
-                        lambda: ["pacman", "-Sy", "--noconfirm"])
-    monkeypatch.setattr(distro, "package_manager_install_cmd",
-                        lambda: ["pacman", "-S", "--noconfirm", "--needed"])
+    monkeypatch.setattr(distro, "current_distro", lambda: "arch")
+    monkeypatch.setattr(distro, "distro_id_like", lambda: ())
 
-    assert utils.pkg_sync_install("vulkan-headers", "cmake") is True
-    assert len(_record_run) == 2
-    assert _record_run[0][0] == ["/usr/bin/pacman", "-Sy", "--noconfirm"]
-    assert _record_run[1][0] == ["/usr/bin/pacman", "-S", "--noconfirm", "--needed",
-                                 "vulkan-headers", "cmake"]
+    assert utils.pkg_sync_install("vulkan-headers", "cmake")
+    assert [argv for argv, _ in _record_run] == [
+        ["/usr/bin/pacman", "-S", "--noconfirm", "--needed", "vulkan-headers", "cmake"]
+    ]
+
+
+def test_arch_transaction_failure_stops_with_recovery_hint(monkeypatch):
+    import distro
+    monkeypatch.setattr(distro, "current_distro", lambda: "arch")
+    monkeypatch.setattr(distro, "distro_id_like", lambda: ())
+    monkeypatch.setattr(utils, "_run_pkg_cmd", lambda *args: False)
+    messages = []
+    monkeypatch.setattr(utils, "note", messages.append)
+
+    assert not utils.pkg_sync_install("cmake")
+    assert any("system update" in message for message in messages)
 
 
 def test_pkg_sync_install_does_not_install_when_sync_fails(monkeypatch):

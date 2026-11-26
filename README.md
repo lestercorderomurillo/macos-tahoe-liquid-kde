@@ -312,7 +312,7 @@ Text adjusts to the background so labels stay readable.
 
 ![Getting started](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-Download and open the installer:
+**Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

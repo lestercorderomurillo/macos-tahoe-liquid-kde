@@ -123,6 +123,25 @@ def test_existing_install_detects_current_state_marker(
     assert cli_module._theme_is_already_installed() is True
 
 
+def test_reinstall_after_uninstall_preserves_wallpaper_history_without_marking_layout_installed(
+        cli_module, monkeypatch, tmp_path):
+    from state import state_dir
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+    monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "data"))
+    monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
+    state_dir().mkdir(parents=True)
+    history = state_dir() / "wallpapers.json"
+    history.write_text('{"version": 3, "initialized": true}')
+    assert cli_module._theme_is_already_installed()
+    (state_dir() / "last-run.json").write_text(
+        '{"script":"uninstall","status":"completed","exit_code":0}')
+    assert not cli_module._theme_is_already_installed()
+    assert history.exists()
+    (state_dir() / "layout-installed").touch()
+    assert cli_module._theme_is_already_installed()
+
+
 def test_existing_install_detects_legacy_applet_without_state(
         cli_module, monkeypatch, tmp_path):
     home = tmp_path / "home"

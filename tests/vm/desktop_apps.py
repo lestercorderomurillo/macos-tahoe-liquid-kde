@@ -73,7 +73,7 @@ class Marionette:
 def prepare():
     # A previous qualification ends with uninstall. Its still-running apps
     # retain the removed style providers; start fresh after the next install.
-    for name in ('firefox', 'firefox-esr', 'nautilus', 'dolphin', 'konsole'):
+    for name in ('firefox', 'firefox-esr', 'firefox-bin', 'nautilus', 'dolphin', 'konsole'):
         subprocess.run(['pkill', '-u', str(os.getuid()), '-x', name], check=False)
     time.sleep(2)
     STATE.mkdir(parents=True, exist_ok=True)
@@ -152,6 +152,8 @@ def exercise(mode):
     from release_capture_guest import windows
     from screenshot_checks import wait_for_session
     restore_desktop_session_env()
+    # Wayland clients need an active output to acknowledge their new frame size.
+    subprocess.run(['kscreen-doctor', '--dpms', 'on'], check=True)
     wait_for_session(mode)
     for binary in ('firefox', 'nautilus', 'dolphin', 'konsole'):
         if not shutil.which(binary):
@@ -220,7 +222,7 @@ def exercise(mode):
         if not any(marker in value for value in classes):
             raise RuntimeError(f'No visible {marker} window: {classes}')
     processes = {}
-    for name, pattern in [('firefox', 'firefox|firefox-esr'), ('nautilus', 'nautilus'), ('dolphin', 'dolphin'), ('konsole', 'konsole')]:
+    for name, pattern in [('firefox', 'firefox|firefox-esr|firefox-bin'), ('nautilus', 'nautilus'), ('dolphin', 'dolphin'), ('konsole', 'konsole')]:
         processes[name] = subprocess.check_output(['pgrep', '-u', str(os.getuid()), '-x', pattern], text=True).split()
     return {'mode': mode, 'status': 'pass', 'firefox': observation, 'processes': processes,
             'browser_version': browser_version, 'windows': observed}
