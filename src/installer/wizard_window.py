@@ -4262,9 +4262,6 @@ class InstallerWindow(OpaqueSurface):
         self.render()
 
     def finished(self, code):
-        reveal_desktop = bool(self.transition_screens) and code == 0
-        if reveal_desktop:
-            self.showMinimized()
         if self.transition_screens and code not in (0, 130) and not self.close_pending:
             self.failed_apply_progress = next(iter(self.transition_screens.values())).bar.value()
             self.release_transition_inhibitor()
@@ -4280,6 +4277,10 @@ class InstallerWindow(OpaqueSurface):
         self.next.setEnabled(True)
         self.page = ("removed" if self.action == "uninstall" else "done") if code == 0 else "error"
         self.render()
+        if self.page == "done":
+            self.showMaximized()
+            self.raise_()
+            self.activateWindow()
 
     def closeEvent(self, event):
         if self.appearance_process is not None:
