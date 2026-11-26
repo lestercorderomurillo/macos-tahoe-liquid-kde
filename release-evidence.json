@@ -1,5 +1,5 @@
 {
-  "version": "0.85.6",
+  "version": "0.85.7",
   "scope": "Protect customized Plasma layouts during install and update, check widget dependencies before reset, and report component and desktop load failures.",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
   "checks": [
@@ -18,6 +18,10 @@
     {
       "command": "Golden Gate full wizard-backend update with reset_layout=false retained both customized panels. Final focused --only --apply-theme --light activation completed on coherent packages.",
       "result": "passed"
+    },
+    {
+      "command": "pytest tests/test_edition_transition.py tests/test_static.py::test_init_specific_user_manager_calls_stay_in_distro_layer: verified both edition transitions and init portability after the v0.85.6 shard failure.",
+      "result": "passed"
     }
   ],
   "vm_panel_snapshot_sha256": {
@@ -30,5 +34,5 @@
   "candidate_patch_sha256": "3e859aa26828e0f9beea69b8d49d68f93be3935556ff3bad46138ee67b425a57",
   "local_evidence_archive_sha256": "5fb68360f7bd6bd675bd4dbb81a01a0122bc73f0a4cada6051efeaca48c082a0",
   "coverage_limits": "Golden Gate supplied the Wayland VM evidence for the shared implementation. The full update preceded the final logging and failure-status changes. The reporter\u2019s Alt+F4 symptom and VMware/X11 were not reproduced. A late runtime error can follow a layout replacement.",
-  "source_sha256": "d3e71f3849e450dbcc6e3e6eba674d2674976a044e9a9225830f779f31b01b39"
+  "source_sha256": "b3cf0e01c6ac3eba3185b20ddeea4100a0d7f7a332a77a25328b61838f81b605"
 }

@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.6**. Install and update preserved two customized panels in a Golden Gate KDE neon Wayland guest. Resets with missing applets or a missing shared QML file stopped before replacement. [Evidence and coverage](release-evidence.json).
+**v0.85.7**. Install and update preserved two customized panels in a Golden Gate KDE neon Wayland guest. Resets with missing applets or a missing shared QML file stopped before replacement. [Evidence and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
