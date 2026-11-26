@@ -37,6 +37,22 @@ APPLICATION_ALIASES = {
 }
 
 
+def _index_symbolic_emotes(index: Path) -> None:
+    original = index.read_text()
+    text = original
+    # Upstream ships symbolic emoticons but indexes only its 22px directory.
+    for prefix in ("emotes", "emotes@2x"):
+        symbolic = f"{prefix}/symbolic"
+        if f"[{symbolic}]" in text:
+            continue
+        text = text.replace(f"{prefix}/22,", f"{prefix}/22,{symbolic},")
+        scale = "Scale=2\n" if prefix.endswith("@2x") else ""
+        text += (f"\n[{symbolic}]\nSize=16\n{scale}Context=Emotes\n"
+                 "MinSize=16\nMaxSize=512\nType=Scalable\n")
+    if text != original:
+        index.write_text(text)
+
+
 def apply_interface_icons(directory: Path) -> None:
     """Adapt extracted themes only; retain canonical sources and notices."""
     directory = directory.resolve()
@@ -45,6 +61,11 @@ def apply_interface_icons(directory: Path) -> None:
         theme = directory / theme_name
         if not theme.is_dir():
             continue
+        index = theme / "index.theme"
+        if (theme / "emotes/symbolic").is_dir() and index.is_file():
+            if not index.resolve().is_relative_to(directory):
+                raise ValueError(f"Theme index escapes staging: {index}")
+            _index_symbolic_emotes(index)
         applications = theme / "apps/scalable"
         for alias, original in APPLICATION_ALIASES.items():
             source, target = applications / original, applications / alias

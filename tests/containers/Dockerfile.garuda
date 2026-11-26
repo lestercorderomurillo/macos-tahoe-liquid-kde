@@ -9,7 +9,7 @@ RUN printf 'NAME="Garuda Linux"\nID=garuda\nID_LIKE=arch\nPRETTY_NAME="Garuda Li
 # Refresh signing keys immediately before the full upgrade.
 RUN pacman -Sy --noconfirm --needed archlinux-keyring && \
     pacman -Syu --noconfirm --needed \
-    python python-pytest git zstd python-pillow python-pyqt6 plasma5support librsvg \
+    python python-pytest git zstd python-pillow python-pyqt6 python-gobject gtk3 gtk4 kvantum xorg-xauth plasma5support librsvg \
     cmake make ccache gcc extra-cmake-modules \
     xorg-server-xvfb dbus ttf-dejavu \
     qt6-base qt6-tools qt6-declarative qt6-svg qt6-wayland \

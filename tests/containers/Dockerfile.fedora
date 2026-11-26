@@ -13,7 +13,7 @@ FROM fedora:latest AS sdk
 #   - libepoxy + libdrm + libX11 + libxcb (acrylic-glass effect)
 # Fetch complete metadata; zchunk range transfers can stall on mirror proxies.
 RUN dnf install -y --setopt=install_weak_deps=False --setopt=zchunk=False \
-        python3 python3-pytest git zstd python3-pillow python3-pyqt6 plasma5support librsvg2-tools \
+        python3 python3-pytest git zstd python3-pillow python3-pyqt6 python3-gobject gtk3 gtk4 kvantum xorg-x11-xauth plasma5support librsvg2-tools \
         cmake make ccache gcc-c++ extra-cmake-modules pkgconf-pkg-config \
         xorg-x11-server-Xvfb dbus-daemon dejavu-sans-fonts \
         qt6-qtbase-devel qt6-qttools-devel qt6-qtdeclarative-devel qt6-qtsvg-devel qt6-qtwayland-devel \

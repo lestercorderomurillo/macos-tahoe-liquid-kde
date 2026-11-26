@@ -8,7 +8,7 @@ RUN gpg --homedir "$(pacman-conf GPGDir)" --auto-key-locate clear,nodefault,wkd 
         --locate-external-keys mtorromeo@archlinux.org && \
     pacman -Sy --noconfirm --needed archlinux-keyring manjaro-keyring && \
     pacman -Syu --noconfirm --needed \
-    python python-pytest git zstd python-pillow python-pyqt6 plasma5support librsvg \
+    python python-pytest git zstd python-pillow python-pyqt6 python-gobject gtk3 gtk4 kvantum xorg-xauth plasma5support librsvg \
     cmake make ccache gcc extra-cmake-modules \
     xorg-server-xvfb dbus ttf-dejavu \
     qt6-base qt6-tools qt6-declarative qt6-svg qt6-wayland \

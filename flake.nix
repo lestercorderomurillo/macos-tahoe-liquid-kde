@@ -40,6 +40,16 @@
             inherit nixpkgs home-manager pkgs;
             modules = { home = self.homeManagerModules.default; system = self.nixosModules.default; };
           };
+          installed-icons = pkgs.runCommand "mac-tahoe-installed-icons" {
+            nativeBuildInputs = [ (pkgs.python3.withPackages (ps: [ ps.pyqt6 ps.pillow ])) ];
+          } ''
+            export HOME="$TMPDIR" XDG_DATA_DIRS="$TMPDIR" XDG_CONFIG_DIRS="$TMPDIR"
+            export QT_QPA_PLATFORM=offscreen QT_QPA_PLATFORMTHEME=generic
+            export QT_PLUGIN_PATH="${pkgs.kdePackages.qtsvg}/${pkgs.kdePackages.qtbase.qtPluginPrefix}:${pkgs.kdePackages.qtbase}/${pkgs.kdePackages.qtbase.qtPluginPrefix}"
+            PYTHONPATH=${./src/scripts} python ${./tests/containers/installed_icons.py} \
+              --theme-root ${packages.theme-assets}/share/icons
+            touch "$out"
+          '';
           installed-artifacts = pkgs.runCommand "mac-tahoe-installed-artifacts" { } ''
             test -s ${packages.global-menu}/${pkgs.kdePackages.qtbase.qtPluginPrefix}/plasma/applets/org.kde.mac.tahoe.liquid.globalmenu.so
             test -s ${packages.task-manager}/${pkgs.kdePackages.qtbase.qtPluginPrefix}/plasma/applets/org.kde.mac.tahoe.liquid.taskmanager.so

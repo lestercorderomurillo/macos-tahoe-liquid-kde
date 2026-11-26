@@ -14,7 +14,7 @@ RUN pacman-key --init && \
     pacman-key --populate archlinux cachyos && \
     pacman -Sy --noconfirm archlinux-keyring cachyos-keyring && \
     pacman -Syu --noconfirm --needed \
-        python python-pytest git zstd python-pillow python-pyqt6 plasma5support librsvg \
+        python python-pytest git zstd python-pillow python-pyqt6 python-gobject gtk3 gtk4 kvantum xorg-xauth plasma5support librsvg \
         cmake make ccache gcc extra-cmake-modules \
         xorg-server-xvfb dbus ttf-dejavu \
     qt6-base qt6-tools qt6-declarative qt6-svg qt6-wayland \

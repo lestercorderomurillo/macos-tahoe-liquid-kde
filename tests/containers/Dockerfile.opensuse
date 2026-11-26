@@ -38,7 +38,7 @@ RUN for i in 1 2 3; do \
     done && \
     zypper --non-interactive --gpg-auto-import-keys dup --no-recommends && \
     zypper --non-interactive install --no-recommends \
-        python3 python3-pytest git zstd python3-Pillow python3-qt6 plasma5support6 rsvg-convert \
+        python3 python3-pytest git zstd python3-Pillow python3-qt6 python3-gobject typelib-1_0-Gtk-3_0 typelib-1_0-Gtk-4_0 kvantum-qt6 xauth plasma5support6 rsvg-convert \
         cmake make ccache gcc-c++ kf6-extra-cmake-modules pkgconf-pkg-config \
         xorg-x11-server-Xvfb dbus-1 dejavu-fonts \
         qt6-base-devel qt6-tools-devel qt6-uitools-devel \

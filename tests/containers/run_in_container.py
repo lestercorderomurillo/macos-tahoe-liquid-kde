@@ -57,6 +57,8 @@ import os
 import shutil
 import subprocess
 import sys
+import tempfile
+import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -105,11 +107,7 @@ def _collect_dep_tokens() -> list[tuple[str, str]]:
     for mod_info in pkgutil.iter_modules(steps_pkg.__path__):
         if mod_info.name.startswith("_"):
             continue
-        try:
-            mod = importlib.import_module(f"steps.{mod_info.name}")
-        except Exception as exc:  # noqa: BLE001 — step modules may have heavy imports
-            print(f"  WARN: cannot import steps.{mod_info.name}: {exc}")
-            continue
+        mod = importlib.import_module(f"steps.{mod_info.name}")
 
         source_path = Path(mod.__file__)
         tree = ast.parse(
@@ -149,33 +147,28 @@ def _collect_dep_tokens() -> list[tuple[str, str]]:
         deps_fn = getattr(mod, "deps", None)
         if deps_fn is None:
             continue
-        try:
-            tokens = deps_fn()
-        except Exception as exc:  # noqa: BLE001
-            print(f"  WARN: steps.{mod_info.name}.deps() raised {exc}")
-            continue
+        tokens = deps_fn()
         for tok in tokens or ():
             if isinstance(tok, tuple) and len(tok) == 2:
                 cmd, arch_pkg = tok
                 if not isinstance(cmd, str) or not isinstance(arch_pkg, str):
-                    print(
-                        f"  WARN: steps.{mod_info.name}.deps() returned "
+                    raise ValueError(
+                        f"steps.{mod_info.name}.deps() returned "
                         f"malformed tuple {tok!r}"
                     )
-                    continue
             elif isinstance(tok, str):
                 cmd, _, arch_pkg = tok.partition(":")
                 arch_pkg = arch_pkg.strip() or cmd
             else:
-                print(
-                    f"  WARN: steps.{mod_info.name}.deps() returned "
+                raise ValueError(
+                    f"steps.{mod_info.name}.deps() returned "
                     f"unsupported token {tok!r}"
                 )
-                continue
             cmd = cmd.strip()
             arch_pkg = arch_pkg.strip()
-            if cmd:
-                remember(cmd, arch_pkg, f"steps.{mod_info.name}.deps()")
+            if not cmd or not arch_pkg:
+                raise ValueError(f"Empty dependency in steps.{mod_info.name}: {tok!r}")
+            remember(cmd, arch_pkg, f"steps.{mod_info.name}.deps()")
 
     # qmake6 is required by path discovery independently of feature
     # selection. Route it through remember() so a compiled step cannot
@@ -293,8 +286,8 @@ def step_package_manager_layer() -> bool:
                 break
     probe = probers.get(d)
     if probe is None:
-        print(f"  SKIP: no repo-probe for distro {distro.current_distro()!r}")
-        return True
+        print(f"  FAIL: no repo-probe for distro {distro.current_distro()!r}")
+        return False
 
     ok = True
     mapped = []
@@ -315,33 +308,7 @@ def step_package_manager_layer() -> bool:
             print(f"     PASS")
             continue
 
-        # Distinguish "package genuinely missing from repo" (true
-        # negative — installer would fail at runtime, so we must FAIL
-        # the test) from "package manager couldn't reach the repo"
-        # (transient network / metadata issue inside the container —
-        # SKIP so flaky upstream repos don't tank CI). The signal is
-        # in stderr text, not just the returncode: zypper returns 106
-        # on metadata-fetch failures, apt returns 100 on similar
-        # network issues, etc. Match by string instead of code so we
-        # don't have to track every PM's exit-code table.
         stderr = (res.stderr or "").strip()
-        transient_markers = (
-            "Failed to retrieve",      # zypper
-            "repository metadata",     # zypper / apt
-            "Could not resolve host",  # curl
-            "Temporary failure",       # apt
-            "404 Not Found",           # dead mirror
-            "Connection timed out",
-            "Cannot initiate the connection",
-            "No more mirrors to try",  # dnf
-            "Errors during downloading metadata",  # dnf
-        )
-        if any(m in stderr for m in transient_markers):
-            print(f"     SKIP: probe returned {res.returncode} but "
-                  f"stderr looks transient (network / metadata)")
-            print(f"           stderr: {stderr[:200]}")
-            continue
-
         print(f"     FAIL: probe returned {res.returncode}")
         print(f"           stderr: {stderr[:200]}")
         ok = False
@@ -431,7 +398,8 @@ def step_cmake_configure() -> bool:
     for label, relpath in _CMAKE_COMPONENTS:
         src = REPO / relpath
         if not (src / "CMakeLists.txt").is_file():
-            print(f"  SKIP: {label} — no CMakeLists.txt at {src}")
+            print(f"  FAIL: {label} — no CMakeLists.txt at {src}")
+            ok_all = False
             continue
         build = REPO / "build" / "container-cmake" / label
         if build.is_dir():
@@ -523,17 +491,17 @@ def step_bundled_kvantum_build() -> bool:
         print(linkage.stdout)
         return False
 
-    kvantum._remove_bundled_engine()
-    leftovers = [path for path in installed if path.exists()]
-    if leftovers:
-        for path in leftovers:
-            print(f"  FAIL: uninstall leftover {path}")
-        return False
-    print(
-        f"  PASS: Kvantum Qt 6 engine v{kvantum.ENGINE_VERSION} "
-        "compiled, linked, installed, and removed"
-    )
     return True
+
+
+def remove_test_engine():
+    from steps import kvantum
+
+    outputs = (kvantum._engine_destination(), kvantum.ENGINE_MARKER, kvantum.ENGINE_LICENSE)
+    kvantum._remove_bundled_engine()
+    leftovers = [str(path) for path in outputs if path.exists()]
+    if leftovers:
+        raise RuntimeError("Kvantum uninstall leftovers: " + ", ".join(leftovers))
 
 
 PLATFORM_TESTS = (
@@ -552,12 +520,26 @@ PLATFORM_TESTS = (
 
 def step_pytest() -> bool:
     print("\n=== pytest ===")
-    res = subprocess.run(
-        ["python3", "-m", "pytest", *PLATFORM_TESTS, "-q", "-rs", "--durations=10", "-x"],
-        check=False, cwd=str(REPO),
-        env=os.environ | {"MTTKDE_REQUIRE_NATIVE_GLOBALMENU": "1"},
-    )
-    return res.returncode == 0
+    import distro
+
+    tests = list(PLATFORM_TESTS)
+    if not os.environ.get("MTTKDE_X11_PLUGIN") and distro.current_distro() != "debian":
+        tests.remove("tests/test_acrylic_glass_x11_smoke.py")
+        print("X11 module load is covered by the Debian X11 SDK leg.", flush=True)
+    with tempfile.TemporaryDirectory() as temp:
+        report = Path(temp) / "results.xml"
+        result = subprocess.run(
+            [sys.executable, "-m", "pytest", *tests, "-q", "-rs", "--durations=10", "-x",
+             f"--junitxml={report}"], cwd=REPO,
+            env=os.environ | {"MTTKDE_REQUIRE_NATIVE_GLOBALMENU": "1"},
+        )
+        if result.returncode:
+            return False
+        cases = ET.parse(report).findall(".//testcase")
+        skipped = [case for case in cases if case.find("skipped") is not None]
+        for case in skipped:
+            print(f"Missing platform coverage: {case.get('classname')}.{case.get('name')}")
+        return bool(cases) and not skipped
 
 
 def main() -> int:
@@ -570,13 +552,29 @@ def main() -> int:
         if not shutil.which(command):
             print(f"FAIL: {command} is required by the test suite")
             return 1
+    target = os.environ.get("MTTKDE_EXPECT_DISTRO")
+    if target:
+        import distro
+        expected = {"arch-kdeunstable": "arch", "opensuse": "opensuse-tumbleweed"}.get(target, target)
+        if distro.current_distro() != expected:
+            print(f"FAIL: {target} expected ID={expected}, found {distro.current_distro()}")
+            return 1
     plugins, qml = step_qmake6_directly()
     layer_ok = step_distro_layer(plugins, qml)
     pkg_ok = step_package_manager_layer()
     preflight_ok = step_preflight_destinations()
     cmake_ok = step_cmake_configure()
-    kvantum_ok = step_bundled_kvantum_build()
-    tests_ok = step_pytest()
+    from steps import kvantum
+    install_engine = kvantum._bundled_engine_required()
+    try:
+        kvantum_ok = step_bundled_kvantum_build()
+        icons_ok = subprocess.run([
+            sys.executable, str(REPO / "tests/containers/installed_icons.py"),
+        ], check=False).returncode == 0
+        tests_ok = step_pytest()
+    finally:
+        if install_engine and kvantum.ENGINE_MARKER.is_file():
+            remove_test_engine()
 
     print("\n=== summary ===")
     print(f"  qmake6 plugins:     {plugins or '(missing)'}")
@@ -586,13 +584,14 @@ def main() -> int:
     print(f"  Preflight paths:    {'PASS' if preflight_ok else 'FAIL'}")
     print(f"  CMake cfg+compile:  {'PASS' if cmake_ok else 'FAIL'}")
     print(f"  Kvantum Qt6 build:  {'PASS' if kvantum_ok else 'FAIL'}")
+    print(f"  Installed icons:    {'PASS' if icons_ok else 'FAIL'}")
     print(f"  Pytest suite:       {'PASS' if tests_ok else 'FAIL'}")
 
     if plugins is None or qml is None:
         print("  → qmake6 not available — install the Qt6 base development package")
         return 1
     if not all((
-        layer_ok, pkg_ok, preflight_ok, cmake_ok, kvantum_ok, tests_ok,
+        layer_ok, pkg_ok, preflight_ok, cmake_ok, kvantum_ok, icons_ok, tests_ok,
     )):
         return 1
     return 0

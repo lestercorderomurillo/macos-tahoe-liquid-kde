@@ -95,11 +95,22 @@ jobs:
           name: pytest-${{ matrix.shard }}
           path: build/ci/*.xml
 
+  artix-icons:
+    runs-on: ubuntu-latest
+    container: artixlinux/artixlinux:base-dinit@sha256:83532660def626d61e016d5f394ac20dfa6567a0f22c36c4fd5f2682ab4c182d
+    steps:
+      - name: Install native Artix icon runtime
+        run: pacman -Syu --noconfirm --needed git python python-pillow python-pyqt6 qt6-svg zstd
+      - uses: actions/checkout@v5
+      - name: Verify the installed icon themes on Artix
+        run: python3 tests/containers/installed_icons.py
+
   # Cross-distro matrix — proves the qmake6-driven path discovery
   # works on every distro the README claims support for. Each leg
   # runs the same container test from tests/containers/, so a regression
   # that breaks one distro can't silently sneak through CI.
   cross-distro:
+    name: cross-distro (${{ matrix.distro }}${{ matrix.sdk_label }})
     permissions:
       contents: read
       packages: write
@@ -126,6 +137,13 @@ jobs:
           # against the next KWin ABI before any release distro ships
           # it, so a 6.6->6.7-style break fails CI here first.
           - arch-kdeunstable
+        include:
+          - distro: endeavouros
+            sdk_label: ', Arch simulation'
+          - distro: garuda
+            sdk_label: ', Arch simulation'
+          - distro: nobara
+            sdk_label: ', Fedora simulation'
     steps:
       - uses: actions/checkout@v5
       - name: Select weekly compiler cache
@@ -148,6 +166,7 @@ jobs:
             -v "$RUNNER_TEMP/ccache:/ccache" \
             -e CMAKE_C_COMPILER_LAUNCHER=ccache \
             -e CMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -e MTTKDE_EXPECT_DISTRO=${{ matrix.distro }} \
             -e CCACHE_DIR=/ccache -e CCACHE_BASEDIR=/repo \
             -e CCACHE_COMPILERCHECK=content \
             -e CCACHE_MAXSIZE=1G \
