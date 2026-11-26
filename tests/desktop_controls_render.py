@@ -68,6 +68,10 @@ def assert_islands():
     assert view.mask().contains(QPoint(42,42)), 'Plasma cleared the control mask'
     assert not view.mask().contains(QPoint(5,5)), 'Transparent margin intercepts input'
     surfaces = [s for s in root.property('surfaces').toVariant() if s.get('width', 0) > 0]
+    # A half-pixel island can prevent KWin from recovering every tile's lens.
+    for surface in surfaces:
+        for key in ('x', 'y'):
+            assert surface[key] == round(surface[key]), (key, surface)
     top = min(s['y'] for s in surfaces)
     first, second = sorted((s for s in surfaces if s['y'] == top), key=lambda s:s['x'])[:2]
     right = first['x'] + first['width']
