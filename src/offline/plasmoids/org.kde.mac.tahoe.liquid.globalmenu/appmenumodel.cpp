@@ -338,7 +338,10 @@ QString preferredFileManager()
     const auto selected = mimeApps.group(QStringLiteral("Default Applications")).readXdgListEntry(mimeType).value(0);
     if (!selected.isEmpty()) return selected;
     const auto service = KApplicationTrader::preferredService(mimeType);
-    return service ? service->storageId() : QString();
+    // Editors can advertise inode/directory to open projects. With no explicit
+    // association, use only a file manager for folder navigation.
+    return service && service->categories().contains(QStringLiteral("FileManager"))
+        ? service->storageId() : QString();
 }
 
 void openFinderLocation(const QUrl &location, bool newWindow = false)
