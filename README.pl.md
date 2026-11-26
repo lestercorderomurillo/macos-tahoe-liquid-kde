@@ -312,7 +312,7 @@ Kolor tekstu dostosowuje się do tła, by etykiety pozostały czytelne.
 
 ![Zaczynam](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-Zabierz i otwórz instalator:
+**Zanim uruchomisz instalator na swoim komputerze, przetestuj go na maszynie wirtualnej z tą samą dystrybucją i wersją Plasmy.**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

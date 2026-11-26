@@ -312,7 +312,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 
 ![시작](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-설치 프로그램을 다운로드하여 열 수 있습니다.
+**PC에서 설치 프로그램을 실행하기 전에 같은 배포판과 Plasma 버전을 사용하는 가상 머신에서 먼저 테스트하세요.**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

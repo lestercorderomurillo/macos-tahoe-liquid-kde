@@ -312,7 +312,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 
 ![शुरू करना](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-इंस्टॉलर डाउनलोड करें और खोलेंः
+**अपने पीसी पर इंस्टॉलर चलाने से पहले उसे उसी वितरण और Plasma संस्करण वाली वर्चुअल मशीन में जाँचें।**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

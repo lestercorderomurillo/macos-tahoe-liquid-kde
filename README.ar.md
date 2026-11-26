@@ -312,7 +312,7 @@
 
 ![البدء](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-تحميل و فتح التركيب:
+**قبل تشغيل برنامج التثبيت على حاسوبك، اختبره في آلة افتراضية تستخدم التوزيعة نفسها وإصدار Plasma نفسه.**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

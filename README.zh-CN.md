@@ -309,7 +309,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ![入门](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-下载并打开安装程序：
+**在自己的电脑上运行安装程序之前，请先在使用相同发行版和 Plasma 版本的虚拟机中测试。**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

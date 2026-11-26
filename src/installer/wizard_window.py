@@ -2560,6 +2560,9 @@ class InstallerWindow(OpaqueSurface):
         self.body.addWidget(self.image(f"logo-{variant}.png", 180, 180))
         title = self.label(self.t("Install") + " " + self.edition, heading=True)
         title.setAlignment(Qt.AlignmentFlag.AlignCenter); self.body.addWidget(title)
+        warning = self.label('Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.')
+        warning.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.body.addWidget(warning)
         if self.update_available:
             text = self.t("Update available:") + " " + self.update_available
             update = QPushButton(text)

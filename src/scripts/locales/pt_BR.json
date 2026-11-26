@@ -1,4 +1,5 @@
 {
+  "KWin was updated while running. Log out, log back in, then run the installer again to install the effects.": "O KWin foi atualizado enquanto estava em execução. Encerre a sessão, entre novamente e execute o instalador outra vez para instalar os efeitos.",
   "Widgets to install": "Widgets a instalar",
   "Screen Configuration": "Configuração da tela",
   "Errors: {count}": "Erros: {count}",
@@ -1790,5 +1791,6 @@
   "installing missing: {value1}": "Instalando dependências ausentes: {value1}",
   "dependency package transaction failed — refusing to continue": "Falha na transação de pacotes de dependências — execução interrompida",
   "Kvantum bundled-source marker installed": "Marcador do código-fonte incluído do Kvantum instalado",
+  "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "Antes de executar o instalador no seu PC, teste-o em uma máquina virtual com a sua distribuição e versão do Plasma.",
   "No initialized Firefox profiles found — run Firefox once, then reinstall": "Nenhum perfil inicializado do Firefox encontrado — execute o Firefox uma vez e reinstale"
 }

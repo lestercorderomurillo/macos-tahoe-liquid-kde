@@ -152,6 +152,8 @@ def exercise(mode):
     from release_capture_guest import windows
     from screenshot_checks import wait_for_session
     restore_desktop_session_env()
+    # Wayland clients need an active output to acknowledge their new frame size.
+    subprocess.run(['kscreen-doctor', '--dpms', 'on'], check=True)
     wait_for_session(mode)
     for binary in ('firefox', 'nautilus', 'dolphin', 'konsole'):
         if not shutil.which(binary):

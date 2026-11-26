@@ -22,6 +22,14 @@ for desktop, name in (('notification-review', 'Notification Review'), ('discord'
     (applications / f'{desktop}.desktop').write_text(
         f'[Desktop Entry]\nType=Application\nName={name}\nExec=true\n')
 
+# Include the fixture's senders in KDE's application index on distributions
+# whose session normally supplies a vendor-prefixed menu.
+menus = Path(os.environ['XDG_CONFIG_HOME']) / 'menus'
+menus.mkdir(parents=True, exist_ok=True)
+(menus / 'applications.menu').write_text(
+    '<Menu><Name>Applications</Name><DefaultAppDirs/><Include><All/></Include></Menu>')
+os.environ['XDG_MENU_PREFIX'] = ''
+
 app = QApplication([])
 engine = QQmlEngine()
 engine.rootContext().setContextProperty('i18n', engine.evaluate('''(function(text) {

@@ -267,9 +267,7 @@ def kwin_plugin_mapping_matches(maps: str, plugin: Path) -> bool | None:
     return all(matches) if matches else None
 
 
-def running_kwin_plugin_matches(plugin: Path) -> bool | None:
-    """Check the running KWin's mappings: Qt keeps a replaced plugin library
-    resident after its effect instance is reloaded. None when unknown."""
+def _session_kwin_pid() -> int | None:
     q = qdbus_cmd()
     if not q:
         return None
@@ -284,6 +282,30 @@ def running_kwin_plugin_matches(plugin: Path) -> bool | None:
         pid = int(result.stdout.strip())
         if pid <= 0:
             return None
+        return pid
+    except (OSError, ValueError, subprocess.TimeoutExpired):
+        return None
+
+
+def kwin_executable_replaced() -> bool:
+    """Detect a package replacement in the compositor serving this desktop."""
+    pid = _session_kwin_pid()
+    if pid is None:
+        return False
+    try:
+        with _as_root():
+            return os.readlink(f"/proc/{pid}/exe").endswith(" (deleted)")
+    except OSError:
+        return False
+
+
+def running_kwin_plugin_matches(plugin: Path) -> bool | None:
+    """Check the running KWin's mappings: Qt keeps a replaced plugin library
+    resident after its effect instance is reloaded. None when unknown."""
+    pid = _session_kwin_pid()
+    if pid is None:
+        return None
+    try:
         # KWin's capabilities can deny same-user access to its mappings.
         with _as_root():
             maps = Path(f"/proc/{pid}/maps").read_text()

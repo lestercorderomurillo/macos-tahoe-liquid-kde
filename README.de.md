@@ -309,7 +309,7 @@ Die Textfarbe passt sich dem Hintergrund an, damit Beschriftungen lesbar bleiben
 
 ![Erste Schritte](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-Installationsprogramm herunterladen und öffnen:
+**Teste das Installationsprogramm zuerst in einer virtuellen Maschine mit deiner Distribution und Plasma-Version, bevor du es auf deinem PC ausführst.**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

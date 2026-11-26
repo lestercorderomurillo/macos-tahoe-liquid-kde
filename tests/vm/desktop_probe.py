@@ -39,8 +39,13 @@ def verify_panels(panels: list[dict], installed: bool) -> None:
         if len(panels) < 2 or not required <= widgets:
             raise RuntimeError(f"Missing themed panels/widgets: {sorted(required - widgets)}")
         docks = [panel for panel in panels if "org.kde.mac.tahoe.liquid.icontasks" in panel["widgets"]]
-        if any(panel["hiding"] != "autohide" for panel in docks):
-            raise RuntimeError("Expected an auto-hiding Dock on a fresh install")
+        # Both edition defaults install an always-visible Dock with windows
+        # going below it. Plasma 6.6 reports this mode as "none" over D-Bus.
+        for dock in docks:
+            mode = run("kreadconfig6", "--file", "plasmashellrc", "--group", "PlasmaViews",
+                       "--group", f"Panel {dock['id']}", "--key", "panelVisibility")
+            if mode != "3" or dock["hiding"] not in ("windowsgobelow", "none"):
+                raise RuntimeError(f"Unexpected fresh Dock visibility: saved={mode}, live={dock['hiding']}")
     elif any("mac.tahoe" in widget or "mac-tahoe" in widget for widget in widgets):
         raise RuntimeError("Uninstall left themed widgets on the desktop")
 

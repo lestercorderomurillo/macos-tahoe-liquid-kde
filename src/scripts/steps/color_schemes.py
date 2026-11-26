@@ -37,7 +37,10 @@ def install() -> None:
 
 def uninstall() -> None:
     n = 0
-    for cs in DEST_DIR.glob("MacTahoeLiquidKde*.colors"):
+    for palette in offline("color-schemes").glob("*.colors"):
+        cs = DEST_DIR / palette.name
+        if not cs.is_file() and not cs.is_symlink():
+            continue
         try:
             cs.unlink()
             ok(tr('{value1} removed', value1=cs.stem))

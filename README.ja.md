@@ -312,7 +312,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 
 ![スタートする](https://img.shields.io/badge/getting-started-3B7B5B?style=for-the-badge&logo=gnubash&logoColor=white)
 
-インストーラをダウンロードして開きます:
+**お使いの PC でインストーラーを実行する前に、同じディストリビューションと Plasma バージョンの仮想マシンでテストしてください。**
 
 ```bash
 git clone --filter=blob:none https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde.git

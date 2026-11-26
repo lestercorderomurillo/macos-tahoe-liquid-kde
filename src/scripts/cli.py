@@ -687,8 +687,17 @@ def _theme_is_already_installed() -> bool:
     home = Path.home()
     from state import state_dir
     data = Path(os.environ.get("XDG_DATA_HOME") or home / ".local/share")
+    # Uninstall retains wallpaper history so a future install can preserve
+    # user choices. That history alone does not make this an active install.
+    if (state_dir() / "wallpapers.json").exists():
+        try:
+            previous = json.loads((state_dir() / "last-run.json").read_text())
+        except (OSError, UnicodeError, ValueError):
+            previous = None
+        if not (isinstance(previous, dict) and previous.get("script") == "uninstall"
+                and previous.get("status") == "completed" and previous.get("exit_code") == 0):
+            return True
     candidates = (
-        state_dir() / "wallpapers.json",
         state_dir() / "layout-installed",
         home / ".local/bin/mac-tahoe-theme-switch",
         data / "plasma/look-and-feel/"
@@ -1168,6 +1177,12 @@ def _run_install_steps(feat: dict[str, object]) -> int:
     check_cancelled()
     if not deps_ok:
         return 1
+    if should_process("acrylic_glass", feat) or should_process("rounded_corners", feat):
+        from steps._helpers import kwin_executable_replaced
+        if kwin_executable_replaced():
+            fail(tr('KWin was updated while running. Log out, log back in, then run the installer again to install the effects.'))
+            progress_event("phase", id="dependencies", state="failed")
+            return 1
 
     progress_event('phase', id='dependencies', state='done')
     progress_event('phase', id='downloads', state='running')
@@ -1476,7 +1491,7 @@ def run_install(argv: list[str],
             return rc
 
         banner(read_version())
-        if not confirm(tr('In development — Install at your own risk.\n  Do not install on production / work systems.')):
+        if not confirm(tr('In development — Install at your own risk.\n  Do not install on production / work systems.') + "\n  " + tr('Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.')):
             tracker.mark_aborted()
             rc = 130
             return rc
