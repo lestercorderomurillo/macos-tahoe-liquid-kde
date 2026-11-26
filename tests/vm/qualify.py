@@ -232,6 +232,14 @@ class Guest:
         self.screenshot('light', mode='light', apps=light_apps)
         return dark
 
+    def installed_icons(self):
+        self.phase('installed-icons-after-reboot', self.desktop_command(
+            'PYTHONPATH=src/scripts python3 tests/containers/installed_icons.py '
+            '--theme-root "${XDG_DATA_HOME:-$HOME/.local/share}/icons" '
+            '--archive src/offline/icons/MacTahoeLiquidKde-Icons.tar.zst '
+            '--dock-plugin "$(qmake6 -query QT_INSTALL_PLUGINS)/plasma/applets/'
+            'org.kde.mac.tahoe.liquid.taskmanager.so"'), timeout=180)
+
     def qualify(self):
         dark = self.installed_captures(capture_only=False)
         self.phase('switch-dark', self.desktop_command('~/.local/bin/mac-tahoe-theme-switch dark'))
@@ -240,6 +248,7 @@ class Guest:
         self.run('sudo reboot', check=False)
         self.wait_desktop(dark['boot_id'])
         self.probe('reboot', 'dark')
+        self.installed_icons()
         if self.distro == 'kubuntu':
             self.launcher('launcher-reboot')
         reboot_apps = self.apps('apps-reboot', 'dark')
