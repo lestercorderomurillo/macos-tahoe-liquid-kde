@@ -42,9 +42,17 @@ def report(minutes):
             line for line in kwin.get("output", "").splitlines() if line.startswith(
                 ("KWin version:", "Qt Version:", "Compositing Type:", "OpenGL vendor string:",
                  "OpenGL renderer string:", "OpenGL version string:", "Driver:")))}
-    result["services"] = probe(["systemctl", "--user", "show", "plasma-plasmashell.service",
-                                "plasma-kwin_wayland.service", "plasma-kwin_x11.service",
-                                "-p", "Id,LoadState,ActiveState,Result,NRestarts,MainPID"])
+    command = None
+    if Path(__file__).with_name("distro.py").is_file():
+        from distro import user_service_manager_command
+        command = user_service_manager_command(
+            "show", "plasma-plasmashell.service", "plasma-kwin_wayland.service",
+            "plasma-kwin_x11.service", "-p", "Id,LoadState,ActiveState,Result,NRestarts,MainPID")
+    if command:
+        result["services"] = probe(command)
+    else:
+        result["desktop_processes"] = probe(["pgrep", "-l", "-u", str(os.getuid()),
+                                             "-x", "plasmashell|kwin_wayland|kwin_x11"])
     result["journal"] = probe(["journalctl", "--user", "-b", "--since", f"{minutes} minutes ago",
                                "--no-pager", "-o", "short-iso", "-n", "80", "--case-sensitive=no",
                                "--grep", "error|failed|crash|segfault|restart|unavailable|not installed|"

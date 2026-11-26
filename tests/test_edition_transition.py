@@ -43,6 +43,7 @@ def execute_layout(script, presets):
         pytest.skip("Node.js required for Plasma layout script execution")
     harness = '''
 const screenCount = 2;
+const knownWidgetTypes = { includes: () => true };
 const created = [];
 function makeWidget(type, preset) {
     return { type, config: {launcherPreset: preset},
