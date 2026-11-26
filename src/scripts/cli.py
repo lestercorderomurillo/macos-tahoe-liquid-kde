@@ -1061,15 +1061,11 @@ def _check_deps(feat: dict[str, object]) -> bool:
         return False
 
     tokens: list[tuple[str, str]] = list(_BASE_DEPS)
-    # These two steps run outside INSTALL_ORDER but still own conditional
-    # OpenRC dependencies (crontab). Keep their deps in the same atomic
-    # resolution pass as every regular install step.
-    dependency_features = dict.fromkeys(
-        (*INSTALL_ORDER, "theme_switch", "oled_care")
-    )
-    for feature in dependency_features:
-        if not should_process(feature, feat):
-            continue
+    # Both scheduler steps always run, including when they retire an old schedule.
+    dependency_features = [
+        feature for feature in INSTALL_ORDER if should_process(feature, feat)
+    ]
+    for feature in (*dependency_features, "theme_switch", "oled_care"):
         if not step_exists(feature):
             continue
         tokens.extend(step_deps(feature))

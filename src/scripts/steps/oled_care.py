@@ -41,10 +41,8 @@ _LEGACY_DRAIN_POLL_SECONDS = 0.05
 
 
 def deps():
-    # crontab is only needed on OpenRC/dinit, where the timer falls back to a
-    # per-user cron line. systemd hosts schedule via the user manager and
-    # need nothing extra. The flag gates it further — no --oled-care, no dep.
-    if is_systemd() or not feat_enabled("oled_care", default=False):
+    # OpenRC and dinit also use crontab to verify removal of previous schedules.
+    if is_systemd():
         return []
     return ["crontab"]
 

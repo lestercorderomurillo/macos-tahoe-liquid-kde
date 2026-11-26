@@ -187,9 +187,8 @@ def _systemd_unit_stopped_and_disabled(unit: str) -> bool:
 
 
 def deps():
-    # OpenRC/dinit + auto mode needs crontab for the timed flip; systemd and
-    # pinned modes need nothing extra.
-    if is_systemd() or theme_mode() != "auto":
+    # OpenRC and dinit also use crontab to verify removal of previous schedules.
+    if is_systemd():
         return []
     return ["crontab"]
 

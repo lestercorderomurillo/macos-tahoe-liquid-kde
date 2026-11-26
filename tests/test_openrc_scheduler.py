@@ -90,17 +90,17 @@ def test_crontab_dep_resolves_per_distro(monkeypatch):
 
 
 @pytest.mark.parametrize("backend", ["systemd", "openrc", "dinit"])
-def test_cron_dependencies_only_for_enabled_schedules(monkeypatch, backend):
+def test_cron_dependencies_cover_schedule_creation_and_removal(monkeypatch, backend):
     from steps import oled_care, theme_switch
 
     monkeypatch.setenv("MTTKDE_INIT", backend)
     monkeypatch.setenv("THEME_MODE", "light")
     monkeypatch.setenv("FEAT_OLED_CARE", "false")
-    assert theme_switch.deps() == []
-    assert oled_care.deps() == []
+    expected = [] if backend == "systemd" else ["crontab"]
+    assert theme_switch.deps() == expected
+    assert oled_care.deps() == expected
     monkeypatch.setenv("THEME_MODE", "auto")
     monkeypatch.setenv("FEAT_OLED_CARE", "true")
-    expected = [] if backend == "systemd" else ["crontab"]
     assert theme_switch.deps() == expected
     assert oled_care.deps() == expected
 

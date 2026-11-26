@@ -772,8 +772,8 @@ def test_check_deps_collects_deps_from_separately_run_steps(
     )
 
     assert cli_module._check_deps({
-        "theme_switch": True,
-        "oled_care": True,
+        "theme_switch": False,
+        "oled_care": False,
     }) is True
     assert {"theme_switch", "oled_care"} <= set(deps_calls)
     assert set(probes) == {
