@@ -1,28 +1,31 @@
 {
-  "version": "0.85.11",
+  "version": "0.85.12",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Installer safety, VM-first guidance, native Plasma compatibility and recovery.",
-  "qualified_candidate": "cb89f3f92bb05bef3f569f2cc573021f3578b5f1",
-  "matrix": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/blob/v0.85.10/docs/installer-safety-plan.md",
-  "matrix_results_sha256": "8c609c9f72ebc765215a13cefcb552e331c29fafddd99dabfba2ca0632d6661c",
+  "scope": "Saved installer options and new Dock view initialization.",
+  "qualified_candidate": "5d70802e66eee3f737207bb77ff3b046d354035e",
+  "matrix": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/blob/v0.85.12/docs/installer-safety-plan.md",
   "checks": [
     {
-      "command": "Prepared neon 6.8.1 VM, candidate cb89f3f9: preflight, install, desktop probe, ordinary reinstall, desktop probe and uninstall. On neon 6.7.5 the patched preflight rejected an unloadable shell. After native library repair the guest passed install, light/dark rendering, reboot and uninstall.",
+      "command": "Tahoe on Tumbleweed 6.6.5 and staged Golden Gate on 6.7.5: ordinary install --dark --layout, live panel verification, dark and light desktop probes, reinstall, reboot to a different kernel boot ID, uninstall and restored desktop probe.",
       "result": "passed"
     },
     {
-      "command": "Final integrated Tahoe tree: python3 -m pytest tests/test_preflight.py tests/test_component_cache.py::test_committed_component_hashes_match_sources tests/test_cli.py tests/test_distro_packages.py tests/test_utils_deps.py (567 passed).",
+      "command": "Both Tumbleweed VMs: the candidate rejected truncated JSON. Replacing saved choices as root preserved owner, group, mode and the disabled layout selection. Neon 6.8.1: malformed data failed safely, explicit reset recovered and interrupted write preserved content.",
       "result": "passed"
     },
     {
-      "command": "Golden Gate ./install --prepare: checked the wizard and preflight sources against Tahoe, then ran tests/test_preflight.py and tests/test_desktop_widgets.py in the staged edition (57 passed).",
+      "command": "Tumbleweed 6.6.5 and 6.7.5: native Wayland and X11 Glass builds and pixel comparisons, excluded and included window identities, Wayland partial repaint and competing blur recovery. Native Quickbar and notification/control tests passed.",
       "result": "passed"
     },
     {
-      "command": "python3 -m pytest tests/test_multilanguage.py tests/test_vm_qualification.py (208 passed). Checked the translated mirror recovery message in all 14 catalogs and the saved and live Dock visibility combinations.",
+      "command": "pytest tests/test_cli.py tests/test_preflight.py tests/test_dock_defaults.py tests/test_layout_step.py tests/test_edition_transition.py tests/test_component_cache.py::test_committed_component_hashes_match_sources (237 passed). Final CLI and localization suites (260 passed).",
+      "result": "passed"
+    },
+    {
+      "command": "Golden Gate ./install --prepare against the repaired Tahoe source, CLI and preflight tests (128 passed). The final settings ownership preservation change was independently exercised in both editions during the VM reinstall.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The matrix contains 21 full lifecycle runs across 12 distributions on the identified candidate revisions. Native SDK checks, targeted reinstalls and NixOS checks have separate evidence. Historical package gaps and mixed Artix SDK inputs are documented. The integrated v0.85.10 tree retains the separately released v0.85.9 calendar change. The v0.85.11 correction updates the translated mirror recovery instructions and VM test fixture. Installation logic and native modules match v0.85.10.",
-  "source_sha256": "1d1075b542ea872bcde5b8112f26fa366adc14304a0493a6303c5323e6dd0590"
+  "coverage_limits": "The historical Tumbleweed environments used verified openSUSE KDE images and archived RPMs. The included/excluded windows were synthetic. Other distro/version combinations retain their individual coverage and source revisions in the matrix. No host desktop installation was run.",
+  "source_sha256": "962bfaef15bf8231213b7365751df9c0a6b38c18e5ecb0a81f38561fed29e099"
 }

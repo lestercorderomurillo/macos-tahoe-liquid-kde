@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.11**. The installer blocked a broken Plasma shell on KDE neon and passed install, reinstall and uninstall on a healthy neon desktop. The broader qualification covered Plasma 6.6–6.8. [Validation and coverage](release-evidence.json).
+**v0.85.12**. Tahoe on Tumbleweed 6.6.5 and staged Golden Gate on 6.7.5 passed install, dark and light desktop checks, reinstall, reboot and uninstall. On neon 6.8.1, damaged saved options stopped installation and an interrupted save preserved the previous choices. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
