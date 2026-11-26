@@ -1398,7 +1398,9 @@ class InstallerWindow(OpaqueSurface):
         self._eta_timer = QTimer(self)
         self._eta_timer.setInterval(1000)
         self._eta_timer.timeout.connect(self.refresh_progress)
+        from cli import _theme_is_already_installed, default_layout_reset
         self.defaults = defaults()
+        self.defaults["reset_layout"] = default_layout_reset(_theme_is_already_installed())
         self.defaults["wallpaper_explicit"] = False
         self.choices = dict(self.defaults)
         self.theme_launcher = "golden" if self.defaults["launcher"] == "golden" else "tahoe"

@@ -45,6 +45,7 @@ class RunTracker:
         self.aborted = False
         self.active = False
         self.steps = []
+        self.install_context = {}
 
     def start(self) -> bool:
         self.started_at = _now_iso()
@@ -114,6 +115,8 @@ class RunTracker:
             "exit_code": exit_code,
             "steps": self.steps,
         }
+        if self.install_context:
+            payload["install"] = self.install_context
         # Write-then-rename so a crash/kill mid-write (OOM, power loss)
         # can't leave last-run.json truncated — same pattern as
         # theme_switch.py's _save_wallpaper_state. Failure is reported

@@ -579,6 +579,7 @@ def export_env(feat: dict[str, object]) -> None:
         feat.get("_existing_install", False))
     os.environ["MTTKDE_RESET_WALLPAPERS"] = _b(
         feat.get("_reset_wallpapers", False))
+    os.environ["MTTKDE_PRESERVE_LAYOUT"] = _b(feat.get("_preserve_layout", False))
     for k in ALL_FEATURES:
         os.environ[f"FEAT_{k.upper()}"] = _b(feat.get(k, True))
 
@@ -684,23 +685,52 @@ def _theme_is_already_installed() -> bool:
     choices. The wizard also uses this to preserve existing panel layouts.
     """
     home = Path.home()
+    from state import state_dir
+    data = Path(os.environ.get("XDG_DATA_HOME") or home / ".local/share")
     candidates = (
-        home / ".local/state/mac-tahoe-liquid-kde/wallpapers.json",
-        home / ".local/state/mac-tahoe-liquid-kde/layout-installed",
+        state_dir() / "wallpapers.json",
+        state_dir() / "layout-installed",
         home / ".local/bin/mac-tahoe-theme-switch",
-        home / ".local/share/plasma/look-and-feel/"
+        data / "plasma/look-and-feel/"
         "org.kde.mac-tahoe-liquid-kde.light",
-        home / ".local/share/plasma/look-and-feel/"
+        data / "plasma/look-and-feel/"
         "org.kde.mac-tahoe-liquid-kde.dark",
     )
     if any(path.exists() for path in candidates):
         return True
-    appletsrc = home / ".config/plasma-org.kde.plasma.desktop-appletsrc"
+    appletsrc = Path(os.environ.get("XDG_CONFIG_HOME") or home / ".config") / "plasma-org.kde.plasma.desktop-appletsrc"
     try:
         text = appletsrc.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return False
-    return "org.kde.mac-tahoe" in text or "org.kde.mac.tahoe" in text
+    return re.search(r"^plugin=org\.kde\.mac[.-]tahoe[.-]", text, re.MULTILINE) is not None
+
+
+def default_layout_reset(existing_install: bool) -> bool:
+    if existing_install:
+        return False
+    config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+    try:
+        text = (config / "plasma-org.kde.plasma.desktop-appletsrc").read_text()
+    except FileNotFoundError:
+        return True
+    except (OSError, UnicodeError):
+        return False
+    panels = set()
+    applets = []
+    for match in re.finditer(r"^\[Containments\]\[(\d+)\](\[Applets\]\[\d+\])?\n([^\[]*)", text, re.M):
+        panel, applet, body = match.groups()
+        plugin = re.search(r"^plugin=(.+)$", body, re.M)
+        if not plugin:
+            continue
+        if applet:
+            applets.append((panel, plugin[1]))
+        elif plugin[1] == "org.kde.panel":
+            if re.search(r"^location=[356]$", body, re.M):  # top, left or right
+                return False
+            panels.add(panel)
+    return len(panels) <= 1 and all(
+        plugin.startswith("org.kde.plasma.") for panel, plugin in applets if panel in panels)
 
 
 def _restore_user_session_env(uid: int) -> None:
@@ -1075,6 +1105,28 @@ def _print_done(verb: str) -> None:
     print()
 
 
+def desktop_load_errors(since: int) -> list[str]:
+    """Read load failures from this install's shell and compositor only."""
+    if not have("journalctl"):
+        return []
+    try:
+        result = run_user(
+            ["journalctl", "--user", "-b", "--since", f"@{since}", "--no-pager",
+             "--quiet", "-o", "cat", "-n", "32", "--case-sensitive=no", "--grep",
+             "error (when )?loading|could not load|failed to load|module .* is not installed|"
+             "cannot load library|undefined symbol|type .* unavailable",
+             "_COMM=plasmashell", "_COMM=kwin_wayland", "_COMM=kwin_x11"],
+            capture_output=True, text=True, errors="replace", timeout=3,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        print(f"[desktop] journal unavailable: {type(exc).__name__}", flush=True)
+        return []
+    if result.returncode not in (0, 1):
+        print(f"[desktop] journal unavailable: {result.stderr.strip()[:256]}", flush=True)
+        return []
+    return list(dict.fromkeys(line[:768] for line in result.stdout.splitlines() if line.strip()))
+
+
 def _run_install_body(feat: dict[str, object]) -> int:
     from theme_switch import button_position, preserve_button_layout
 
@@ -1198,7 +1250,9 @@ def _run_install_steps(feat: dict[str, object]) -> int:
         if feat.get("layout", True) and step_exists("layout"):
             step('Installing Layout')
             note(tr(FEATURE_DESC["layout"]))
-            run_phase("layout", "install")
+            if not run_phase("layout", "install"):
+                progress_event("phase", id="apply", state="failed")
+                return 1
 
         progress_event('phase', id='apply', state='failed' if errors else 'done')
         progress_event('phase', id='verify', state='running')
@@ -1221,10 +1275,10 @@ def _run_install_steps(feat: dict[str, object]) -> int:
             run_phase("plasmoids", "place_desktop_widgets")
         if not keep_layout and not feat.get("layout", True) and step_exists("layout"):
             run_phase("layout", "migrate_dock_preset")
-        if step_exists("layout") and (feat.get("layout", True) or _layout_is_installed()):
+        if not keep_layout and step_exists("layout") and (feat.get("layout", True) or _layout_is_installed()):
             run_phase("layout", "configure_dock")
         run_phase("theme_switch", "start_schedule")
-        if feat.get("layout", True) or _layout_is_installed():
+        if not keep_layout and (feat.get("layout", True) or _layout_is_installed()):
             run_phase("layout", "verify_dock_glass")
         if feat.get("acrylic_glass", True):
             run_phase("acrylic_glass", "verify_active")
@@ -1235,7 +1289,6 @@ def _run_install_steps(feat: dict[str, object]) -> int:
         step('Skipping Activation')
         note(tr('--no-apply-theme: files installed but Plasma left untouched. Re-run with --apply-theme to switch over.'))
 
-    _print_done("installed")
     return 1 if errors else 0
 
 
@@ -1381,6 +1434,12 @@ def run_install(argv: list[str],
         feat = features(parsed.wizard_options, DEFAULT_FEATURES,
                         existing_install=existing_install)
         os.environ["MTTKDE_WIZARD_OPTIONS"] = json.dumps(parsed.wizard_options)
+        feat["_preserve_layout"] = not parsed.wizard_options["reset_layout"]
+    else:
+        preserve = not default_layout_reset(existing_install) and "layout" not in parsed.cli_overrides
+        if preserve:
+            feat["layout"] = False
+        feat["_preserve_layout"] = preserve or parsed.cli_overrides.get("layout") is False
     feat["_existing_install"] = existing_install
     export_env(feat)
 
@@ -1400,6 +1459,12 @@ def run_install(argv: list[str],
         return 0 if run_phase("apply", "restart_plasma") else 1
 
     tracker = RunTracker("install", argv, str(feat.get("theme_mode", "auto")))
+    tracker.install_context = {
+        "source_version": read_version(), "edition": edition_name(),
+        "existing_install": existing_install, "session": os.environ.get("XDG_SESSION_TYPE", "unknown"),
+        "layout": "reset" if feat.get("layout") else "preserve" if feat["_preserve_layout"] else "disabled",
+    }
+    print("[install]", json.dumps(tracker.install_context, sort_keys=True), flush=True)
     tracker.start()
     progress_reset()
     rc = 1
@@ -1419,11 +1484,33 @@ def run_install(argv: list[str],
         # the running backend underneath that transaction.
         if parsed.wizard_options is None and check_for_updates(inline=True):
             auto_update_and_reexec(argv, prog)
-        with tracker.track_components():
-            rc = _run_install_body(feat)
+        started = int(time.time())
+        if feat.get("apply_theme", True):
+            from desktop_diagnostics import panel_inventory
+            from utils import qdbus_cmd
+            tracker.install_context["panels_before"] = panel_inventory(qdbus_cmd(), run_user)
+        try:
+            with tracker.track_components():
+                rc = _run_install_body(feat)
+        finally:
+            if feat.get("apply_theme", True):
+                inventory = panel_inventory(qdbus_cmd(), run_user)
+                tracker.install_context["panels_after"] = inventory
+                if inventory.get("panels") == [] and feat["_preserve_layout"]:
+                    warn("Layout preservation selected. Plasma reports zero live panels.")
+                messages = desktop_load_errors(started)
+                if messages:
+                    tracker.install_context["desktop_load_errors"] = messages
+                    for message in messages:
+                        if re.match(r'error (?:when )?loading applet "org\.kde\.mac[.-]tahoe', message, re.I):
+                            fail(f"[desktop] {message}")
+                            rc = 1
+                        else:
+                            warn(f"[desktop] {message}")
 
         check_cancelled()
         if rc == 0:
+            _print_done("installed")
             tracker.mark_completed()
         return rc
     except KeyboardInterrupt:

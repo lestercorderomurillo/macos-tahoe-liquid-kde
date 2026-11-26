@@ -1,7 +1,34 @@
 // MacTahoe Liquid KDE — macOS Tahoe-style layout
 // Top menu bar (flush) + bottom dock (floating, large icons)
 
-// ── remove existing panels ──────────────────────
+// Plasma can create placeholder applets for missing packages. Check the live
+// registry before modifying any existing containment.
+if (screenCount < 1) throw new Error("Layout reset: Plasma reports no screens");
+var requiredWidgets = [];
+requiredWidgets.push(
+    "org.kde.mac.tahoe.liquid.globalmenu",
+    "org.kde.plasma.panelspacer",
+    "org.kde.plasma.systemtray",
+    "org.kde.mac-tahoe-liquid-kde.acrylicglass",
+    "org.kde.mac-tahoe-liquid-kde.notifications",
+    "org.kde.mac-tahoe-liquid-kde.bluetooth",
+    "org.kde.mac-tahoe-liquid-kde.wifi",
+    "org.kde.mac-tahoe-liquid-kde.battery",
+    "org.kde.mac-tahoe-liquid-kde.controlcenter",
+    "org.kde.plasma.marginsseparator",
+    "org.kde.plasma.digitalclock"
+);
+requiredWidgets.push(
+    "org.kde.mac.tahoe.liquid.icontasks",
+    "org.kde.mac-tahoe-liquid-kde.dockseparator",
+    "org.kde.mac-tahoe-liquid-kde.downloads",
+    "org.kde.mac-tahoe-liquid-kde.trashcan"
+);
+if (typeof userLauncherTypes === "undefined" && (typeof mttkdeDock === "undefined" || mttkdeDock))
+    requiredWidgets.push("org.kde.mac-tahoe-liquid-kde.launcher");
+var missingWidgets = requiredWidgets.filter(id => !knownWidgetTypes.includes(id));
+if (missingWidgets.length) throw new Error("Layout reset: unavailable widgets: " + missingWidgets.join(", "));
+
 var old = panels();
 var launcherPresets = {};
 var userLaunchers = {};
@@ -22,9 +49,7 @@ for (var p = 0; p < old.length; p++) {
         }
     }
 }
-if (typeof userLauncherTypes === "undefined") {
-    for (var i = 0; i < old.length; i++) old[i].remove();
-}
+
 
 // ── top menu bar ────────────────────────────────
 // top bar, flush panel with applets-only floating
@@ -170,6 +195,4 @@ dock.addWidget("org.kde.mac-tahoe-liquid-kde.downloads");
 var trash = dock.addWidget("org.kde.mac-tahoe-liquid-kde.trashcan");
 trash.currentConfigGroup = ["General"];
 trash.writeConfig("showSeparator", false);
-if (typeof userLauncherTypes !== "undefined") {
-    for (var i = 0; i < old.length; i++) old[i].remove();
-}
+for (var i = 0; i < old.length; i++) old[i].remove();

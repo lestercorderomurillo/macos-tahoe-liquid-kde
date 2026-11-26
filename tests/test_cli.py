@@ -868,3 +868,32 @@ def test_failed_download_stops_before_build_or_application(monkeypatch, cli_modu
     monkeypatch.setattr(cli_module, "_prepare_downloads", lambda *_: False)
     monkeypatch.setattr(cli_module, "_run_builds_or_abort", lambda *_: pytest.fail("started build"))
     assert cli_module._run_install_steps({}) == 1
+
+@pytest.mark.parametrize("layout,reset", [
+    ("", True),
+    ("[Containments][7]\nplugin=org.kde.panel\nlocation=4\n", True),
+    ("[Containments][7]\nplugin=org.kde.panel\nlocation=5\n", False),
+    ("[Containments][7]\nplugin=org.kde.panel\n[Containments][9]\nplugin=org.kde.panel\n", False),
+    ("[Containments][7]\nplugin=org.kde.panel\n[Containments][7][Applets][11]\nplugin=vendor.clock\n", False),
+])
+def test_initial_layout_choice_tracks_existing_profile(cli_module, sandbox, layout, reset):
+    (sandbox / ".config/plasma-org.kde.plasma.desktop-appletsrc").write_text(layout)
+    assert cli_module.default_layout_reset(False) is reset
+    assert not cli_module.default_layout_reset(True)
+
+
+def test_project_qml_load_failure_overrides_successful_install(monkeypatch, sandbox, cli_module):
+    import state
+    monkeypatch.setattr(cli_module, "_require_root_and_drop_to_user", lambda *_: True)
+    monkeypatch.setattr(cli_module, "load_features", lambda: dict(cli_module.DEFAULT_FEATURES))
+    monkeypatch.setattr(cli_module, "confirm", lambda *_: True)
+    monkeypatch.setattr(cli_module, "check_for_updates", lambda **_: False)
+    monkeypatch.setattr(cli_module, "_run_install_body", lambda _: 0)
+    message = 'error when loading applet "org.kde.mac-tahoe-liquid-kde.bluetooth": Type Controls.ControlDialog unavailable'
+    monkeypatch.setattr(cli_module, "desktop_load_errors", lambda _: [message])
+    monkeypatch.setattr(cli_module, "_print_done", lambda *_: pytest.fail("false success"))
+    assert cli_module.run_install([]) == 1
+    import json
+    record = json.loads(state.last_run_file().read_text())
+    assert record["status"] == "failed"
+    assert message in record["install"]["desktop_load_errors"]

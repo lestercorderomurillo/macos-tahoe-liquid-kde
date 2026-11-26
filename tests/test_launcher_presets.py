@@ -80,6 +80,7 @@ const assert = require('node:assert/strict');
 const saved = PRESETS;
 const created = [];
 const screenCount = 2;
+const knownWidgetTypes = { includes: () => true };
 function makeWidget(type, preset) {
     return { type, currentConfigGroup: [], config: {launcherPreset: preset},
         readConfig: function(key, fallback) { return this.config[key] ?? fallback; },

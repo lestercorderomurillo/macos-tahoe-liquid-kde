@@ -610,28 +610,30 @@ def detect_mode_by_system() -> str | None:
 
 
 _PRC_PANEL_RE = re.compile(
-    r"(\[PlasmaViews\]\[Panel \d+\]\n(?:[^\[]*\n)*)", re.MULTILINE,
+    r"(\[PlasmaViews\]\[Panel (\d+)\]\n(?:[^\[]*\n)*)", re.MULTILINE,
 )
 
 
-def patch_dock_transparency() -> bool:
-    """Re-assert panel glass settings after a Global Theme apply.
-
-    Every panel is explicitly translucent so Plasma's Adaptive mode cannot
-    turn the top bar opaque when a window touches it. Non-floating panels also
-    keep applets-only floating. Global Theme applies can drop these view-state
-    keys, so every theme switch restores them. Returns True if the file changed.
-    """
-    prc = _xdg_config() / "plasmashellrc"
-    if not prc.is_file():
-        return False
+def patch_dock_transparency(config_dir: Path | None = None) -> bool:
+    """Restore project panel glass while leaving other panel views untouched."""
+    config = config_dir or _xdg_config()
+    prc = config / "plasmashellrc"
     try:
+        applets = (config / "plasma-org.kde.plasma.desktop-appletsrc").read_text()
         text = prc.read_text()
-    except OSError:
+    except (OSError, UnicodeError):
         return False
+    project_panels = {
+        panel_id for panel_id, body in re.findall(
+            r"^\[Containments\]\[(\d+)\]\[Applets\]\[\d+\]\n([^\[]*)", applets, re.MULTILINE)
+        if any(line in ("plugin=org.kde.mac.tahoe.liquid.globalmenu",
+                        "plugin=org.kde.mac.tahoe.liquid.icontasks") for line in body.splitlines())
+    }
 
     def fix(m: "re.Match[str]") -> str:
         section = m.group(0)
+        if m.group(2) not in project_panels:
+            return section
         if "panelOpacity=" in section:
             section = re.sub(r"panelOpacity=\d+", "panelOpacity=2", section)
         else:

@@ -37,6 +37,8 @@ def test_patch_dock_subcommand_is_idempotent_and_does_not_apply_theme(monkeypatc
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
     monkeypatch.setattr(switch, "_sync_session_env", lambda: None)
     monkeypatch.setattr(switch, "apply", lambda *a, **k: pytest.fail("full apply called"))
+    (tmp_path / "plasma-org.kde.plasma.desktop-appletsrc").write_text(
+        "[Containments][1][Applets][4]\nplugin=org.kde.mac.tahoe.liquid.globalmenu\n")
     path = tmp_path / "plasmashellrc"
     path.write_text("[PlasmaViews][Panel 1]\nfloating=0\npanelOpacity=0\n")
     assert switch.main(["patch-dock"]) == 0

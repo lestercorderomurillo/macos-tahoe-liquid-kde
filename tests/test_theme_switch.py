@@ -699,16 +699,15 @@ def test_cycle_widget_style_works_off_main_thread(monkeypatch):
 
 
 def test_patch_dock_transparency_reasserts_panel_opacity(monkeypatch, tmp_path):
-    """The dock goes black when panelOpacity is dropped (a Global Theme apply
-    from System Settings drops it), because the opaque panel background paints
-    over the Acrylic Glass. patch_dock_transparency must re-assert
-    panelOpacity=2 on every panel and floatingApplets=1 on non-floating —
-    on install, on switch, and on the manual System Settings path. Real run
-    against a real plasmashellrc, no mocking of the patch itself."""
+    """Restore project glass without changing a third-party panel on the same desktop."""
     import theme_switch
     cfg = tmp_path / ".config"
     cfg.mkdir()
     monkeypatch.setenv("XDG_CONFIG_HOME", str(cfg))
+    (cfg / "plasma-org.kde.plasma.desktop-appletsrc").write_text(
+        "[Containments][1][Applets][4]\nplugin=org.kde.mac.tahoe.liquid.globalmenu\n"
+        "[Containments][2][Applets][5]\nplugin=org.kde.mac.tahoe.liquid.icontasks\n"
+        "[Containments][3][Applets][6]\nplugin=org.kde.plasma.kickoff\n")
     prc = cfg / "plasmashellrc"
     prc.write_text(
         "[PlasmaViews][Panel 1]\n"
@@ -724,8 +723,11 @@ def test_patch_dock_transparency_reasserts_panel_opacity(monkeypatch, tmp_path):
         "thickness=68\n"
     )
 
+    custom = "[PlasmaViews][Panel 3]\nfloating=0\npanelOpacity=0\n"
+    prc.write_text(prc.read_text() + custom)
     assert theme_switch.patch_dock_transparency() is True
     text = prc.read_text()
+    assert text.endswith(custom)
     top_section, dock_section = text.split("[PlasmaViews][Panel 2]", 1)
     assert "panelOpacity=2" in top_section
     assert "floatingApplets=1" in top_section
