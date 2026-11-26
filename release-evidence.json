@@ -1,31 +1,31 @@
 {
-  "version": "0.85.12",
+  "version": "0.85.13",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Saved installer options and new Dock view initialization.",
-  "qualified_candidate": "5d70802e66eee3f737207bb77ff3b046d354035e",
-  "matrix": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/blob/v0.85.12/docs/installer-safety-plan.md",
+  "scope": "Resolve the crontab client for scheduler cleanup during pinned-mode installation on OpenRC and dinit.",
+  "qualified_candidate": "d7ed697fbb774b3e038914fef19a95e14ed31fda",
+  "matrix": "https://github.com/lestercorderomurillo/macos-golden-gate-liquid-kde/blob/v0.85.13/docs/installer-safety-plan.md",
   "checks": [
     {
-      "command": "Tahoe on Tumbleweed 6.6.5 and staged Golden Gate on 6.7.5: ordinary install --dark --layout, live panel verification, dark and light desktop probes, reinstall, reboot to a different kernel boot ID, uninstall and restored desktop probe.",
+      "command": "577 passed: tests/test_distro_packages.py, tests/test_utils_deps.py, tests/test_openrc_scheduler.py, tests/test_cli.py and the committed component hash regression. The package mapping checks cover all supported distributions.",
       "result": "passed"
     },
     {
-      "command": "Both Tumbleweed VMs: the candidate rejected truncated JSON. Replacing saved choices as root preserved owner, group, mode and the disabled layout selection. Neon 6.8.1: malformed data failed safely, explicit reset recovered and interrupted write preserved content.",
+      "command": "Artix OpenRC 6.6.5: reproduced the partial v0.85.12 installation without crontab. Applied the candidate to that same checkout. Pacman installed signed cronie before the pinned-mode installer proceeded. Dark and light desktop probes passed.",
       "result": "passed"
     },
     {
-      "command": "Tumbleweed 6.6.5 and 6.7.5: native Wayland and X11 Glass builds and pixel comparisons, excluded and included window identities, Wayland partial repaint and competing blur recovery. Native Quickbar and notification/control tests passed.",
+      "command": "Artix OpenRC 6.6.5: ordinary reinstall retained a personal cron entry. The VM rebooted to a distinct kernel boot ID, passed the dark desktop check, uninstalled and passed the restored desktop check. The exact user cron entry remained.",
       "result": "passed"
     },
     {
-      "command": "pytest tests/test_cli.py tests/test_preflight.py tests/test_dock_defaults.py tests/test_layout_step.py tests/test_edition_transition.py tests/test_component_cache.py::test_committed_component_hashes_match_sources (237 passed). Final CLI and localization suites (260 passed).",
+      "command": "Staged Golden Gate source matched the three installer source SHA-256 values and component manifest. All 62 selected CLI dependency and scheduler cases passed.",
       "result": "passed"
     },
     {
-      "command": "Golden Gate ./install --prepare against the repaired Tahoe source, CLI and preflight tests (128 passed). The final settings ownership preservation change was independently exercised in both editions during the VM reinstall.",
+      "command": "Ordinary staged Golden Gate install, reinstall and uninstall on the restored Artix 6.6.5 guest. Light desktop and uninstalled probes passed, and the unrelated cron entry remained byte-for-byte identical.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The historical Tumbleweed environments used verified openSUSE KDE images and archived RPMs. The included/excluded windows were synthetic. Other distro/version combinations retain their individual coverage and source revisions in the matrix. No host desktop installation was run.",
-  "source_sha256": "962bfaef15bf8231213b7365751df9c0a6b38c18e5ecb0a81f38561fed29e099"
+  "coverage_limits": "The ordinary installer lifecycle was exercised on an installed Artix OpenRC 6.6.5 virtual desktop. Dinit and systemd dependency selection were exercised by automated regressions. The detailed matrix names earlier sources, rendering checks and remaining distro gaps.",
+  "source_sha256": "0f4e88891df3d70d75dcb94b0bf60e0a869e9c6ce9cba42b07c10b1f773d0471"
 }

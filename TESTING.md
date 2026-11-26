@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.12**. Tahoe on Tumbleweed 6.6.5 and staged Golden Gate on 6.7.5 passed install, dark and light desktop checks, reinstall, reboot and uninstall. On neon 6.8.1, damaged saved options stopped installation and an interrupted save preserved the previous choices. [Validation and coverage](release-evidence.json).
+**v0.85.13**. On Artix OpenRC with Plasma 6.6.5, the installer recovered a partial installation by installing the missing crontab client. Tahoe passed dark and light desktop checks, reinstall, reboot and uninstall. Golden Gate passed install, reinstall and uninstall on the restored guest. The full matrix lists native rendering checks and unverified distribution versions. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
