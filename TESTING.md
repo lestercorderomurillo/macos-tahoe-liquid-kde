@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.18**. The calendar refreshed its blur during light and dark wallpaper transitions in a disposable Plasma session with per-frame updates disabled. All eight desktop widget tests passed. [Validation and coverage](release-evidence.json).
+**v0.85.19**. Control Center keeps the desktop sharp between tiles and preserves each tile’s glass. Both edition materials were captured in light and dark on KDE neon Wayland. The isolated KWin X11 popup test changed zero pixels in its gap. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

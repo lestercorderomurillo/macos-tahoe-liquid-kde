@@ -1,27 +1,35 @@
 {
-  "version": "0.85.18",
+  "version": "0.85.19",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "c72a79388314c8edaf31456f9e8ce2e5adb07d2d",
-  "scope": "Refresh the shared desktop widget blur when Plasma replaces the wallpaper during an appearance transition.",
+  "qualified_candidate": "1cf85a7db06df98ef00161de48ba113c9c6b2dab",
+  "scope": "Confine Control Center blur to the individual controls and preserve the exterior shadow.",
+  "approval": "Maintainer approved the light and dark before/after comparisons for both edition materials.",
+  "approved_previews": {
+    "golden-gate-comparacion.png": "1409f613d311d75682357c626496d361f1691ef6c6f6f881d87f4b5624e7278c",
+    "golden-gate-dark.png": "55d63a5fd64371f1e6dc28dd356617bd40376a513ceeee3acf2f4f93efb4554d",
+    "golden-gate-light.png": "1a4badb17fae4ef7dc76513f3fddae435e1bd8c16d997c55a64a0c5a57b3a1bc",
+    "tahoe-comparacion.png": "c82b970001277635659a620544da9164a8aed8a134e7b37e397f15d69331c701",
+    "tahoe-dark.png": "d1092f9985d57769da803e6a93696c64a80b8251456e076c7bd3e35753c5f235",
+    "tahoe-light.png": "ada6cebe2d0765fd8d64ee8e9c9cbcdc7e77ddaaa4384f93afe53401a01c2804"
+  },
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_desktop_widgets.py (8 passed)",
+      "command": "KDE neon 6.8.1 Wayland: verified candidate effect identity and popup open/closed desktop detail in both edition materials and both appearance modes. Dark captures also verified the per-control edge lens on both wallpapers.",
       "result": "passed"
     },
     {
-      "command": "KDE neon guest, calendar open with realtimeRefraction=false, plasma-apply-colorscheme light and dark with MacTahoe and MacGoldenGate wallpapers",
+      "command": "pytest tests/test_glass_presets.py::test_native_glass_shader_pixels (1 passed, both shader profiles)",
       "result": "passed"
     },
     {
-      "command": "mac-tahoe-theme-switch light and dark in the guest, same plasmashell PID and no LiquidGlass.qml TypeError",
+      "command": "Fedora KWin 6.6.4 Wayland SDK and KWin 6.7.4 Wayland/X11 SDK builds",
+      "result": "passed"
+    },
+    {
+      "command": "KWin 6.7.4 native X11 inside Xvfb: tests/acrylic_glass_capture.py --compositor x11 --identity GradientProbe --material golden-gate --expect changed --popup-islands: 0 changed gap pixels, 16 fractional edge pixels",
       "result": "passed"
     }
   ],
-  "coverage_limits": "One live calendar instance exercised the shared material. Manual light and dark switches were observed. Scheduled transitions and other widget instances were not individually exercised.",
-  "approval": "Maintainer approved both light/dark comparison previews before paired publication.",
-  "preview_sha256": {
-    "MacTahoe.jpg": "3410a1388eca057830ae80a3e353bd1c929f08bfd793ed64c79060007424f5cb",
-    "MacGoldenGate.jpg": "36dbd84a2e70e8ba3f245f229b416ecb283517a81c6d6f529e8a2967fdb63197"
-  },
-  "source_sha256": "83541006c37b5c642d6704fa9dee683dcf4b606f247c44d7f05e57e62d8ae32b"
+  "coverage_limits": "The four approved frames used a disposable KDE neon Wayland session with each edition\u2019s material and wallpaper. Native X11 exercised a synthetic popup and the 6.6 SDK check was build-only.",
+  "source_sha256": "141a972bf3b284e1bf5102d35ac0822a0a8bd290ddcccd214606058f265eed65"
 }
