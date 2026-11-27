@@ -27,7 +27,7 @@ Validation and precise hardware/SDK coverage are recorded in
 [release-evidence.json](../release-evidence.json). Historical README photographs
 retain their original source and are not evidence for these new controls.
 
-[Light preview](../src/screenshots/previews/control-center-tahoe-light-cc86e8a6cf41.png) · [Dark preview](../src/screenshots/previews/control-center-tahoe-dark-9ff57df537c6.png) · [Capture provenance](../src/screenshots/previews/control-center-tahoe-provenance.json)
+[Light preview](../src/screenshots/previews/tahoe-control-center-light-e7755f5f44ef.webp) · [Dark preview](../src/screenshots/previews/tahoe-control-center-dark-c79bc1595893.webp) · [Capture provenance](../src/screenshots/previews/tahoe-aligned-gallery-8725f969c563.json)
 
 Typography uses the bundled SF Pro Text face: 13 logical pixels for labels and
 11 for secondary captions. Original monochrome symbols use consistent 18-pixel
@@ -42,6 +42,5 @@ preparation. Plasma's backgroundless dialog otherwise clears that region during
 layout and theme updates. A real striped window behind the popup verifies the
 compositor effect: the tiles blur while the gaps remain sharp. The X11 regression
 checks the published blur property after opening, theme reset and reopening.
-Earlier typography previews above predate this blur lifecycle repair.
 
 [Blur proof — light](../src/screenshots/previews/control-center-blur-tahoe-light-95480d7f88be.png) · [Blur proof — dark](../src/screenshots/previews/control-center-blur-tahoe-dark-46f0aa2b6ca3.png) · [Blur capture provenance](../src/screenshots/previews/control-center-blur-tahoe-provenance.json)
