@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.21**. Desktop widget glass follows the selection rectangle during a drag and restores the original pixels on release. [Validation and coverage](release-evidence.json).
+**v0.85.22**. Verified the four status panels in light and dark and the four material presets. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

@@ -1,18 +1,27 @@
 {
-  "version": "0.85.21",
+  "version": "0.85.22",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "a459e8b1ce87f352fbc603db7040a8fdeae8859c",
-  "scope": "Composite the active desktop selection into overlapping glass widgets.",
-  "approval": "Maintainer approved the four-frame calendar preview for both editions.",
+  "qualified_candidate": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+  "scope": "Curved glass and horizontal highlights for Control Center, Wi-Fi, Bluetooth, and notifications, with 24/55 refraction in the four material presets.",
+  "approval": "Maintainer approved the light and dark panel material previews.",
   "approved_previews": {
-    "seleccion.png": "62acb4ad54b372e4544c436553fd415359e6c4b458126e22d574b0f2c1df2053"
+    "light.png": "b8a63942f536559e8e2ba96dbf4f3c6edd6f7f3f74838b23747449e2788ec0c1",
+    "dark.png": "c55956781f35de2ce29139bece2c30f8d6454ad77b5406d7416c9c102ad453b0"
   },
   "checks": [
     {
-      "command": "KDE neon VM: drag the desktop selection across the calendar, expand it and release. Compare two interior regions across the four captures. Both return exactly to their initial pixels.",
+      "command": "pytest tests/test_glass_presets.py (36 tests, including native KCM restore and shader pixels).",
+      "result": "passed"
+    },
+    {
+      "command": "Build the effect on the Plasma 6.6 SDK and render popup islands in an isolated KWin 6.7.4 X11 compositor.",
+      "result": "passed"
+    },
+    {
+      "command": "Capture both editions in light and dark in a KDE neon Plasma 6.8.1 Wayland guest.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The render check exercised the Tahoe calendar. All 14 packages share the same verified LiquidGlass.qml.",
-  "source_sha256": "f79c4e46e13f5f6ef83f571f8d8a25d0bf29d9228e0c189dcaf774b3ed27df11"
+  "coverage_limits": "X11 rendering was exercised on 6.7.4. Edition screenshots were captured on Plasma 6.8.1 Wayland.",
+  "source_sha256": "ca73af4d97cf487084974b3908b744d674ffa6c4489909c738cf18bf18d93c5e"
 }
