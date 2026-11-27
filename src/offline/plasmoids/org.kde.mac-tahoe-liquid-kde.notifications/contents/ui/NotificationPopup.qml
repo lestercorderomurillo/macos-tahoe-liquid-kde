@@ -46,6 +46,7 @@ Native.NotificationBanner {
         Kirigami.Theme.backgroundColor: banner.backgroundColor
         Kirigami.Theme.disabledTextColor: banner.disabledColor
         Controls.NotificationStackSurface {
+            panelHighlight: false
             id: tile
             x: 10; y: 10
             width: banner.width - 20
