@@ -752,6 +752,10 @@ const BlurEffect::ComponentMaterial &BlurEffect::materialFor(EffectWindow *w) co
     const auto component = GlassMaterials::classify(w->window()->resourceClass(), caption, w->isDock(),
         w->isMenu() || w->isDropdownMenu() || w->isPopupMenu() || w->isPopupWindow(),
         w->isTooltip() || (w->isAppletPopup() || w->isNotification() || w->isCriticalNotification()), m_aboutTitle);
+    if (component == QStringLiteral("control-center")
+        && (caption == QStringLiteral("mttkde-battery") || caption == QStringLiteral("mttkde-calendar"))) {
+        return m_componentMaterials.constFind(QStringLiteral("other_status_panels")).value();
+    }
     if (component == QStringLiteral("menus") && (w->window()->resourceClass() == QStringLiteral("plasmashell")
         || w->window()->resourceClass() == QStringLiteral("org.kde.plasmashell"))
         && w->window()->palette().color(QPalette::Window).lightnessF() < 0.5) {
@@ -785,6 +789,15 @@ void BlurEffect::configureComponentMaterials()
         }
         components.insert(QStringLiteral("dark_shell_menu"), menu);
     }
+    auto otherPanels = components.value(QStringLiteral("control-center")).toObject();
+    const auto panelDefaults = preset.value(QStringLiteral("components")).toObject()
+                                   .value(QStringLiteral("control-center")).toObject();
+    // Battery and Calendar share user adjustments, but keep their original preset lens.
+    const auto otherDefaults = preset.value(QStringLiteral("other_status_panels")).toObject();
+    for (auto it = otherDefaults.begin(); it != otherDefaults.end(); ++it) {
+        if (otherPanels.value(it.key()) == panelDefaults.value(it.key())) otherPanels.insert(it.key(), it.value());
+    }
+    components.insert(QStringLiteral("other_status_panels"), otherPanels);
     m_aboutTitle = i18nd("plasma_applet_org.kde.mac.tahoe.liquid.globalmenu", "About This Computer");
     const auto aboutApp = i18nd("plasma_applet_org.kde.mac.tahoe.liquid.globalmenu", "About %1", QStringLiteral("%1"));
     m_aboutAppPrefix = aboutApp.section(QStringLiteral("%1"), 0, 0);

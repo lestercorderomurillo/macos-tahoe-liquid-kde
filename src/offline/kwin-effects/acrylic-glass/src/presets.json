@@ -82,7 +82,7 @@
         "HighlightWidth": 2.0,
         "MagnifyGlassStrength": 0.0,
         "NoiseStrength": 0,
-        "RefractionWidth": 22.0,
+        "RefractionWidth": 24,
         "RgbDriftStrength": 0.0,
         "Saturation": 1.05,
         "SurfaceBlur": 1,
@@ -153,6 +153,9 @@
       "BlurStrength": 8.75,
       "Saturation": 0.7,
       "RgbDriftStrength": 2.0
+    },
+    "other_status_panels": {
+      "RefractionWidth": 22.0
     }
   },
   {
@@ -227,7 +230,7 @@
         "HighlightStrength": 0.12,
         "HighlightWidth": 2,
         "MagnifyGlassStrength": 0,
-        "RefractionWidth": 22,
+        "RefractionWidth": 24,
         "RgbDriftStrength": 0,
         "Saturation": 1,
         "SurfaceBlur": 1,
@@ -298,6 +301,9 @@
       "BlurStrength": 18,
       "Saturation": 0.7,
       "RgbDriftStrength": 2.0
+    },
+    "other_status_panels": {
+      "RefractionWidth": 22
     }
   },
   {
@@ -380,7 +386,7 @@
         "HighlightWidth": 2.0,
         "MagnifyGlassStrength": 0.0,
         "NoiseStrength": 0,
-        "RefractionWidth": 22.0,
+        "RefractionWidth": 24,
         "RgbDriftStrength": 0.0,
         "Saturation": 1.05,
         "SurfaceBlur": 1,
@@ -459,6 +465,9 @@
       "BlurStrength": 9,
       "Saturation": 0.7,
       "RgbDriftStrength": 2.0
+    },
+    "other_status_panels": {
+      "RefractionWidth": 22.0
     }
   },
   {
@@ -524,6 +533,8 @@
         "EdgeLensDepth": 55,
         "HighlightStrength": 0.12,
         "HighlightWidth": 2,
+        "RefractionWidth": 24,
+        "RgbDriftStrength": 0,
         "Saturation": 1,
         "SurfaceBlur": 1,
         "SurfaceTransparencyDark": 99,
@@ -579,6 +590,10 @@
       "BlurStrength": 1.5,
       "Saturation": 0.7,
       "RgbDriftStrength": 2.0
+    },
+    "other_status_panels": {
+      "RefractionWidth": 40,
+      "RgbDriftStrength": 1.0
     }
   }
 ]

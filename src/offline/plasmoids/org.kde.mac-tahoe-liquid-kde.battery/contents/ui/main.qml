@@ -28,7 +28,7 @@ PlasmoidItem {
         visualParent: root
         location: Plasmoid.location
         surfaces: menu.surfaces
-        mainItem: Controls.StatusMenuPopup { id: menu; source: Qt.resolvedUrl("../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/BatteryView.qml"); width: implicitWidth; height: implicitHeight }
+        mainItem: Controls.StatusMenuPopup { id: menu; panelHighlight: false; source: Qt.resolvedUrl("../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/BatteryView.qml"); width: implicitWidth; height: implicitHeight }
         onVisibleChanged: if (visible) { requestActivate(); menu.forceActiveFocus(); }
     }
 }
