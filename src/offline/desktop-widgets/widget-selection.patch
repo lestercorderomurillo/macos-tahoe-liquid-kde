@@ -1,0 +1,69 @@
+--- a/contents/ui/components/LiquidGlass.qml
++++ b/contents/ui/components/LiquidGlass.qml
+@@ -190 +190 @@
+-                                       && (glass.realtimeRefraction || glass._wallpaperTransition || glass._dirtyBurst)
++                                       && (glass.realtimeRefraction || glass._wallpaperTransition || glass.selectionOverlaps || glass._dirtyBurst)
+@@ -288,0 +289,19 @@
++
++    // Folder View owns the selection and clears rubberBand on release or
++    // cancellation. Read it from this desktop, without taking a pointer grab.
++    readonly property Item selectionBand: {
++        if (solidMode || !active || !visible) return null
++        for (let item = parent; item; item = item.parent) {
++            if (item.folderViewLayer !== undefined)
++                return item.folderViewLayer?.view?.rubberBand ?? null
++        }
++        return null
++    }
++    readonly property rect selectionRect: selectionBand && selectionBand.parent
++        ? selectionBand.parent.mapToItem(glass, selectionBand.x, selectionBand.y,
++                                         selectionBand.width, selectionBand.height)
++        : Qt.rect(0, 0, 0, 0)
++    readonly property bool selectionOverlaps: selectionRect.width > 0 && selectionRect.height > 0
++        && selectionRect.x < width && selectionRect.y < height
++        && (selectionRect.x + selectionRect.width) > 0 && (selectionRect.y + selectionRect.height) > 0
++    onSelectionOverlapsChanged: markDirty()
+@@ -343 +362 @@
+-    ShaderEffect {
++    Item {
+@@ -346,5 +365,21 @@
+-        visible: false
+-        fragmentShader: Qt.resolvedUrl("shaders/crop.frag.qsb")
+-        property variant source: wallpaperTex
+-        property vector2d uvOffset: glass._uvOff
+-        property vector2d uvScale: glass._uvSc
++        visible: glass._blurActive || glass.selectionOverlaps
++
++        ShaderEffect {
++            anchors.fill: parent
++            fragmentShader: Qt.resolvedUrl("shaders/crop.frag.qsb")
++            property variant source: wallpaperTex
++            property vector2d uvOffset: glass._uvOff
++            property vector2d uvScale: glass._uvSc
++        }
++
++        Rectangle {
++            visible: glass.selectionOverlaps
++            x: glass.selectionRect.x
++            y: glass.selectionRect.y
++            width: glass.selectionRect.width
++            height: glass.selectionRect.height
++            color: glass.selectionBand?.color ?? "transparent"
++            radius: glass.selectionBand?.radius ?? 0
++            border.color: glass.selectionBand?.border.color ?? "transparent"
++            border.width: glass.selectionBand?.border.width ?? 0
++        }
+@@ -356,2 +391,2 @@
+-        sourceItem: glass._blurActive ? cropPass : null
+-        live: glass._chainLive
++        sourceItem: glass._blurActive || glass.selectionOverlaps ? cropPass : null
++        live: glass._chainLive || glass.selectionOverlaps
+@@ -628 +663 @@
+-            : wallpaperTex
++            : (glass.selectionOverlaps ? cropTex : wallpaperTex)
+@@ -648 +683 @@
+-        property vector2d uvOffset: glass._blurActive
++        property vector2d uvOffset: glass._blurActive || glass.selectionOverlaps
+@@ -650 +685 @@
+-        property vector2d uvScale: glass._blurActive
++        property vector2d uvScale: glass._blurActive || glass.selectionOverlaps
