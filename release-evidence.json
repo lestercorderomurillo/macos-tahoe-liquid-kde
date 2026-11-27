@@ -1,27 +1,30 @@
 {
-  "version": "0.85.22",
+  "version": "0.85.23",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
-  "scope": "Curved glass and horizontal highlights for Control Center, Wi-Fi, Bluetooth, and notifications, with 24/55 refraction in the four material presets.",
-  "approval": "Maintainer approved the light and dark panel material previews.",
-  "approved_previews": {
-    "light.png": "b8a63942f536559e8e2ba96dbf4f3c6edd6f7f3f74838b23747449e2788ec0c1",
-    "dark.png": "c55956781f35de2ce29139bece2c30f8d6454ad77b5406d7416c9c102ad453b0"
-  },
+  "qualified_candidate": "e4ed0e0013e9f70ea1d830a557e6d04a926ed36e",
+  "scope": "Verify staged installation payloads, update preexisting widgets and installed Dock packages when preserving the layout, and repair stale Golden Gate preparation caches.",
   "checks": [
     {
-      "command": "pytest tests/test_glass_presets.py (36 tests, including native KCM restore and shader pixels).",
+      "command": "KDE neon Plasma 6.8.1 Wayland VM: seed four unmanaged v0.85.17 packages and personal files, damage installed contents and run the Tahoe wizard backend with layout preservation. Verify eight installed trees and four personal backups.",
       "result": "passed"
     },
     {
-      "command": "Build the effect on the Plasma 6.6 SDK and render popup islands in an isolated KWin 6.7.4 X11 compositor.",
+      "command": "Switch the isolated guest to Golden Gate defaults, damage six more installed files, and run the shared backend again. Compare all eight trees to the staged sources and confirm replacement of the six damaged files.",
       "result": "passed"
     },
     {
-      "command": "Capture both editions in light and dark in a KDE neon Plasma 6.8.1 Wayland guest.",
+      "command": "Golden Gate bootstrap.prepare(): corrupt both a widget archive and a color scheme in a real prepared checkout; verify reconstruction from local Tahoe source and Golden Gate defaults.",
+      "result": "passed"
+    },
+    {
+      "command": "268 Tahoe checks covering installer choices, content fingerprints for all 71 manifest entries, ownership, staging, permissions, Kvantum, CLI, storage cleanup and translations; 64 Golden Gate bootstrap tests.",
+      "result": "passed"
+    },
+    {
+      "command": "Final cursor install, repair and uninstall probe in the same guest.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "X11 rendering was exercised on 6.7.4. Edition screenshots were captured on Plasma 6.8.1 Wayland.",
-  "source_sha256": "ca73af4d97cf487084974b3908b744d674ffa6c4489909c738cf18bf18d93c5e"
+  "coverage_limits": "One KDE neon Wayland guest. Both runs used the wizard backend with desktop choices and four selected widgets. Exact content comparisons cover eight installed trees. Additional sentinel checks cover six files. Other enabled phases were checked via installer exit status. Optional third-party app installation and physical hardware were not exercised in the guest.",
+  "source_sha256": "d783095a8c9eed831a84900e18c5d87f896ec57d71c5543cd3b512d4320eb269"
 }
