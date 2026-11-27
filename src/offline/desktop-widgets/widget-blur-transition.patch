@@ -1,0 +1,94 @@
+--- a/contents/ui/components/LiquidGlass.qml
++++ b/contents/ui/components/LiquidGlass.qml
+@@ -146,3 +146,2 @@
+-    property bool _wallpaperTransition: false
+-    property var _wallpaperStackView: null
+-    property var _wallpaperCurrentItem: null
++    readonly property bool _wallpaperTransition: _wallpaperStackView?.busy ?? false
++    readonly property var _wallpaperStackView: findWallpaperStackView(wallpaperItem)
+@@ -153,10 +152,9 @@
+-    function findWallpaperStackView() {
+-        if (!wallpaperItem || !wallpaperItem.children)
+-            return null
+-
+-        for (let i = 0; i < wallpaperItem.children.length; i++) {
+-            const child = wallpaperItem.children[i]
+-            if (child
+-                    && child.currentItem !== undefined
+-                    && child.busy !== undefined)
+-                return child
++    // The containment can wrap the image plugin in a loader. Binding to
++    // its children also picks up a stack created after widget startup.
++    function findWallpaperStackView(item) {
++        if (!item) return null
++        if (item.currentItem !== undefined && item.busy !== undefined)
++            return item
++        for (const child of item.children) {
++            const stack = findWallpaperStackView(child)
++            if (stack) return stack
+@@ -164 +161,0 @@
+-
+@@ -168,7 +164,0 @@
+-    function updateWallpaperStackView() {
+-        _wallpaperStackView = findWallpaperStackView()
+-        _wallpaperCurrentItem = _wallpaperStackView
+-                ? _wallpaperStackView.currentItem
+-                : null
+-    }
+-
+@@ -185,43 +175,2 @@
+-        function onCurrentItemChanged() {
+-            glass._wallpaperCurrentItem =
+-                    glass._wallpaperStackView.currentItem
+-
+-            if (glass.solidMode
+-                    || glass.realtimeRefraction
+-                    || !glass.active)
+-                return
+-
+-            glass._wallpaperTransition = true
+-
+-            // Ensure the transition begins from a fresh capture, then let
+-            // live capture follow Plasma's animated wallpaper item.
+-            glass.wallpaperTex.scheduleUpdate()
+-            glass.markDirty()
+-
+-            // Some wallpaper implementations may replace the current item
+-            // without animating its opacity.
+-            if (glass._wallpaperCurrentItem
+-                    && glass._wallpaperCurrentItem.opacity >= 1.0) {
+-                glass._wallpaperTransition = false
+-                glass.refreshWallpaperCapture()
+-            }
+-        }
+-    }
+-
+-    Connections {
+-        target: glass._wallpaperCurrentItem
+-
+-        function onOpacityChanged() {
+-            if (!glass._wallpaperTransition)
+-                return
+-
+-            if (glass._wallpaperCurrentItem.opacity >= 1.0) {
+-                glass._wallpaperTransition = false
+-                glass.refreshWallpaperCapture()
+-            } else {
+-                // Keep the existing blur chain live for the duration of
+-                // Plasma's fade. markDirty() extends the existing burst
+-                // without changing the blur pipeline itself.
+-                glass.markDirty()
+-            }
+-        }
++        function onCurrentItemChanged() { glass.refreshWallpaperCapture() }
++        function onBusyChanged() { glass.refreshWallpaperCapture() }
+@@ -241 +190 @@
+-                                       && (glass.realtimeRefraction || glass._dirtyBurst)
++                                       && (glass.realtimeRefraction || glass._wallpaperTransition || glass._dirtyBurst)
+@@ -248 +197 @@
+-    onSolidModeChanged: markDirty()
++    onSolidModeChanged: { markDirty(); refreshWallpaperCapture() }
+@@ -251 +199,0 @@
+-        updateWallpaperStackView()
+@@ -309 +256,0 @@
+-        updateWallpaperStackView()
