@@ -819,7 +819,7 @@ void BlurEffect::configureComponentMaterials()
         material.optics = {n("RgbDriftStrength", 10, 0, 100), n("MagnifyGlassStrength", .02, 0, .2),
             n("RefractionWidth", 38, 0, 300), n("HighlightWidth", 16, 0, 600), n("HighlightStrength", .1, 0, 3),
             n("EdgeLensDepth", 0, 0, 120), n("BackdropGap", 0, 0, 60), n("BackdropFeather", 0, 0, 300),
-            n("BackdropBlurMix", 1, 0, 1), n("BackdropShadow", 0, 0, 1), n("BackdropCurve", 1, 0.2, 6),
+            n("BackdropShadow", 0, 0, 1), n("BackdropCurve", 1, 0.2, 6),
             n("SurfaceBlur", 1, 0, 1), n("BackdropTopFade", 0, 0, 120)};
         // The seamless backdrop draws past the surfaces: capture enough around them.
         if (material.optics.backdropFeather > 0)
@@ -2380,7 +2380,6 @@ void BlurEffect::blur(
         glUniform1fv(shader->uniformLocation("backdropRadii"), count, radii.data());
         glUniform1f(shader->uniformLocation("backdropGap"), optics.backdropGap * viewport.scale());
         glUniform1f(shader->uniformLocation("backdropFeather"), optics.backdropFeather * viewport.scale());
-        glUniform1f(shader->uniformLocation("backdropBlurMix"), optics.backdropBlurMix);
         glUniform1f(shader->uniformLocation("backdropShadow"), optics.backdropShadow);
         glUniform1f(shader->uniformLocation("backdropCurve"), optics.backdropCurve);
         glUniform1f(shader->uniformLocation("backdropTopFade"), optics.backdropTopFade * viewport.scale());

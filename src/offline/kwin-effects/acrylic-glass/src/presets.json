@@ -60,7 +60,6 @@
         "SurfaceTransparencyLight": 85
       },
       "control-center": {
-        "BackdropBlurMix": 0,
         "BackdropCurve": 1.1,
         "BackdropFeather": 170.0,
         "BackdropGap": 0.0,
@@ -217,7 +216,6 @@
         "SurfaceTransparencyLight": 85
       },
       "control-center": {
-        "BackdropBlurMix": 0,
         "BackdropCurve": 1.1,
         "BackdropFeather": 170,
         "BackdropGap": 0,
@@ -367,7 +365,6 @@
         "SurfaceTransparencyLight": 86
       },
       "control-center": {
-        "BackdropBlurMix": 0,
         "BackdropCurve": 1.1,
         "BackdropFeather": 170.0,
         "BackdropGap": 0.0,
@@ -518,7 +515,6 @@
         "SurfaceTransparencyLight": 98
       },
       "control-center": {
-        "BackdropBlurMix": 0,
         "BackdropCurve": 1.1,
         "BackdropFeather": 170,
         "BackdropGap": 0,
