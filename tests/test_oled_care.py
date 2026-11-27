@@ -438,25 +438,26 @@ def test_uncertain_restore_accepts_normalization_but_ignores_new_panels():
     assert "if (!base) continue" in script
 
 
-def test_uncertain_first_shift_without_saved_bases_requires_manual_recovery(
+def test_uncertain_first_shift_without_saved_bases_can_retry(
         tmp_path, monkeypatch):
-    _state_env(tmp_path, monkeypatch)
-    empty = {"index": 0, "last_off": 0, "last_h": 0, "panels": {}}
-    with oled_care._operation_lock(1.0) as acquired:
-        assert acquired
-        oled_care._prepare_state_unlocked()
-        oled_care._disable_unlocked(oled_care._MARKER_TRANSITION)
-        assert oled_care._save_transition(empty, 1, 2, 2) is True
-    monkeypatch.setattr(
-        oled_care, "_evaluate_script",
-        lambda _script: (_ for _ in ()).throw(
-            AssertionError("unknown geometry must not be guessed")
-        ),
-    )
-
-    assert oled_care.restore() == 1
+    state_file = _state_env(tmp_path, monkeypatch)
+    monkeypatch.setattr(oled_care, "_evaluate_script",
+                        lambda _: oled_care._EVAL_UNCERTAIN)
+    assert oled_care.shift() == 1
     assert oled_care._transition_file().is_file()
     assert oled_care._disabled_file().is_file()
+
+    monkeypatch.setattr(oled_care, "_evaluate_script",
+                        lambda _: pytest.fail("capture-only recovery contacted Plasma"))
+    assert oled_care.restore() == 0
+    assert not oled_care._transition_file().exists()
+    assert not oled_care._disabled_file().exists()
+
+    panels = {"5": {"offset": 0, "height": 32}}
+    monkeypatch.setattr(oled_care, "_evaluate_script",
+                        lambda _: json.dumps(panels) + "\nnormalized")
+    assert oled_care.shift() == 0
+    assert json.loads(state_file.read_text())["panels"] == panels
 
 
 def test_quiesce_waits_for_inflight_shift_then_blocks_later_shifts(

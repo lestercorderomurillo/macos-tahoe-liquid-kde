@@ -1031,12 +1031,12 @@ def _restore_unlocked() -> int:
         except _StateError as exc:
             print(tr('oled care: {exc}', exc=exc), file=sys.stderr)
             return 1
-        if transition is None:
-            # The journal is removed only after no dispatch or after the new
-            # state/rollback has become trustworthy. A leftover typed marker
-            # alone can therefore be cleared without touching geometry.
+        if transition is None or not transition["prior"]["panels"]:
+            # A marker alone has no pending journal. With an empty base map,
+            # the shift script could only capture geometry. In either case
+            # consume the guard, then handle any committed state below.
             try:
-                _finish_transition_unlocked()
+                _clear_transition_files_unlocked()
             except OSError as exc:
                 print(tr('oled care: transition cleanup failed ({exc})', exc=exc),
                       file=sys.stderr)
@@ -1044,9 +1044,6 @@ def _restore_unlocked() -> int:
         else:
             prior = transition["prior"]
             target = transition["target"]
-            if not prior["panels"]:
-                print(tr('oled care: uncertain geometry has no persisted panel bases; manual recovery is required'), file=sys.stderr)
-                return 1
             output = _evaluate_script(build_uncertain_restore_script(
                 prior["panels"], prior["last_off"], prior["last_h"],
                 target["last_off"], target["last_h"],

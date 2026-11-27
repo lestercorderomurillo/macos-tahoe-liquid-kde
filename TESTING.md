@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.16**. The native settings module passed all ten preset save and reopen cases. On KDE neon 6.8.1 Wayland, KWin recognized all 12 visible Control Center tiles. Disabling the lens changed the rendered edges on both edition wallpapers. The isolated X11 check verified the popup mask. [Validation and coverage](release-evidence.json).
+**v0.85.17**. All 90 OLED Care tests passed, including recovery and retry after a lost reply during initial panel discovery. The recovery test simulated the Plasma reply. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

@@ -1,34 +1,18 @@
 {
-  "version": "0.85.16",
+  "version": "0.85.17",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "1d6887a9d33a8479a32a52aa23167c6c48091269",
-  "scope": "Restore the reviewed Control Center optics and align the Edit Controls capsule.",
-  "reference": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/pull/140",
-  "active_effect_identity": "6457f982e9f6743bfc4a025689b13cb4d57f8bcd0a439fb2260d2a2ecbff93bb",
+  "scope": "Recover an interrupted OLED Care discovery pass with an empty panel map.",
+  "reference": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/171",
   "checks": [
     {
-      "command": "22 installer preset regression cases passed",
+      "command": "python3 -m pytest tests/test_oled_care.py (89 passed initially; the socket-path case passed separately with a shorter repository-local basetemp)",
       "result": "passed"
     },
     {
-      "command": "CONTROL_CENTER_X11_RENDER_OK 316 509, isolated Xvfb, updated region assertion",
-      "result": "passed"
-    },
-    {
-      "command": "pytest tests/test_glass_presets.py::test_native_material_preset_controls: all 10 native cases passed for the four reviewed material choices.",
-      "result": "passed"
-    },
-    {
-      "command": "KDE neon Wayland: same popup and lens depth, 0 recognized tiles before alignment and 12 after. Dark-mode on/off lens pixel comparisons passed on both edition wallpapers.",
+      "command": "python3 src/scripts/component_manifest.py",
       "result": "passed"
     }
   ],
-  "approved_previews": {
-    "final-golden-gate-dark.png": "722a491767114dd39fb2ae7c429e70c4b58f2beb5076a61ac54bb2b1537c7e3d",
-    "final-golden-gate-light.png": "bc49b6bd6f8d569a44c163c94a3ebf6a91af49d75c83a07feaef678ec68bef2e",
-    "final-tahoe-dark.png": "705e81c73a4b9bfd5f0cb4b273684f50a19a2807e72b7911cd51fe4a2fb57110",
-    "final-tahoe-light.png": "3a88bf89b89151df4730d73e70e7b7751c6dda069fee800582f37cd5cbe5ea2e"
-  },
-  "coverage_limits": "Wayland compositor lens pixels were exercised on KDE neon 6.8.1. The X11 check exercised the popup and published mask on Xvfb.",
-  "source_sha256": "4496d30f1eee553aeeece290ab6ce7a6cbbdcccbfbe59a8bd67459a03accb567"
+  "coverage_limits": "Local Python and Node regressions. Lost replies were simulated. No live Plasma session was required for journal cleanup.",
+  "source_sha256": "c267fb2f6ce76f6ced66bbd6e0b53d353a87b57b95c38ea30d14dc722fcfedc1"
 }
