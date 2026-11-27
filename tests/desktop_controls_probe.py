@@ -810,7 +810,8 @@ with tempfile.TemporaryDirectory() as directory:
             image = tile_window.grabWindow();assert not image.isNull()
             top,bottom = image.pixelColor(100,25),image.pixelColor(100,95)
             assert top == bottom, ('Tile contains a vertical tint', golden,light,top.getRgb(),bottom.getRgb())
-            expected = 46 if light else 31
+            light_alpha, dark_alpha = (153, 3) if golden else (140, 122)
+            expected = light_alpha if light else dark_alpha
             assert abs(top.alpha() - expected) <= 2, ('Tile fill changed',golden,light,top.getRgb())
         tile_window.close()
 
