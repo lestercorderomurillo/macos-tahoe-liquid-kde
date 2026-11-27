@@ -21,6 +21,8 @@
 #include <QLockFile>
 #include <memory>
 #include <QStandardPaths>
+#include <QStringDecoder>
+#include <QTextDocumentFragment>
 #include <QTimer>
 #include <KSystemClipboard>
 
@@ -53,13 +55,10 @@ public:
         if (!lock->tryLock()) throw std::runtime_error("Clipboard history is in use");
         cipher.initialize(QFile::exists(m_dir + "/index.enc") || !QDir(m_dir + "/images").entryList({"*.enc"}).isEmpty());
         load();
-        m_debounce.setSingleShot(true);
-        m_debounce.setInterval(90);
-        connect(&m_debounce, &QTimer::timeout, this, &Store::capture);
         connect(KSystemClipboard::instance(), &KSystemClipboard::changed, this, [this](QClipboard::Mode mode) {
             if (mode == QClipboard::Clipboard) {
                 m_currentId.clear();
-                m_debounce.start();
+                capture();
             }
         });
         QTimer::singleShot(300, this, &Store::capture); // pick up whatever is on the clipboard right now
@@ -169,7 +168,6 @@ private:
     QString m_dir;
     QString m_currentId;
     QList<Item> m_items; // newest first
-    QTimer m_debounce;
 
     static qint64 now() { return QDateTime::currentMSecsSinceEpoch(); }
     QString imagePath(const QString &id) const { return m_dir + "/images/" + cipher.imageName(id) + ".enc"; }
@@ -195,10 +193,54 @@ private:
         return true;
     }
 
+    // Plain text from whatever the source offered: standard text/plain, a charset variant, the X11
+    // names (UTF8_STRING / STRING / TEXT) some XWayland apps use, or, as a last resort, text/html.
+    static QString textOf(const QMimeData *md)
+    {
+        if (md->hasText()) {
+            const QString t = md->text();
+            if (!t.trimmed().isEmpty()) return t;
+        }
+        const QStringList formats = md->formats();
+        for (const QString &f : formats) {
+            const QString type = f.section(';', 0, 0).trimmed();
+            if (type.compare(QLatin1String("text/plain"), Qt::CaseInsensitive) != 0
+                && f != QLatin1String("UTF8_STRING")) continue;
+
+            static const QRegularExpression charset(
+                QStringLiteral(";\\s*charset\\s*=\\s*(?:\"([^\"]+)\"|([^;\\s]+))"),
+                QRegularExpression::CaseInsensitiveOption);
+            const auto match = charset.match(f);
+            const QString encoding = match.hasMatch() ? match.captured(match.lastCapturedIndex())
+                                                      : QStringLiteral("UTF-8");
+            QStringDecoder decoder(encoding.toLatin1().constData(), QStringConverter::Flag::Stateless);
+            if (!decoder.isValid()) continue;
+            const QString t = decoder(md->data(f));
+            if (!decoder.hasError() && !t.trimmed().isEmpty()) return t;
+        }
+        for (const QString &f : {QStringLiteral("STRING"), QStringLiteral("TEXT")}) {
+            if (formats.contains(f)) {
+                const QString t = QString::fromLatin1(md->data(f));
+                if (!t.trimmed().isEmpty()) return t;
+            }
+        }
+        // HTML is only a text source when no image came with it: "copy image" offers <img> markup plus the picture.
+        if (!md->hasImage() && formats.contains(QStringLiteral("text/html"))) {
+            QString t = QTextDocumentFragment::fromHtml(QString::fromUtf8(md->data(QStringLiteral("text/html")))).toPlainText();
+            t.remove(QChar::ObjectReplacementCharacter);   // inline images/objects render as U+FFFC
+            if (!t.trimmed().isEmpty()) return t;
+        }
+        return {};
+    }
+
     // Build an Item from clipboard data; pngOut receives the encoded PNG for images.
     bool build(const QMimeData *md, Item &it, QByteArray *pngOut)
     {
         if (!md || md->hasFormat("x-kde-passwordManagerHint")) return false; // never record secrets
+        // Real text wins over an image: spreadsheet cells, rich-text copies and the like offer both,
+        // and the text is what the user meant. Pure images (screenshots, "copy image") have none.
+        const QString text = textOf(md);
+        if (textItem(text, it)) return true;
         if (md->hasImage()) {
             QImage img = qvariant_cast<QImage>(md->imageData());
             if (img.isNull() || qint64(img.width()) * img.height() > kMaxImagePixels) return false;
@@ -210,7 +252,6 @@ private:
             if (pngOut) *pngOut = png;
             return true;
         }
-        if (md->hasText()) return textItem(md->text(), it);
         return false;
     }
 

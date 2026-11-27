@@ -5,8 +5,10 @@ import json
 import subprocess
 import sys
 import time
+from PyQt6.QtCore import QMimeData
+from PyQt6.QtGui import QImage
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtDBus import QDBusConnection, QDBusInterface
+from PyQt6.QtDBus import QDBus, QDBusConnection, QDBusInterface
 
 app = QApplication([])
 daemon = subprocess.Popen([sys.argv[1]])
@@ -19,7 +21,7 @@ def pump(seconds):
         time.sleep(.02)
 
 def entries():
-    return json.loads(iface.call('list').arguments()[0])
+    return json.loads(iface.call(QDBus.CallMode.BlockWithGui, 'list').arguments()[0])
 
 def wait(predicate):
     for _ in range(100):
@@ -47,6 +49,33 @@ try:
             assert not any(item.get('text') == 'DO-NOT-RECORD' for item in entries())
         else:
             wait(lambda: any(item['kind'] == mode for item in entries()))
+    image = QImage(6, 4, QImage.Format.Format_RGB32)
+    image.fill(0xff00ff)
+    for fmt, payload, expected in [
+        ('text/plain;charset="ISO-8859-1"', b'caf\xe9', 'café'),
+        ('text/html', b'<b>formatted</b>', 'formatted'),
+    ]:
+        md = QMimeData()
+        md.setData(fmt, payload)
+        app.clipboard().setMimeData(md)
+        wait(lambda: entries()[0].get('text') == expected)
+
+    for text, kind in [('cells', 'text'), ('a' * (1024 * 1024 + 1), 'image')]:
+        md = QMimeData()
+        md.setText(text)
+        md.setImageData(image)
+        app.clipboard().setMimeData(md)
+        wait(lambda: entries()[0]['kind'] == kind and
+             (entries()[0].get('text') == text if kind == 'text' else entries()[0]['w'] == 6))
+
+    app.clipboard().setText('first quick copy')
+    deadline = time.monotonic() + .020
+    while time.monotonic() < deadline:
+        app.processEvents()
+    app.clipboard().setText('second quick copy')
+    wait(lambda: [item.get('text') for item in entries()[:2]] ==
+         ['second quick copy', 'first quick copy'])
+
     for item in entries():
         iface.call('copy', item['id'])
         if item['kind'] == 'text':
