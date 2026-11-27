@@ -1,18 +1,27 @@
 {
-  "version": "0.85.17",
+  "version": "0.85.18",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Recover an interrupted OLED Care discovery pass with an empty panel map.",
-  "reference": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/issues/171",
+  "qualified_candidate": "c72a79388314c8edaf31456f9e8ce2e5adb07d2d",
+  "scope": "Refresh the shared desktop widget blur when Plasma replaces the wallpaper during an appearance transition.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_oled_care.py (89 passed initially; the socket-path case passed separately with a shorter repository-local basetemp)",
+      "command": "python3 -m pytest tests/test_desktop_widgets.py (8 passed)",
       "result": "passed"
     },
     {
-      "command": "python3 src/scripts/component_manifest.py",
+      "command": "KDE neon guest, calendar open with realtimeRefraction=false, plasma-apply-colorscheme light and dark with MacTahoe and MacGoldenGate wallpapers",
+      "result": "passed"
+    },
+    {
+      "command": "mac-tahoe-theme-switch light and dark in the guest, same plasmashell PID and no LiquidGlass.qml TypeError",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Local Python and Node regressions. Lost replies were simulated. No live Plasma session was required for journal cleanup.",
-  "source_sha256": "c267fb2f6ce76f6ced66bbd6e0b53d353a87b57b95c38ea30d14dc722fcfedc1"
+  "coverage_limits": "One live calendar instance exercised the shared material. Manual light and dark switches were observed. Scheduled transitions and other widget instances were not individually exercised.",
+  "approval": "Maintainer approved both light/dark comparison previews before paired publication.",
+  "preview_sha256": {
+    "MacTahoe.jpg": "3410a1388eca057830ae80a3e353bd1c929f08bfd793ed64c79060007424f5cb",
+    "MacGoldenGate.jpg": "36dbd84a2e70e8ba3f245f229b416ecb283517a81c6d6f529e8a2967fdb63197"
+  },
+  "source_sha256": "83541006c37b5c642d6704fa9dee683dcf4b606f247c44d7f05e57e62d8ae32b"
 }

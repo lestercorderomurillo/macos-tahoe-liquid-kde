@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.17**. All 90 OLED Care tests passed, including recovery and retry after a lost reply during initial panel discovery. The recovery test simulated the Plasma reply. [Validation and coverage](release-evidence.json).
+**v0.85.18**. The calendar refreshed its blur during light and dark wallpaper transitions in a disposable Plasma session with per-frame updates disabled. All eight desktop widget tests passed. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
