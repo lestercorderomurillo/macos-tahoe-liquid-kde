@@ -178,7 +178,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 एक ही मेन्यू से वाई-फ़ाई, आवाज़ और चमक नियंत्रित करें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="नियंत्रण केंद्र · लाइट और डार्क मोड" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="नियंत्रण केंद्र · लाइट और डार्क मोड" width="360">
 </p>
 
 <br>
@@ -188,7 +188,7 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 हाल की सूचनाएँ ऐप के अनुसार समूहों में देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="सूचनाएं · लाइट और डार्क मोड" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="सूचनाएं · लाइट और डार्क मोड" width="620">
 </p>
 
 <br>
@@ -218,7 +218,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 पेयर किए गए डिवाइस जोड़ें और उनकी बैटरी का स्तर देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · लाइट और डार्क मोड" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · लाइट और डार्क मोड" width="620">
 </p>
 
 ### Wi-Fi
@@ -226,7 +226,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 उपलब्ध नेटवर्क और कनेक्शन की स्थिति देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · लाइट और डार्क मोड" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · लाइट और डार्क मोड" width="328">
 </p>
 
 <br>

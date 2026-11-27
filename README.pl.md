@@ -178,7 +178,7 @@ Szukaj aplikacji lub przeglądaj je według kategorii.
 Steruj siecią Wi-Fi, dźwiękiem i jasnością z jednego menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Centrum sterowania · Tryb jasny i ciemny" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="Centrum sterowania · Tryb jasny i ciemny" width="360">
 </p>
 
 <br>
@@ -188,7 +188,7 @@ Steruj siecią Wi-Fi, dźwiękiem i jasnością z jednego menu.
 Czytaj ostatnie powiadomienia pogrupowane według aplikacji.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Powiadomienia · Tryb jasny i ciemny" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="Powiadomienia · Tryb jasny i ciemny" width="620">
 </p>
 
 <br>
@@ -218,7 +218,7 @@ Otwórz zegar, aby wyświetlić kalendarz miesięczny.
 Łącz się ze sparowanymi urządzeniami i sprawdzaj poziom ich baterii.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Tryb jasny i ciemny" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · Tryb jasny i ciemny" width="620">
 </p>
 
 ### Wi-Fi
@@ -226,7 +226,7 @@ Otwórz zegar, aby wyświetlić kalendarz miesięczny.
 Sprawdź dostępne sieci i stan połączenia.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Tryb jasny i ciemny" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · Tryb jasny i ciemny" width="328">
 </p>
 
 <br>

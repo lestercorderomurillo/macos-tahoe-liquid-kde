@@ -175,7 +175,7 @@
 Настраивайте Wi-Fi, звук и яркость в одном меню.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Центр управления · Светлый и тёмный режимы" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="Центр управления · Светлый и тёмный режимы" width="360">
 </p>
 
 <br>
@@ -185,7 +185,7 @@
 Просматривайте недавние уведомления, сгруппированные по приложениям.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Уведомления · Светлый и тёмный режимы" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="Уведомления · Светлый и тёмный режимы" width="620">
 </p>
 
 <br>
@@ -215,7 +215,7 @@
 Подключайте сопряжённые устройства и проверяйте их заряд.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Светлый и тёмный режимы" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · Светлый и тёмный режимы" width="620">
 </p>
 
 ### Wi-Fi
@@ -223,7 +223,7 @@
 Просматривайте доступные сети и состояние подключения.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Светлый и тёмный режимы" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · Светлый и тёмный режимы" width="328">
 </p>
 
 <br>

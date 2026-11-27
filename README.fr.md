@@ -175,7 +175,7 @@ Recherchez des applications ou parcourez-les par catégorie.
 Réglez le Wi-Fi, le son et la luminosité dans un seul menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Centre de contrôle · Modes clair et sombre" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="Centre de contrôle · Modes clair et sombre" width="360">
 </p>
 
 <br>
@@ -185,7 +185,7 @@ Réglez le Wi-Fi, le son et la luminosité dans un seul menu.
 Retrouvez les notifications récentes regroupées par application.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Les notifications · Modes clair et sombre" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="Les notifications · Modes clair et sombre" width="620">
 </p>
 
 <br>
@@ -215,7 +215,7 @@ Ouvrez l’horloge pour afficher le calendrier du mois.
 Connectez vos appareils associés et vérifiez leur batterie.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Modes clair et sombre" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · Modes clair et sombre" width="620">
 </p>
 
 ### Wi-Fi
@@ -223,7 +223,7 @@ Connectez vos appareils associés et vérifiez leur batterie.
 Consultez les réseaux disponibles et l’état de la connexion.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Modes clair et sombre" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · Modes clair et sombre" width="328">
 </p>
 
 <br>

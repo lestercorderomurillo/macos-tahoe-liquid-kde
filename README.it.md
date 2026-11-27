@@ -178,7 +178,7 @@ Cerca le app o sfogliale per categoria.
 Regola Wi-Fi, audio e luminosità da un unico menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Centro di controllo · Modalità chiara e scura" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="Centro di controllo · Modalità chiara e scura" width="360">
 </p>
 
 <br>
@@ -188,7 +188,7 @@ Regola Wi-Fi, audio e luminosità da un unico menu.
 Leggi le notifiche recenti raggruppate per app.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Notifiche · Modalità chiara e scura" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="Notifiche · Modalità chiara e scura" width="620">
 </p>
 
 <br>
@@ -218,7 +218,7 @@ Apri l’orologio per consultare il calendario del mese.
 Connetti i dispositivi associati e controlla la loro batteria.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Modalità chiara e scura" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · Modalità chiara e scura" width="620">
 </p>
 
 ### Wi-Fi
@@ -226,7 +226,7 @@ Connetti i dispositivi associati e controlla la loro batteria.
 Visualizza le reti disponibili e lo stato della connessione.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Modalità chiara e scura" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · Modalità chiara e scura" width="328">
 </p>
 
 <br>

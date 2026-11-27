@@ -175,7 +175,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 在同一菜单中调节无线网络、音量和亮度。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="控制中心 · 浅色与深色模式" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="控制中心 · 浅色与深色模式" width="360">
 </p>
 
 <br>
@@ -185,7 +185,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 按应用查看最近的通知。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="通知 · 浅色与深色模式" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="通知 · 浅色与深色模式" width="620">
 </p>
 
 <br>
@@ -215,7 +215,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 连接已配对的设备并查看其剩余电量。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · 浅色与深色模式" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · 浅色与深色模式" width="620">
 </p>
 
 ### Wi-Fi
@@ -223,7 +223,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 查看可用网络和连接状态。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · 浅色与深色模式" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · 浅色与深色模式" width="328">
 </p>
 
 <br>

@@ -178,7 +178,7 @@ Uygulamaları arayın veya kategoriye göre gözden geçirin.
 Wi-Fi, ses ve parlaklığı tek menüden ayarlayın.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Kontrol Merkezi · Açık ve koyu modlar" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="Kontrol Merkezi · Açık ve koyu modlar" width="360">
 </p>
 
 <br>
@@ -188,7 +188,7 @@ Wi-Fi, ses ve parlaklığı tek menüden ayarlayın.
 Son bildirimleri uygulamaya göre gruplanmış olarak görün.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="İletişimler · Açık ve koyu modlar" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="İletişimler · Açık ve koyu modlar" width="620">
 </p>
 
 <br>
@@ -218,7 +218,7 @@ Aylık takvimi görmek için saati açın.
 Eşleştirilmiş cihazları bağlayın ve pil düzeylerini kontrol edin.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Açık ve koyu modlar" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · Açık ve koyu modlar" width="620">
 </p>
 
 ### Wi-Fi
@@ -226,7 +226,7 @@ Eşleştirilmiş cihazları bağlayın ve pil düzeylerini kontrol edin.
 Kullanılabilir ağları ve bağlantı durumunu görün.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Açık ve koyu modlar" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · Açık ve koyu modlar" width="328">
 </p>
 
 <br>

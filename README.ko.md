@@ -178,7 +178,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 한 메뉴에서 Wi-Fi, 음량, 밝기를 조절할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="제어 센터 · 밝은 모드와 어두운 모드" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="제어 센터 · 밝은 모드와 어두운 모드" width="360">
 </p>
 
 <br>
@@ -188,7 +188,7 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 최근 알림을 앱별로 모아 볼 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="통지 · 밝은 모드와 어두운 모드" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="통지 · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 <br>
@@ -218,7 +218,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 페어링된 기기를 연결하고 배터리 잔량을 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · 밝은 모드와 어두운 모드" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · 밝은 모드와 어두운 모드" width="620">
 </p>
 
 ### Wi-Fi
@@ -226,7 +226,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 사용 가능한 네트워크와 연결 상태를 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · 밝은 모드와 어두운 모드" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · 밝은 모드와 어두운 모드" width="328">
 </p>
 
 <br>

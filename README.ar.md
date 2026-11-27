@@ -178,7 +178,7 @@
 اضبط الشبكة اللاسلكية والصوت والسطوع من قائمة واحدة.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="مركز التحكم · الوضعان الفاتح والداكن" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="مركز التحكم · الوضعان الفاتح والداكن" width="360">
 </p>
 
 <br>
@@ -188,7 +188,7 @@
 اطّلع على الإشعارات الأخيرة مجمّعة حسب التطبيق.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="الإخطارات · الوضعان الفاتح والداكن" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="الإخطارات · الوضعان الفاتح والداكن" width="620">
 </p>
 
 <br>
@@ -218,7 +218,7 @@
 اتصل بالأجهزة المقترنة وتحقق من مستوى بطارياتها.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · الوضعان الفاتح والداكن" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · الوضعان الفاتح والداكن" width="620">
 </p>
 
 ### Wi-Fi
@@ -226,7 +226,7 @@
 اعرض الشبكات المتاحة وحالة الاتصال.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · الوضعان الفاتح والداكن" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · الوضعان الفاتح والداكن" width="328">
 </p>
 
 <br>

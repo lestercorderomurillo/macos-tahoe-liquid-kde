@@ -175,7 +175,7 @@ Suche Apps oder durchstöbere sie nach Kategorie.
 Steuere WLAN, Lautstärke und Helligkeit in einem Menü.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Kontrollzentrum · Heller und dunkler Modus" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="Kontrollzentrum · Heller und dunkler Modus" width="360">
 </p>
 
 <br>
@@ -185,7 +185,7 @@ Steuere WLAN, Lautstärke und Helligkeit in einem Menü.
 Lies aktuelle Meldungen nach App gruppiert.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Mitteilungen · Heller und dunkler Modus" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="Mitteilungen · Heller und dunkler Modus" width="620">
 </p>
 
 <br>
@@ -215,7 +215,7 @@ Durchsuche Dateien in einem Fenster im Finder-Stil.
 Verbinde gekoppelte Geräte und prüfe ihren Akkustand.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Heller und dunkler Modus" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · Heller und dunkler Modus" width="620">
 </p>
 
 ### Wi-Fi
@@ -223,7 +223,7 @@ Verbinde gekoppelte Geräte und prüfe ihren Akkustand.
 Sieh verfügbare Netzwerke und den Verbindungsstatus.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Heller und dunkler Modus" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · Heller und dunkler Modus" width="328">
 </p>
 
 <br>

@@ -178,7 +178,7 @@ Dock のアイコンをデスクトップに合う色に変更できます。
 Wi-Fi、音量、明るさをひとつのメニューで調整できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="制御センター · ライトモードとダークモード" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="制御センター · ライトモードとダークモード" width="360">
 </p>
 
 <br>
@@ -188,7 +188,7 @@ Wi-Fi、音量、明るさをひとつのメニューで調整できます。
 最近の通知をアプリごとにまとめて確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="通知 · ライトモードとダークモード" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="通知 · ライトモードとダークモード" width="620">
 </p>
 
 <br>
@@ -218,7 +218,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 ペアリング済みの機器を接続し、電池残量を確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · ライトモードとダークモード" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · ライトモードとダークモード" width="620">
 </p>
 
 ### Wi-Fi
@@ -226,7 +226,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 利用可能なネットワークと接続状態を確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · ライトモードとダークモード" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · ライトモードとダークモード" width="328">
 </p>
 
 <br>

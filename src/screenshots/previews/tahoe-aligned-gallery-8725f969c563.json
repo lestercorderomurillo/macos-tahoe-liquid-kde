@@ -99,10 +99,9 @@
     "bluetooth": {
       "captures": [
         {
+          "case": "bluetooth",
           "edition": "tahoe",
           "mode": "light",
-          "case": "bluetooth",
-          "window": "mttkde-bluetooth",
           "geometry": {
             "x": 1507,
             "y": 30,
@@ -115,35 +114,42 @@
             3670,
             452
           ],
+          "window": "mttkde-bluetooth",
           "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "17a2a5d1a5131e8cddafba086699a169087b12309f84721bcdadf0787f11cf55"
+          "source": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+          "kwin": "kwin 6.8.1",
+          "plasma": "plasmashell 6.8.1",
+          "sha256": "87ec528af9047c32470c3117c2a9a3b495284cd21cc930005c4f98bf5ebc7514"
         },
         {
+          "case": "bluetooth",
           "edition": "tahoe",
           "mode": "dark",
-          "case": "bluetooth",
-          "window": "mttkde-bluetooth",
           "geometry": {
-            "x": 1507,
+            "x": 1509,
             "y": 30,
             "width": 328,
             "height": 196
           },
           "crop": [
-            3014,
+            3018,
             60,
-            3670,
+            3674,
             452
           ],
+          "window": "mttkde-bluetooth",
           "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "2af6d1ca6721ee9f5963d66dd5e893b639e09625a21bf639c8492c605a87853f"
+          "source": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+          "kwin": "kwin 6.8.1",
+          "plasma": "plasmashell 6.8.1",
+          "sha256": "087bcdb5dc4fe555769c67e0c74b5f8effa84d87b018d356b78d00796fcc7644"
         }
       ],
       "sources": [
-        "src/screenshots/previews/tahoe-bluetooth-light-7864e59c82a4.webp",
-        "src/screenshots/previews/tahoe-bluetooth-dark-cbf4909b04cf.webp"
+        "src/screenshots/previews/tahoe-bluetooth-light-db897bcb2422.webp",
+        "src/screenshots/previews/tahoe-bluetooth-dark-6f20c719db50.webp"
       ],
-      "gif": "src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif",
+      "gif": "src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif",
       "dimensions": [
         656,
         392
@@ -258,10 +264,9 @@
     "control-center": {
       "captures": [
         {
+          "case": "control-center",
           "edition": "tahoe",
           "mode": "light",
-          "case": "control-center",
-          "window": "mttkde-control-center",
           "geometry": {
             "x": 1434,
             "y": 30,
@@ -274,14 +279,17 @@
             3840,
             1418
           ],
+          "window": "mttkde-control-center",
           "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "57d5994355946efd3b6f555e0d3e031792a37f148cef18785465c58572c9fcb6"
+          "source": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+          "kwin": "kwin 6.8.1",
+          "plasma": "plasmashell 6.8.1",
+          "sha256": "fe64f8e47e043fffe4f66f936831903b3640371150f165d1eb6f611d62f845be"
         },
         {
+          "case": "control-center",
           "edition": "tahoe",
           "mode": "dark",
-          "case": "control-center",
-          "window": "mttkde-control-center",
           "geometry": {
             "x": 1434,
             "y": 30,
@@ -294,15 +302,19 @@
             3840,
             1418
           ],
+          "window": "mttkde-control-center",
           "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "dfb8e75297c7984e637417f6c6ffe27517af01f0a83f38670784094072e128b3"
+          "source": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+          "kwin": "kwin 6.8.1",
+          "plasma": "plasmashell 6.8.1",
+          "sha256": "eb4d47093f4a43ce32a26547098ad173a0da1066dcadf65aa16139bcf10d9b9c"
         }
       ],
       "sources": [
-        "src/screenshots/previews/tahoe-control-center-light-42ada65625b6.webp",
-        "src/screenshots/previews/tahoe-control-center-dark-669ce1af10f3.webp"
+        "src/screenshots/previews/tahoe-control-center-light-e7755f5f44ef.webp",
+        "src/screenshots/previews/tahoe-control-center-dark-c79bc1595893.webp"
       ],
-      "gif": "src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif",
+      "gif": "src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif",
       "dimensions": [
         632,
         1018
@@ -417,10 +429,9 @@
     "notifications": {
       "captures": [
         {
+          "case": "notifications",
           "edition": "tahoe",
           "mode": "light",
-          "case": "notifications",
-          "window": "mttkde-notifications",
           "geometry": {
             "x": 1550,
             "y": 36,
@@ -433,14 +444,17 @@
             3828,
             328
           ],
+          "window": "mttkde-notifications",
           "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "e95db059f8d8835f18625174efb1d7c433544f5ae9d5eef63c32edd1d561f215"
+          "source": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+          "kwin": "kwin 6.8.1",
+          "plasma": "plasmashell 6.8.1",
+          "sha256": "42c3b06f3ef6906119535ac4f979a2fdad8357ce806897281c0d4437afdad9fd"
         },
         {
+          "case": "notifications",
           "edition": "tahoe",
           "mode": "dark",
-          "case": "notifications",
-          "window": "mttkde-notifications",
           "geometry": {
             "x": 1550,
             "y": 36,
@@ -453,15 +467,19 @@
             3828,
             328
           ],
+          "window": "mttkde-notifications",
           "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "1e23008657ba43c59de62e5e448e9c757ba01fdfd54734f88c6a3556b2b522e5"
+          "source": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+          "kwin": "kwin 6.8.1",
+          "plasma": "plasmashell 6.8.1",
+          "sha256": "931502fc205749857361e7534c91f4d40738607b950fc7b6909382b6389fa216"
         }
       ],
       "sources": [
-        "src/screenshots/previews/tahoe-notifications-light-e8bdd3c35e88.webp",
-        "src/screenshots/previews/tahoe-notifications-dark-61b56592e8f0.webp"
+        "src/screenshots/previews/tahoe-notifications-light-e174ddf2341d.webp",
+        "src/screenshots/previews/tahoe-notifications-dark-d9781d550859.webp"
       ],
-      "gif": "src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif",
+      "gif": "src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif",
       "dimensions": [
         728,
         256
@@ -629,10 +647,9 @@
     "wi-fi": {
       "captures": [
         {
+          "case": "wi-fi",
           "edition": "tahoe",
           "mode": "light",
-          "case": "wi-fi",
-          "window": "mttkde-wifi",
           "geometry": {
             "x": 1541,
             "y": 30,
@@ -645,35 +662,42 @@
             3738,
             730
           ],
+          "window": "mttkde-wifi",
           "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "bb10bda5c40369ffeeb33725860763e78190058d01af0d4aadf7abbf7f38fcd7"
+          "source": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+          "kwin": "kwin 6.8.1",
+          "plasma": "plasmashell 6.8.1",
+          "sha256": "6bc26ebb01389ec924ced865f2d4d98b83a89ae531c33b39262a5d8bbb1bf606"
         },
         {
+          "case": "wi-fi",
           "edition": "tahoe",
           "mode": "dark",
-          "case": "wi-fi",
-          "window": "mttkde-wifi",
           "geometry": {
-            "x": 1541,
+            "x": 1543,
             "y": 30,
             "width": 328,
             "height": 335
           },
           "crop": [
-            3082,
+            3086,
             60,
-            3738,
+            3742,
             730
           ],
+          "window": "mttkde-wifi",
           "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "5094633945a36fd763db20fa0c9885be1c277274764f8a474382c56e634e9a1a"
+          "source": "7a76d59e9834b04d1caeb204a4a094cb4738b24d",
+          "kwin": "kwin 6.8.1",
+          "plasma": "plasmashell 6.8.1",
+          "sha256": "b2ad4b27970ba43b8c03603aee32ada262ff409ba2ffed8137a4dcccac97f467"
         }
       ],
       "sources": [
-        "src/screenshots/previews/tahoe-wi-fi-light-adf1be302ea7.webp",
-        "src/screenshots/previews/tahoe-wi-fi-dark-8f58f63136f5.webp"
+        "src/screenshots/previews/tahoe-wi-fi-light-cd35f24ea5e0.webp",
+        "src/screenshots/previews/tahoe-wi-fi-dark-0d7e499cc26e.webp"
       ],
-      "gif": "src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif",
+      "gif": "src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif",
       "dimensions": [
         656,
         670

@@ -178,7 +178,7 @@ Search for apps or browse them by category.
 Adjust Wi-Fi, sound and brightness in one menu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-control-center-light-dark-0b1436efd34c.gif" alt="Control Center · Light and dark modes" width="360">
+  <img src="src/screenshots/previews/tahoe-control-center-light-dark-b77cd15ec0aa.gif" alt="Control Center · Light and dark modes" width="360">
 </p>
 
 <br>
@@ -188,7 +188,7 @@ Adjust Wi-Fi, sound and brightness in one menu.
 Read recent alerts grouped by app.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-notifications-light-dark-934cf72b696e.gif" alt="Notifications · Light and dark modes" width="620">
+  <img src="src/screenshots/previews/tahoe-notifications-light-dark-78a8785285cc.gif" alt="Notifications · Light and dark modes" width="620">
 </p>
 
 <br>
@@ -218,7 +218,7 @@ Open the clock to browse the month.
 Connect paired devices and check their battery levels.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-939d5481fd28.gif" alt="Bluetooth · Light and dark modes" width="620">
+  <img src="src/screenshots/previews/tahoe-bluetooth-light-dark-d8bb48c8303a.gif" alt="Bluetooth · Light and dark modes" width="620">
 </p>
 
 ### Wi-Fi
@@ -226,7 +226,7 @@ Connect paired devices and check their battery levels.
 View available networks and connection status.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-d3c1485cc8a2.gif" alt="Wi-Fi · Light and dark modes" width="328">
+  <img src="src/screenshots/previews/tahoe-wi-fi-light-dark-ac5243f2e981.gif" alt="Wi-Fi · Light and dark modes" width="328">
 </p>
 
 <br>
