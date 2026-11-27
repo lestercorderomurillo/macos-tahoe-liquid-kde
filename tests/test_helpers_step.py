@@ -162,3 +162,22 @@ def test_public_namespace_rejects_escape_before_writing(tmp_path, monkeypatch, e
     assert not _helpers.sudo_install_file(source, target, "payload", directory_root=root)
     assert not (private / "new").exists()
     assert private.stat().st_mode & 0o777 == 0o700
+
+
+def test_corrupt_staging_copy_cannot_replace_live_assets(tmp_path, monkeypatch):
+    import utils
+    monkeypatch.setenv('XDG_CACHE_HOME', str(tmp_path / 'cache'))
+    src = tmp_path / 'source'
+    dst = tmp_path / 'installed'
+    for folder, text in ((src, 'new'), (dst, 'installed')):
+        folder.mkdir()
+        (folder / 'payload').write_text(text)
+    copytree = utils.shutil.copytree
+
+    def incomplete(source, target, **kwargs):
+        copytree(source, target, **kwargs)
+        (target / 'payload').write_text('bad')
+
+    monkeypatch.setattr(utils.shutil, 'copytree', incomplete)
+    assert not utils.safe_copy(src, dst)
+    assert (dst / 'payload').read_text() == 'installed'

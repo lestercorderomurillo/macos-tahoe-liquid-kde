@@ -62,6 +62,7 @@ def install() -> None:
     n = 0
     for v in VARIANTS:
         if not (src / v).is_dir():
+            fail(tr('{label} (source missing: {src})', label=v, src=src / v))
             continue
         if install_tree(src / v, DEST_DIR / v, v):
             from window_controls import apply_gtk_controls

@@ -192,6 +192,9 @@ def sudo_install_file(src: Path, dest: Path, label: str, *, user_owned: bool = F
                 os.chown(tmp, *owner, follow_symlinks=False)
             else:
                 _public_payload(tmp)
+            if not (identical(src, tmp) if user_owned else _same_public_payload(src, tmp)):
+                tmp.unlink()
+                raise OSError(f"Installed content differs from {src}")
             os.replace(str(tmp), str(dest))
     except OSError as exc:
         fail(f"{label} ({exc.__class__.__name__}: {exc})")
@@ -222,6 +225,9 @@ def sudo_install_tree(src: Path, dest: Path, label: str | None = None,
                 shutil.rmtree(str(tmp))
             shutil.copytree(str(src), str(tmp), symlinks=True)
             _public_payload(tmp)
+            if not _same_public_payload(src, tmp):
+                shutil.rmtree(tmp)
+                raise OSError(f"Installed content differs from {src}")
             if dest.exists():
                 shutil.rmtree(str(dest))
             os.replace(str(tmp), str(dest))

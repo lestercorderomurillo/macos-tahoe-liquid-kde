@@ -18,7 +18,8 @@ def install() -> None:
         (DEST_DIR / stale).unlink(missing_ok=True)
 
     n_inst = n_re = 0
-    for cs in sorted(src.glob("*.colors")):
+    for mode in ("Light", "Dark"):
+        cs = src / f"MacTahoeLiquidKde{mode}.colors"
         dest = DEST_DIR / cs.name
         existed = dest.is_file()
         try:

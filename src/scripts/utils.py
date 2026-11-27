@@ -504,6 +504,12 @@ def _copy_transaction(src: Path, dest: Path, transaction: Path, consume_staged: 
                 raise
 
     try:
+        # A consumed tree was renamed intact. For copies, verify every entry
+        # before displacing the installed version.
+        if not consume_staged or src.exists():
+            from component_cache import identical
+            if not identical(src, tmp):
+                return False
         if dest.exists() or dest.is_symlink():
             _move(dest, bak)
         _move(tmp, dest)

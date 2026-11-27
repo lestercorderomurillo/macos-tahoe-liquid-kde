@@ -110,6 +110,16 @@ def read_schema(package):
                          for entry in entries if entry.attrib["name"] in editable})
 
 
+def active_desktop_widgets():
+    config = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
+    try:
+        text = (config / "plasma-org.kde.plasma.desktop-appletsrc").read_text()
+    except (OSError, UnicodeError):
+        return []
+    plugins = re.findall(r"^plugin=" + re.escape(PREFIX) + r"([a-z0-9-]+)$", text, re.MULTILINE)
+    return sorted(set(plugins).intersection(NAMES))
+
+
 def installed_schema(plugin):
     if not plugin.startswith(PREFIX) or plugin.removeprefix(PREFIX) not in NAMES:
         return None

@@ -9,6 +9,7 @@ from pathlib import Path
 from distro import qt6_plugins_dir, qt6_qml_dir
 from glass_surface_settings import atomic_write
 from desktop_widget_settings import NAMES, PREFIX
+import owned_assets
 from installer_choices import selected
 from utils import qdbus_cmd, run_user
 from launcher_defaults import LAUNCHER_ID, apply_launcher_default, remember_installed_edition
@@ -356,7 +357,10 @@ def _remove_desktop_widgets(keep=frozenset()) -> None:
     remaining = installed.intersection(keep)
     for name in sorted(installed - keep):
         target = DEST_DIR / name
-        if target.is_dir() and not target.is_symlink() and not remove_tree(target, name):
+        if owned_assets.has_record(name, target):
+            if not owned_assets.remove_owned(name, DEST_DIR):
+                remaining.add(name)
+        elif target.is_dir() and not target.is_symlink() and not remove_tree(target, name):
             remaining.add(name)
     _save_installed_widgets(remaining)
 
@@ -367,19 +371,23 @@ def install_desktop_widgets(enabled: bool, selection=None) -> None:
         _remove_desktop_widgets()
         return
     if not WIDGETS_ARCHIVE.is_file():
-        warn(tr('Liquid Glass desktop widgets not found — skipping'))
+        fail(tr('Liquid Glass desktop widgets not found — skipping'))
         return
     with temp_dir("mttkde-desktop-widgets-") as staging:
         result = subprocess.run(["tar", "--zstd", "-xf", str(WIDGETS_ARCHIVE), "-C", str(staging)],
                                 check=False, capture_output=True, text=True)
         if result.returncode != 0:
-            warn(tr('Liquid Glass desktop widgets could not be unpacked: {error}', error=result.stderr.strip()))
+            fail(tr('Liquid Glass desktop widgets could not be unpacked: {error}', error=result.stderr.strip()))
             return
         from desktop_widget_settings import stage_configuration_route as stage_desktop_widget
         from weather_panel_settings import PLUGIN as WEATHER_PANEL, stage_configuration_route
         # The panel weather plugin is shared with the panel settings.
         wanted = None if selection is None else {WEATHER_PANEL, *(PREFIX + name for name in selection)}
         if wanted is not None:
+            for name in sorted(wanted):
+                if not (staging / name / "metadata.json").is_file():
+                    fail(tr('{value1} (no metadata.json — skipping)', value1=name))
+                    return
             _remove_desktop_widgets(wanted)
         installed = _installed_widgets()
         for entry in sorted(staging.iterdir()):
@@ -389,13 +397,28 @@ def install_desktop_widgets(enabled: bool, selection=None) -> None:
             if not WIDGET_ID.fullmatch(name) or not (entry / "metadata.json").is_file():
                 continue
             target = DEST_DIR / name
-            if target.is_symlink() or (target.exists() and name not in installed):
+            if target.is_symlink():
+                fail(f"{name}: {target} is a symbolic link")
                 continue
+            preexisting = target.exists() and name not in installed
+            if preexisting:
+                try:
+                    metadata = json.loads((target / "metadata.json").read_text())
+                    if metadata["KPlugin"]["Id"] != name:
+                        raise ValueError("unexpected package ID")
+                except (OSError, KeyError, TypeError, ValueError) as exc:
+                    fail(f"{target}: {exc}")
+                    continue
             if name == WEATHER_PANEL:
                 stage_configuration_route(entry)
             else:
                 stage_desktop_widget(entry)
-            if install_tree(entry, target, name):
+            if preexisting or owned_assets.has_record(name, target):
+                # Preserve the complete pre-installer package, including local edits.
+                owned_assets.install(name, entry, target, lambda src, dst: install_tree(src, dst, name))
+            elif not install_tree(entry, target, name):
+                continue
+            if name not in installed:
                 installed.add(name)
                 _save_installed_widgets(installed)
 

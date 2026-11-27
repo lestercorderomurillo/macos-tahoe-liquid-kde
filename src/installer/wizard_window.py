@@ -1401,6 +1401,10 @@ class InstallerWindow(OpaqueSurface):
         from cli import _theme_is_already_installed, default_layout_reset
         self.defaults = defaults()
         self.defaults["reset_layout"] = default_layout_reset(_theme_is_already_installed())
+        if not self.defaults["reset_layout"]:
+            from desktop_widget_settings import active_desktop_widgets
+            self.defaults["desktop_widget_selection"] = list(dict.fromkeys(
+                self.defaults["desktop_widget_selection"] + active_desktop_widgets()))
         self.defaults["wallpaper_explicit"] = False
         self.choices = dict(self.defaults)
         self.theme_launcher = "golden" if self.defaults["launcher"] == "golden" else "tahoe"
@@ -1839,6 +1843,10 @@ class InstallerWindow(OpaqueSurface):
         from installer_choices import installed_choices
         saved = installed_choices()
         self.choices = dict(self.defaults if saved is None else saved)
+        if saved and self.choices["desktop_widgets"]:
+            from desktop_widget_settings import active_desktop_widgets
+            self.choices["desktop_widget_selection"] = list(dict.fromkeys(
+                self.choices["desktop_widget_selection"] + active_desktop_widgets()))
         self.choices.update(reset_layout=False, wallpaper_explicit=False)
         self.sync_appearance_choice()
         self.settings_baseline = dict(self.choices) if saved is not None else None

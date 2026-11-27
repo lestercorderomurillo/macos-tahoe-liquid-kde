@@ -833,7 +833,7 @@ def test_wizard_update_preserves_layout_and_respects_file_manager(
     else:
         assert ("layout", "finish_reset") not in phases
     if not reset:
-        assert not any(step == "layout" for step, _ in phases)
+        assert [phase for step, phase in phases if step == "layout"] == ["refresh_installed_packages"]
     assert (("nautilus", "install") in phases) == (file_manager == "nautilus")
     assert defaults == ([(nautilus.DOLPHIN_DESKTOP, mime)
                          for mime in (nautilus.MIME_FOLDER, nautilus.MIME_SEARCH)]

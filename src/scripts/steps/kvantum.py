@@ -307,7 +307,7 @@ def _install_one(name: str) -> None:
             from theme_accent import apply as apply_accent
             apply_accent(dst / f.name)
         else:
-            warn(tr('Kvantum file {value1} not found', value1=f.name))
+            fail(tr('Kvantum file {value1} not found', value1=f.name))
 
 
 def install() -> None:
@@ -333,13 +333,13 @@ def install() -> None:
     for name in _THEMES:
         _install_one(name)
 
-    if any((DEST_DIR / f"{_THEMES[0]}{e}").is_file() for e in (".kvconfig", ".svg")):
+    if all((DEST_DIR / f"{_THEMES[0]}{e}").is_file() for e in (".kvconfig", ".svg")):
         ok(tr('mac-tahoe-liquid-kde theme (installed)'))
     else:
         fail(tr('mac-tahoe-liquid-kde theme (copy failed)'))
         return
 
-    if any((DEST_DIR_DARK / f"{_THEMES[1]}{e}").is_file() for e in (".kvconfig", ".svg")):
+    if all((DEST_DIR_DARK / f"{_THEMES[1]}{e}").is_file() for e in (".kvconfig", ".svg")):
         if existed:
             reinstall(tr('mac-tahoe-liquid-kdeDark theme'))
         else:

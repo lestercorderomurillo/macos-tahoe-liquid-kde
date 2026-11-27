@@ -1225,6 +1225,9 @@ def _run_install_steps(feat: dict[str, object]) -> int:
     keep_layout = keep_panel_layout()
     if not keep_layout and selected().get("launcher") == "keep" and not run_phase("clipboard", "uninstall"):
         return 1
+    if keep_layout and should_process("plasmoids", feat):
+        if not run_phase("layout", "refresh_installed_packages"):
+            return 1
     for feature in INSTALL_ORDER:
         check_cancelled()
         if feature == "layout":

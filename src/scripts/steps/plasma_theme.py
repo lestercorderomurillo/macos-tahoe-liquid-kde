@@ -25,6 +25,7 @@ def install() -> None:
     n = 0
     for v in VARIANTS:
         if not (src / v).is_dir():
+            fail(tr('{label} (source missing: {src})', label=v, src=src / v))
             continue
         with temp_dir("plasma-surfaces-") as staging:
             source = staging / v

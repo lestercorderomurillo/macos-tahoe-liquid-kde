@@ -187,3 +187,24 @@ def test_state_entries_that_are_paths_are_ignored(widgets):
 def test_desktop_widgets_are_selected_by_default():
     from installer_choices import defaults
     assert defaults()["desktop_widgets"] is True
+
+
+def test_reinstall_updates_unrecorded_widget_and_restores_original(widgets, tmp_path, monkeypatch):
+    from steps._helpers import install_tree
+    plasmoids, dest = widgets
+    monkeypatch.setattr(plasmoids, 'install_tree', install_tree)
+    monkeypatch.setenv('XDG_CACHE_HOME', str(tmp_path / 'cache'))
+    monkeypatch.setenv('XDG_STATE_HOME', str(tmp_path / 'state'))
+    name = 'com.jaxparrow07.macoswidgets.one'
+    package = dest / name
+    package.mkdir(parents=True)
+    original = '{"KPlugin":{"Id":"' + name + '"}}'
+    (package / 'metadata.json').write_text(original)
+    (package / 'personal.qml').write_text('original')
+    for _ in range(2):
+        plasmoids.install_desktop_widgets(True)
+        assert (package / 'metadata.json').read_text() == '{}'
+        assert not (package / 'personal.qml').exists()
+    plasmoids.install_desktop_widgets(False)
+    assert (package / 'metadata.json').read_text() == original
+    assert (package / 'personal.qml').read_text() == 'original'

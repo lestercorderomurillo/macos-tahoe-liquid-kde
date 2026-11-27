@@ -97,6 +97,11 @@ def install(component, source, target, copier):
     return result
 
 
+def has_record(component, target):
+    target, _, record = _entry(component, target)
+    return _read(record, target) is not None
+
+
 def remove_owned(component, base):
     """Leave modified/unrecorded assets intact. Restore the latest user baseline."""
     base = Path(os.path.abspath(base))

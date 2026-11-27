@@ -8,11 +8,12 @@ import shutil
 import subprocess
 
 from steps._helpers import (
-    DATA_HOME, fail, info, ok, offline,
+    DATA_HOME, fail, info, install_tree, ok, offline, temp_dir,
 )
 
 OFFLINE_DIR = offline("cursors")
 DEST_DIR = DATA_HOME / "icons"
+THEMES = ("MacTahoeLiquidKde", "MacTahoeLiquidKde-Dark")
 
 
 def deps():
@@ -26,33 +27,28 @@ def install() -> None:
         fail(tr('offline tarball missing: {tarball}', tarball=tarball))
         return
 
-    # Wipe our own stale cursor dirs (crashed-run leftovers); dirs whose
-    # name contains "Icons" belong to the icons step — never touch them.
-    for old in DEST_DIR.glob("MacTahoeLiquidKde*"):
-        if old.is_dir() and "Icons" not in old.name:
-            shutil.rmtree(old, ignore_errors=True)
-
-    res = subprocess.run(
-        ["tar", "--zstd", "-xf", str(tarball), "-C", str(DEST_DIR)],
-        check=False, capture_output=True, text=True,
-    )
-    if res.returncode != 0:
-        fail(tr('tar --zstd failed ({value1}): {value2}', value1=res.returncode, value2=res.stderr.strip()))
-        return
-
-    n = 0
-    for theme in sorted(DEST_DIR.glob("MacTahoeLiquidKde*")):
-        if theme.is_dir() and "Icons" not in theme.name and \
-                (theme / "cursors").is_dir():
-            ok(tr('{value1} (installed)', value1=theme.name))
-            n += 1
-    info(tr('{n} cursor themes installed/reinstalled', n=n))
+    with temp_dir("mttkde-cursors-") as staging:
+        res = subprocess.run(["tar", "--zstd", "-xf", str(tarball), "-C", str(staging)],
+                             check=False, capture_output=True, text=True)
+        if res.returncode:
+            fail(tr('tar --zstd failed ({value1}): {value2}', value1=res.returncode, value2=res.stderr.strip()))
+            return
+        for name in THEMES:
+            theme = staging / name
+            if not (theme / "index.theme").is_file() or not (theme / "cursors/left_ptr").is_file():
+                fail(tr('{label} (source missing: {src})', label=name, src=theme))
+                return
+        for name in THEMES:
+            if not install_tree(staging / name, DEST_DIR / name, name):
+                return
+    info(tr('{n} cursor themes installed/reinstalled', n=len(THEMES)))
 
 
 def uninstall() -> None:
     n = 0
-    for theme in DEST_DIR.glob("MacTahoeLiquidKde*"):
-        if not theme.is_dir() or "Icons" in theme.name:
+    for name in THEMES:
+        theme = DEST_DIR / name
+        if not theme.is_dir() or theme.is_symlink():
             continue
         try:
             shutil.rmtree(theme)

@@ -1,7 +1,7 @@
 import json
 
 from steps._helpers import (
-    DATA_HOME, install_tree, offline, ok, remove_tree,
+    DATA_HOME, fail, install_tree, offline, ok, remove_tree,
 )
 
 DEST_DIR = DATA_HOME / "plasma/look-and-feel"
@@ -10,15 +10,15 @@ DEST_DIR = DATA_HOME / "plasma/look-and-feel"
 def install() -> None:
     src = offline("look-and-feel")
     DEST_DIR.mkdir(parents=True, exist_ok=True)
-    for theme in sorted(src.glob("MacTahoeLiquidKde-*")):
-        if not theme.is_dir():
-            continue
+    for mode in ("Dark", "Light"):
+        theme = src / ("MacTahoeLiquidKde-" + mode)
         try:
             meta = json.loads((theme / "metadata.json").read_text())
             theme_id = meta.get("KPlugin", {}).get("Id") or meta.get("Id")
         except (OSError, json.JSONDecodeError):
             theme_id = None
         if not theme_id:
+            fail(tr('{dir_name}: metadata.json missing KPlugin.Id', dir_name=theme.name))
             continue
         if install_tree(theme, DEST_DIR / theme_id, theme.name):
             from window_controls import apply_global_theme

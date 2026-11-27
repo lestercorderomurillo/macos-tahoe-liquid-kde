@@ -343,3 +343,22 @@ def test_every_component_detects_changed_and_unchanged_inputs(tmp_path):
         else:
             file.write_bytes(previous)
     assert hashes() == baseline
+
+
+def test_cursor_archive_failure_preserves_live_theme(tmp_path, monkeypatch):
+    from steps import cursors
+    monkeypatch.setattr(cursors, "OFFLINE_DIR", tmp_path)
+    monkeypatch.setattr(cursors, "DEST_DIR", tmp_path / "installed")
+    monkeypatch.setattr(cursors, "fail", lambda message: errors.append(message))
+    errors = []
+    tarball = tmp_path / "MacTahoeLiquidKde-Cursors.tar.zst"
+    tarball.write_bytes(b"incomplete")
+    theme = cursors.DEST_DIR / cursors.THEMES[0]
+    theme.mkdir(parents=True)
+    (theme / "index.theme").write_text("previous")
+    cursors.install()
+    assert errors and (theme / "index.theme").read_text() == "previous"
+    personal = cursors.DEST_DIR / "MacTahoeLiquidKde-personal"
+    personal.mkdir()
+    cursors.uninstall()
+    assert personal.is_dir() and not theme.exists()

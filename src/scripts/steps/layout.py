@@ -259,6 +259,18 @@ def _configure_dock_flush(mode: str) -> None:
         qdbus_call("org.kde.KWin", "/Effects", "org.kde.kwin.Effects.reconfigureEffect", DOCK_FLUSH_ID)
 
 
+def refresh_installed_packages():
+    """Refresh installed layout dependencies without changing any panel settings."""
+    if any(path.is_dir() for path in _colorizer_dirs()):
+        _ensure_panel_colorizer()
+    for source, target, label in (
+        (offline("kwin-effects", "dock-flush"), DATA_HOME / "kwin/effects" / DOCK_FLUSH_ID, "Dock motion"),
+        (offline("kwin-scripts", DOCK_SCRIPT_ID), DATA_HOME / "kwin/scripts" / DOCK_SCRIPT_ID, "Dock follows screen"),
+    ):
+        if target.is_dir() and not target.is_symlink():
+            install_tree(source, target, label)
+
+
 def configure_dock() -> None:
     from installer_choices import dock_visibility, dock_visibility_preference, selected
     choices = selected()
