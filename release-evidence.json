@@ -1,22 +1,18 @@
 {
-  "version": "0.85.20",
+  "version": "0.85.21",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "bd386ecf0cdcfced3608989ac931322eda469206",
-  "scope": "Preserve consecutive clipboard changes and decode mixed and alternative MIME offers.",
+  "qualified_candidate": "a459e8b1ce87f352fbc603db7040a8fdeae8859c",
+  "scope": "Composite the active desktop selection into overlapping glass widgets.",
+  "approval": "Maintainer approved the four-frame calendar preview for both editions.",
+  "approved_previews": {
+    "seleccion.png": "62acb4ad54b372e4544c436553fd415359e6c4b458126e22d574b0f2c1df2053"
+  },
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_clipboard_step.py tests/test_clipboard_popup.py (59 passed)",
-      "result": "passed"
-    },
-    {
-      "command": "python3 -m pytest tests/test_clipboard_native.py (1 passed, encrypted storage, Xvfb mixed offers, oversized text and rapid copies)",
-      "result": "passed"
-    },
-    {
-      "command": "kwin_wayland --virtual with independent KSystemClipboard producer and mac-tahoe-clipd; compare the D-Bus history to all five offered strings",
+      "command": "KDE neon VM: drag the desktop selection across the calendar, expand it and release. Compare two interior regions across the four captures. Both return exactly to their initial pixels.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Native probes used Qt 6.11.2 on CachyOS, Xvfb and KWin Wayland 6.7.4. Clipboard history is shared by both editions.",
-  "source_sha256": "9aa909a4d261ce07c6b15b145012329086e7be3c7165e936e1bf4fbe791f88bb"
+  "coverage_limits": "The render check exercised the Tahoe calendar. All 14 packages share the same verified LiquidGlass.qml.",
+  "source_sha256": "f79c4e46e13f5f6ef83f571f8d8a25d0bf29d9228e0c189dcaf774b3ed27df11"
 }

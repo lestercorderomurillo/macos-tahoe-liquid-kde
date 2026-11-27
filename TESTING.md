@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.20**. Native clipboard history preserved two rapid copies in order on X11. A private KWin Wayland session verified UTF8_STRING, STRING, TEXT, Latin-1 MIME and HTML offers. [Validation and coverage](release-evidence.json).
+**v0.85.21**. Desktop widget glass follows the selection rectangle during a drag and restores the original pixels on release. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
