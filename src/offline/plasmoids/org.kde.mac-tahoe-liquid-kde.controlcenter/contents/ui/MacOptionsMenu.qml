@@ -22,6 +22,13 @@ PlasmaCore.Dialog {
     property bool isDarkTheme: textColor.r * 0.2126 + textColor.g * 0.7152 + textColor.b * 0.0722 > 0.5
     property int preferredWidth: 154
     property bool fitContents: false
+    property bool notificationGlass: false
+    backgroundHints: notificationGlass ? PlasmaCore.Dialog.NoBackground : PlasmaCore.Dialog.StandardBackground
+    property NativeGlass.ControlGlass glass: NativeGlass.ControlGlass {
+        window: menu.notificationGlass ? menu : null
+        surfaces: menu.notificationGlass ? [{x: 0, y: 0, width: menuBody.width,
+            height: menuBody.height, radius: surface.item ? surface.item.cornerRadius : 0}] : []
+    }
     signal restoreFocusRequested()
     property Item anchorItem
     property list<QtObject> actions
@@ -91,7 +98,7 @@ PlasmaCore.Dialog {
         Binding on width {
             delayed: true
             value: Math.max(menu.preferredWidth, menu.fitContents ? menuBody.contentWidth() : 0)
-                - dialogSvg.margins.left - dialogSvg.margins.right
+                - (menu.notificationGlass ? 0 : dialogSvg.margins.left + dialogSvg.margins.right)
         }
         function contentWidth() {
             let width = 0;
@@ -102,7 +109,15 @@ PlasmaCore.Dialog {
         }
         KSvg.FrameSvgItem { id: dialogSvg; visible: false; imagePath: "dialogs/background" }
         FontMetrics { id: labelMetrics; font.family: menu.textFont; font.pointSize: menu.textSize * 1.05 }
-        height: rows.height
+        height: rows.height + (menu.notificationGlass ? dialogSvg.margins.top + dialogSvg.margins.bottom : 0)
+        Loader {
+            id: surface
+            anchors.fill: parent
+            active: menu.notificationGlass
+            sourceComponent: Component {
+                NotificationSurface { cornerRadius: Math.min(16, height / 2) }
+            }
+        }
         focus: true
         Keys.onPressed: event => {
             switch (event.key) {
@@ -118,7 +133,9 @@ PlasmaCore.Dialog {
         }
         Column {
             id: rows
-            width: parent.width
+            x: menu.notificationGlass ? dialogSvg.margins.left : 0
+            y: menu.notificationGlass ? dialogSvg.margins.top : 0
+            width: parent.width - (menu.notificationGlass ? dialogSvg.margins.left + dialogSvg.margins.right : 0)
             Repeater {
                 model: menu.actions
                 delegate: Controls.ItemDelegate {

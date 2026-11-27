@@ -11,10 +11,11 @@ QQC.Pane {
     font.family: Style.family
     font.pixelSize: Style.body
     property string materialComponent: "control-center"
-    property real lightFallback: 0.18
-    property real darkFallback: 0.12
-    property real rimWidth: 1.1
-    property color darkTint: "white"
+    property real lightFallback: goldenGate ? 0.60 : 0.55
+    property real darkFallback: goldenGate ? 0.01 : 0.48
+    property bool panelHighlight: true
+    property real rimWidth: 0.75
+    property color darkTint: goldenGate ? "white" : "black"
     property real cornerRadius: Math.min(width, height) / 2
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
     readonly property bool goldenGate: material.hasElement("hint-clear-surface")
@@ -30,6 +31,6 @@ QQC.Pane {
             color: tile.lightMode ? Qt.rgba(1, 1, 1, glassSettings.lightOpacity >= 0 ? glassSettings.lightOpacity : tile.lightFallback)
                                  : Qt.rgba(tile.darkTint.r, tile.darkTint.g, tile.darkTint.b, glassSettings.darkOpacity >= 0 ? glassSettings.darkOpacity : tile.darkFallback)
         }
-        GlassRim { anchors.fill: parent; cornerRadius: tile.cornerRadius; lineWidth: tile.rimWidth; lightMode: tile.lightMode }
+        GlassRim { anchors.fill: parent; cornerRadius: tile.cornerRadius; lineWidth: tile.rimWidth; panelHighlight: tile.panelHighlight; lightMode: tile.lightMode }
     }
 }

@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
-// The Dock's opposing light rims, redrawn for each control's own radius.
+// Draw the rim along each control’s own rounded outline.
 // This is only the edge; the compositor supplies the real backdrop blur.
 Canvas {
     id: rim
     property real cornerRadius: 24
     property real lineWidth: 1.25
     property bool lightMode: true
+    property bool panelHighlight: true
+    onPanelHighlightChanged: requestPaint()
     antialiasing: true
     onWidthChanged: requestPaint()
     onHeightChanged: requestPaint()
@@ -34,5 +36,32 @@ Canvas {
         edge.addColorStop(0.72,"rgba(0,0,0,0.12)");
         edge.addColorStop(1,"rgba(255,255,255,0.56)");
         ctx.strokeStyle = edge; ctx.stroke();
+        if (!panelHighlight) return;
+
+        // Fade from the horizontal highlights into the existing side contour.
+        const reach = Math.max(1, Math.min(h / 2, r * 0.72));
+        const stop = Math.min(0.5, reach / height);
+        const ends = ctx.createLinearGradient(0, 0, 0, height);
+        ends.addColorStop(0, "white");
+        ends.addColorStop(stop, "transparent");
+        ends.addColorStop(1 - stop, "transparent");
+        ends.addColorStop(1, "white");
+        ctx.save();
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillStyle = ends;
+        ctx.fillRect(0, 0, width, height);
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = ends;
+        ctx.globalAlpha = lightMode ? 0.64 : 0.74;
+        ctx.stroke();
+        // Clip the faint, wider strokes to the inside of the glass.
+        ctx.clip();
+        ctx.globalAlpha = 0.09;
+        ctx.lineWidth = rim.lineWidth + 4;
+        ctx.stroke();
+        ctx.globalAlpha = 0.15;
+        ctx.lineWidth = rim.lineWidth + 1.8;
+        ctx.stroke();
+        ctx.restore();
     }
 }

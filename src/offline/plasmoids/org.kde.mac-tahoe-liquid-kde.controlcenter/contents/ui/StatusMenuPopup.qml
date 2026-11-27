@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 Item {
     id: popup
+    property alias panelHighlight: surface.panelHighlight
     property url source
     implicitWidth: 328
     implicitHeight: surface.implicitHeight + 20

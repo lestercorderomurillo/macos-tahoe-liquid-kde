@@ -240,6 +240,7 @@ Item {
     MacOptionsMenu {
         id: options
         objectName: "notificationOptionsMenu"
+        notificationGlass: true
         anchorItem: more
         textColor: Kirigami.Theme.textColor
         preferredWidth: 184

@@ -127,6 +127,7 @@ Item {
         }
 
         mainItem: NotificationSurface {
+            panelHighlight: false
             id: card
             property date today: new Date()
             property int offset: 0

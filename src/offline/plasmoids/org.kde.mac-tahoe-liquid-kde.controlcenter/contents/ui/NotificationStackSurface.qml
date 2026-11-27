@@ -5,6 +5,7 @@ import QtQuick.Effects
 Item {
     id: stack
     objectName: "notificationStackSurface"
+    property bool panelHighlight: true
     property int depth: 0
     property alias contentItem: surface.contentItem
     readonly property color fillColor: surface.fillColor
@@ -48,6 +49,7 @@ Item {
                     maskSource: occluder
                 }
                 NotificationSurface {
+                    panelHighlight: stack.panelHighlight
                     anchors.bottom: parent.bottom
                     width: parent.width
                     height: lip.area.height
@@ -70,6 +72,7 @@ Item {
         }
     }
     NotificationSurface {
+        panelHighlight: stack.panelHighlight
         id: surface
         width: parent.width; height: implicitHeight
     }
