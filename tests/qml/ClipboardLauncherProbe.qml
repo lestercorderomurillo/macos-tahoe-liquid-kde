@@ -7,9 +7,13 @@ Timer {
     repeat: true
     property int phase: -1
     property int waits: 0
+    property bool processing: false
     property string pinnedId: ""
     function verify(ok, message) { if (!ok) throw new Error(message); }
     onTriggered: {
+        // Native menu interaction can enter a nested event loop.
+        if (processing) return;
+        processing = true;
         try {
             if (phase === -1) {
                 root.visible = true;
@@ -26,7 +30,8 @@ Timer {
                 verify(!appList.visible && !searchList.visible, "applications hidden in history mode");
                 main.searchText = "second";
             } else if (phase === 2) {
-                verify(clipboardView.entries.length === 1, "query filters clipboard: " + JSON.stringify({query:main.searchText, visible:root.visible, mode:main.clipboardMode, entries:clipboardView.entries.length, total:main.clipboard.entries.length}));
+                verify(main.searchText === "second" && clipboardView.entries.length === 1,
+                       "query filters clipboard");
                 pinnedId = clipboardView.entries[0].id;
                 main.clipboard.pin(pinnedId, true);
             } else if (phase === 3) {
@@ -41,7 +46,9 @@ Timer {
                 root.visible = true;
                 main.showClipboard(false);
             } else if (phase === 6) {
-                verify(!main.clipboard.active && appList.visible, "return to applications");
+                const returned = root.visible && !main.clipboard.active && appList.visible;
+                if (!returned && ++waits < 8) return;
+                verify(returned, "return to applications");
                 main.showClipboard(true);
             } else if (phase === 7) {
                 const loaded = main.clipboard.active && main.clipboard.available
@@ -65,6 +72,8 @@ Timer {
         } catch (error) {
             console.log("CLIPBOARD_LAUNCHER_FAILED", phase, error);
             stop();
+        } finally {
+            processing = false;
         }
     }
 }
