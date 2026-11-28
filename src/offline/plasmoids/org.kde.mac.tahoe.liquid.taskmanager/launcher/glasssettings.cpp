@@ -282,7 +282,7 @@ QColor GlassSettings::notificationForeground(QColor base, QColor backdrop, QColo
     if (!dynamicTinting()) return base;
     GlassInk::Samples local;
     if (backdrop.alpha()) local.add(GlassInk::composite(backdrop, fill));
-    return local.tone(base);
+    return local.tone(base, ContrastPreset::settings(contrastProfiles().value(QStringLiteral("notifications.card")).toObject()));
 }
 
 QColor GlassSettings::animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop,

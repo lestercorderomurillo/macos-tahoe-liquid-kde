@@ -95,7 +95,6 @@ def component_inputs(root):
             if path.name == 'plasmoids' and payload.name == 'org.kde.mac-tahoe-liquid-kde.launcher':
                 controls = path / 'org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui'
                 inputs.append(('shared-options-menu', controls / 'MacOptionsMenu.qml'))
-                inputs.append(('shared-text-contrast', controls / 'NotificationContrast.js'))
             # Satellite status applets import the Control Center's shared views.
             if path.name == 'plasmoids' and payload.name in (
                 'org.kde.mac-tahoe-liquid-kde.acrylicglass',
