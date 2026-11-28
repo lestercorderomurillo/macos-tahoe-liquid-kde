@@ -1,0 +1,19 @@
+{
+  "edition": "golden-gate",
+  "component": "Glass Text Clock",
+  "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+  "session": "plasmashell 6.8.1",
+  "backend": "Wayland",
+  "scale": 1.25,
+  "geometry": {
+    "x": 800,
+    "y": 334,
+    "width": 304,
+    "height": 224
+  },
+  "installed_widget": "4e77560bcac55d6888ce2ccf311088acfc4a62bc14f5e04ce942e7d771d03cc4",
+  "sha256": {
+    "default": "9c9975262443b9fc79941db32ab504aa4e35d91c6be6bc7bf4390eb1f5461a8d",
+    "stress": "31e391601997f1e1075d1ddc6fb84e429fd018393c3200f2b08def3915d935d2"
+  }
+}

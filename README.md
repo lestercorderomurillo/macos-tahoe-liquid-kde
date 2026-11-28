@@ -1,83 +1,81 @@
-# Adaptive Contrast screenshot review
+# Adaptive Contrast visual review
 
-Captured on KDE neon with Plasma 6.8.1 under Wayland. Each default view uses its edition’s wallpaper. Stress views use diagonal light and dark bands. Tahoe’s search field appears inside the launcher. Golden Gate also has a separate search-field capture. Open an original PNG to inspect the foreground at capture resolution.
+Installed source `881c87e526ee2a1ab13f0fa866237765a154cbe8`, KDE neon Plasma 6.8.1, Wayland, 3840×2160 at 125% scale. Each edition used its own defaults. The stress wallpaper contains sharp black and white bands. Select any thumbnail to see its original pixels.
 
-Desktop widget grid and widget crops use `e92f8ee9`, which corrects a Glass Text Clock visibility binding. Other views use `b133b535`. Captures show the installed defaults. The images alone do not establish single-device-pixel precision or custom-preset behavior.
+[Capture dimensions, scenarios and SHA-256 hashes](captures.json)
+
+[Installed scope and sampling evidence](verification.md)
 
 ## Tahoe
 
-[Paired screenshot preview](tahoe/comparison.pdf) · [Installed source](tahoe/installed-source.json) · [Default preset editor](tahoe/preset-default.png) · [Notification JSON example](tahoe/preset-custom.png)
-
-| Component or view | Default | Stress |
+| Component | Default | Stress |
 | --- | --- | --- |
-| Menu bar and panel | [Open PNG](tahoe/default/global-menu-and-panel.png) | [Open PNG](tahoe/stress/global-menu-and-panel.png) |
-| Global menu titles | [Open PNG](tahoe/default/global-menu-titles.png) | [Open PNG](tahoe/stress/global-menu-titles.png) |
-| Panel clock | [Open PNG](tahoe/default/panel-clock.png) | [Open PNG](tahoe/stress/panel-clock.png) |
-| Panel status symbols | [Open PNG](tahoe/default/panel-status-symbols.png) | [Open PNG](tahoe/stress/panel-status-symbols.png) |
-| Native menu | [Open PNG](tahoe/default/native-menu.png) | [Open PNG](tahoe/stress/native-menu.png) |
-| Control center | [Open PNG](tahoe/default/control-center.png) | [Open PNG](tahoe/stress/control-center.png) |
-| Notification banner | [Open PNG](tahoe/default/notification-banner.png) | [Open PNG](tahoe/stress/notification-banner.png) |
-| Notification history | [Open PNG](tahoe/default/notification-history.png) | [Open PNG](tahoe/stress/notification-history.png) |
-| Launcher grid and categories | [Open PNG](tahoe/default/launcher.png) | [Open PNG](tahoe/stress/launcher.png) |
-| Launcher search | [Open PNG](tahoe/default/launcher-search.png) | [Open PNG](tahoe/stress/launcher-search.png) |
-| Launcher list | [Open PNG](tahoe/default/launcher-list.png) | [Open PNG](tahoe/stress/launcher-list.png) |
-| Clipboard | [Open PNG](tahoe/default/clipboard.png) | [Open PNG](tahoe/stress/clipboard.png) |
-| Options menu | [Open PNG](tahoe/default/options-menu.png) | [Open PNG](tahoe/stress/options-menu.png) |
-| About computer | [Open PNG](tahoe/default/about-computer.png) | [Open PNG](tahoe/stress/about-computer.png) |
-| About application | [Open PNG](tahoe/default/about-application.png) | [Open PNG](tahoe/stress/about-application.png) |
-| Desktop widgets | [Open PNG](tahoe/default/desktop-widgets.png) | [Open PNG](tahoe/stress/desktop-widgets.png) |
-| Calendar | [Open PNG](tahoe/default/widget-calendar.png) | [Open PNG](tahoe/stress/widget-calendar.png) |
-| Glass Text Clock | [Open PNG](tahoe/default/widget-clock-glass-text.png) | [Open PNG](tahoe/stress/widget-clock-glass-text.png) |
-| Analog Clock I | [Open PNG](tahoe/default/widget-clock-analog.png) | [Open PNG](tahoe/stress/widget-clock-analog.png) |
-| Analog Clock II | [Open PNG](tahoe/default/widget-clock-analog-2.png) | [Open PNG](tahoe/stress/widget-clock-analog-2.png) |
-| Analog Clock III | [Open PNG](tahoe/default/widget-clock-analog-3.png) | [Open PNG](tahoe/stress/widget-clock-analog-3.png) |
-| Digital Clock | [Open PNG](tahoe/default/widget-clock-square.png) | [Open PNG](tahoe/stress/widget-clock-square.png) |
-| World Clock I | [Open PNG](tahoe/default/widget-city-1.png) | [Open PNG](tahoe/stress/widget-city-1.png) |
-| World Clock II | [Open PNG](tahoe/default/widget-city-2.png) | [Open PNG](tahoe/stress/widget-city-2.png) |
-| World Clock III | [Open PNG](tahoe/default/widget-city-3.png) | [Open PNG](tahoe/stress/widget-city-3.png) |
-| Digital World Clock | [Open PNG](tahoe/default/widget-city-digital.png) | [Open PNG](tahoe/stress/widget-city-digital.png) |
-| Music | [Open PNG](tahoe/default/widget-music.png) | [Open PNG](tahoe/stress/widget-music.png) |
-| Timer | [Open PNG](tahoe/default/widget-timer.png) | [Open PNG](tahoe/stress/widget-timer.png) |
-| Weather | [Open PNG](tahoe/default/widget-weather.png) | [Open PNG](tahoe/stress/widget-weather.png) |
-| Photos · empty state | [Open PNG](tahoe/default/widget-photos.png) | [Open PNG](tahoe/stress/widget-photos.png) |
-| Photos · loaded photograph | [Open PNG](tahoe/default/photos-loaded.png) | [Open PNG](tahoe/stress/photos-loaded.png) |
+| Menu bar and panel | [![Tahoe default Menu bar and panel](tahoe/default/global-menu-and-panel.png)](tahoe/default/global-menu-and-panel.png) | [![Tahoe stress Menu bar and panel](tahoe/stress/global-menu-and-panel.png)](tahoe/stress/global-menu-and-panel.png) |
+| Global menu titles | [![Tahoe default Global menu titles](tahoe/default/global-menu-titles.png)](tahoe/default/global-menu-titles.png) | [![Tahoe stress Global menu titles](tahoe/stress/global-menu-titles.png)](tahoe/stress/global-menu-titles.png) |
+| Panel clock | [![Tahoe default Panel clock](tahoe/default/panel-clock.png)](tahoe/default/panel-clock.png) | [![Tahoe stress Panel clock](tahoe/stress/panel-clock.png)](tahoe/stress/panel-clock.png) |
+| Panel status symbols | [![Tahoe default Panel status symbols](tahoe/default/panel-status-symbols.png)](tahoe/default/panel-status-symbols.png) | [![Tahoe stress Panel status symbols](tahoe/stress/panel-status-symbols.png)](tahoe/stress/panel-status-symbols.png) |
+| Native menu | [![Tahoe default Native menu](tahoe/default/native-menu.png)](tahoe/default/native-menu.png) | [![Tahoe stress Native menu](tahoe/stress/native-menu.png)](tahoe/stress/native-menu.png) |
+| Control center | [![Tahoe default Control center](tahoe/default/control-center.png)](tahoe/default/control-center.png) | [![Tahoe stress Control center](tahoe/stress/control-center.png)](tahoe/stress/control-center.png) |
+| Notification banner | [![Tahoe default Notification banner](tahoe/default/notification-banner.png)](tahoe/default/notification-banner.png) | [![Tahoe stress Notification banner](tahoe/stress/notification-banner.png)](tahoe/stress/notification-banner.png) |
+| Notification history | [![Tahoe default Notification history](tahoe/default/notification-history.png)](tahoe/default/notification-history.png) | [![Tahoe stress Notification history](tahoe/stress/notification-history.png)](tahoe/stress/notification-history.png) |
+| Launcher grid and categories | [![Tahoe default Launcher grid and categories](tahoe/default/launcher.png)](tahoe/default/launcher.png) | [![Tahoe stress Launcher grid and categories](tahoe/stress/launcher.png)](tahoe/stress/launcher.png) |
+| Launcher search | [![Tahoe default Launcher search](tahoe/default/launcher-search.png)](tahoe/default/launcher-search.png) | [![Tahoe stress Launcher search](tahoe/stress/launcher-search.png)](tahoe/stress/launcher-search.png) |
+| Launcher list | [![Tahoe default Launcher list](tahoe/default/launcher-list.png)](tahoe/default/launcher-list.png) | [![Tahoe stress Launcher list](tahoe/stress/launcher-list.png)](tahoe/stress/launcher-list.png) |
+| Clipboard | [![Tahoe default Clipboard](tahoe/default/clipboard.png)](tahoe/default/clipboard.png) | [![Tahoe stress Clipboard](tahoe/stress/clipboard.png)](tahoe/stress/clipboard.png) |
+| Options menu | [![Tahoe default Options menu](tahoe/default/options-menu.png)](tahoe/default/options-menu.png) | [![Tahoe stress Options menu](tahoe/stress/options-menu.png)](tahoe/stress/options-menu.png) |
+| About computer | [![Tahoe default About computer](tahoe/default/about-computer.png)](tahoe/default/about-computer.png) | [![Tahoe stress About computer](tahoe/stress/about-computer.png)](tahoe/stress/about-computer.png) |
+| About application | [![Tahoe default About application](tahoe/default/about-application.png)](tahoe/default/about-application.png) | [![Tahoe stress About application](tahoe/stress/about-application.png)](tahoe/stress/about-application.png) |
+| Desktop widgets | [![Tahoe default Desktop widgets](tahoe/default/desktop-widgets.png)](tahoe/default/desktop-widgets.png) | [![Tahoe stress Desktop widgets](tahoe/stress/desktop-widgets.png)](tahoe/stress/desktop-widgets.png) |
+| Calendar | [![Tahoe default Calendar](tahoe/default/widget-calendar.png)](tahoe/default/widget-calendar.png) | [![Tahoe stress Calendar](tahoe/stress/widget-calendar.png)](tahoe/stress/widget-calendar.png) |
+| Glass Text Clock | [![Tahoe default Glass Text Clock](tahoe/default/widget-clock-glass-text.png)](tahoe/default/widget-clock-glass-text.png) | [![Tahoe stress Glass Text Clock](tahoe/stress/widget-clock-glass-text.png)](tahoe/stress/widget-clock-glass-text.png) |
+| Analog Clock I | [![Tahoe default Analog Clock I](tahoe/default/widget-clock-analog.png)](tahoe/default/widget-clock-analog.png) | [![Tahoe stress Analog Clock I](tahoe/stress/widget-clock-analog.png)](tahoe/stress/widget-clock-analog.png) |
+| Analog Clock II | [![Tahoe default Analog Clock II](tahoe/default/widget-clock-analog-2.png)](tahoe/default/widget-clock-analog-2.png) | [![Tahoe stress Analog Clock II](tahoe/stress/widget-clock-analog-2.png)](tahoe/stress/widget-clock-analog-2.png) |
+| Analog Clock III | [![Tahoe default Analog Clock III](tahoe/default/widget-clock-analog-3.png)](tahoe/default/widget-clock-analog-3.png) | [![Tahoe stress Analog Clock III](tahoe/stress/widget-clock-analog-3.png)](tahoe/stress/widget-clock-analog-3.png) |
+| Digital Clock | [![Tahoe default Digital Clock](tahoe/default/widget-clock-square.png)](tahoe/default/widget-clock-square.png) | [![Tahoe stress Digital Clock](tahoe/stress/widget-clock-square.png)](tahoe/stress/widget-clock-square.png) |
+| World Clock I | [![Tahoe default World Clock I](tahoe/default/widget-city-1.png)](tahoe/default/widget-city-1.png) | [![Tahoe stress World Clock I](tahoe/stress/widget-city-1.png)](tahoe/stress/widget-city-1.png) |
+| World Clock II | [![Tahoe default World Clock II](tahoe/default/widget-city-2.png)](tahoe/default/widget-city-2.png) | [![Tahoe stress World Clock II](tahoe/stress/widget-city-2.png)](tahoe/stress/widget-city-2.png) |
+| World Clock III | [![Tahoe default World Clock III](tahoe/default/widget-city-3.png)](tahoe/default/widget-city-3.png) | [![Tahoe stress World Clock III](tahoe/stress/widget-city-3.png)](tahoe/stress/widget-city-3.png) |
+| Digital World Clock | [![Tahoe default Digital World Clock](tahoe/default/widget-city-digital.png)](tahoe/default/widget-city-digital.png) | [![Tahoe stress Digital World Clock](tahoe/stress/widget-city-digital.png)](tahoe/stress/widget-city-digital.png) |
+| Music | [![Tahoe default Music](tahoe/default/widget-music.png)](tahoe/default/widget-music.png) | [![Tahoe stress Music](tahoe/stress/widget-music.png)](tahoe/stress/widget-music.png) |
+| Timer | [![Tahoe default Timer](tahoe/default/widget-timer.png)](tahoe/default/widget-timer.png) | [![Tahoe stress Timer](tahoe/stress/widget-timer.png)](tahoe/stress/widget-timer.png) |
+| Weather | [![Tahoe default Weather](tahoe/default/widget-weather.png)](tahoe/default/widget-weather.png) | [![Tahoe stress Weather](tahoe/stress/widget-weather.png)](tahoe/stress/widget-weather.png) |
+| Photos · empty state | [![Tahoe default Photos · empty state](tahoe/default/widget-photos.png)](tahoe/default/widget-photos.png) | [![Tahoe stress Photos · empty state](tahoe/stress/widget-photos.png)](tahoe/stress/widget-photos.png) |
+| Photos · loaded photograph | [![Tahoe default Photos · loaded photograph](tahoe/default/photos-loaded.png)](tahoe/default/photos-loaded.png) | [![Tahoe stress Photos · loaded photograph](tahoe/stress/photos-loaded.png)](tahoe/stress/photos-loaded.png) |
 
 ## Golden Gate
 
-[Paired screenshot preview](golden-gate/comparison.pdf) · [Installed source](golden-gate/installed-source.json) · [Default preset editor](golden-gate/preset-default.png) · [Notification JSON example](golden-gate/preset-custom.png)
-
-| Component or view | Default | Stress |
+| Component | Default | Stress |
 | --- | --- | --- |
-| Menu bar and panel | [Open PNG](golden-gate/default/global-menu-and-panel.png) | [Open PNG](golden-gate/stress/global-menu-and-panel.png) |
-| Global menu titles | [Open PNG](golden-gate/default/global-menu-titles.png) | [Open PNG](golden-gate/stress/global-menu-titles.png) |
-| Panel clock | [Open PNG](golden-gate/default/panel-clock.png) | [Open PNG](golden-gate/stress/panel-clock.png) |
-| Panel status symbols | [Open PNG](golden-gate/default/panel-status-symbols.png) | [Open PNG](golden-gate/stress/panel-status-symbols.png) |
-| Native menu | [Open PNG](golden-gate/default/native-menu.png) | [Open PNG](golden-gate/stress/native-menu.png) |
-| Control center | [Open PNG](golden-gate/default/control-center.png) | [Open PNG](golden-gate/stress/control-center.png) |
-| Notification banner | [Open PNG](golden-gate/default/notification-banner.png) | [Open PNG](golden-gate/stress/notification-banner.png) |
-| Notification history | [Open PNG](golden-gate/default/notification-history.png) | [Open PNG](golden-gate/stress/notification-history.png) |
-| Launcher grid and categories | [Open PNG](golden-gate/default/launcher.png) | [Open PNG](golden-gate/stress/launcher.png) |
-| Detached search field | [Open PNG](golden-gate/default/search-field.png) | [Open PNG](golden-gate/stress/search-field.png) |
-| Launcher search | [Open PNG](golden-gate/default/launcher-search.png) | [Open PNG](golden-gate/stress/launcher-search.png) |
-| Launcher list | [Open PNG](golden-gate/default/launcher-list.png) | [Open PNG](golden-gate/stress/launcher-list.png) |
-| Clipboard | [Open PNG](golden-gate/default/clipboard.png) | [Open PNG](golden-gate/stress/clipboard.png) |
-| Options menu | [Open PNG](golden-gate/default/options-menu.png) | [Open PNG](golden-gate/stress/options-menu.png) |
-| About computer | [Open PNG](golden-gate/default/about-computer.png) | [Open PNG](golden-gate/stress/about-computer.png) |
-| About application | [Open PNG](golden-gate/default/about-application.png) | [Open PNG](golden-gate/stress/about-application.png) |
-| Desktop widgets | [Open PNG](golden-gate/default/desktop-widgets.png) | [Open PNG](golden-gate/stress/desktop-widgets.png) |
-| Calendar | [Open PNG](golden-gate/default/widget-calendar.png) | [Open PNG](golden-gate/stress/widget-calendar.png) |
-| Glass Text Clock | [Open PNG](golden-gate/default/widget-clock-glass-text.png) | [Open PNG](golden-gate/stress/widget-clock-glass-text.png) |
-| Analog Clock I | [Open PNG](golden-gate/default/widget-clock-analog.png) | [Open PNG](golden-gate/stress/widget-clock-analog.png) |
-| Analog Clock II | [Open PNG](golden-gate/default/widget-clock-analog-2.png) | [Open PNG](golden-gate/stress/widget-clock-analog-2.png) |
-| Analog Clock III | [Open PNG](golden-gate/default/widget-clock-analog-3.png) | [Open PNG](golden-gate/stress/widget-clock-analog-3.png) |
-| Digital Clock | [Open PNG](golden-gate/default/widget-clock-square.png) | [Open PNG](golden-gate/stress/widget-clock-square.png) |
-| World Clock I | [Open PNG](golden-gate/default/widget-city-1.png) | [Open PNG](golden-gate/stress/widget-city-1.png) |
-| World Clock II | [Open PNG](golden-gate/default/widget-city-2.png) | [Open PNG](golden-gate/stress/widget-city-2.png) |
-| World Clock III | [Open PNG](golden-gate/default/widget-city-3.png) | [Open PNG](golden-gate/stress/widget-city-3.png) |
-| Digital World Clock | [Open PNG](golden-gate/default/widget-city-digital.png) | [Open PNG](golden-gate/stress/widget-city-digital.png) |
-| Music | [Open PNG](golden-gate/default/widget-music.png) | [Open PNG](golden-gate/stress/widget-music.png) |
-| Timer | [Open PNG](golden-gate/default/widget-timer.png) | [Open PNG](golden-gate/stress/widget-timer.png) |
-| Weather | [Open PNG](golden-gate/default/widget-weather.png) | [Open PNG](golden-gate/stress/widget-weather.png) |
-| Photos · empty state | [Open PNG](golden-gate/default/widget-photos.png) | [Open PNG](golden-gate/stress/widget-photos.png) |
-| Photos · loaded photograph | [Open PNG](golden-gate/default/photos-loaded.png) | [Open PNG](golden-gate/stress/photos-loaded.png) |
+| Menu bar and panel | [![Golden Gate default Menu bar and panel](golden-gate/default/global-menu-and-panel.png)](golden-gate/default/global-menu-and-panel.png) | [![Golden Gate stress Menu bar and panel](golden-gate/stress/global-menu-and-panel.png)](golden-gate/stress/global-menu-and-panel.png) |
+| Global menu titles | [![Golden Gate default Global menu titles](golden-gate/default/global-menu-titles.png)](golden-gate/default/global-menu-titles.png) | [![Golden Gate stress Global menu titles](golden-gate/stress/global-menu-titles.png)](golden-gate/stress/global-menu-titles.png) |
+| Panel clock | [![Golden Gate default Panel clock](golden-gate/default/panel-clock.png)](golden-gate/default/panel-clock.png) | [![Golden Gate stress Panel clock](golden-gate/stress/panel-clock.png)](golden-gate/stress/panel-clock.png) |
+| Panel status symbols | [![Golden Gate default Panel status symbols](golden-gate/default/panel-status-symbols.png)](golden-gate/default/panel-status-symbols.png) | [![Golden Gate stress Panel status symbols](golden-gate/stress/panel-status-symbols.png)](golden-gate/stress/panel-status-symbols.png) |
+| Native menu | [![Golden Gate default Native menu](golden-gate/default/native-menu.png)](golden-gate/default/native-menu.png) | [![Golden Gate stress Native menu](golden-gate/stress/native-menu.png)](golden-gate/stress/native-menu.png) |
+| Control center | [![Golden Gate default Control center](golden-gate/default/control-center.png)](golden-gate/default/control-center.png) | [![Golden Gate stress Control center](golden-gate/stress/control-center.png)](golden-gate/stress/control-center.png) |
+| Notification banner | [![Golden Gate default Notification banner](golden-gate/default/notification-banner.png)](golden-gate/default/notification-banner.png) | [![Golden Gate stress Notification banner](golden-gate/stress/notification-banner.png)](golden-gate/stress/notification-banner.png) |
+| Notification history | [![Golden Gate default Notification history](golden-gate/default/notification-history.png)](golden-gate/default/notification-history.png) | [![Golden Gate stress Notification history](golden-gate/stress/notification-history.png)](golden-gate/stress/notification-history.png) |
+| Launcher grid and categories | [![Golden Gate default Launcher grid and categories](golden-gate/default/launcher.png)](golden-gate/default/launcher.png) | [![Golden Gate stress Launcher grid and categories](golden-gate/stress/launcher.png)](golden-gate/stress/launcher.png) |
+| Launcher search | [![Golden Gate default Launcher search](golden-gate/default/launcher-search.png)](golden-gate/default/launcher-search.png) | [![Golden Gate stress Launcher search](golden-gate/stress/launcher-search.png)](golden-gate/stress/launcher-search.png) |
+| Launcher list | [![Golden Gate default Launcher list](golden-gate/default/launcher-list.png)](golden-gate/default/launcher-list.png) | [![Golden Gate stress Launcher list](golden-gate/stress/launcher-list.png)](golden-gate/stress/launcher-list.png) |
+| Clipboard | [![Golden Gate default Clipboard](golden-gate/default/clipboard.png)](golden-gate/default/clipboard.png) | [![Golden Gate stress Clipboard](golden-gate/stress/clipboard.png)](golden-gate/stress/clipboard.png) |
+| Options menu | [![Golden Gate default Options menu](golden-gate/default/options-menu.png)](golden-gate/default/options-menu.png) | [![Golden Gate stress Options menu](golden-gate/stress/options-menu.png)](golden-gate/stress/options-menu.png) |
+| About computer | [![Golden Gate default About computer](golden-gate/default/about-computer.png)](golden-gate/default/about-computer.png) | [![Golden Gate stress About computer](golden-gate/stress/about-computer.png)](golden-gate/stress/about-computer.png) |
+| About application | [![Golden Gate default About application](golden-gate/default/about-application.png)](golden-gate/default/about-application.png) | [![Golden Gate stress About application](golden-gate/stress/about-application.png)](golden-gate/stress/about-application.png) |
+| Desktop widgets | [![Golden Gate default Desktop widgets](golden-gate/default/desktop-widgets.png)](golden-gate/default/desktop-widgets.png) | [![Golden Gate stress Desktop widgets](golden-gate/stress/desktop-widgets.png)](golden-gate/stress/desktop-widgets.png) |
+| Calendar | [![Golden Gate default Calendar](golden-gate/default/widget-calendar.png)](golden-gate/default/widget-calendar.png) | [![Golden Gate stress Calendar](golden-gate/stress/widget-calendar.png)](golden-gate/stress/widget-calendar.png) |
+| Glass Text Clock | [![Golden Gate default Glass Text Clock](golden-gate/default/widget-clock-glass-text.png)](golden-gate/default/widget-clock-glass-text.png) | [![Golden Gate stress Glass Text Clock](golden-gate/stress/widget-clock-glass-text.png)](golden-gate/stress/widget-clock-glass-text.png) |
+| Analog Clock I | [![Golden Gate default Analog Clock I](golden-gate/default/widget-clock-analog.png)](golden-gate/default/widget-clock-analog.png) | [![Golden Gate stress Analog Clock I](golden-gate/stress/widget-clock-analog.png)](golden-gate/stress/widget-clock-analog.png) |
+| Analog Clock II | [![Golden Gate default Analog Clock II](golden-gate/default/widget-clock-analog-2.png)](golden-gate/default/widget-clock-analog-2.png) | [![Golden Gate stress Analog Clock II](golden-gate/stress/widget-clock-analog-2.png)](golden-gate/stress/widget-clock-analog-2.png) |
+| Analog Clock III | [![Golden Gate default Analog Clock III](golden-gate/default/widget-clock-analog-3.png)](golden-gate/default/widget-clock-analog-3.png) | [![Golden Gate stress Analog Clock III](golden-gate/stress/widget-clock-analog-3.png)](golden-gate/stress/widget-clock-analog-3.png) |
+| Digital Clock | [![Golden Gate default Digital Clock](golden-gate/default/widget-clock-square.png)](golden-gate/default/widget-clock-square.png) | [![Golden Gate stress Digital Clock](golden-gate/stress/widget-clock-square.png)](golden-gate/stress/widget-clock-square.png) |
+| World Clock I | [![Golden Gate default World Clock I](golden-gate/default/widget-city-1.png)](golden-gate/default/widget-city-1.png) | [![Golden Gate stress World Clock I](golden-gate/stress/widget-city-1.png)](golden-gate/stress/widget-city-1.png) |
+| World Clock II | [![Golden Gate default World Clock II](golden-gate/default/widget-city-2.png)](golden-gate/default/widget-city-2.png) | [![Golden Gate stress World Clock II](golden-gate/stress/widget-city-2.png)](golden-gate/stress/widget-city-2.png) |
+| World Clock III | [![Golden Gate default World Clock III](golden-gate/default/widget-city-3.png)](golden-gate/default/widget-city-3.png) | [![Golden Gate stress World Clock III](golden-gate/stress/widget-city-3.png)](golden-gate/stress/widget-city-3.png) |
+| Digital World Clock | [![Golden Gate default Digital World Clock](golden-gate/default/widget-city-digital.png)](golden-gate/default/widget-city-digital.png) | [![Golden Gate stress Digital World Clock](golden-gate/stress/widget-city-digital.png)](golden-gate/stress/widget-city-digital.png) |
+| Music | [![Golden Gate default Music](golden-gate/default/widget-music.png)](golden-gate/default/widget-music.png) | [![Golden Gate stress Music](golden-gate/stress/widget-music.png)](golden-gate/stress/widget-music.png) |
+| Timer | [![Golden Gate default Timer](golden-gate/default/widget-timer.png)](golden-gate/default/widget-timer.png) | [![Golden Gate stress Timer](golden-gate/stress/widget-timer.png)](golden-gate/stress/widget-timer.png) |
+| Weather | [![Golden Gate default Weather](golden-gate/default/widget-weather.png)](golden-gate/default/widget-weather.png) | [![Golden Gate stress Weather](golden-gate/stress/widget-weather.png)](golden-gate/stress/widget-weather.png) |
+| Photos · empty state | [![Golden Gate default Photos · empty state](golden-gate/default/widget-photos.png)](golden-gate/default/widget-photos.png) | [![Golden Gate stress Photos · empty state](golden-gate/stress/widget-photos.png)](golden-gate/stress/widget-photos.png) |
+| Photos · loaded photograph | [![Golden Gate default Photos · loaded photograph](golden-gate/default/photos-loaded.png)](golden-gate/default/photos-loaded.png) | [![Golden Gate stress Photos · loaded photograph](golden-gate/stress/photos-loaded.png)](golden-gate/stress/photos-loaded.png) |
+| Detached search field | [![Golden Gate default Detached search field](golden-gate/default/search-field.png)](golden-gate/default/search-field.png) | [![Golden Gate stress Detached search field](golden-gate/stress/search-field.png)](golden-gate/stress/search-field.png) |
 

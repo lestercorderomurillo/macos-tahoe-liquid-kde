@@ -1,1519 +1,1519 @@
 {
-  "candidate": "b133b535",
-  "session": "KDE neon, Plasma 6.8.1, Wayland, 3840x2160",
-  "clock_binding_fix": "e92f8ee9",
+  "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+  "scale": 1.25,
+  "session": "KDE neon Plasma 6.8.1 Wayland",
   "captures": [
     {
-      "edition": "tahoe",
-      "view": "global-menu-and-panel",
+      "edition": "Tahoe",
+      "view": "Menu bar and panel",
       "condition": "default",
       "path": "tahoe/default/global-menu-and-panel.png",
-      "source": "b133b535",
       "size": [
         3840,
-        72
+        42
       ],
-      "sha256": "9c91f3ae9cd41c7c9aa8d0447b59be71eca7c50bbda5983838ae9b415a1e9e7c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "fb5fa24b50cf9db9c2da9d206ee29e14b30a86763f8fa08369fe6c253b8cad63"
     },
     {
-      "edition": "tahoe",
-      "view": "global-menu-and-panel",
+      "edition": "Tahoe",
+      "view": "Menu bar and panel",
       "condition": "stress",
       "path": "tahoe/stress/global-menu-and-panel.png",
-      "source": "b133b535",
       "size": [
         3840,
-        72
+        42
       ],
-      "sha256": "07ae01d36013d4187f01b78c7bd23898c0f7f672d89478e2acd49f978819d614"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "27291679c1cb2fa5aac29c485fe7fa8043697f625654aba661ccff370eace257"
     },
     {
-      "edition": "tahoe",
-      "view": "global-menu-titles",
+      "edition": "Tahoe",
+      "view": "Global menu titles",
       "condition": "default",
       "path": "tahoe/default/global-menu-titles.png",
-      "source": "b133b535",
       "size": [
-        594,
-        68
+        649,
+        42
       ],
-      "sha256": "081a39164bf9a701c9646f462387ea8e23e5b64d63a63adccceb28d6422338df"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "e36b223ad27ba7eac3b302e4fb96957605fd075550d43e04f2cc896a3aa3c893"
     },
     {
-      "edition": "tahoe",
-      "view": "global-menu-titles",
+      "edition": "Tahoe",
+      "view": "Global menu titles",
       "condition": "stress",
       "path": "tahoe/stress/global-menu-titles.png",
-      "source": "b133b535",
       "size": [
-        594,
-        68
+        649,
+        42
       ],
-      "sha256": "2d827f739a51b88cb6f15f2d519e9ce4953e59130a3fb60c912ee56be92c6a37"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "2f1ff0e69dd3e51bcc5cc5630211684c5e77e775f4d98662b6f7003748d50e53"
     },
     {
-      "edition": "tahoe",
-      "view": "panel-clock",
+      "edition": "Tahoe",
+      "view": "Panel clock",
       "condition": "default",
       "path": "tahoe/default/panel-clock.png",
-      "source": "b133b535",
       "size": [
-        212,
-        68
+        134,
+        42
       ],
-      "sha256": "49b9fd166a1eef535b35344befc96ecaabc6c0754fa783aaf431997d166dd465"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "d8e4ad4687bfea7808995f9a83b8d4e475344a98d578145761b447a984d30abd"
     },
     {
-      "edition": "tahoe",
-      "view": "panel-clock",
+      "edition": "Tahoe",
+      "view": "Panel clock",
       "condition": "stress",
       "path": "tahoe/stress/panel-clock.png",
-      "source": "b133b535",
       "size": [
-        212,
-        68
+        132,
+        42
       ],
-      "sha256": "12ae84637f8b3d69513ef2b37562520149f7e272f69f9dfb63d1aefdf6ba03f8"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "4705bb8d6f32332ed4c712aca3f2836766fd56f0a063f5c13410fd8a597e0804"
     },
     {
-      "edition": "tahoe",
-      "view": "panel-status-symbols",
+      "edition": "Tahoe",
+      "view": "Panel status symbols",
       "condition": "default",
       "path": "tahoe/default/panel-status-symbols.png",
-      "source": "b133b535",
       "size": [
-        492,
-        68
+        308,
+        42
       ],
-      "sha256": "72b2b7b8478b19b3920195ed523b1d2944c1e2970b34883011b144a1a32ab43b"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "f284d2ffa54b3bd4e80c8bf82508009d47c977b7f2acab6dc45f8c3d8b30fb85"
     },
     {
-      "edition": "tahoe",
-      "view": "panel-status-symbols",
+      "edition": "Tahoe",
+      "view": "Panel status symbols",
       "condition": "stress",
       "path": "tahoe/stress/panel-status-symbols.png",
-      "source": "b133b535",
       "size": [
-        492,
-        68
+        307,
+        42
       ],
-      "sha256": "7ae414afa0d2348a0219ebe9e32db985282ad0806990ba83aa2f4be3560cb24c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "ab35392c888ac9dcb3332a8f25a880de6b98cfd1ae1beed628fd01b79521f5b9"
     },
     {
-      "edition": "tahoe",
-      "view": "native-menu",
+      "edition": "Tahoe",
+      "view": "Native menu",
       "condition": "default",
       "path": "tahoe/default/native-menu.png",
-      "source": "b133b535",
       "size": [
-        250,
-        128
+        156,
+        80
       ],
-      "sha256": "49d0465c9de1a56879d15db67b5bc1ad954415a893bbb5b524d75cec84147691"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "46bac998a5365e5c194b56ee8e8663fbcb43e088c19e7f276e43bc84af2984c8"
     },
     {
-      "edition": "tahoe",
-      "view": "native-menu",
+      "edition": "Tahoe",
+      "view": "Native menu",
       "condition": "stress",
       "path": "tahoe/stress/native-menu.png",
-      "source": "b133b535",
       "size": [
-        250,
-        128
+        156,
+        80
       ],
-      "sha256": "9f6d46b9d0b4c54cf7f63fffab6fe6f7f12d863f1e323ee3705e31556e6cbbbc"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "8a9f150f58d5d181eea5f58c9597ccf8eb94bd99f528080dc33333f1fea68421"
     },
     {
-      "edition": "tahoe",
-      "view": "control-center",
+      "edition": "Tahoe",
+      "view": "Control center",
       "condition": "default",
       "path": "tahoe/default/control-center.png",
-      "source": "b133b535",
       "size": [
-        972,
-        1358
+        608,
+        848
       ],
-      "sha256": "e795f2937d1707af5f1d7c7270fc6a02c621e0227abc307611e9995c58766669"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "b73cbf9c48cc03100a7d093293b3e0a80e4ac9556324f96366b0eb7cc4666b15"
     },
     {
-      "edition": "tahoe",
-      "view": "control-center",
+      "edition": "Tahoe",
+      "view": "Control center",
       "condition": "stress",
       "path": "tahoe/stress/control-center.png",
-      "source": "b133b535",
       "size": [
-        972,
-        1358
+        608,
+        848
       ],
-      "sha256": "37a1721bb596e334cc0579bf5d945599152518111febfc20ffec32c83009f18d"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "2944f87aa371f00964c69b3a22f01a595c27d544882b3a261a7a57b143de5b23"
     },
     {
-      "edition": "tahoe",
-      "view": "notification-banner",
+      "edition": "Tahoe",
+      "view": "Notification banner",
       "condition": "default",
       "path": "tahoe/default/notification-banner.png",
-      "source": "b133b535",
       "size": [
-        728,
-        184
+        454,
+        115
       ],
-      "sha256": "ff0254e5c10edc60a0f0bfbdf3fb93575dc9a6c2ff0229230b8370a403977d78"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "a33ff50b88f58c429b953c241c5afc3cc82dd471124cdf8d7f67684166b783ce"
     },
     {
-      "edition": "tahoe",
-      "view": "notification-banner",
+      "edition": "Tahoe",
+      "view": "Notification banner",
       "condition": "stress",
       "path": "tahoe/stress/notification-banner.png",
-      "source": "b133b535",
       "size": [
-        728,
-        184
+        454,
+        115
       ],
-      "sha256": "245c8b140f17b29699bdce9b2b6bd7fc41734c5e06a84634e830870ac2ca05ac"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "a4a62ffe036aca4c10767dc122e3405b79e154a7264ab6b1c2e1b001a73a75ce"
     },
     {
-      "edition": "tahoe",
-      "view": "notification-history",
+      "edition": "Tahoe",
+      "view": "Notification history",
       "condition": "default",
       "path": "tahoe/default/notification-history.png",
-      "source": "b133b535",
       "size": [
-        728,
-        264
+        454,
+        258
       ],
-      "sha256": "ecc8ba9be4d6ab76c1eb733ea4fbfedad758477d955a2ec27e2809eed0b58db6"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "13cf0a8a25c7dca655ac13b5b953ae3843774e274d84a51d03c2e22b04378851"
     },
     {
-      "edition": "tahoe",
-      "view": "notification-history",
+      "edition": "Tahoe",
+      "view": "Notification history",
       "condition": "stress",
       "path": "tahoe/stress/notification-history.png",
-      "source": "b133b535",
       "size": [
-        728,
-        272
+        454,
+        395
       ],
-      "sha256": "38bffb5670be3ff22375965919e990f6ad5ce2a1a12791f140f7e3c31e5e3388"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "af60bc48d08e66e90cf73d6627b4f861f7e1cc3b5bb38e2b9923c774b81b79da"
     },
     {
-      "edition": "tahoe",
-      "view": "launcher",
+      "edition": "Tahoe",
+      "view": "Launcher grid and categories",
       "condition": "default",
       "path": "tahoe/default/launcher.png",
-      "source": "b133b535",
       "size": [
-        1272,
-        1090
+        796,
+        681
       ],
-      "sha256": "1b173c5321453a3ba0fd02016860320d2fc6670ba8386210626b4b606abe7bd4"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "93dc771381cdd88eb4c3d5453c2c2b8074f40cc7a806817d20a8317d1290912b"
     },
     {
-      "edition": "tahoe",
-      "view": "launcher",
+      "edition": "Tahoe",
+      "view": "Launcher grid and categories",
       "condition": "stress",
       "path": "tahoe/stress/launcher.png",
-      "source": "b133b535",
       "size": [
-        1272,
-        1090
+        796,
+        681
       ],
-      "sha256": "d597f311669e84383b8d44bb3fc382b00f9ad13ecdf4dd834c465bac3a4d6781"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "fb2e55b5276ccdd199a0a59ef05ea8bb71628cfcefa4e6f24dfcb04e771e2e17"
     },
     {
-      "edition": "tahoe",
-      "view": "launcher-search",
+      "edition": "Tahoe",
+      "view": "Launcher search",
       "condition": "default",
       "path": "tahoe/default/launcher-search.png",
-      "source": "b133b535",
       "size": [
-        1272,
-        1090
+        796,
+        681
       ],
-      "sha256": "d5f2a4db1e25f5520851ced5fc380eb0138515817d64be3f111f802e25da9d0c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "ee5711cf3bb5848d82a0aa587e20cb2bdf4514e7cd47b74e00c42fd277004899"
     },
     {
-      "edition": "tahoe",
-      "view": "launcher-search",
+      "edition": "Tahoe",
+      "view": "Launcher search",
       "condition": "stress",
       "path": "tahoe/stress/launcher-search.png",
-      "source": "b133b535",
       "size": [
-        1272,
-        1090
+        796,
+        681
       ],
-      "sha256": "a67f47421e28a65debe550a1c7193ca7e25152e811421d112a92bcd5a2645880"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "490c3343aef9811a29eedef8b0dccbe23c051e885c456dc39989dce8b1489563"
     },
     {
-      "edition": "tahoe",
-      "view": "launcher-list",
+      "edition": "Tahoe",
+      "view": "Launcher list",
       "condition": "default",
       "path": "tahoe/default/launcher-list.png",
-      "source": "b133b535",
       "size": [
-        1272,
-        1090
+        796,
+        681
       ],
-      "sha256": "8faeb227903da1e152498ce2372e9ffbb7d235cfa1f3412b4cec2364fa815d39"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "95e24f7225b6d67367308d4487a2606aad79568041ca0e4cd2289e6537251923"
     },
     {
-      "edition": "tahoe",
-      "view": "launcher-list",
+      "edition": "Tahoe",
+      "view": "Launcher list",
       "condition": "stress",
       "path": "tahoe/stress/launcher-list.png",
-      "source": "b133b535",
       "size": [
-        1272,
-        1090
+        796,
+        681
       ],
-      "sha256": "e2fea608b413eaac016c9147179e8d348a14d5ad69d8d1cedb4b8e0acfa29ddb"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "9696e1f8fa3092efafbae37f8416fb5ecaf031b6152fbde4ee4673d1b4f41b27"
     },
     {
-      "edition": "tahoe",
-      "view": "clipboard",
+      "edition": "Tahoe",
+      "view": "Clipboard",
       "condition": "default",
       "path": "tahoe/default/clipboard.png",
-      "source": "b133b535",
       "size": [
-        1232,
-        356
+        770,
+        223
       ],
-      "sha256": "ad407d348d8311738d8b8bd557cb0271ba655cba8ea62d81c2b3e4a7453a3676"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "18c2aafcefc8e0557ecc59c9e18bc7cccf85704940a283b9c0193174d2c86056"
     },
     {
-      "edition": "tahoe",
-      "view": "clipboard",
+      "edition": "Tahoe",
+      "view": "Clipboard",
       "condition": "stress",
       "path": "tahoe/stress/clipboard.png",
-      "source": "b133b535",
       "size": [
-        1232,
-        356
+        770,
+        223
       ],
-      "sha256": "3fc4946ca390c06e67407c85df09efeb6f17f75445a5f39af95a9d8a49e30386"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "67dfcce636a0f8f9f9d364590a06843af2375598beb41f39bb97a266792fc5b7"
     },
     {
-      "edition": "tahoe",
-      "view": "options-menu",
+      "edition": "Tahoe",
+      "view": "Options menu",
       "condition": "default",
       "path": "tahoe/default/options-menu.png",
-      "source": "b133b535",
       "size": [
-        308,
-        404
+        193,
+        253
       ],
-      "sha256": "60d0891b8bca622033aa24a6621a34f28b20eff6b752c5997d2b625eadccee65"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "90eb14f9d58c2f8e4f55a7c9ce7871291a42f22434d1ed01ef0b7aa056998e94"
     },
     {
-      "edition": "tahoe",
-      "view": "options-menu",
+      "edition": "Tahoe",
+      "view": "Options menu",
       "condition": "stress",
       "path": "tahoe/stress/options-menu.png",
-      "source": "b133b535",
       "size": [
-        308,
-        404
+        193,
+        253
       ],
-      "sha256": "91fdc25335005085fe1cf0d58d56773da34e202a475283b969af0bf55050fba3"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c52babc468790d3ee66ad230b27f18d86ffaf88af678fe0249b4b9fb10ffba09"
     },
     {
-      "edition": "tahoe",
-      "view": "about-computer",
+      "edition": "Tahoe",
+      "view": "About computer",
       "condition": "default",
       "path": "tahoe/default/about-computer.png",
-      "source": "b133b535",
       "size": [
-        720,
-        1400
+        450,
+        679
       ],
-      "sha256": "a2e20d6b66ae65a5dc7b42691f83a4229f2e1959f200777894f8f6986971b506"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "9dc134aad6283ea39a0112773013b50d217a03d543e9c8a463844c767a683221"
     },
     {
-      "edition": "tahoe",
-      "view": "about-computer",
+      "edition": "Tahoe",
+      "view": "About computer",
       "condition": "stress",
       "path": "tahoe/stress/about-computer.png",
-      "source": "b133b535",
       "size": [
-        720,
-        1400
+        450,
+        679
       ],
-      "sha256": "66951165bf56432e086dcb71bb591fc7dc6e9e58d4f2c0211d8572872ffa57a5"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "5ed5e0788fca6b69971d56b420314f655ec4c9d599da435080efa1d5e547039a"
     },
     {
-      "edition": "tahoe",
-      "view": "about-application",
+      "edition": "Tahoe",
+      "view": "About application",
       "condition": "default",
       "path": "tahoe/default/about-application.png",
-      "source": "b133b535",
       "size": [
-        720,
-        792
+        450,
+        495
       ],
-      "sha256": "1902570c2ef198bf16dbef3309ce5b8f4b3db921c5c544d16c2875592a4ed046"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c1169d9f8b7a0acc097e490d3ce7981a4915b03c28db3fe4b93bce0c66658df1"
     },
     {
-      "edition": "tahoe",
-      "view": "about-application",
+      "edition": "Tahoe",
+      "view": "About application",
       "condition": "stress",
       "path": "tahoe/stress/about-application.png",
-      "source": "b133b535",
       "size": [
-        720,
-        792
+        450,
+        495
       ],
-      "sha256": "bb7e21fcd064fedaa58500b449a5e317864e6cb597b673200f814d1fe7a2f7ee"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c1169d9f8b7a0acc097e490d3ce7981a4915b03c28db3fe4b93bce0c66658df1"
     },
     {
-      "edition": "tahoe",
-      "view": "desktop-widgets",
+      "edition": "Tahoe",
+      "view": "Desktop widgets",
       "condition": "default",
       "path": "tahoe/default/desktop-widgets.png",
-      "source": "e92f8ee9",
       "size": [
         3840,
         2160
       ],
-      "sha256": "25d11f866d99161e768aed6091db303f6260678f5fadc8c6a0ae189eaf271d74"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "3152bedda81eb4c6f549fc4fba7ef4fee1b85ec7c94252a28b2922db1804e863"
     },
     {
-      "edition": "tahoe",
-      "view": "desktop-widgets",
+      "edition": "Tahoe",
+      "view": "Desktop widgets",
       "condition": "stress",
       "path": "tahoe/stress/desktop-widgets.png",
-      "source": "e92f8ee9",
       "size": [
         3840,
         2160
       ],
-      "sha256": "c4e5e896d336b88eb1cc45a197cf81df495ccb2f53cc0a4833e3b7fa53a609a0"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "6a7d289012cac51143ad7a0dbd94edd1f5d047af35d8ebf95f6b3022a1e70cbb"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-calendar",
+      "edition": "Tahoe",
+      "view": "Calendar",
       "condition": "default",
       "path": "tahoe/default/widget-calendar.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        260,
+        260
       ],
-      "sha256": "e037b621ea6ceafe1d276b386ed399255d112236ef0ae3a738b6c47e6f632ce9"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "a160034c95a844d6eee5ee162d0bd355e4a46e298dc5eb312496094c0ae66bcc"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-calendar",
+      "edition": "Tahoe",
+      "view": "Calendar",
       "condition": "stress",
       "path": "tahoe/stress/widget-calendar.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        260,
+        260
       ],
-      "sha256": "aa7ee2450b8912c72172cfa92d79e8c994561ecbd49804fe95e52e8271de4798"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "ee0d21e2c46db9b6e0a8b97325459aa17498ede12a6b34291dd7640db85d6c6e"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-glass-text",
+      "edition": "Tahoe",
+      "view": "Glass Text Clock",
       "condition": "default",
       "path": "tahoe/default/widget-clock-glass-text.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "03c3740258f58b0407de54af877d5792d3292278d38f36bb3dfba6887371ee6b"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "886d32b8366339c5c4cc456f1a116263a9dc0aa7d5ed5e2531c52a85bf141e2c"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-glass-text",
+      "edition": "Tahoe",
+      "view": "Glass Text Clock",
       "condition": "stress",
       "path": "tahoe/stress/widget-clock-glass-text.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "f2a23408c88a79f460b7bee60f48fed87580e609d2114b86d77c39045b2d4452"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "769c0cf245c3111fcdac91dde73c597ea53d046fc2ea8382759e5d4fd46e30c9"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-analog",
+      "edition": "Tahoe",
+      "view": "Analog Clock I",
       "condition": "default",
       "path": "tahoe/default/widget-clock-analog.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        260,
+        260
       ],
-      "sha256": "7b669353935a294b6f865408f6c14a34c4278c9b861b2e9ac5325a2aa79ec00e"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "22cb4f7de3b779d6a7fae7707536fc1508a921864c7500e7267cba12f8eabccd"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-analog",
+      "edition": "Tahoe",
+      "view": "Analog Clock I",
       "condition": "stress",
       "path": "tahoe/stress/widget-clock-analog.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        260,
+        260
       ],
-      "sha256": "c831b922011af8a48f799139f6cb114325317327ccf15df8b3ca62f56df4a072"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "3eb1ba5d93d806e16e9174e94933cdd50544bd04f82b2a8a573e26df99a75a92"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-analog-2",
+      "edition": "Tahoe",
+      "view": "Analog Clock II",
       "condition": "default",
       "path": "tahoe/default/widget-clock-analog-2.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "d9e0076a01ebf528c0994800d4abcae57f7e10049a3c6da8726d887149b1e974"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c8859823efc433f72a90c6e2f2938729cd14d4922f1e4b2125089e6b0a8e53b0"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-analog-2",
+      "edition": "Tahoe",
+      "view": "Analog Clock II",
       "condition": "stress",
       "path": "tahoe/stress/widget-clock-analog-2.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "dc81460c3ca9543e9fb070e4921d813185cc04cd332429df0a464679777dfe97"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "ac25cc2c96532ff72d5966fa766d606d7a94d98fdee1df5e7df21b2b072635c2"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-analog-3",
+      "edition": "Tahoe",
+      "view": "Analog Clock III",
       "condition": "default",
       "path": "tahoe/default/widget-clock-analog-3.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "9ca7cde6d295b84d29e0e783cec934f225505d92de7249c070e3904cf8f6615e"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "e03303e826a52a9632b54aa5fc55b8f9b2314078f75eda7021b057851f50c832"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-analog-3",
+      "edition": "Tahoe",
+      "view": "Analog Clock III",
       "condition": "stress",
       "path": "tahoe/stress/widget-clock-analog-3.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "018336f370338fd156e5468fc1886e56eedee30ef3477bdd8ede7fafdb6f32a8"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "1043e141f36bb7f356484bb08ecd951aa2fb65e4f121f4a667ca8556ff4ea9c4"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-square",
+      "edition": "Tahoe",
+      "view": "Digital Clock",
       "condition": "default",
       "path": "tahoe/default/widget-clock-square.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "7abdf4d094007bdc8f4a7852ffbf6ecf6985c5468535f3ef0fdaf576fa3f932c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "38b21021bc7d96ead7c543ec768d5f03a0a0d05a5e4725a252b2b08e4481205f"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-clock-square",
+      "edition": "Tahoe",
+      "view": "Digital Clock",
       "condition": "stress",
       "path": "tahoe/stress/widget-clock-square.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "cc74140f7d9f6597d668638c1c60c142284aeaf5a20e1ab34e40a7f2f5f6efa6"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "0adf2a5e7a5bf3b6abc7c4365c3377c0f950fb94a7382955cc8e040d65067895"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-city-1",
+      "edition": "Tahoe",
+      "view": "World Clock I",
       "condition": "default",
       "path": "tahoe/default/widget-city-1.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "e6cf138aa03c081f6165b3086257b43fc087a3606d6a08ab0bbcf7936856e20b"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "6b8dd52a910e47c7bcdbea4f93156a8b1787190f2c689e7add635c47c3faeba9"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-city-1",
+      "edition": "Tahoe",
+      "view": "World Clock I",
       "condition": "stress",
       "path": "tahoe/stress/widget-city-1.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "2ed0f1335b0110d8e9ac93eb5b48043aa21bb02373a0a38e103b4798e5e38041"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "39e59a481ff6f06e97dc6c11fa7c2a3468e499e8467b93384c3332193bbfb86e"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-city-2",
+      "edition": "Tahoe",
+      "view": "World Clock II",
       "condition": "default",
       "path": "tahoe/default/widget-city-2.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "dc3934f4904498674ede1c4ab44e5bde23cf44dc663990a7b19e7275a8d31a4c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "1e1517a7ef205abf71fe2a4305077058a3aaedafe15d651fda9b476e0d2b1ec6"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-city-2",
+      "edition": "Tahoe",
+      "view": "World Clock II",
       "condition": "stress",
       "path": "tahoe/stress/widget-city-2.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "303f11fd9556f15c8f46b85ebc4db49c2e44522f84b2a204480155a327727876"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "f5e02eb36e693dd979d14e36ac3b60c57bbbb17ec31324b18e124b0f7ca17a63"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-city-3",
+      "edition": "Tahoe",
+      "view": "World Clock III",
       "condition": "default",
       "path": "tahoe/default/widget-city-3.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "b14118a892f82b4e459a73b0a87cefad7b88fdb8b88e3231959608533a7b06c5"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "63bcc2fd1eeabc1484d16e9b12e2cdf6ad7a30caea0d13c2ad2d3162a9f8455e"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-city-3",
+      "edition": "Tahoe",
+      "view": "World Clock III",
       "condition": "stress",
       "path": "tahoe/stress/widget-city-3.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "947a1e5207f35da66c1229442e328cea20d5667c2caa3a38df10ae3cde9a39ed"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "acf89daa155d8f5136d42386f673e420dc46dcca9b3d008efdebd2f296bcc359"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-city-digital",
+      "edition": "Tahoe",
+      "view": "Digital World Clock",
       "condition": "default",
       "path": "tahoe/default/widget-city-digital.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "869019600a6052e89221c4406f46658676a119ced1f5b854d0704a7dbd31cb69"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "b5b29c9d017430506606aa6bd11290e0fb2915fdc33eeaf07faed117441635d2"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-city-digital",
+      "edition": "Tahoe",
+      "view": "Digital World Clock",
       "condition": "stress",
       "path": "tahoe/stress/widget-city-digital.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "bdfceda624c0a8ceafba03fc4fdfd78cf97bda784a43b5f9cc1d9c820744363e"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "2555dec65d4ee0c821ad8f1fd1b247446b15d2fc712d42987419f514468a0484"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-music",
+      "edition": "Tahoe",
+      "view": "Music",
       "condition": "default",
       "path": "tahoe/default/widget-music.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "b6e5f2102eb02a280b0992c041bd6d8d92dcfdaab58a91f280e114a14d4341c6"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "d0288c581b5ee793efb1dde7afc1769230de0231990076bb80f2ba026216f7d2"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-music",
+      "edition": "Tahoe",
+      "view": "Music",
       "condition": "stress",
       "path": "tahoe/stress/widget-music.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "7c0e18736e333f7ffc5231de49a742fdca5ed9e67cd0099d5c9ee4285018b71c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "fcd43ed0a530daa886cd7befd9f1146b0cdf9bd1b9095f7a345036941fc8e677"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-timer",
+      "edition": "Tahoe",
+      "view": "Timer",
       "condition": "default",
       "path": "tahoe/default/widget-timer.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "9a388c6faca11b0aeefd4b7602a67cb5466ae63c8d7a7707a009b570e303b46d"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "ec2ac62c9ab4d287179bb7a03ba7a442c45446b675e421efbec615e0589a99da"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-timer",
+      "edition": "Tahoe",
+      "view": "Timer",
       "condition": "stress",
       "path": "tahoe/stress/widget-timer.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "81653f6023b2a6d44b5b50e6425ea57c440b9e3935115ba7b84ee8b1d6e23e31"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "111d46cd5840973587f8b08d10fd2140d9cf6f977fc08ea5fff6a262e55909e5"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-weather",
+      "edition": "Tahoe",
+      "view": "Weather",
       "condition": "default",
       "path": "tahoe/default/widget-weather.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "37f6e09733c835acaf51ff96c108e3759a1d90e090b42516bc44630eac99ad74"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "210cc5a1406a1c2208a951cea90a6a1dc874338eabb1c9811135acfb665b1a15"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-weather",
+      "edition": "Tahoe",
+      "view": "Weather",
       "condition": "stress",
       "path": "tahoe/stress/widget-weather.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "81b6eaf484cfb005caabfb42eee6a61691808454561e092cef892091728438c2"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "774dada48138537e89eb9573986d8d9b5dc367978bc64a0432ca00cff0d460f4"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-photos",
+      "edition": "Tahoe",
+      "view": "Photos \u00b7 empty state",
       "condition": "default",
       "path": "tahoe/default/widget-photos.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        260,
+        260
       ],
-      "sha256": "0934c2ffff9e62d6b5c26935ab9d94c8f221bf8d083afeadd7e7616ae30a034d"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "8bd3f0940061dc861ed7f326f29efdfd54b20010e07680d2715ae046530078a8"
     },
     {
-      "edition": "tahoe",
-      "view": "widget-photos",
+      "edition": "Tahoe",
+      "view": "Photos \u00b7 empty state",
       "condition": "stress",
       "path": "tahoe/stress/widget-photos.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        260,
+        260
       ],
-      "sha256": "682794922ea2fdce3ff21e954f68679d5ad25e12278e6c761885f12b26d4f8ac"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "a000eaad0872998cd692ea1f33ed2ebb033e6a9d08eaca2bae0009579262602f"
     },
     {
-      "edition": "tahoe",
-      "view": "photos-loaded",
+      "edition": "Tahoe",
+      "view": "Photos \u00b7 loaded photograph",
       "condition": "default",
       "path": "tahoe/default/photos-loaded.png",
-      "source": "b133b535",
       "size": [
-        544,
-        448
+        260,
+        260
       ],
-      "sha256": "6eccae48b5249f7495df97377e72347da86b0c59a0488117f069e060f0b982a9"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "6851ac5d2d99d0bc2cdd91fb6d24900ff95c0bbe5469c8d85a3dcb3f52d0515d"
     },
     {
-      "edition": "tahoe",
-      "view": "photos-loaded",
+      "edition": "Tahoe",
+      "view": "Photos \u00b7 loaded photograph",
       "condition": "stress",
       "path": "tahoe/stress/photos-loaded.png",
-      "source": "b133b535",
       "size": [
-        544,
-        448
+        260,
+        260
       ],
-      "sha256": "a0ea8e1cfcb70722f054f8516abc9124f84632ff86ce84a6b7058e721208d7f2"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "8d66d3a2c7fd3ee721832abd55bfb012c2f09fa8356cf9fe4e055dc807f7652c"
     },
     {
-      "edition": "golden-gate",
-      "view": "global-menu-and-panel",
+      "edition": "Golden Gate",
+      "view": "Menu bar and panel",
       "condition": "default",
       "path": "golden-gate/default/global-menu-and-panel.png",
-      "source": "b133b535",
       "size": [
         3840,
-        72
+        42
       ],
-      "sha256": "8d707662a6867f9358a85c2cfd0494929795317adb2bffcd455b742936aca37d"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "784119a39edea3666f0df7505abb926b37cab14b47b8b58f02df3388e80f40b5"
     },
     {
-      "edition": "golden-gate",
-      "view": "global-menu-and-panel",
+      "edition": "Golden Gate",
+      "view": "Menu bar and panel",
       "condition": "stress",
       "path": "golden-gate/stress/global-menu-and-panel.png",
-      "source": "b133b535",
       "size": [
         3840,
-        72
+        42
       ],
-      "sha256": "050bd92ad46ab092f3bbad557c34284f678f6e9e04b1cf25d58a5b9697c07210"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c8d73da2cb2eeb1e22f518554bed924da880c6a711779209d5d4ae454e8e4855"
     },
     {
-      "edition": "golden-gate",
-      "view": "global-menu-titles",
+      "edition": "Golden Gate",
+      "view": "Global menu titles",
       "condition": "default",
       "path": "golden-gate/default/global-menu-titles.png",
-      "source": "b133b535",
       "size": [
-        584,
-        68
+        638,
+        42
       ],
-      "sha256": "973934ea747de0785c63b24f3ee5e2d5ca374fa4064932015e55a809e5e46ec1"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "deccedae4159df39011b33c28d8bb1df9d2a5b0d78dbc628bd1cfa27d16a5157"
     },
     {
-      "edition": "golden-gate",
-      "view": "global-menu-titles",
+      "edition": "Golden Gate",
+      "view": "Global menu titles",
       "condition": "stress",
       "path": "golden-gate/stress/global-menu-titles.png",
-      "source": "b133b535",
       "size": [
-        584,
-        68
+        638,
+        42
       ],
-      "sha256": "7f6475cb6f65b6dbeb7e7e4d22705b4ffe268990dde0be1be680406f2c48d39c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "178ab22e38835c0401ef0d030deda4a592e426f11cf07776af9f42eb2e7a6470"
     },
     {
-      "edition": "golden-gate",
-      "view": "panel-clock",
+      "edition": "Golden Gate",
+      "view": "Panel clock",
       "condition": "default",
       "path": "golden-gate/default/panel-clock.png",
-      "source": "b133b535",
       "size": [
-        212,
-        68
+        134,
+        42
       ],
-      "sha256": "4d032dd792d03f8356114840a853cb3cb06c3638f3877d640b024f48d6e691f8"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "3c1949390c50e370a64cbb168b4260f44e1bb2dc3c812cb149c31811e8081c23"
     },
     {
-      "edition": "golden-gate",
-      "view": "panel-clock",
+      "edition": "Golden Gate",
+      "view": "Panel clock",
       "condition": "stress",
       "path": "golden-gate/stress/panel-clock.png",
-      "source": "b133b535",
       "size": [
-        216,
-        68
+        134,
+        42
       ],
-      "sha256": "e01665f32af57d563cdba6720d275773323129810cd63aa291c68c0fcc31046d"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "419e1acbbaf26fae2f4f972c88311c21b9684f01a67a6a56b2f42458f4775639"
     },
     {
-      "edition": "golden-gate",
-      "view": "panel-status-symbols",
+      "edition": "Golden Gate",
+      "view": "Panel status symbols",
       "condition": "default",
       "path": "golden-gate/default/panel-status-symbols.png",
-      "source": "b133b535",
       "size": [
-        492,
-        68
+        308,
+        42
       ],
-      "sha256": "46b63bb9270f84480749a3d893d35d52da8aa9d3932f56240d1c41a0fa168f4a"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "851994ef071267e4d816f79df81f0e57163522d0f11663a43737bc5a22cb53ff"
     },
     {
-      "edition": "golden-gate",
-      "view": "panel-status-symbols",
+      "edition": "Golden Gate",
+      "view": "Panel status symbols",
       "condition": "stress",
       "path": "golden-gate/stress/panel-status-symbols.png",
-      "source": "b133b535",
       "size": [
-        492,
-        68
+        308,
+        42
       ],
-      "sha256": "7b957aa49b27cc783ce9084dd47c8d631f1c3c8aa9f56f51719b6c598e918a72"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c2767971995dab11ed98ba09fcb3186accfeb1b290abbf403c3d87ef92a922bb"
     },
     {
-      "edition": "golden-gate",
-      "view": "native-menu",
+      "edition": "Golden Gate",
+      "view": "Native menu",
       "condition": "default",
       "path": "golden-gate/default/native-menu.png",
-      "source": "b133b535",
       "size": [
-        250,
-        128
+        156,
+        80
       ],
-      "sha256": "033a15c40e7b8c17c1463439c9ca9b1ef9379a9cbf07976895442befbc9224c5"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "25386e8190ef1e2c8244a35819a4db8758b6fd05122993cb74e8a74f42ade1a6"
     },
     {
-      "edition": "golden-gate",
-      "view": "native-menu",
+      "edition": "Golden Gate",
+      "view": "Native menu",
       "condition": "stress",
       "path": "golden-gate/stress/native-menu.png",
-      "source": "b133b535",
       "size": [
-        250,
-        128
+        156,
+        80
       ],
-      "sha256": "92e716ce8762b8347ebe7df3ed970c49c1321d6bcdfc0028134a184dfc084c5c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c82e469475b3f0508f375d873f3d8614a1b3f1febe486f43d2054d49e60b180b"
     },
     {
-      "edition": "golden-gate",
-      "view": "control-center",
+      "edition": "Golden Gate",
+      "view": "Control center",
       "condition": "default",
       "path": "golden-gate/default/control-center.png",
-      "source": "b133b535",
       "size": [
-        972,
-        1358
+        608,
+        848
       ],
-      "sha256": "25c42c740642340ad145df8b348ced637b6a48bc94e0618e02347a196d7a3d5b"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "28cf2fb41d7838a198eb5446d995d1242dc1b7af86066c496631369d7615e160"
     },
     {
-      "edition": "golden-gate",
-      "view": "control-center",
+      "edition": "Golden Gate",
+      "view": "Control center",
       "condition": "stress",
       "path": "golden-gate/stress/control-center.png",
-      "source": "b133b535",
       "size": [
-        972,
-        1358
+        608,
+        848
       ],
-      "sha256": "87debaf5ce0b977a33eebee3aca77cbf1909a17da8e69f19ee6dda6aec9847f4"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "fe4a2f647a097a8dbbcce80765133664069a33f277544a26bd3726acd142cb36"
     },
     {
-      "edition": "golden-gate",
-      "view": "notification-banner",
+      "edition": "Golden Gate",
+      "view": "Notification banner",
       "condition": "default",
       "path": "golden-gate/default/notification-banner.png",
-      "source": "b133b535",
       "size": [
-        728,
-        184
+        454,
+        115
       ],
-      "sha256": "7cfff07a04c3019ab5f05a42a0bbb064a18d2939e978c3e7063e0c41c4e01660"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "ff5ebe1dd08159a365818d37e64bd252a474cb9068c8b7f7c36142cf30ef765c"
     },
     {
-      "edition": "golden-gate",
-      "view": "notification-banner",
+      "edition": "Golden Gate",
+      "view": "Notification banner",
       "condition": "stress",
       "path": "golden-gate/stress/notification-banner.png",
-      "source": "b133b535",
       "size": [
-        728,
-        184
+        454,
+        115
       ],
-      "sha256": "4757523745d70e03016f5efad1b33004cad3015e82ba1c1648b7b367e1c108d7"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "a4a62ffe036aca4c10767dc122e3405b79e154a7264ab6b1c2e1b001a73a75ce"
     },
     {
-      "edition": "golden-gate",
-      "view": "notification-history",
+      "edition": "Golden Gate",
+      "view": "Notification history",
       "condition": "default",
       "path": "golden-gate/default/notification-history.png",
-      "source": "b133b535",
       "size": [
-        728,
-        264
+        454,
+        165
       ],
-      "sha256": "ec2b5239583c5e187094d59eae4861f05f1251a7da1d9ef60936dba49d23c6f4"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "998d6a6e36e2f7af0af7d24aa8872248bc0b39adfdfa801e1f1e4c463510d6fa"
     },
     {
-      "edition": "golden-gate",
-      "view": "notification-history",
+      "edition": "Golden Gate",
+      "view": "Notification history",
       "condition": "stress",
       "path": "golden-gate/stress/notification-history.png",
-      "source": "b133b535",
       "size": [
-        728,
-        272
+        454,
+        170
       ],
-      "sha256": "793f9c954c5102207f2a7712fd8b388e197784e4b238dcc1288170317269c803"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "7f89abbead253714eb69d04dbc1a27045238f769100e925c97e95fbb86918692"
     },
     {
-      "edition": "golden-gate",
-      "view": "launcher",
+      "edition": "Golden Gate",
+      "view": "Launcher grid and categories",
       "condition": "default",
       "path": "golden-gate/default/launcher.png",
-      "source": "b133b535",
       "size": [
-        2056,
-        1264
+        1284,
+        790
       ],
-      "sha256": "92aeae33118e53cdea1174dcb72360dc4903c49f8a3d8c4733826baacf9a14cf"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "09c0167507e615fde8d2fb1f7db63fc23404a86bfc0723a36a7d0ade7e8bb1ae"
     },
     {
-      "edition": "golden-gate",
-      "view": "launcher",
+      "edition": "Golden Gate",
+      "view": "Launcher grid and categories",
       "condition": "stress",
       "path": "golden-gate/stress/launcher.png",
-      "source": "b133b535",
       "size": [
-        2056,
-        1264
+        1284,
+        790
       ],
-      "sha256": "b973181fc93312652402f8319066aa013a09fa34283fd8c7dbfc0b3574c6e9d5"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "78e016e676f3ad0caf3b101562f436eb95dfa88ac6c03fc725a5a92b522a8985"
     },
     {
-      "edition": "golden-gate",
-      "view": "search-field",
-      "condition": "default",
-      "path": "golden-gate/default/search-field.png",
-      "source": "b133b535",
-      "size": [
-        1268,
-        208
-      ],
-      "sha256": "6cb97865aaa8f965b9e7ecddd5417d440386db235e6a85e0ac95f66e40cb71cc"
-    },
-    {
-      "edition": "golden-gate",
-      "view": "search-field",
-      "condition": "stress",
-      "path": "golden-gate/stress/search-field.png",
-      "source": "b133b535",
-      "size": [
-        1268,
-        208
-      ],
-      "sha256": "e16240ec84643add4abb729903ec423545fed66349d9ae72c1be0ead90fabf7d"
-    },
-    {
-      "edition": "golden-gate",
-      "view": "launcher-search",
+      "edition": "Golden Gate",
+      "view": "Launcher search",
       "condition": "default",
       "path": "golden-gate/default/launcher-search.png",
-      "source": "b133b535",
       "size": [
-        2056,
-        1264
+        1284,
+        790
       ],
-      "sha256": "26c5883e833d756c48e8c730251eb09508f57d6a9bb4d74f74477bfb70e8744b"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "7765a52f6b5928a6701f26234740d13089e0ae8d096ed3a54b9002531d52f734"
     },
     {
-      "edition": "golden-gate",
-      "view": "launcher-search",
+      "edition": "Golden Gate",
+      "view": "Launcher search",
       "condition": "stress",
       "path": "golden-gate/stress/launcher-search.png",
-      "source": "b133b535",
       "size": [
-        2056,
-        1264
+        1284,
+        790
       ],
-      "sha256": "c36e06888bbcb9a2222a66c5e203306928715fce955f2216259e34bfdbe6da58"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "25525b33aae26eb4377ca93741b5bfb8ce8353d7287341c43ca2a6f6b9ebbe0a"
     },
     {
-      "edition": "golden-gate",
-      "view": "launcher-list",
+      "edition": "Golden Gate",
+      "view": "Launcher list",
       "condition": "default",
       "path": "golden-gate/default/launcher-list.png",
-      "source": "b133b535",
       "size": [
-        2056,
-        1264
+        1284,
+        790
       ],
-      "sha256": "d819a44b58a8e9573e9f2d991c590182d2c486192bf6c7f9ef1381868d8354e9"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "3c31de2de7903b2f54060f47ce87f715f239731455be63e9e72e5ad81ce6d29e"
     },
     {
-      "edition": "golden-gate",
-      "view": "launcher-list",
+      "edition": "Golden Gate",
+      "view": "Launcher list",
       "condition": "stress",
       "path": "golden-gate/stress/launcher-list.png",
-      "source": "b133b535",
       "size": [
-        2056,
-        1264
+        1284,
+        790
       ],
-      "sha256": "b2a104817cd258ddd972b7b1b32e9d8b0308533aba4dc4f10133e8adb2c5df58"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "1ba8ad27c4de64968f8f8f255cf59c82de5321ecb8b50cdcc4ff102066692933"
     },
     {
-      "edition": "golden-gate",
-      "view": "clipboard",
+      "edition": "Golden Gate",
+      "view": "Clipboard",
       "condition": "default",
       "path": "golden-gate/default/clipboard.png",
-      "source": "b133b535",
       "size": [
-        1232,
-        356
+        770,
+        223
       ],
-      "sha256": "2a992fc8e18d05e888b62448f695fb7182c69291c03a7bf71ae55acb6bde4cef"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "4b64959f431bba8bf6d7e318ee3fac132b9c339fa158a4ea7faeb35917696767"
     },
     {
-      "edition": "golden-gate",
-      "view": "clipboard",
+      "edition": "Golden Gate",
+      "view": "Clipboard",
       "condition": "stress",
       "path": "golden-gate/stress/clipboard.png",
-      "source": "b133b535",
       "size": [
-        1232,
-        356
+        770,
+        223
       ],
-      "sha256": "dffa76e0377e1a471414dc0f3ca2d3c9bbd734ad83224fee7d04417ec86fed99"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "42d50847683e0643adc54dcb338e87950a75f8cc0701053a00eabeb03491185b"
     },
     {
-      "edition": "golden-gate",
-      "view": "options-menu",
+      "edition": "Golden Gate",
+      "view": "Options menu",
       "condition": "default",
       "path": "golden-gate/default/options-menu.png",
-      "source": "b133b535",
       "size": [
-        308,
-        404
+        193,
+        253
       ],
-      "sha256": "4fe30cca3ebc56119c1bb9334c459f8989f0c34d2695cd06e34dae24b6054827"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "e0e1cfe11403de2da050537ecb3e5e3330f57e979d9d77eb6bf544a9244e0129"
     },
     {
-      "edition": "golden-gate",
-      "view": "options-menu",
+      "edition": "Golden Gate",
+      "view": "Options menu",
       "condition": "stress",
       "path": "golden-gate/stress/options-menu.png",
-      "source": "b133b535",
       "size": [
-        308,
-        404
+        193,
+        253
       ],
-      "sha256": "aeff945aea62c3def7299395c11526e253bb32669fc9c8fdb73a5970f8292449"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c3efd48b311b25c6f2b79c24da4eec32ea738351b606102a596a534d66689f74"
     },
     {
-      "edition": "golden-gate",
-      "view": "about-computer",
+      "edition": "Golden Gate",
+      "view": "About computer",
       "condition": "default",
       "path": "golden-gate/default/about-computer.png",
-      "source": "b133b535",
       "size": [
-        720,
-        1400
+        450,
+        679
       ],
-      "sha256": "c10e040274612b9cc60b6fc46642001f5685a6116b0de564bd73371791de5aa0"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "db48d79efe64b0cf2c80c9b88db26685e558cd95825f53a50b2deaec618afd9f"
     },
     {
-      "edition": "golden-gate",
-      "view": "about-computer",
+      "edition": "Golden Gate",
+      "view": "About computer",
       "condition": "stress",
       "path": "golden-gate/stress/about-computer.png",
-      "source": "b133b535",
       "size": [
-        720,
-        1400
+        450,
+        679
       ],
-      "sha256": "e3910f9f4ce644c997b73062203ca08cc418788bfe795d40e46e12cf9281c9fd"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "1514c632092beee66e5d97fa49f6edfe0f674d0f402015d38fa38a3135e1bf43"
     },
     {
-      "edition": "golden-gate",
-      "view": "about-application",
+      "edition": "Golden Gate",
+      "view": "About application",
       "condition": "default",
       "path": "golden-gate/default/about-application.png",
-      "source": "b133b535",
       "size": [
-        720,
-        792
+        450,
+        495
       ],
-      "sha256": "c7801db4664d429a2537fab3e65b95d7071aac76c861c7ba3958cd0a1c62c913"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c312df035448a1fec3d4fa9af0b430f3d410c80ab676a7c547a9cfc4a9d75f2c"
     },
     {
-      "edition": "golden-gate",
-      "view": "about-application",
+      "edition": "Golden Gate",
+      "view": "About application",
       "condition": "stress",
       "path": "golden-gate/stress/about-application.png",
-      "source": "b133b535",
       "size": [
-        720,
-        792
+        450,
+        495
       ],
-      "sha256": "09d547ad57361b447143b715705bb9bb69a790208c6d16cb3e81a035d6c2669a"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c312df035448a1fec3d4fa9af0b430f3d410c80ab676a7c547a9cfc4a9d75f2c"
     },
     {
-      "edition": "golden-gate",
-      "view": "desktop-widgets",
+      "edition": "Golden Gate",
+      "view": "Desktop widgets",
       "condition": "default",
       "path": "golden-gate/default/desktop-widgets.png",
-      "source": "e92f8ee9",
       "size": [
         3840,
         2160
       ],
-      "sha256": "19fa08a8d82e9f81ee413ebd426257a0a4ad4581236874de06068255f3d64214"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "228046de9c8809e74586e30c3784b588bc399158a64f1f25ce2a6a5829ab9102"
     },
     {
-      "edition": "golden-gate",
-      "view": "desktop-widgets",
+      "edition": "Golden Gate",
+      "view": "Desktop widgets",
       "condition": "stress",
       "path": "golden-gate/stress/desktop-widgets.png",
-      "source": "e92f8ee9",
       "size": [
         3840,
         2160
       ],
-      "sha256": "9f29bfb58e7335e1a4dfd2dcba613ca4bb9b3ef26314d5f8dd5061fad03e3c4f"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "b338ce44647b50e203ca1e675ae7c89c0027157ed854196b3991a077d3dec84c"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-calendar",
+      "edition": "Golden Gate",
+      "view": "Calendar",
       "condition": "default",
       "path": "golden-gate/default/widget-calendar.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "5d45f452515a7b45966c11f514c4750267b85dd4477955c9a27269c893f9331b"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "2de5ff111c05d96941525dcfd35494621704c543bce37e0f1174072a943e3c3b"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-calendar",
+      "edition": "Golden Gate",
+      "view": "Calendar",
       "condition": "stress",
       "path": "golden-gate/stress/widget-calendar.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "37dc8a2174dd47b96e588b612a5a945b7acb60f6c666971be1fa0773b0084e36"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "084bbf3d9c8818a6c4321a0b33e9c84586205a5c403e98904e4a8aafc8e4a38d"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-glass-text",
+      "edition": "Golden Gate",
+      "view": "Glass Text Clock",
       "condition": "default",
       "path": "golden-gate/default/widget-clock-glass-text.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "c07b249cfac57408aa46e1e80d30340542e9339964f8bdf3fb28482ab3319cd1"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "97698c3a9cb503fadde030f7331d41a331028fd110c8c8ac96b14a6fd2e291b8"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-glass-text",
+      "edition": "Golden Gate",
+      "view": "Glass Text Clock",
       "condition": "stress",
       "path": "golden-gate/stress/widget-clock-glass-text.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "119a44bc1d700f541e6dff436ea12413c20caa5cff22c0d882d9089fd15b2ca6"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "268636ce6c6cbefca6d3ef3eee2164b29f72e8a52ec448003c90ee7d0b6f3f7b"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-analog",
+      "edition": "Golden Gate",
+      "view": "Analog Clock I",
       "condition": "default",
       "path": "golden-gate/default/widget-clock-analog.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "9820acfdea8ef610e778ea928ee81e06e46647c583bea9966b3004fc9711fadd"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "8e049fb77677a081b98bb315916e0e10b886b68f6695a7ac9bde88032d838d0e"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-analog",
+      "edition": "Golden Gate",
+      "view": "Analog Clock I",
       "condition": "stress",
       "path": "golden-gate/stress/widget-clock-analog.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "d6a0d99509c0336ea98d1df9af04f6cc33c95b15d2266c23f0dc3944f983ec17"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "82a8beeae457f2126625f55eeb5e5185935940adff6c492b225f2e12ae8afd96"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-analog-2",
+      "edition": "Golden Gate",
+      "view": "Analog Clock II",
       "condition": "default",
       "path": "golden-gate/default/widget-clock-analog-2.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "61e4444fda26aedf6cff669fa85ffe6db0e8051e7f4cb29dc7d423b42b53d398"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "a977c7829822a54fb5ef95b332fcd8d49033174857a6e978edeb261692ae999c"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-analog-2",
+      "edition": "Golden Gate",
+      "view": "Analog Clock II",
       "condition": "stress",
       "path": "golden-gate/stress/widget-clock-analog-2.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "9fdb48c767ffdd7c6aacf58ef6cc0044edb3700b347b22e7a4f5af4f2694f29e"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "c2ec8ec6345caab4fcfaaf0655266191821ece9f959294b2f1c58ad38c79b358"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-analog-3",
+      "edition": "Golden Gate",
+      "view": "Analog Clock III",
       "condition": "default",
       "path": "golden-gate/default/widget-clock-analog-3.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "056b0a6b4b87dab3dfda7ca7c520e70c2e7af14f5bbf791c5b38abb45402bbd4"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "3804fc067ae788ab4f3b3dec5815a8b9c76344555b0d5140d78038f87d23aa64"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-analog-3",
+      "edition": "Golden Gate",
+      "view": "Analog Clock III",
       "condition": "stress",
       "path": "golden-gate/stress/widget-clock-analog-3.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "2235c9b84a19c8f07b8e3065f99cd6d8b266f859426a1fd5ad2a75ffde6cd837"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "ac1f6859326f53ee7a236bcea90d4d92f6b1a8c8d4db9707dbdd74fe6b8f2e0f"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-square",
+      "edition": "Golden Gate",
+      "view": "Digital Clock",
       "condition": "default",
       "path": "golden-gate/default/widget-clock-square.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "99903f885437197cdec19341fb384015acf3150a60bc3ca2edd0cd05acb5e7a7"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "82acfc8c1b21cc0c0808e25a53b157c11c63139f19c47532be3bc31aa1c115da"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-clock-square",
+      "edition": "Golden Gate",
+      "view": "Digital Clock",
       "condition": "stress",
       "path": "golden-gate/stress/widget-clock-square.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "77946c061b441c1e424d701a8f7ebe4a77203812b052d18efb0bd2464576ca47"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "28549e05044567deb737827bf4f4bef651b221eab4078c8e76ddffe5c7a736a3"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-city-1",
+      "edition": "Golden Gate",
+      "view": "World Clock I",
       "condition": "default",
       "path": "golden-gate/default/widget-city-1.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "ccdbcd612246132da6b473dc0fc816c70d9f3fff1f93357ac4fea73f324bc818"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "1bece75f8619a243b09d3ef0cfb265205df6f291372071eb2edae517f31f9210"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-city-1",
+      "edition": "Golden Gate",
+      "view": "World Clock I",
       "condition": "stress",
       "path": "golden-gate/stress/widget-city-1.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "cf6f619748909c59de58e8a116e547f78f75478f0b370eb6cdf28b631e651220"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "5da146e23c67a3d78bfebb4bf324ef8454647f2f358104526eb6cee7a37c0c4c"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-city-2",
+      "edition": "Golden Gate",
+      "view": "World Clock II",
       "condition": "default",
       "path": "golden-gate/default/widget-city-2.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "e712fdac35a7498d9fca13b160ebde11257bf974f9e2ae2d44fd9415c28c8b21"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "11998bac89d34a8e9f4890ca35b9e1bc3d886106cba708845407e1e26902a303"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-city-2",
+      "edition": "Golden Gate",
+      "view": "World Clock II",
       "condition": "stress",
       "path": "golden-gate/stress/widget-city-2.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "8cf1710e354d6faac3f884b3ce2faa9feaffa2f855c5b9f68d1c2ff88470121d"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "f9db570405d1cc926a7f074c21dec54cea16ba9f05509e7591507c71943f3a15"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-city-3",
+      "edition": "Golden Gate",
+      "view": "World Clock III",
       "condition": "default",
       "path": "golden-gate/default/widget-city-3.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "b699cabde5e87895a6abf6fe2531edf73bd162ba9bdd951b1f4f58b50a39e69e"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "55b05025b29d62a750db49dd989c27eb4f14b0b69a2e5c1485b755c5ab31c56c"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-city-3",
+      "edition": "Golden Gate",
+      "view": "World Clock III",
       "condition": "stress",
       "path": "golden-gate/stress/widget-city-3.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "fd503741f00fa1a7b10d68bd8ea803310735b987644b961e3a93e45fbddd5929"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "f60f87c453a87a4af4843e269c3ddc359bc77b3d62291afbcc1e11df770ed33d"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-city-digital",
+      "edition": "Golden Gate",
+      "view": "Digital World Clock",
       "condition": "default",
       "path": "golden-gate/default/widget-city-digital.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "5ac4c9045fec919e21794379f8fe1ce23b3d077e8d75f3b0e972a4fdd9880a68"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "94e6e8be232e3e7b64954127acb9c1289da5c05c7f493762ef035216aac0c47b"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-city-digital",
+      "edition": "Golden Gate",
+      "view": "Digital World Clock",
       "condition": "stress",
       "path": "golden-gate/stress/widget-city-digital.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "b11c81665c733a6bf25294ac6bf05d4c7c17da44ac137ae965c865ca254b5f8d"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "db894559ea8585055bedf2baa4d8b6d64f2515db1e31da0270fae5eab17755d5"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-music",
+      "edition": "Golden Gate",
+      "view": "Music",
       "condition": "default",
       "path": "golden-gate/default/widget-music.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "abd01e2db5a26eb7fed1f562112d8757610567082a4cc10ff750807af0f129c1"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "21db6fdeea37cfa566675a15a50f648aa256c866fee0e1c267718a0f002e3ec2"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-music",
+      "edition": "Golden Gate",
+      "view": "Music",
       "condition": "stress",
       "path": "golden-gate/stress/widget-music.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "35c8a5af0247ddc99153febc869e3c4fe6a11f5d59d860f445dd3fd78818a36c"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "fcd43ed0a530daa886cd7befd9f1146b0cdf9bd1b9095f7a345036941fc8e677"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-timer",
+      "edition": "Golden Gate",
+      "view": "Timer",
       "condition": "default",
       "path": "golden-gate/default/widget-timer.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "30158a15a7b7876f6337392a79d8da6d119d3da47844f5237cb1d0dad79de0a9"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "8c09742badb6931c19abb74c1b1891fef095cc852c3de8dd401f0e60665a2e11"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-timer",
+      "edition": "Golden Gate",
+      "view": "Timer",
       "condition": "stress",
       "path": "golden-gate/stress/widget-timer.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "81653f6023b2a6d44b5b50e6425ea57c440b9e3935115ba7b84ee8b1d6e23e31"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "111d46cd5840973587f8b08d10fd2140d9cf6f977fc08ea5fff6a262e55909e5"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-weather",
+      "edition": "Golden Gate",
+      "view": "Weather",
       "condition": "default",
       "path": "golden-gate/default/widget-weather.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "5afb15afe6044699006187f471f153207de2e907223b245191791eaac366ef64"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "4f883bda6d63db02b1dd736f53812e653945d623c3ac4910d222f25d76e71f23"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-weather",
+      "edition": "Golden Gate",
+      "view": "Weather",
       "condition": "stress",
       "path": "golden-gate/stress/widget-weather.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "641f86c800b728fefac1ed2d1e8def0a128a35dffa76f9538ebbffe32680ffe7"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "774dada48138537e89eb9573986d8d9b5dc367978bc64a0432ca00cff0d460f4"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-photos",
+      "edition": "Golden Gate",
+      "view": "Photos \u00b7 empty state",
       "condition": "default",
       "path": "golden-gate/default/widget-photos.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "f718a6cd04ef9951655610cebeabe74fa0c793fd8ee582fc12e00eed6b49dcb7"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "b5dc784a0f0b15d34af4fa2df093f20103142bd633154226267ee179298c72e6"
     },
     {
-      "edition": "golden-gate",
-      "view": "widget-photos",
+      "edition": "Golden Gate",
+      "view": "Photos \u00b7 empty state",
       "condition": "stress",
       "path": "golden-gate/stress/widget-photos.png",
-      "source": "e92f8ee9",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "7a356b222247191a39fffc2fd1577e522198df235c201dc3fb0349a16c9b8176"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "44a229dbb561a5210ccacb739a4e5112ff7c4e9502b023ca96f9d645d9835399"
     },
     {
-      "edition": "golden-gate",
-      "view": "photos-loaded",
+      "edition": "Golden Gate",
+      "view": "Photos \u00b7 loaded photograph",
       "condition": "default",
       "path": "golden-gate/default/photos-loaded.png",
-      "source": "b133b535",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "195f15856b78613ea8044cf36435a6766fbe803ecd44df5904e3b54da8149d08"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "ea1a2fabb39b9d613de5fd4cd5023394ade206d64ba9596a9235cdac8b00f5fd"
     },
     {
-      "edition": "golden-gate",
-      "view": "photos-loaded",
+      "edition": "Golden Gate",
+      "view": "Photos \u00b7 loaded photograph",
       "condition": "stress",
       "path": "golden-gate/stress/photos-loaded.png",
-      "source": "b133b535",
       "size": [
-        544,
-        448
+        380,
+        280
       ],
-      "sha256": "a0ea8e1cfcb70722f054f8516abc9124f84632ff86ce84a6b7058e721208d7f2"
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "7e3a2a70f7b9e3877682270e21e3432e9fc8a4fd6a33e7498ca9843bbbe8dce2"
+    },
+    {
+      "edition": "Golden Gate",
+      "view": "Detached search field",
+      "condition": "default",
+      "path": "golden-gate/default/search-field.png",
+      "size": [
+        793,
+        130
+      ],
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "4850926d509b7d6b42d41c4f16016a73961bbe3521a08e6da4c4b61262d20b5b"
+    },
+    {
+      "edition": "Golden Gate",
+      "view": "Detached search field",
+      "condition": "stress",
+      "path": "golden-gate/stress/search-field.png",
+      "size": [
+        793,
+        130
+      ],
+      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "sha256": "14eb9f5477fc4a5b807bc0757909904f57792190dfb3aa00c4efd94c75c025c2"
     }
   ]
 }
