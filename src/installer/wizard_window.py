@@ -231,21 +231,41 @@ def light_control_surface(widget):
     return color.lightnessF() > .5
 
 
-def paint_glass_control(widget, painter, *, pressed=False, backed=False):
+def paint_glass_control(widget, painter, *, pressed=False, backed=False, squircle=False):
     """Keep the face even; concentrate reflections along the capsule edge."""
     painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     light = light_control_surface(widget)
     rect = QRectF(1, 1, widget.width()-2, widget.height()-(2 if backed else 3))
-    radius = rect.height()/2
+    def draw_outline(bounds):
+        radius = bounds.height() / 2
+        if not squircle:
+            painter.drawRoundedRect(bounds, radius, radius)
+            return
+        # Continuous corners leave a short vertical side on the search field.
+        r = min(bounds.width(), bounds.height()) * .40
+        inset = r * .20
+        x, y, right, bottom = bounds.left(), bounds.top(), bounds.right(), bounds.bottom()
+        path = QPainterPath(QPointF(x + r, y))
+        path.lineTo(right - r, y)
+        path.cubicTo(right - inset, y, right, y + inset, right, y + r)
+        path.lineTo(right, bottom - r)
+        path.cubicTo(right, bottom - inset, right - inset, bottom, right - r, bottom)
+        path.lineTo(x + r, bottom)
+        path.cubicTo(x + inset, bottom, x, bottom - inset, x, bottom - r)
+        path.lineTo(x, y + r)
+        path.cubicTo(x, y + inset, x + inset, y, x + r, y)
+        path.closeSubpath()
+        painter.drawPath(path)
+
     if backed:
         # Give the toolbar's shadow a solid silhouette while retaining its rim and reflections.
         painter.setPen(Qt.PenStyle.NoPen)
         painter.setBrush(widget.window().surface_color)
-        painter.drawRoundedRect(rect, radius, radius)
+        draw_outline(rect)
     elif not getattr(widget.window(), "settings_mode", False):
         painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.setPen(QPen(QColor(0, 0, 0, 12 if light else 28), 1))
-        painter.drawRoundedRect(rect.translated(0, .8), radius, radius)
+        draw_outline(rect.translated(0, .8))
     alpha = 80 if light else 16
     if widget.underMouse() and widget.isEnabled():
         alpha += 14
@@ -255,7 +275,7 @@ def paint_glass_control(widget, painter, *, pressed=False, backed=False):
     if backed:
         edge_color = QColor(86, 96, 112, 20) if light else QColor(229, 235, 243, 23)
     painter.setPen(QPen(edge_color, .45 if backed else .5))
-    painter.drawRoundedRect(rect, radius, radius)
+    draw_outline(rect)
     # Opposing highlights fade around the sides rather than banding the face.
     rim = QLinearGradient(rect.topLeft(), rect.bottomRight())
     for position, alpha in ((0, 240 if light else 125), (.22, 160 if light else 65),
@@ -265,10 +285,10 @@ def paint_glass_control(widget, painter, *, pressed=False, backed=False):
     painter.setBrush(Qt.BrushStyle.NoBrush)
     painter.setPen(QPen(rim, .7 if backed else 1))
     edge = rect.adjusted(.45, .45, -.45, -.45)
-    painter.drawRoundedRect(edge, radius-.45, radius-.45)
+    draw_outline(edge)
     if widget.hasFocus() and getattr(widget, "keyboard_focus", False):
         painter.setPen(QPen(QColor(65, 65, 65, 145) if light else QColor(225, 225, 225, 150), 1))
-        painter.drawRoundedRect(rect, radius, radius)
+        draw_outline(rect)
 
 
 def add_surface_shadow(widget, *, radius, offset, opacity):
@@ -672,7 +692,7 @@ class SettingsSearch(QLineEdit):
 
     def paintEvent(self, event):
         painter = QPainter(self)
-        paint_glass_control(self, painter)
+        paint_glass_control(self, painter, squircle=True)
         painter.setPen(QPen(self.palette().placeholderText().color(), 1.25,
                             Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
         y = self.height() / 2 - 1
