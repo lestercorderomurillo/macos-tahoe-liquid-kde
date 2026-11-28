@@ -842,6 +842,8 @@ switcher.chmod(0o700)
 os.environ['PATH'] = str(switcher.parent) + ':' + os.environ['PATH']
 window.refresh_settings_appearance()
 assert window.choices['appearance'] == 'light'
+window.update_choice('fonts', not window.settings_baseline['fonts'])
+assert window.settings_review.text() == window.t('Review changes')
 window.select('appearance', 'dark')
 assert window.appearance_process is None and window.choices['appearance'] == 'light'
 assert window.settings_review.text() == window.t('Save')
@@ -851,6 +853,11 @@ for _ in range(100):
         break
     QTest.qWait(10)
 assert window.choices['appearance'] == 'dark' and not window.appearance_error
+assert window.settings_mode and window.page == 'theme'
+assert window.settings_review.text() == window.t('Review changes')
+assert window.choices['fonts'] != window.settings_baseline['fonts']
+window.update_choice('fonts', window.settings_baseline['fonts'])
+assert not window.settings_review.isVisible()
 window.select('appearance', 'light')
 window.settings_review.click()
 for _ in range(100):

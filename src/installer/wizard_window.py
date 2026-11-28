@@ -1874,18 +1874,22 @@ class InstallerWindow(OpaqueSurface):
         self.sync_appearance_choice()
         self.settings_baseline = dict(self.choices) if saved is not None else None
 
+    def has_pending_settings_save(self):
+        return (self.draft_language is not None or self.draft_appearance is not None
+                or any(dirty() for _, dirty, _ in self.immediate_forms.values()))
+
     def update_settings_review(self):
         reinstall = self.settings_baseline is not None and self.choices != self.settings_baseline
-        pending = (self.draft_language is not None or self.draft_appearance is not None
-                   or any(dirty() for _, dirty, _ in self.immediate_forms.values()))
-        self.settings_review.setText(self.t("Review changes" if reinstall else "Save"))
+        pending = self.has_pending_settings_save()
+        self.settings_review.setText(self.t("Review changes" if reinstall and not pending else "Save"))
         self.settings_review.setVisible(self.settings_mode and (reinstall or pending))
         self.settings_review.setEnabled(self.appearance_process is None)
 
     def review_settings_changes(self):
         if not self.settings_mode or self.appearance_process is not None:
             return
-        if self.settings_baseline is not None and self.choices != self.settings_baseline:
+        if (not self.has_pending_settings_save() and self.settings_baseline is not None
+                and self.choices != self.settings_baseline):
             self.open_settings_operation("summary")
             return
         for panel, dirty, save in list(self.immediate_forms.values()):
