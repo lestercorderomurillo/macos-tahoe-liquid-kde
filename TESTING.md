@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.28**. The panel calendar opens six logical pixels below the top bar. [Validation and coverage](release-evidence.json).
+**v0.85.29**. Successful installation restores the wizard at its original window size. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

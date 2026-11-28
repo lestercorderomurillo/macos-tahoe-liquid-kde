@@ -1,18 +1,17 @@
 {
-  "version": "0.85.28",
+  "version": "0.85.29",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Separate the calendar card from the top panel by six logical pixels.",
+  "scope": "Restore the normal installer window size when the ready page opens.",
   "checks": [
     {
-      "command": "Open the panel clock in a disposable KDE neon Wayland guest and capture the installed baseline and candidate. Verify the candidate QML SHA-256, a 328 by 328 card and popup height increasing from 328 to 334 logical pixels.",
+      "command": "python3 -m pytest tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion (both editions passed)",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Dark Tahoe calendar on KDE neon Wayland at 2x scale. Golden Gate uses the shared QML.",
-  "source_sha256": "4c792509ea24143ac5e51866c40347d6cd38650e267636116ca95c5ad91d93bb",
-  "qualified_candidate": "25166350e17da529556e630e9cb4ca872082938c",
-  "approval": "Maintainer approved publication of the before-and-after preview.",
+  "coverage_limits": "Offscreen Qt wizard with simulated backend completion.",
+  "approval": "Maintainer approved publication after reviewing the 900 x 680 Tahoe completion window.",
   "approved_previews": {
-    "comparacion.png": "2a018082b6584a134b5104afbf92db4720d2e807d1ac1b56ca47081eafb89966"
-  }
+    "ready.png": "b8f1e89416ec2300d0474a43ad657c0573dccca02125b38c5f92e83de1c1cc4d"
+  },
+  "source_sha256": "fa2263365265f338f44ba0ee6c431fc37b6b2dcfa6c10e6e8c3c2c314fc92de9"
 }
