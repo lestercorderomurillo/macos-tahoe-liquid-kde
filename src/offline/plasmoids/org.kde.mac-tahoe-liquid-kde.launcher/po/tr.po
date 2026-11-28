@@ -68,9 +68,6 @@ msgstr "Yüzer"
 msgid "General"
 msgstr "Genel"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "Izgara"
 
@@ -101,14 +98,11 @@ msgstr "Başlatıcı konumlandırması:"
 msgid "Launcher options"
 msgstr "Başlatıcı seçenekleri"
 
-msgid "Launcher preset"
-msgstr "Başlatıcı ön ayar"
-
-msgid "Launcher preset:"
-msgstr "Başlatıcı ön ayar:"
-
 msgid "Launchpad"
 msgstr "Launchpad"
+
+msgid "Launchpad Search"
+msgstr "Launchpad araması"
 
 msgid "List"
 msgstr "Liste"
@@ -152,12 +146,6 @@ msgstr "Sabitle"
 msgid "Pinned"
 msgstr "Sabitlenmiş"
 
-msgid "Preset 1 — Tahoe"
-msgstr "Ön ayar 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "Ön ayar 2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "Sık Kullanılanlardan Kaldır"
 
@@ -181,9 +169,6 @@ msgstr "Küçük"
 
 msgid "Suggestions"
 msgstr "Öneriler"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "Metin"

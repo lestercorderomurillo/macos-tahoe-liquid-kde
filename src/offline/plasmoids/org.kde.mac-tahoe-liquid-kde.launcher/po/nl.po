@@ -68,9 +68,6 @@ msgstr "Zwevend"
 msgid "General"
 msgstr "Algemeen"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "Raster"
 
@@ -101,14 +98,11 @@ msgstr "Locatie van programmastarter:"
 msgid "Launcher options"
 msgstr "Opties voor de lancer"
 
-msgid "Launcher preset"
-msgstr "Vooraf ingesteld lancer"
-
-msgid "Launcher preset:"
-msgstr "Vooraf ingesteld:"
-
 msgid "Launchpad"
 msgstr "Launchpad"
+
+msgid "Launchpad Search"
+msgstr "Zoeken in Launchpad"
 
 msgid "List"
 msgstr "Lijst"
@@ -152,12 +146,6 @@ msgstr "Vastmaken"
 msgid "Pinned"
 msgstr "Vastgemaakt"
 
-msgid "Preset 1 — Tahoe"
-msgstr "Vooraf ingesteld 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "Vooraf ingesteld 2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "Verwijderen uit favorieten"
 
@@ -181,9 +169,6 @@ msgstr "Klein"
 
 msgid "Suggestions"
 msgstr "Aanbevelingen"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "Tekst"

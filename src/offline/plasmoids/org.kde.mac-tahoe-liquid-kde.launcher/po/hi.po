@@ -68,9 +68,6 @@ msgstr "तैरना"
 msgid "General"
 msgstr "सामान्य"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "ग्रिड"
 
@@ -101,14 +98,11 @@ msgstr "प्रक्षेपण स्थान:"
 msgid "Launcher options"
 msgstr "लॉन्चर विकल्प"
 
-msgid "Launcher preset"
-msgstr "प्रक्षेपण पूर्व निर्धारित"
-
-msgid "Launcher preset:"
-msgstr "प्रक्षेपण पूर्वनिर्धारितः"
-
 msgid "Launchpad"
 msgstr "Launchpad"
+
+msgid "Launchpad Search"
+msgstr "Launchpad खोज"
 
 msgid "List"
 msgstr "सूची"
@@ -152,12 +146,6 @@ msgstr "पिन करें"
 msgid "Pinned"
 msgstr "पिन किया गया"
 
-msgid "Preset 1 — Tahoe"
-msgstr "पूर्व निर्धारित 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "पूर्व निर्धारित 2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "पसंदीदा सूची से हटाएँ"
 
@@ -181,9 +169,6 @@ msgstr "छोटा"
 
 msgid "Suggestions"
 msgstr "सुझाव"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "पाठ"

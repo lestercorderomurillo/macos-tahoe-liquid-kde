@@ -1799,5 +1799,6 @@
   "Adaptive Contrast presets": "إعدادات التباين التكيفي المسبقة",
   "Invalid contrast preset: %1": "إعداد التباين المسبق غير صالح: %1",
   "Import JSON…": "استيراد JSON…",
-  "Export JSON…": "تصدير JSON…"
+  "Export JSON…": "تصدير JSON…",
+  "Launchpad Search": "بحث Launchpad"
 }

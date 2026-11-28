@@ -1799,5 +1799,6 @@
   "Adaptive Contrast presets": "적응형 대비 사전 설정",
   "Invalid contrast preset: %1": "잘못된 대비 사전 설정: %1",
   "Import JSON…": "JSON 가져오기…",
-  "Export JSON…": "JSON 내보내기…"
+  "Export JSON…": "JSON 내보내기…",
+  "Launchpad Search": "Launchpad 검색"
 }

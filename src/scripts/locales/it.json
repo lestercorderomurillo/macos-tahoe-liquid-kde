@@ -1799,5 +1799,6 @@
   "Adaptive Contrast presets": "Preimpostazioni del contrasto adattivo",
   "Invalid contrast preset: %1": "Preimpostazione del contrasto non valida: %1",
   "Import JSON…": "Importa JSON…",
-  "Export JSON…": "Esporta JSON…"
+  "Export JSON…": "Esporta JSON…",
+  "Launchpad Search": "Ricerca in Launchpad"
 }

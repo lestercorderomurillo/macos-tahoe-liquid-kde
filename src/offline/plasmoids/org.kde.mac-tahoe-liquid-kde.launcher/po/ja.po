@@ -68,9 +68,6 @@ msgstr "フローティング"
 msgid "General"
 msgstr "全般"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "グリッド"
 
@@ -101,14 +98,11 @@ msgstr "打ち上げ機位置:"
 msgid "Launcher options"
 msgstr "打ち上げ機オプション"
 
-msgid "Launcher preset"
-msgstr "打ち上げ機プリセット"
-
-msgid "Launcher preset:"
-msgstr "打ち上げ器プリセット:"
-
 msgid "Launchpad"
 msgstr "Launchpad"
+
+msgid "Launchpad Search"
+msgstr "Launchpad 検索"
 
 msgid "List"
 msgstr "リスト"
@@ -152,12 +146,6 @@ msgstr "ピン留め"
 msgid "Pinned"
 msgstr "ピン留め済み"
 
-msgid "Preset 1 — Tahoe"
-msgstr "プリセット 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "プリセット2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "お気に入りから削除"
 
@@ -181,9 +169,6 @@ msgstr "小"
 
 msgid "Suggestions"
 msgstr "提案"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "テキスト"

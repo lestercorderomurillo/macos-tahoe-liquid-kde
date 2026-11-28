@@ -1799,5 +1799,6 @@
   "Adaptive Contrast presets": "自适应对比度预设",
   "Invalid contrast preset: %1": "无效的对比度预设：%1",
   "Import JSON…": "导入 JSON…",
-  "Export JSON…": "导出 JSON…"
+  "Export JSON…": "导出 JSON…",
+  "Launchpad Search": "启动台搜索"
 }

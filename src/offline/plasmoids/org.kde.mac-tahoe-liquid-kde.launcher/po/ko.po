@@ -68,9 +68,6 @@ msgstr "떠다님"
 msgid "General"
 msgstr "일반"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "격자"
 
@@ -101,14 +98,11 @@ msgstr "발사기 위치:"
 msgid "Launcher options"
 msgstr "발사기 옵션"
 
-msgid "Launcher preset"
-msgstr "발사기 미리 설정"
-
-msgid "Launcher preset:"
-msgstr "발사기 사전 설정:"
-
 msgid "Launchpad"
 msgstr "Launchpad"
+
+msgid "Launchpad Search"
+msgstr "Launchpad 검색"
 
 msgid "List"
 msgstr "목록"
@@ -152,12 +146,6 @@ msgstr "고정"
 msgid "Pinned"
 msgstr "고정됨"
 
-msgid "Preset 1 — Tahoe"
-msgstr "미리 설정 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "미리 설정 2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "책갈피에서 삭제"
 
@@ -181,9 +169,6 @@ msgstr "작게"
 
 msgid "Suggestions"
 msgstr "제안"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "텍스트"

@@ -68,9 +68,6 @@ msgstr "Плавающая"
 msgid "General"
 msgstr "Общие"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "Сетка"
 
@@ -101,14 +98,11 @@ msgstr "Положение меню запуска:"
 msgid "Launcher options"
 msgstr "Параметры меню запуска"
 
-msgid "Launcher preset"
-msgstr "Пресет меню запуска"
-
-msgid "Launcher preset:"
-msgstr "Пресет меню запуска:"
-
 msgid "Launchpad"
 msgstr "Launchpad"
+
+msgid "Launchpad Search"
+msgstr "Поиск в Launchpad"
 
 msgid "List"
 msgstr "Список"
@@ -152,12 +146,6 @@ msgstr "Закрепить"
 msgid "Pinned"
 msgstr "Закреплённые"
 
-msgid "Preset 1 — Tahoe"
-msgstr "Пресет 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "Пресет 2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "Убрать из избранного"
 
@@ -181,9 +169,6 @@ msgstr "Маленький"
 
 msgid "Suggestions"
 msgstr "Предложения"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "Текст"

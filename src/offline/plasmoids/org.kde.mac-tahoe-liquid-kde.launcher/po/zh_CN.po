@@ -68,9 +68,6 @@ msgstr "浮动"
 msgid "General"
 msgstr "常规"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "网格"
 
@@ -101,14 +98,11 @@ msgstr "启动器位置："
 msgid "Launcher options"
 msgstr "启动器选项"
 
-msgid "Launcher preset"
-msgstr "发射器预设"
-
-msgid "Launcher preset:"
-msgstr "启动器预设："
-
 msgid "Launchpad"
 msgstr "启动台"
+
+msgid "Launchpad Search"
+msgstr "启动台搜索"
 
 msgid "List"
 msgstr "列表"
@@ -152,12 +146,6 @@ msgstr "固定"
 msgid "Pinned"
 msgstr "已固定"
 
-msgid "Preset 1 — Tahoe"
-msgstr "预设 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "预设 2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "从常用程序中移除"
 
@@ -181,9 +169,6 @@ msgstr "小"
 
 msgid "Suggestions"
 msgstr "建议"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "文本"

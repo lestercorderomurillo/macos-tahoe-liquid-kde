@@ -68,9 +68,6 @@ msgstr "التعويم"
 msgid "General"
 msgstr "عامّ"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "الشبكة"
 
@@ -101,14 +98,11 @@ msgstr "وضع القاذف:"
 msgid "Launcher options"
 msgstr "خيارات إطلاق"
 
-msgid "Launcher preset"
-msgstr "إعداد مسبق للاطلاق"
-
-msgid "Launcher preset:"
-msgstr "إعداد مسبق للشريع:"
-
 msgid "Launchpad"
 msgstr "Launchpad"
+
+msgid "Launchpad Search"
+msgstr "بحث Launchpad"
 
 msgid "List"
 msgstr "قائمة"
@@ -152,12 +146,6 @@ msgstr "تثبيت"
 msgid "Pinned"
 msgstr "مثبّت"
 
-msgid "Preset 1 — Tahoe"
-msgstr "إعداد مسبق 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "إعداد مسبق 2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "أزل من المفضّلة"
 
@@ -181,9 +169,6 @@ msgstr "صغير"
 
 msgid "Suggestions"
 msgstr "اقتراحات"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "النصّ"

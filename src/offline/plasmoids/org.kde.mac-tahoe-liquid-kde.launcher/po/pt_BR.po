@@ -68,9 +68,6 @@ msgstr "Flutuante"
 msgid "General"
 msgstr "Geral"
 
-msgid "Golden Gate"
-msgstr "Golden Gate"
-
 msgid "Grid"
 msgstr "Grade"
 
@@ -101,14 +98,11 @@ msgstr "Posicionamento do lançador:"
 msgid "Launcher options"
 msgstr "Opções do lançador"
 
-msgid "Launcher preset"
-msgstr "Predefinição do lançador"
-
-msgid "Launcher preset:"
-msgstr "Predefinição do lançador:"
-
 msgid "Launchpad"
 msgstr "Launchpad"
+
+msgid "Launchpad Search"
+msgstr "Pesquisa no Launchpad"
 
 msgid "List"
 msgstr "Lista"
@@ -152,12 +146,6 @@ msgstr "Fixar"
 msgid "Pinned"
 msgstr "Fixado"
 
-msgid "Preset 1 — Tahoe"
-msgstr "Predefinição 1 — Tahoe"
-
-msgid "Preset 2 — Golden Gate"
-msgstr "Predefinição 2 — Golden Gate"
-
 msgid "Remove from Favorites"
 msgstr "Remover dos favoritos"
 
@@ -181,9 +169,6 @@ msgstr "Pequeno"
 
 msgid "Suggestions"
 msgstr "Sugestões"
-
-msgid "Tahoe"
-msgstr "Tahoe"
 
 msgid "Text"
 msgstr "Texto"
