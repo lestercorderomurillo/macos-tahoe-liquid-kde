@@ -1,0 +1,15 @@
+{
+  "source": "d670a8de",
+  "scale": 1.25,
+  "edition": "tahoe",
+  "geometry": {
+    "x": 800,
+    "y": 334,
+    "width": 304,
+    "height": 224
+  },
+  "scope": "letter",
+  "correction": "flip",
+  "textTintPct": 100,
+  "sha256": "6f08c304b51718c8328091f4f3ba32ba3ddfc64e25f47adb5ee13b0134a0036c"
+}

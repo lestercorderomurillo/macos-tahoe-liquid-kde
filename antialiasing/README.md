@@ -89,3 +89,11 @@ The previous candidate is on the left and the revised candidate is on the right.
 | widget-weather | [Default PNG](golden-gate/default/widget-weather.png) | [Stress PNG](golden-gate/stress/widget-weather.png) |
 | widget-photos | [Default PNG](golden-gate/default/widget-photos.png) | [Stress PNG](golden-gate/stress/widget-photos.png) |
 | photos-loaded | [Default PNG](golden-gate/default/photos-loaded.png) | [Stress PNG](golden-gate/stress/photos-loaded.png) |
+
+## Glass Text Clock with its tint overlay at 100%
+
+These additional installed stress views expose the per-glyph Flip foreground over the refracted clock. The day label changes between dark and light letters. A single glyph can still cross both bands. The default screenshots above retain the edition settings.
+
+| Tahoe | Golden Gate |
+| --- | --- |
+| ![Tahoe tinted clock](tahoe/tinted-stress.png) | ![Golden Gate tinted clock](golden-gate/tinted-stress.png) |
