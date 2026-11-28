@@ -1630,9 +1630,8 @@ CMake configuration and Make's SDK/header dependency checks.
 
 Menu appearance comparisons use real screenshots of the corresponding macOS
 edition, aligned at the same display scale and blended at 50/50 opacity.
-Do not use a Tahoe photograph as Golden Gate evidence or vice versa. Installer
-source defaults remain Tahoe with launcher preset 1 and Golden Gate with
-preset 2; explicit per-step choices still override their own setting. Native
+Do not use a Tahoe photograph as Golden Gate evidence or vice versa. Both editions
+install the Tahoe launcher preset and honor “Use my launcher”. Native
 menu selections use the measured 8px corners, while edition materials remain
 independent of the launcher preset. Record any remaining geometry differences
 instead of claiming a pixel-identical match.

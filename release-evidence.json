@@ -1,17 +1,25 @@
 {
-  "version": "0.85.31",
+  "version": "0.85.32",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Align all numeric sliders in Acrylic Glass settings.",
+  "scope": "Use the Tahoe Launchpad layout in both editions and Notification Center glass inside launcher options.",
   "checks": [
     {
-      "command": "Render the candidate Settings editor in the disposable KDE neon guest and compare the editor-relative x position and width of every QSlider. All 20 returned (505, 124).",
+      "command": "Capture Launchpad and its options in both editions on Plasma 6.8.1 Wayland in light and dark appearance. Measure the 615 × 526 default frame and exercise dismissal through the underlying textbox, category tab, application and blank space.",
+      "result": "passed"
+    },
+    {
+      "command": "Build Acrylic Glass with the Plasma 6.6, 6.7 and 6.8 SDKs. On 6.7 run tests/acrylic_glass_capture.py with --compositor x11 --identity GradientProbe --material golden-gate --expect changed --popup-islands.",
+      "result": "passed"
+    },
+    {
+      "command": "Run the focused launcher preset, edition transition, plasmoid settings and release screenshot regressions. Verify the generated component manifest.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Dark Settings editor with the Golden Gate (Official) material preset. Both editions share the slider implementation.",
-  "approval": "Maintainer approved the displayed sliders.png preview for release.",
+  "coverage_limits": "Visual review covers the default grid and light and dark appearances on Wayland. The X11 pixel check exercises compositor rendering. The hidden Search AI popup has no user entry point.",
+  "approval": "Maintainer approved the paired light and dark Notification Center glass preview.",
   "approved_previews": {
-    "sliders.png": "8e60fdba3b987a4bd7aa5cdb14b22a81fad8b20e3e4c49ec52a01af95b0e460a"
+    "notification-glass-preview.png": "f381ff87afcffdf8ef62179405b22bc210670b185afaac22dbe226daf1c655de"
   },
-  "source_sha256": "bfdcd878d9059d83a277deef72c3cebb24502b99da785ddc535c78616d431c8d"
+  "source_sha256": "611983709fcbf542e2091788ff97bf49f63e705fc263f686857f57a4bd1ced43"
 }

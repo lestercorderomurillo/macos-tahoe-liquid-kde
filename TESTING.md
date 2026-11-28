@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.31**. All 20 Acrylic Glass sliders share the same track alignment. [Validation and coverage](release-evidence.json).
+**v0.85.32**. Both editions use the Tahoe Launchpad layout and Notification Center glass for its options menu. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
