@@ -1,11 +1,11 @@
 {
-  "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+  "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
   "edition": "tahoe",
   "scale": 1.25,
   "plasma": "plasmashell 6.8.1",
   "artifacts": {
-    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so": "e19f2c82de45b705de5d84bc12c0b6eb371756e5804589bb35f3ff8d882b9b74",
-    "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/liquidglass.so": "e3bcd05dea7d106ec86d2d60b3f2537dd05790cb5ca64a26a76b3684e320d2ae",
+    "/usr/lib/x86_64-linux-gnu/qt6/qml/org/kde/mac/tahoe/launcher/libmactahoelauncher.so": "fe3d13a2268725174736258bc3a9dbdef63dcb78a3c0a47b80a13ca75fa815ae",
+    "/usr/lib/x86_64-linux-gnu/qt6/plugins/kwin/effects/plugins/liquidglass.so": "b65abe7a0f89aa7ff839f20d3b3091d24b36d92a8e83d98e7073ed9132320bd6",
     "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui/PanelClockText.qml": "108029823ff915a9d8c1976dc7afa01e307bf71c9dbcb69431aa5c980cc95ea2",
     "/home/tester/.local/share/plasma/plasmoids/org.kde.mac-tahoe-liquid-kde.launcher/contents/ui/AppGridViewDelegate.qml": "6c12b6e61250f477d4fd6cdb5ac9200ee510666dc8a288b17533522a959cf679"
   }

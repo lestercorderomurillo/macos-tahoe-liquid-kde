@@ -1,5 +1,5 @@
 {
-  "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+  "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
   "scale": 1.25,
   "session": "KDE neon Plasma 6.8.1 Wayland",
   "captures": [
@@ -12,7 +12,7 @@
         3840,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "fb5fa24b50cf9db9c2da9d206ee29e14b30a86763f8fa08369fe6c253b8cad63"
     },
     {
@@ -24,7 +24,7 @@
         3840,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "27291679c1cb2fa5aac29c485fe7fa8043697f625654aba661ccff370eace257"
     },
     {
@@ -36,7 +36,7 @@
         649,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "e36b223ad27ba7eac3b302e4fb96957605fd075550d43e04f2cc896a3aa3c893"
     },
     {
@@ -48,7 +48,7 @@
         649,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "2f1ff0e69dd3e51bcc5cc5630211684c5e77e775f4d98662b6f7003748d50e53"
     },
     {
@@ -60,7 +60,7 @@
         134,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "d8e4ad4687bfea7808995f9a83b8d4e475344a98d578145761b447a984d30abd"
     },
     {
@@ -72,7 +72,7 @@
         132,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "4705bb8d6f32332ed4c712aca3f2836766fd56f0a063f5c13410fd8a597e0804"
     },
     {
@@ -84,7 +84,7 @@
         308,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "f284d2ffa54b3bd4e80c8bf82508009d47c977b7f2acab6dc45f8c3d8b30fb85"
     },
     {
@@ -96,7 +96,7 @@
         307,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "ab35392c888ac9dcb3332a8f25a880de6b98cfd1ae1beed628fd01b79521f5b9"
     },
     {
@@ -108,7 +108,7 @@
         156,
         80
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "46bac998a5365e5c194b56ee8e8663fbcb43e088c19e7f276e43bc84af2984c8"
     },
     {
@@ -120,7 +120,7 @@
         156,
         80
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "8a9f150f58d5d181eea5f58c9597ccf8eb94bd99f528080dc33333f1fea68421"
     },
     {
@@ -132,7 +132,7 @@
         608,
         848
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "b73cbf9c48cc03100a7d093293b3e0a80e4ac9556324f96366b0eb7cc4666b15"
     },
     {
@@ -144,7 +144,7 @@
         608,
         848
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "2944f87aa371f00964c69b3a22f01a595c27d544882b3a261a7a57b143de5b23"
     },
     {
@@ -156,7 +156,7 @@
         454,
         115
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "a33ff50b88f58c429b953c241c5afc3cc82dd471124cdf8d7f67684166b783ce"
     },
     {
@@ -168,7 +168,7 @@
         454,
         115
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "a4a62ffe036aca4c10767dc122e3405b79e154a7264ab6b1c2e1b001a73a75ce"
     },
     {
@@ -178,10 +178,10 @@
       "path": "tahoe/default/notification-history.png",
       "size": [
         454,
-        258
+        165
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "13cf0a8a25c7dca655ac13b5b953ae3843774e274d84a51d03c2e22b04378851"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "cdad2b766ebe196f2038d4c26773dbaa7db0abbc1f663f03c451e4dd77c5cf4a"
     },
     {
       "edition": "Tahoe",
@@ -190,10 +190,10 @@
       "path": "tahoe/stress/notification-history.png",
       "size": [
         454,
-        258
+        170
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "f8ec454cd7c3c6e3658ad219c3f9ec77804cc48b7298b4de5f0b37b4e1c695d4"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "4c23d6bcd01d35937914658396896f61994910f33231698804b99a257d941252"
     },
     {
       "edition": "Tahoe",
@@ -201,11 +201,11 @@
       "condition": "default",
       "path": "tahoe/default/launcher.png",
       "size": [
-        796,
-        681
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "93dc771381cdd88eb4c3d5453c2c2b8074f40cc7a806817d20a8317d1290912b"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "c7ed20484d5f568655b01dc76be0ae0e6af298e0d885352a7a6dacf9aebdef85"
     },
     {
       "edition": "Tahoe",
@@ -213,11 +213,11 @@
       "condition": "stress",
       "path": "tahoe/stress/launcher.png",
       "size": [
-        796,
-        681
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "fb2e55b5276ccdd199a0a59ef05ea8bb71628cfcefa4e6f24dfcb04e771e2e17"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "e4c11607e9d6594a4af5e1e47fb9b8c5d9915387ac6c89d0140e9f49e908a107"
     },
     {
       "edition": "Tahoe",
@@ -225,11 +225,11 @@
       "condition": "default",
       "path": "tahoe/default/launcher-search.png",
       "size": [
-        796,
-        681
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "ee5711cf3bb5848d82a0aa587e20cb2bdf4514e7cd47b74e00c42fd277004899"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "60ab160f187d66967496934e0d2151283c7c8028f6f4fd8474b99acd98d9ffdf"
     },
     {
       "edition": "Tahoe",
@@ -237,11 +237,11 @@
       "condition": "stress",
       "path": "tahoe/stress/launcher-search.png",
       "size": [
-        796,
-        681
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "490c3343aef9811a29eedef8b0dccbe23c051e885c456dc39989dce8b1489563"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "98641b248e88c9f0a287b1ffe96bfb2f488d65664eec124df18592a6b0b9b034"
     },
     {
       "edition": "Tahoe",
@@ -249,11 +249,11 @@
       "condition": "default",
       "path": "tahoe/default/launcher-list.png",
       "size": [
-        796,
-        681
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "95e24f7225b6d67367308d4487a2606aad79568041ca0e4cd2289e6537251923"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "95f88cb9b8581a87a80f57991be02b8d82cc35fe5338837cdfd6ce05a237db5f"
     },
     {
       "edition": "Tahoe",
@@ -261,11 +261,11 @@
       "condition": "stress",
       "path": "tahoe/stress/launcher-list.png",
       "size": [
-        796,
-        681
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "9696e1f8fa3092efafbae37f8416fb5ecaf031b6152fbde4ee4673d1b4f41b27"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "a5246cfc2e5d1d7041f0e202495a89ed4e65e2b3556ced914aa44cac6e2307bb"
     },
     {
       "edition": "Tahoe",
@@ -276,8 +276,8 @@
         770,
         223
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "18c2aafcefc8e0557ecc59c9e18bc7cccf85704940a283b9c0193174d2c86056"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "4b5d1be763328134320c7832be74c0926030b3ee921b761413d834819f93aeb7"
     },
     {
       "edition": "Tahoe",
@@ -288,8 +288,8 @@
         770,
         223
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "67dfcce636a0f8f9f9d364590a06843af2375598beb41f39bb97a266792fc5b7"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "342ffb883d5de000a11a5db10d5169bfa0996edd8cb2850ccea88e43d6f3ab21"
     },
     {
       "edition": "Tahoe",
@@ -298,10 +298,10 @@
       "path": "tahoe/default/options-menu.png",
       "size": [
         193,
-        253
+        151
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "90eb14f9d58c2f8e4f55a7c9ce7871291a42f22434d1ed01ef0b7aa056998e94"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "89e00d8a58bb812fcb3ccb9170ea00a0245316d63ab6bd74089ed16605d66800"
     },
     {
       "edition": "Tahoe",
@@ -310,10 +310,10 @@
       "path": "tahoe/stress/options-menu.png",
       "size": [
         193,
-        253
+        151
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c52babc468790d3ee66ad230b27f18d86ffaf88af678fe0249b4b9fb10ffba09"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "c20758ba0a4c75a186fb934df208d4e05b2de817b0d2987a9e787c406cd8a05e"
     },
     {
       "edition": "Tahoe",
@@ -324,8 +324,8 @@
         450,
         679
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "9dc134aad6283ea39a0112773013b50d217a03d543e9c8a463844c767a683221"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "13ba5d5ddc30adc3b621f17defcd37b843e00a501f173dca1ab64d12f820c7ae"
     },
     {
       "edition": "Tahoe",
@@ -336,8 +336,8 @@
         450,
         679
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "5ed5e0788fca6b69971d56b420314f655ec4c9d599da435080efa1d5e547039a"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "8f051fe9a692065c9927111e31c1825597fac7fac8fab7c15282ace9f23f0089"
     },
     {
       "edition": "Tahoe",
@@ -348,7 +348,7 @@
         450,
         495
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "c1169d9f8b7a0acc097e490d3ce7981a4915b03c28db3fe4b93bce0c66658df1"
     },
     {
@@ -360,7 +360,7 @@
         450,
         495
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "c1169d9f8b7a0acc097e490d3ce7981a4915b03c28db3fe4b93bce0c66658df1"
     },
     {
@@ -372,8 +372,8 @@
         3840,
         2160
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "3152bedda81eb4c6f549fc4fba7ef4fee1b85ec7c94252a28b2922db1804e863"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "5254236e3e700fb974faebdf80af2adbe78a41edcfbe443ca60da3e781127b62"
     },
     {
       "edition": "Tahoe",
@@ -384,8 +384,8 @@
         3840,
         2160
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "6a7d289012cac51143ad7a0dbd94edd1f5d047af35d8ebf95f6b3022a1e70cbb"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "d39cde2a8203eb880eaba15297b4432447665dd892097efd0dd077f4625792d0"
     },
     {
       "edition": "Tahoe",
@@ -396,7 +396,7 @@
         260,
         260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "a160034c95a844d6eee5ee162d0bd355e4a46e298dc5eb312496094c0ae66bcc"
     },
     {
@@ -408,7 +408,7 @@
         260,
         260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "ee0d21e2c46db9b6e0a8b97325459aa17498ede12a6b34291dd7640db85d6c6e"
     },
     {
@@ -420,8 +420,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "886d32b8366339c5c4cc456f1a116263a9dc0aa7d5ed5e2531c52a85bf141e2c"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "8b05c84c6eba75817db3a07cfde02b379ad8e427b281ddbd2f707127610f2cb7"
     },
     {
       "edition": "Tahoe",
@@ -432,8 +432,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "769c0cf245c3111fcdac91dde73c597ea53d046fc2ea8382759e5d4fd46e30c9"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "2200240ed72e250c18f458dd46370b3b024cf2f1e500337df1b5a6ef475fbbf6"
     },
     {
       "edition": "Tahoe",
@@ -444,8 +444,8 @@
         260,
         260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "22cb4f7de3b779d6a7fae7707536fc1508a921864c7500e7267cba12f8eabccd"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "01fb85b01b258de3cb41db56e79956d2f4b6572f8bf40ef517588a0dd52d4615"
     },
     {
       "edition": "Tahoe",
@@ -456,8 +456,8 @@
         260,
         260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "3eb1ba5d93d806e16e9174e94933cdd50544bd04f82b2a8a573e26df99a75a92"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "491f133d08a92f017c067c1021a690c1e4f170f126abc3108ce9c3e9abad799a"
     },
     {
       "edition": "Tahoe",
@@ -468,8 +468,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c8859823efc433f72a90c6e2f2938729cd14d4922f1e4b2125089e6b0a8e53b0"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "ee3dd6958f1b437de49a0e5a17b847927d3a919b7f7822b7d8db669efa8f63d9"
     },
     {
       "edition": "Tahoe",
@@ -480,8 +480,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "ac25cc2c96532ff72d5966fa766d606d7a94d98fdee1df5e7df21b2b072635c2"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "4348d28558a00d4c61157fe781aead01deed5e4f7860b0d917b2ba0613571e54"
     },
     {
       "edition": "Tahoe",
@@ -492,8 +492,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "e03303e826a52a9632b54aa5fc55b8f9b2314078f75eda7021b057851f50c832"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "3bafca516c7c6593ee58fd5860a09061255a691b12fed65a067c294b2d59cbd5"
     },
     {
       "edition": "Tahoe",
@@ -504,8 +504,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "1043e141f36bb7f356484bb08ecd951aa2fb65e4f121f4a667ca8556ff4ea9c4"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "929da6354b945573a951246b16f5f85a6add190512199d5ffd8c0bac24cc5a20"
     },
     {
       "edition": "Tahoe",
@@ -516,7 +516,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "38b21021bc7d96ead7c543ec768d5f03a0a0d05a5e4725a252b2b08e4481205f"
     },
     {
@@ -528,8 +528,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "0adf2a5e7a5bf3b6abc7c4365c3377c0f950fb94a7382955cc8e040d65067895"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "0958402c2f8f4a794494b42c4316d060aee7430fd585660ea0d0ef3bd83c7c23"
     },
     {
       "edition": "Tahoe",
@@ -540,7 +540,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "6b8dd52a910e47c7bcdbea4f93156a8b1787190f2c689e7add635c47c3faeba9"
     },
     {
@@ -552,8 +552,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "39e59a481ff6f06e97dc6c11fa7c2a3468e499e8467b93384c3332193bbfb86e"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "71bf474c720665493521a550d28df545b3ff910d5a9d5390d3cde92de21cc4e4"
     },
     {
       "edition": "Tahoe",
@@ -564,7 +564,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "1e1517a7ef205abf71fe2a4305077058a3aaedafe15d651fda9b476e0d2b1ec6"
     },
     {
@@ -576,8 +576,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "f5e02eb36e693dd979d14e36ac3b60c57bbbb17ec31324b18e124b0f7ca17a63"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "0659406c9cbdc12b9cf098118399fafa0cd1df8f1a69bc3e2f537711435b18d4"
     },
     {
       "edition": "Tahoe",
@@ -588,8 +588,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "63bcc2fd1eeabc1484d16e9b12e2cdf6ad7a30caea0d13c2ad2d3162a9f8455e"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "a0cd1922d0bc556c6d30243444791c9fc5aa5ef5c9494a4c801b268d3b0d3d74"
     },
     {
       "edition": "Tahoe",
@@ -600,8 +600,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "acf89daa155d8f5136d42386f673e420dc46dcca9b3d008efdebd2f296bcc359"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "c76f541892b28275969bfa6e35e276244c3a40a6cae03bcb682b836f9d254ae3"
     },
     {
       "edition": "Tahoe",
@@ -612,8 +612,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "b5b29c9d017430506606aa6bd11290e0fb2915fdc33eeaf07faed117441635d2"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "4299f737b611ff677001043e02706ca155f93b2c0fc3e8d9f7154648eaa9cd71"
     },
     {
       "edition": "Tahoe",
@@ -624,8 +624,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "2555dec65d4ee0c821ad8f1fd1b247446b15d2fc712d42987419f514468a0484"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "f5e82abc84a199462eec51da60b537c247ab5baa2ea19bd6ee5975985dc62088"
     },
     {
       "edition": "Tahoe",
@@ -636,7 +636,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "d0288c581b5ee793efb1dde7afc1769230de0231990076bb80f2ba026216f7d2"
     },
     {
@@ -648,7 +648,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "fcd43ed0a530daa886cd7befd9f1146b0cdf9bd1b9095f7a345036941fc8e677"
     },
     {
@@ -660,7 +660,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "ec2ac62c9ab4d287179bb7a03ba7a442c45446b675e421efbec615e0589a99da"
     },
     {
@@ -672,7 +672,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "111d46cd5840973587f8b08d10fd2140d9cf6f977fc08ea5fff6a262e55909e5"
     },
     {
@@ -684,7 +684,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "210cc5a1406a1c2208a951cea90a6a1dc874338eabb1c9811135acfb665b1a15"
     },
     {
@@ -696,7 +696,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "774dada48138537e89eb9573986d8d9b5dc367978bc64a0432ca00cff0d460f4"
     },
     {
@@ -708,7 +708,7 @@
         260,
         260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "8bd3f0940061dc861ed7f326f29efdfd54b20010e07680d2715ae046530078a8"
     },
     {
@@ -720,7 +720,7 @@
         260,
         260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "a000eaad0872998cd692ea1f33ed2ebb033e6a9d08eaca2bae0009579262602f"
     },
     {
@@ -732,7 +732,7 @@
         260,
         260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "6851ac5d2d99d0bc2cdd91fb6d24900ff95c0bbe5469c8d85a3dcb3f52d0515d"
     },
     {
@@ -744,7 +744,7 @@
         260,
         260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "8d66d3a2c7fd3ee721832abd55bfb012c2f09fa8356cf9fe4e055dc807f7652c"
     },
     {
@@ -756,8 +756,8 @@
         3840,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "784119a39edea3666f0df7505abb926b37cab14b47b8b58f02df3388e80f40b5"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "a49e3c2f10b3ffedc0add676338c5d44abdb17a0f0f9c00fa010ded4b73a2139"
     },
     {
       "edition": "Golden Gate",
@@ -768,8 +768,8 @@
         3840,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c8d73da2cb2eeb1e22f518554bed924da880c6a711779209d5d4ae454e8e4855"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "f26f4cd7f4d29f7dd13aed58dde8a52c3023e68f724bf9f3b426b7fa62702367"
     },
     {
       "edition": "Golden Gate",
@@ -780,8 +780,8 @@
         638,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "deccedae4159df39011b33c28d8bb1df9d2a5b0d78dbc628bd1cfa27d16a5157"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "2aedf2ac562aa7f6f0937f240f0140366445662a1b18a86d7d59da903e981d99"
     },
     {
       "edition": "Golden Gate",
@@ -792,8 +792,8 @@
         638,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "178ab22e38835c0401ef0d030deda4a592e426f11cf07776af9f42eb2e7a6470"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "9afb69a0d94ab8097ab07cea57eb431a3aa34f95344768082789390943211329"
     },
     {
       "edition": "Golden Gate",
@@ -804,8 +804,8 @@
         134,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "3c1949390c50e370a64cbb168b4260f44e1bb2dc3c812cb149c31811e8081c23"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "b94c3e1df4e670dc91ec1882e065dc59816f069d08b2f0335c408c8253766b6e"
     },
     {
       "edition": "Golden Gate",
@@ -813,11 +813,11 @@
       "condition": "stress",
       "path": "golden-gate/stress/panel-clock.png",
       "size": [
-        134,
+        132,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "419e1acbbaf26fae2f4f972c88311c21b9684f01a67a6a56b2f42458f4775639"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "4705bb8d6f32332ed4c712aca3f2836766fd56f0a063f5c13410fd8a597e0804"
     },
     {
       "edition": "Golden Gate",
@@ -828,7 +828,7 @@
         308,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "851994ef071267e4d816f79df81f0e57163522d0f11663a43737bc5a22cb53ff"
     },
     {
@@ -837,11 +837,11 @@
       "condition": "stress",
       "path": "golden-gate/stress/panel-status-symbols.png",
       "size": [
-        308,
+        307,
         42
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c2767971995dab11ed98ba09fcb3186accfeb1b290abbf403c3d87ef92a922bb"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "ab35392c888ac9dcb3332a8f25a880de6b98cfd1ae1beed628fd01b79521f5b9"
     },
     {
       "edition": "Golden Gate",
@@ -852,8 +852,8 @@
         156,
         80
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "25386e8190ef1e2c8244a35819a4db8758b6fd05122993cb74e8a74f42ade1a6"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "a4a985ccf4b462bd3d552cf06a745f55547594250203807c09a710259fd089f5"
     },
     {
       "edition": "Golden Gate",
@@ -864,8 +864,8 @@
         156,
         80
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c82e469475b3f0508f375d873f3d8614a1b3f1febe486f43d2054d49e60b180b"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "2e15d24c2d5487a993c68adf0d7604534e43ebc15d388e36dc2bf5572e799780"
     },
     {
       "edition": "Golden Gate",
@@ -876,8 +876,8 @@
         608,
         848
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "28cf2fb41d7838a198eb5446d995d1242dc1b7af86066c496631369d7615e160"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "3b72fc34bb34deb767003267f414a16485a8b22050ed732ec53110cf3a2fb579"
     },
     {
       "edition": "Golden Gate",
@@ -888,8 +888,8 @@
         608,
         848
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "fe4a2f647a097a8dbbcce80765133664069a33f277544a26bd3726acd142cb36"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "2944f87aa371f00964c69b3a22f01a595c27d544882b3a261a7a57b143de5b23"
     },
     {
       "edition": "Golden Gate",
@@ -900,7 +900,7 @@
         454,
         115
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "ff5ebe1dd08159a365818d37e64bd252a474cb9068c8b7f7c36142cf30ef765c"
     },
     {
@@ -912,7 +912,7 @@
         454,
         115
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "a4a62ffe036aca4c10767dc122e3405b79e154a7264ab6b1c2e1b001a73a75ce"
     },
     {
@@ -924,7 +924,7 @@
         454,
         165
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "998d6a6e36e2f7af0af7d24aa8872248bc0b39adfdfa801e1f1e4c463510d6fa"
     },
     {
@@ -936,7 +936,7 @@
         454,
         170
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "7f89abbead253714eb69d04dbc1a27045238f769100e925c97e95fbb86918692"
     },
     {
@@ -945,11 +945,11 @@
       "condition": "default",
       "path": "golden-gate/default/launcher.png",
       "size": [
-        1284,
-        790
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "09c0167507e615fde8d2fb1f7db63fc23404a86bfc0723a36a7d0ade7e8bb1ae"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "bf5b2f9a1d438b0b5087e586a0819e7d06cf2f18730827da4b882e8f2342f0f0"
     },
     {
       "edition": "Golden Gate",
@@ -957,11 +957,11 @@
       "condition": "stress",
       "path": "golden-gate/stress/launcher.png",
       "size": [
-        1284,
-        790
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "78e016e676f3ad0caf3b101562f436eb95dfa88ac6c03fc725a5a92b522a8985"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "28fe1061213645bad060c68b3f93f4355b0dadf3a2a57a3186df2b87f5223d45"
     },
     {
       "edition": "Golden Gate",
@@ -969,11 +969,11 @@
       "condition": "default",
       "path": "golden-gate/default/launcher-search.png",
       "size": [
-        1284,
-        790
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "7765a52f6b5928a6701f26234740d13089e0ae8d096ed3a54b9002531d52f734"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "a5fdd59928ab002f5b1f36b7aad8904251f1d23370fd5c220613a26961ebeb1e"
     },
     {
       "edition": "Golden Gate",
@@ -981,11 +981,11 @@
       "condition": "stress",
       "path": "golden-gate/stress/launcher-search.png",
       "size": [
-        1284,
-        790
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "25525b33aae26eb4377ca93741b5bfb8ce8353d7287341c43ca2a6f6b9ebbe0a"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "20661bfb5272397157247fc20d997dc262373dba03e3ab7381756cd29b5b5bee"
     },
     {
       "edition": "Golden Gate",
@@ -993,11 +993,11 @@
       "condition": "default",
       "path": "golden-gate/default/launcher-list.png",
       "size": [
-        1284,
-        790
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "3c31de2de7903b2f54060f47ce87f715f239731455be63e9e72e5ad81ce6d29e"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "4d9ac29badc768518ecea89128059cd22e52a6e9cc7b2c3f866ebdce8acdb990"
     },
     {
       "edition": "Golden Gate",
@@ -1005,11 +1005,11 @@
       "condition": "stress",
       "path": "golden-gate/stress/launcher-list.png",
       "size": [
-        1284,
-        790
+        769,
+        658
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "1ba8ad27c4de64968f8f8f255cf59c82de5321ecb8b50cdcc4ff102066692933"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "347e22358ea0fa9332638e18fef20e1266d0635c80b304d98f75fd46defe1e61"
     },
     {
       "edition": "Golden Gate",
@@ -1020,8 +1020,8 @@
         770,
         223
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "4b64959f431bba8bf6d7e318ee3fac132b9c339fa158a4ea7faeb35917696767"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "0f8074e7d8a444fe18feaba17d8255d408efd05a9dbc4e359877b20aad7c5450"
     },
     {
       "edition": "Golden Gate",
@@ -1032,8 +1032,8 @@
         770,
         223
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "42d50847683e0643adc54dcb338e87950a75f8cc0701053a00eabeb03491185b"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "541083f4ada9f9e0b5b7055ca2e583cb38e777b0b1a3f35a5ca41c7a0ea54e07"
     },
     {
       "edition": "Golden Gate",
@@ -1042,10 +1042,10 @@
       "path": "golden-gate/default/options-menu.png",
       "size": [
         193,
-        253
+        151
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "e0e1cfe11403de2da050537ecb3e5e3330f57e979d9d77eb6bf544a9244e0129"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "f8d07c33b9e354085428601cf46e6d17788a94a88f6d1680af0e6e0a0861fde3"
     },
     {
       "edition": "Golden Gate",
@@ -1054,10 +1054,10 @@
       "path": "golden-gate/stress/options-menu.png",
       "size": [
         193,
-        253
+        151
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c3efd48b311b25c6f2b79c24da4eec32ea738351b606102a596a534d66689f74"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "fe5c7e3db802a0010a392d6650c67f4fdd2560915fe6ce423f25f9d5680486bc"
     },
     {
       "edition": "Golden Gate",
@@ -1068,8 +1068,8 @@
         450,
         679
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "db48d79efe64b0cf2c80c9b88db26685e558cd95825f53a50b2deaec618afd9f"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "588fa2dbef225d0e3f214d98b741f5ee7db5c6a8f8ab69d8fab6546a1fe65e1f"
     },
     {
       "edition": "Golden Gate",
@@ -1080,8 +1080,8 @@
         450,
         679
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "1514c632092beee66e5d97fa49f6edfe0f674d0f402015d38fa38a3135e1bf43"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "803866bbc2662f7b3dbb80c8784128f0bf95f73718f12a09afd241bdb31ddaec"
     },
     {
       "edition": "Golden Gate",
@@ -1092,8 +1092,8 @@
         450,
         495
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c312df035448a1fec3d4fa9af0b430f3d410c80ab676a7c547a9cfc4a9d75f2c"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "60fd27265e19717882c49b2906b41cad1a57c5362102bc0cd531ef5ddfd0cc21"
     },
     {
       "edition": "Golden Gate",
@@ -1104,8 +1104,8 @@
         450,
         495
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c312df035448a1fec3d4fa9af0b430f3d410c80ab676a7c547a9cfc4a9d75f2c"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "60fd27265e19717882c49b2906b41cad1a57c5362102bc0cd531ef5ddfd0cc21"
     },
     {
       "edition": "Golden Gate",
@@ -1116,8 +1116,8 @@
         3840,
         2160
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "228046de9c8809e74586e30c3784b588bc399158a64f1f25ce2a6a5829ab9102"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "1d506aef88c8f50c88d47651b5e9e0849215bccbb67b4adf8151e0ffa12388f9"
     },
     {
       "edition": "Golden Gate",
@@ -1128,8 +1128,8 @@
         3840,
         2160
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "b338ce44647b50e203ca1e675ae7c89c0027157ed854196b3991a077d3dec84c"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "407ba753391aaa4c657fdec942808a575f9f8f3c8da49589f0f95d27d15d9383"
     },
     {
       "edition": "Golden Gate",
@@ -1137,11 +1137,11 @@
       "condition": "default",
       "path": "golden-gate/default/widget-calendar.png",
       "size": [
-        380,
-        280
+        260,
+        260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "2de5ff111c05d96941525dcfd35494621704c543bce37e0f1174072a943e3c3b"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "96a25ecaab418646bce4ccbae123e4533e9462624775bc8d77097d39f3b1c0c0"
     },
     {
       "edition": "Golden Gate",
@@ -1149,11 +1149,11 @@
       "condition": "stress",
       "path": "golden-gate/stress/widget-calendar.png",
       "size": [
-        380,
-        280
+        260,
+        260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "084bbf3d9c8818a6c4321a0b33e9c84586205a5c403e98904e4a8aafc8e4a38d"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "a6a42beb7e29c4eca291a058bdf0b86a3e8c75364865f80b681c2954b2a49c4d"
     },
     {
       "edition": "Golden Gate",
@@ -1164,8 +1164,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "97698c3a9cb503fadde030f7331d41a331028fd110c8c8ac96b14a6fd2e291b8"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "dfa6e50a6b9e702de25f40540d11db9f569003d214f1c51acf51d0d2555512a6"
     },
     {
       "edition": "Golden Gate",
@@ -1176,8 +1176,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "268636ce6c6cbefca6d3ef3eee2164b29f72e8a52ec448003c90ee7d0b6f3f7b"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "371b9313b72d484618140ef1fa5909121a1be39863cafa14ca20945515bf522e"
     },
     {
       "edition": "Golden Gate",
@@ -1185,11 +1185,11 @@
       "condition": "default",
       "path": "golden-gate/default/widget-clock-analog.png",
       "size": [
-        380,
-        280
+        260,
+        260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "8e049fb77677a081b98bb315916e0e10b886b68f6695a7ac9bde88032d838d0e"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "2bdd1c06eec7b124dcd02040ea5d3d3c0c3157c44c21cf1e8b4fd45a28133cbf"
     },
     {
       "edition": "Golden Gate",
@@ -1197,11 +1197,11 @@
       "condition": "stress",
       "path": "golden-gate/stress/widget-clock-analog.png",
       "size": [
-        380,
-        280
+        260,
+        260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "82a8beeae457f2126625f55eeb5e5185935940adff6c492b225f2e12ae8afd96"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "b0159a4ca061ab2a941e13df3d4131c3ac840fd13e21baa6778dcbdb23318dab"
     },
     {
       "edition": "Golden Gate",
@@ -1212,8 +1212,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "a977c7829822a54fb5ef95b332fcd8d49033174857a6e978edeb261692ae999c"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "ec075df6f8303e501b6f8a1b9a2bea7a430e2b00980a494bd1a9bd4f2afd31eb"
     },
     {
       "edition": "Golden Gate",
@@ -1224,8 +1224,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "c2ec8ec6345caab4fcfaaf0655266191821ece9f959294b2f1c58ad38c79b358"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "6186818d5ba1b60667676048078200713fd2b78656a410f5de99805f96979d0d"
     },
     {
       "edition": "Golden Gate",
@@ -1236,8 +1236,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "3804fc067ae788ab4f3b3dec5815a8b9c76344555b0d5140d78038f87d23aa64"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "0bb2ec1ef972f36e82e2359851386db92d600b445b7bb39f9cd62f2e05bf5abc"
     },
     {
       "edition": "Golden Gate",
@@ -1248,8 +1248,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "ac1f6859326f53ee7a236bcea90d4d92f6b1a8c8d4db9707dbdd74fe6b8f2e0f"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "6a01b98ae1d432fdf44c943b12be27c301fc2b23ebea0a9939cb4e41a0f43df0"
     },
     {
       "edition": "Golden Gate",
@@ -1260,8 +1260,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "82acfc8c1b21cc0c0808e25a53b157c11c63139f19c47532be3bc31aa1c115da"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "ae95e76d5c810d2aab0f775c10a31ee1edb2a4fe70716e3b902aac8d99520487"
     },
     {
       "edition": "Golden Gate",
@@ -1272,8 +1272,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "28549e05044567deb737827bf4f4bef651b221eab4078c8e76ddffe5c7a736a3"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "4cc0c89490e3c476c6e2402dd39a77729809c584a8db5ce520970f36283b4426"
     },
     {
       "edition": "Golden Gate",
@@ -1284,8 +1284,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "1bece75f8619a243b09d3ef0cfb265205df6f291372071eb2edae517f31f9210"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "317d6e99b58eebb3526a4f17ad8175f14b4a3e02770d828facb01338daf74066"
     },
     {
       "edition": "Golden Gate",
@@ -1296,8 +1296,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "5da146e23c67a3d78bfebb4bf324ef8454647f2f358104526eb6cee7a37c0c4c"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "2c29c4fe881e0ae23e76b877fc174742c5f32db9704b8663d21e985f5e961ac2"
     },
     {
       "edition": "Golden Gate",
@@ -1308,8 +1308,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "11998bac89d34a8e9f4890ca35b9e1bc3d886106cba708845407e1e26902a303"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "46804248e2d83b8ec2977bade1fdaeed1651276dc6304a1ed2501efd286a163e"
     },
     {
       "edition": "Golden Gate",
@@ -1320,8 +1320,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "f9db570405d1cc926a7f074c21dec54cea16ba9f05509e7591507c71943f3a15"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "8a577e7f323f6e4e6138b501dbb11318c1efdf394be303ef3ff169f829905030"
     },
     {
       "edition": "Golden Gate",
@@ -1332,8 +1332,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "55b05025b29d62a750db49dd989c27eb4f14b0b69a2e5c1485b755c5ab31c56c"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "529af6fd1f2db95142c1e6dfb5e9d17ee8be6ceef662a2fbb192999fd72c3705"
     },
     {
       "edition": "Golden Gate",
@@ -1344,8 +1344,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "f60f87c453a87a4af4843e269c3ddc359bc77b3d62291afbcc1e11df770ed33d"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "b348c83778f08732280d94ab666f5e0ca3e66e54807904ce73d496b60b93be23"
     },
     {
       "edition": "Golden Gate",
@@ -1356,8 +1356,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "94e6e8be232e3e7b64954127acb9c1289da5c05c7f493762ef035216aac0c47b"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "fe33411d269cf7c335040714cf3f34510bed7ac1e5b7519867b06910a302658d"
     },
     {
       "edition": "Golden Gate",
@@ -1368,8 +1368,8 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "db894559ea8585055bedf2baa4d8b6d64f2515db1e31da0270fae5eab17755d5"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "7b5f2ab648b6160d36908041ff9e7dabe7100eee28c78c78f4b1196ac8fceb62"
     },
     {
       "edition": "Golden Gate",
@@ -1380,7 +1380,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "21db6fdeea37cfa566675a15a50f648aa256c866fee0e1c267718a0f002e3ec2"
     },
     {
@@ -1392,7 +1392,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "fcd43ed0a530daa886cd7befd9f1146b0cdf9bd1b9095f7a345036941fc8e677"
     },
     {
@@ -1404,7 +1404,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "8c09742badb6931c19abb74c1b1891fef095cc852c3de8dd401f0e60665a2e11"
     },
     {
@@ -1416,7 +1416,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "111d46cd5840973587f8b08d10fd2140d9cf6f977fc08ea5fff6a262e55909e5"
     },
     {
@@ -1428,7 +1428,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "4f883bda6d63db02b1dd736f53812e653945d623c3ac4910d222f25d76e71f23"
     },
     {
@@ -1440,7 +1440,7 @@
         380,
         280
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
       "sha256": "774dada48138537e89eb9573986d8d9b5dc367978bc64a0432ca00cff0d460f4"
     },
     {
@@ -1449,11 +1449,11 @@
       "condition": "default",
       "path": "golden-gate/default/widget-photos.png",
       "size": [
-        380,
-        280
+        260,
+        260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "b5dc784a0f0b15d34af4fa2df093f20103142bd633154226267ee179298c72e6"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "7a7e536bebd0ac999988eb4788350efdce7bf634c810ddca44b6d27024db4ab8"
     },
     {
       "edition": "Golden Gate",
@@ -1461,11 +1461,11 @@
       "condition": "stress",
       "path": "golden-gate/stress/widget-photos.png",
       "size": [
-        380,
-        280
+        260,
+        260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "44a229dbb561a5210ccacb739a4e5112ff7c4e9502b023ca96f9d645d9835399"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "a000eaad0872998cd692ea1f33ed2ebb033e6a9d08eaca2bae0009579262602f"
     },
     {
       "edition": "Golden Gate",
@@ -1473,11 +1473,11 @@
       "condition": "default",
       "path": "golden-gate/default/photos-loaded.png",
       "size": [
-        380,
-        280
+        260,
+        260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "ea1a2fabb39b9d613de5fd4cd5023394ade206d64ba9596a9235cdac8b00f5fd"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "3059d37ba541d7ad08cd9e497e029d30ff25e2718f40f9e3e895cb08a69e3fa2"
     },
     {
       "edition": "Golden Gate",
@@ -1485,35 +1485,35 @@
       "condition": "stress",
       "path": "golden-gate/stress/photos-loaded.png",
       "size": [
-        380,
-        280
+        260,
+        260
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "7e3a2a70f7b9e3877682270e21e3432e9fc8a4fd6a33e7498ca9843bbbe8dce2"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "8d66d3a2c7fd3ee721832abd55bfb012c2f09fa8356cf9fe4e055dc807f7652c"
     },
     {
       "edition": "Golden Gate",
-      "view": "Detached search field",
+      "view": "Integrated search field",
       "condition": "default",
       "path": "golden-gate/default/search-field.png",
       "size": [
-        793,
-        130
+        769,
+        68
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "4850926d509b7d6b42d41c4f16016a73961bbe3521a08e6da4c4b61262d20b5b"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "affbc458ae95bd5c48647a9227bea6d5e5e5fb92557bb16f1011c6a3e0981447"
     },
     {
       "edition": "Golden Gate",
-      "view": "Detached search field",
+      "view": "Integrated search field",
       "condition": "stress",
       "path": "golden-gate/stress/search-field.png",
       "size": [
-        793,
-        130
+        769,
+        68
       ],
-      "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "14eb9f5477fc4a5b807bc0757909904f57792190dfb3aa00c4efd94c75c025c2"
+      "source": "a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a",
+      "sha256": "76a64a189f91a4199c3f1841fe46b35117914a1cbe6d9326befa880fcc7e2413"
     }
   ]
 }

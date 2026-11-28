@@ -1,6 +1,6 @@
 # Adaptive Contrast visual review
 
-Installed source `881c87e526ee2a1ab13f0fa866237765a154cbe8`, KDE neon Plasma 6.8.1, Wayland, 3840×2160 at 125% scale. Each edition used its own defaults. The stress wallpaper contains sharp black and white bands. Select any thumbnail to see its original pixels.
+Installed source `a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a`, KDE neon Plasma 6.8.1, Wayland, 3840×2160 at 125% scale. Each edition used its own defaults. The stress wallpaper contains sharp black and white bands. Select any thumbnail to see its original pixels.
 
 [Capture dimensions, scenarios and SHA-256 hashes](captures.json)
 
@@ -77,5 +77,5 @@ Installed source `881c87e526ee2a1ab13f0fa866237765a154cbe8`, KDE neon Plasma 6.8
 | Weather | [![Golden Gate default Weather](golden-gate/default/widget-weather.png)](golden-gate/default/widget-weather.png) | [![Golden Gate stress Weather](golden-gate/stress/widget-weather.png)](golden-gate/stress/widget-weather.png) |
 | Photos · empty state | [![Golden Gate default Photos · empty state](golden-gate/default/widget-photos.png)](golden-gate/default/widget-photos.png) | [![Golden Gate stress Photos · empty state](golden-gate/stress/widget-photos.png)](golden-gate/stress/widget-photos.png) |
 | Photos · loaded photograph | [![Golden Gate default Photos · loaded photograph](golden-gate/default/photos-loaded.png)](golden-gate/default/photos-loaded.png) | [![Golden Gate stress Photos · loaded photograph](golden-gate/stress/photos-loaded.png)](golden-gate/stress/photos-loaded.png) |
-| Detached search field | [![Golden Gate default Detached search field](golden-gate/default/search-field.png)](golden-gate/default/search-field.png) | [![Golden Gate stress Detached search field](golden-gate/stress/search-field.png)](golden-gate/stress/search-field.png) |
+| Integrated search field | [![Golden Gate default Integrated search field](golden-gate/default/search-field.png)](golden-gate/default/search-field.png) | [![Golden Gate stress Integrated search field](golden-gate/stress/search-field.png)](golden-gate/stress/search-field.png) |
 

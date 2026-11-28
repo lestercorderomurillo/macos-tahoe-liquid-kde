@@ -1,6 +1,6 @@
 # Adaptive Contrast qualification
 
-Candidate `881c87e526ee2a1ab13f0fa866237765a154cbe8`. The component photographs come from the installed desktops. The Qt renderer probes use controlled inputs for pixel measurements.
+Candidate `a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a`. The component photographs come from the installed desktops. The Qt renderer results below come from the approved contrast candidate. Repeated shaping on the integrated implementation returned identical geometry after glyph outline caching. Both final desktop installations include the v0.85.32 Launchpad and its options menu.
 
 | Scope | Tahoe | Golden Gate |
 | --- | --- | --- |
@@ -18,12 +18,15 @@ A diagnostic panel applet uses the installed panel sampler and glyph renderer. T
 
 | Edition | Physical centers | Visible RGB | Raw decisions | Capture |
 | --- | --- | --- | --- | --- |
-| tahoe | [[3559, 14], [3564, 14]] | [0, 0, 0], [251, 251, 251] | #ffffff, #000000 | [underlying pixels](tahoe/scopes/transparent-under-glyphs.png) · [painted ink](tahoe/scopes/transparent-glyphs.png) · [record](tahoe/pixel-verification.json) |
-| golden-gate | [[3559, 14], [3564, 14]] | [0, 0, 0], [251, 251, 251] | #ffffff, #000000 | [underlying pixels](golden-gate/scopes/transparent-under-glyphs.png) · [painted ink](golden-gate/scopes/transparent-glyphs.png) · [record](golden-gate/pixel-verification.json) |
+| tahoe | [[3559, 14], [3564, 14]] | [[0, 0, 0], [251, 251, 251]] | #ffffff, #000000 | [background](tahoe/scopes/transparent-under-glyphs.png) · [ink](tahoe/scopes/transparent-glyphs.png) · [measurements](tahoe/pixel-verification.json) |
+| golden-gate | [[3559, 14], [3564, 14]] | [[0, 0, 0], [251, 251, 251]] | #ffffff, #000000 | [background](golden-gate/scopes/transparent-under-glyphs.png) · [ink](golden-gate/scopes/transparent-glyphs.png) · [measurements](golden-gate/pixel-verification.json) |
 
 ### Installed launcher popup
 
-Within one sparse KWin reply, two requested glyph positions inside the same 64×64 grid cell returned RGB 7 and 255 on both launchers. The samples are from the installed launcher under the actual glass material. [Tahoe packet values](tahoe/launcher-sparse.json) · [Golden Gate packet values](golden-gate/launcher-sparse.json).
+Both installed launchers supplied distinct sparse color values within one coarse grid cell.
+
+- tahoe returned #202124 and #ffffff in cell [26, 22]. [Sparse sample record](tahoe/launcher-sparse.json)
+- golden-gate returned #202124 and #ffffff in cell [26, 22]. [Sparse sample record](golden-gate/launcher-sparse.json)
 
 ## Smoothness and antialiasing
 
@@ -65,4 +68,6 @@ Already-legible ink stayed unchanged. A target within the old cap reached 78. A 
 
 <!-- issue-summary -->
 
-The installed boundary demonstration compares neighboring glyph centers over a one-device-pixel stripe at 125%. Both installed launchers separately returned RGB 7 and 255 within the same coarse grid cell. The Qt probes also cover opaque SVG, translucent gradient, transparent pixels, shader-rendered glass, grouping, clipping, shaping and 30 motion positions. The foreground renderer preserved transparent mask pixels and produced intermediate colors during a live target reversal. Visual approval is pending.
+The installed boundary demonstration compares neighboring glyph centers over a one-device-pixel stripe at 125%. Both installed launchers separately returned distinct foreground sample values within the same coarse grid cell. The Qt probes also cover opaque SVG, translucent gradient, transparent pixels, shader-rendered glass, grouping, clipping, shaping and 30 motion positions. The foreground renderer preserved transparent mask pixels and produced intermediate colors during a live target reversal. Visual approval is pending.
+
+The combined source passed the launcher interaction and clipboard cases in light and dark configurations for both editions. KWin X11 6.6.5 and Wayland 6.7.4 compiled the integrated material classification. The installed PNGs exercise Plasma 6.8.1 Wayland.
