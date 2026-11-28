@@ -179,8 +179,8 @@ Item {
         return root.glassSettings.dynamicTinting && (labelProfile.scope === "letter"
             || (labelProfile.scope === "line" && label.wrapMode !== Text.NoWrap && label.maximumLineCount > 1));
     }
-    function styledLabel(item, value, overlay = "transparent", fallback = main.textColor) {
-        return Tahoe.AdaptiveContrast.styledRuns(item, value, labelProfile, (r, i) =>
+    function labelPaint(item, value, overlay = "transparent", fallback = main.textColor) {
+        return Tahoe.AdaptiveContrast.paintRuns(item, value, labelProfile, (r, i) =>
             Tahoe.AdaptiveContrast.resolve(appBackdrop, item, fallback, materialFill(root.glassSettings),
                 "launcher.label", item, root.contentItem, fallback, undefined, undefined, overlay, r, i));
     }

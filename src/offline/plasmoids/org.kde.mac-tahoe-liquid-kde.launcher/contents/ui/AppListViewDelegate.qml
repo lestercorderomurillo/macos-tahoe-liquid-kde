@@ -1,3 +1,4 @@
+import org.kde.mac.tahoe.launcher as Ink
 import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import Qt5Compat.GraphicalEffects
@@ -88,7 +89,11 @@ T.ItemDelegate {
 				Layout.fillWidth: !descriptionLabel.visible
 				Layout.maximumWidth: listDelegate.width - listDelegate.leftPadding - listDelegate.rightPadding - icon.width - row.spacing
 				readonly property string sourceText: ("name" in model ? model.name : model.display)
-				text: main.useTextRuns(this) ? main.styledLabel(this, sourceText, "transparent", main.textColor) : sourceText
+				readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText, "transparent", main.textColor) : null
+				text: painted?.markup ?? sourceText
+				layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
+				layer.smooth: true
+				layer.effect: Ink.InkGradient { lines: label.painted?.lines ?? [] }
 				textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
 				elide: Text.ElideRight
 				wrapMode: Text.NoWrap
@@ -103,7 +108,11 @@ T.ItemDelegate {
 				visible: text && showDescription
 				opacity: 0.85
 				readonly property string sourceText: model.description
-				text: main.useTextRuns(this) ? main.styledLabel(this, sourceText) : sourceText
+				readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText) : null
+				text: painted?.markup ?? sourceText
+				layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
+				layer.smooth: true
+				layer.effect: Ink.InkGradient { lines: descriptionLabel.painted?.lines ?? [] }
 				textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
 				font: Kirigami.Theme.smallFont
 				elide: Text.ElideRight

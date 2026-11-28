@@ -1,3 +1,4 @@
+import org.kde.mac.tahoe.launcher as Ink
 import QtQuick 2.12
 import Qt5Compat.GraphicalEffects
 import org.kde.plasma.components 3.0 as PlasmaComponents
@@ -83,7 +84,11 @@ Item {
 	PlasmaComponents.Label {
 		id: appname
 		readonly property string sourceText: ("name" in model ? model.name : model.display)
-		text: main.useTextRuns(this) ? main.styledLabel(this, sourceText) : sourceText
+		readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText) : null
+		text: painted?.markup ?? sourceText
+		layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
+		layer.smooth: true
+		layer.effect: Ink.InkGradient { lines: appname.painted?.lines ?? [] }
 		font.family: main.textFont
 		font.pointSize: main.appTextSize
 		font.weight: main.detachedSearch || main.tahoeStyle ? Font.Medium : 650

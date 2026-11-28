@@ -13,9 +13,12 @@ Text {
         && (profile.scope === "letter" || (profile.scope === "line" && wrapMode !== Text.NoWrap))
         && (contrastProfile !== "widget.clock-glass-text" || clockOverlay)
         && sourceText.length > 0 && !/<[a-zA-Z][^>]*>/.test(sourceText)
-    function glyphText() {
-        return AdaptiveContrast.styledRuns(label, sourceText, profile, (r, i) => ink.forRect(r, baseColor, i));
-    }
+    readonly property var painted: useRuns ? AdaptiveContrast.paintRuns(label, sourceText, profile,
+        (r, i) => ink.forRect(r, baseColor, i)) : null
+    function glyphText() { return painted?.markup ?? sourceText; }
+    layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
+    layer.smooth: true
+    layer.effect: InkGradient { lines: label.painted?.lines ?? [] }
     property string contrastProfile: ""
     property color baseColor: "black"
     readonly property Item glass: {

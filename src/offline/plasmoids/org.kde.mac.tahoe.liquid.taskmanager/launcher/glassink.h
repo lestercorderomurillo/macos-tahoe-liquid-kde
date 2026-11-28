@@ -71,6 +71,26 @@ inline QColor applyRoleCorrection(QColor base, QColor reference, QColor correcte
                             adjust(base.blueF(), reference.blueF(), corrected.blueF()), base.alphaF());
 }
 
+// Smooth in visual order. The endpoints extend past each line so independent
+// cards, wrapped lines and neighboring controls never contribute to one another.
+inline QList<QColor> smoothGlyphColors(const QList<QColor> &input)
+{
+    QList<QColor> result;
+    constexpr int weights[]{1, 4, 6, 4, 1};
+    for (qsizetype i = 0; i < input.size(); ++i) {
+        double r = 0, g = 0, b = 0;
+        for (int tap = -2; tap <= 2; ++tap) {
+            const auto &c = input[std::clamp<qsizetype>(i + tap, 0, input.size() - 1)];
+            const double weight = weights[tap + 2] / 16.;
+            r += c.redF() * weight;
+            g += c.greenF() * weight;
+            b += c.blueF() * weight;
+        }
+        result.append(QColor::fromRgbF(r, g, b, input[i].alphaF()));
+    }
+    return result;
+}
+
 enum class Correction { Shift, Flip };
 
 struct CorrectionSettings {

@@ -3,6 +3,7 @@
 #include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/inkpixels.h"
 
 #include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/contrastpreset.h"
+#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/glyphgradient.h"
 #include <QImage>
 #include <QMenu>
 #include <QPointer>
@@ -26,6 +27,8 @@ private Q_SLOTS:
 private:
     InkPixels m_pixels;
     Q_SLOT void pixelReply(int pid, const QRect &frame, const QString &role, const QByteArray &data);
+    QHash<const QAction *, GlassInk::GradientTrack> m_gradients;
+    QTimer m_gradientTimer;
     QHash<QAction *, QImage> m_letterImages;
     QHash<const QAction *, GlassInk::Samples> m_actionSamples;
     mutable GlassInk::FlipHistory m_history;

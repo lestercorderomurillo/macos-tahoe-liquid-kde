@@ -7,6 +7,10 @@ QtObject {
     readonly property MaterialSample layout: MaterialSample {}
 
     function styledRuns(item, value, profile, foregroundAt) {
+        return paintRuns(item, value, profile, foregroundAt).markup;
+    }
+
+    function paintRuns(item, value, profile, foregroundAt) {
         const letters = profile.scope === "letter";
         const left = item.leftPadding ?? 0;
         const top = item.topPadding ?? 0;
@@ -19,15 +23,35 @@ QtObject {
             ancestor.x; ancestor.y; ancestor.rotation; ancestor.scale;
         }
         const escape = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
-        let result = "";
+        const lines = [];
+        const colors = [];
         for (let index = 0; index < runs.length; ++index) {
             const run = runs[index];
             const r = run.bounds;
             const rect = item.mapToItem(null, r.x + left, r.y + top, r.width, r.height);
-            const color = foregroundAt(rect, index);
-            result += '<font color="' + color.toString() + '">' + escape(run.text) + '</font>';
+            colors.push(foregroundAt(rect, index));
+            if (letters) {
+                const row = run.line;
+                if (!lines[row]) lines[row] = {top: run.lineTop + top, stops: []};
+                lines[row].stops.push({x:r.x + r.width / 2 + left, index:index});
+            }
         }
-        return result;
+        for (const line of lines) {
+            line.stops.sort((a,b) => a.x - b.x);
+            const blended = layout.smoothGlyphColors(line.stops.map(s => colors[s.index]));
+            for (let i = 0; i < blended.length; ++i) {
+                const stop = line.stops[i];
+                colors[stop.index] = blended[i];
+                stop.color = blended[i].toString();
+            }
+        }
+        let markup = "";
+        for (let i = 0; i < runs.length; ++i) {
+            let fragment = escape(runs[i].text);
+            if (item.wrapMode === Text.NoWrap) fragment = fragment.replace(/ /g, "&#160;");
+            markup += '<font color="' + colors[i].toString() + '">' + fragment + '</font>';
+        }
+        return {markup:markup, lines:lines};
     }
 
     function bounds(item, centerX, textWidth) {

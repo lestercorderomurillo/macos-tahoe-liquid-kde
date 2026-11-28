@@ -1,3 +1,4 @@
+import org.kde.mac.tahoe.launcher as Ink
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtQuick.Layouts
@@ -93,7 +94,12 @@ FocusScope {
                     Text {
                         Layout.fillWidth: true
                         readonly property string sourceText: row.modelData.kind === "image" ? i18n("Image") + " · " + row.modelData.w + " × " + row.modelData.h : row.modelData.text.replace(/\s+/g, " ")
-                        text: main.useTextRuns(this) ? main.styledLabel(this, sourceText, row.background.color, main.textColor) : sourceText
+                        readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText, row.background.color, main.textColor) : null
+                        text: painted?.markup ?? sourceText
+                        layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
+                        layer.smooth: true
+                        layer.effect: Ink.InkGradient { lines: entryTitle.painted?.lines ?? [] }
+                        id: entryTitle
                         textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
                         elide: Text.ElideRight
                         maximumLineCount: 1
@@ -106,7 +112,12 @@ FocusScope {
                         readonly property string sourceText: (row.modelData.pinned ? i18n("Pinned") + " · " : "")
                             + (row.modelData.kind === "image" ? i18n("Image") : i18n("Text"))
                             + " · " + i18n("Copied %1", Qt.formatDateTime(new Date(row.modelData.ts), "h:mm ap"))
-                        text: main.useTextRuns(this) ? main.styledLabel(this, sourceText, row.background.color, main.dimmedTextColor) : sourceText
+                        readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText, row.background.color, main.dimmedTextColor) : null
+                        text: painted?.markup ?? sourceText
+                        layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
+                        layer.smooth: true
+                        layer.effect: Ink.InkGradient { lines: entryDetails.painted?.lines ?? [] }
+                        id: entryDetails
                         textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
                         elide: Text.ElideRight
                         font.family: main.textFont

@@ -48,8 +48,12 @@ Text {
         font: clockText.font
         color: ink.foreground
         textFormat: Text.StyledText
-        text: visible ? Native.AdaptiveContrast.styledRuns(coloredClock, clockText.clockValue,
-            clockText.inkProfile, (r, i) => ink.forRect(r, ink.base, i)) : ""
+        readonly property var painted: visible ? Native.AdaptiveContrast.paintRuns(coloredClock, clockText.clockValue,
+            clockText.inkProfile, (r, i) => ink.forRect(r, ink.base, i)) : null
+        text: painted?.markup ?? ""
+        layer.enabled: !!painted && GraphicsInfo.api !== GraphicsInfo.Software
+        layer.smooth: true
+        layer.effect: Native.InkGradient { lines: coloredClock.painted?.lines ?? [] }
         Accessible.ignored: true
     }
     Native.WallpaperInk {

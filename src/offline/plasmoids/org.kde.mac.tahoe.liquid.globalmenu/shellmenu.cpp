@@ -43,6 +43,10 @@ static QImage menuInk(const QMenu *menu, QStyleOptionMenuItem option)
 
 ShellMenu::ShellMenu(QWidget *parent) : QMenu(parent)
 {
+    m_gradientTimer.setInterval(16);
+    m_gradientTimer.setSingleShot(true);
+    connect(&m_gradientTimer, &QTimer::timeout, this, [this] { update(); });
+    connect(this, &QMenu::aboutToHide, this, [this] { m_gradients.clear(); m_gradientTimer.stop(); });
     setProperty("_mttkde_shell_menu", true);
     connect(this, &QMenu::aboutToShow, this, &ShellMenu::reloadTinting);
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
@@ -172,6 +176,8 @@ void ShellMenu::paintEvent(QPaintEvent *event)
                 }
             }
             int count = 0;
+            QList<qreal> centers;
+            QList<QColor> targets;
             for (int x = 0; x < ink.width();) {
                 if (peak[x] < 0) { ++x; continue; }
                 const int first = x;
@@ -185,14 +191,19 @@ void ShellMenu::paintEvent(QPaintEvent *event)
                                                        qBound(0, int(point.y() * side / height()), side - 1));
                     sample.add(GlassInk::composite(pixel, local));
                 } else sample.add(surfaceAt(point));
-                const auto color = m_history.tone(sample, base, ContrastPreset::settings(m_profile), action, 3 + count++);
-                for (int y = 0; y < ink.height(); ++y) {
-                    auto *pixels = reinterpret_cast<QRgb *>(ink.scanLine(y));
-                    for (int col = first; col < x; ++col)
-                        pixels[col] = qPremultiply(qRgba(color.red(), color.green(), color.blue(), qAlpha(pixels[col]) * color.alpha() / 255));
-                }
+                centers.append((center + .5) / scale);
+                targets.append(m_history.tone(sample, base, ContrastPreset::settings(m_profile), action, 3 + count++));
             }
-            if (count) m_letterImages.insert(action, ink);
+            if (count) {
+                auto &track = m_gradients[action];
+                track.setTarget(GlassInk::smoothGlyphColors(targets));
+                QPainter painter(&ink);
+                painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+                painter.fillRect(QRect(QPoint(), row.size()), track.brush(row.width(), centers));
+                painter.end();
+                m_letterImages.insert(action, ink);
+                if (track.animating() && !m_gradientTimer.isActive()) m_gradientTimer.start();
+            }
         }
         m_paintingSampledMenu = true;
     }

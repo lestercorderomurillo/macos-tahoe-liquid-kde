@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "materialsample.h"
+#include "glassink.h"
 #include <QGlyphRun>
 #include <QPainterPath>
 #include <QTextLayout>
@@ -94,6 +95,11 @@ QColor MaterialSample::at(QPointF scenePoint) const
     return m_pixels.pixelColor(x, y);
 }
 
+QList<QColor> MaterialSample::smoothGlyphColors(const QList<QColor> &colors) const
+{
+    return GlassInk::smoothGlyphColors(colors);
+}
+
 QVariantList MaterialSample::textRuns(const QString &text, const QFont &font, qreal width,
                                       int wrapMode, int alignment, bool letters)
 {
@@ -149,6 +155,7 @@ QVariantList MaterialSample::textRuns(const QString &text, const QFont &font, qr
             const auto next = std::next(i);
             const int limit = next == clusters.end() ? end : next.key();
             result.append(QVariantMap{{QStringLiteral("text"), text.mid(i.key(), limit - i.key())},
+                {QStringLiteral("line"), n}, {QStringLiteral("lineTop"), line.y()},
                 {QStringLiteral("bounds"), QRectF(i.value() - QPointF(.25, .25), QSizeF(.5, .5))}});
         }
     }
