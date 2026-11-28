@@ -373,10 +373,17 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
                  "--size", "1280x1024"],
                 env=env, stdout=log, stderr=log, start_new_session=True,
             )
+            # The probe has 26 timed phases. Bound stalls as well as total time.
             deadline = time.monotonic() + 20
+            hard_deadline = time.monotonic() + 60
+            phase_count = 0
             popup_roles = {}
-            while time.monotonic() < deadline:
+            while time.monotonic() < min(deadline, hard_deadline):
                 output = log_path.read_text()
+                phases = output.count("PROBE_PHASE ")
+                if phases > phase_count:
+                    phase_count = phases
+                    deadline = time.monotonic() + 20
                 if "PROBE_PHASE 2 " in output:
                     for name in ("app", "search"):
                         if name not in popup_roles:

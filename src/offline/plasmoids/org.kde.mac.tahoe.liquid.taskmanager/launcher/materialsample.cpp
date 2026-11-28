@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "materialsample.h"
 #include "glassink.h"
+#include <QCache>
 #include <QGlyphRun>
 #include <QPainterPath>
 #include <QTextLayout>
@@ -100,6 +101,30 @@ QList<QColor> MaterialSample::smoothGlyphColors(const QList<QColor> &colors) con
     return GlassInk::smoothGlyphColors(colors);
 }
 
+// A glyph outline and its interior sample are invariant under translation.
+static QPointF glyphSample(const QRawFont &font, quint32 glyph)
+{
+    using Key = QPair<QRawFont, quint32>;
+    static thread_local QCache<Key, QPointF> cache(4096);
+    const Key key{font, glyph};
+    if (const auto point = cache.object(key)) return *point;
+    const auto path = font.pathForGlyph(glyph);
+    const auto bounds = path.boundingRect();
+    QPointF point = bounds.center();
+    if (!path.isEmpty() && !path.contains(point)) {
+        double best = std::numeric_limits<double>::infinity();
+        for (int y = 0; y < 15; ++y) for (int x = 0; x < 15; ++x) {
+            const QPointF p(bounds.left() + bounds.width() * (x + .5) / 15,
+                            bounds.top() + bounds.height() * (y + .5) / 15);
+            const auto delta = p - bounds.center();
+            const double distance = QPointF::dotProduct(delta, delta);
+            if (distance < best && path.contains(p)) { best = distance; point = p; }
+        }
+    }
+    cache.insert(key, new QPointF(point));
+    return point;
+}
+
 QVariantList MaterialSample::textRuns(const QString &text, const QFont &font, qreal width,
                                       int wrapMode, int alignment, bool letters)
 {
@@ -134,19 +159,7 @@ QVariantList MaterialSample::textRuns(const QString &text, const QFont &font, qr
             const auto positions = run.positions();
             for (qsizetype i = 0; i < glyphs.size(); ++i) {
                 if (clusters.contains(indices[i])) continue;
-                const auto path = run.rawFont().pathForGlyph(glyphs[i]);
-                const auto bounds = path.boundingRect();
-                QPointF point = bounds.center();
-                if (!path.isEmpty() && !path.contains(point)) {
-                    double best = std::numeric_limits<double>::infinity();
-                    for (int y = 0; y < 15; ++y) for (int x = 0; x < 15; ++x) {
-                        const QPointF p(bounds.left() + bounds.width() * (x + .5) / 15,
-                                        bounds.top() + bounds.height() * (y + .5) / 15);
-                        const auto delta = p - bounds.center();
-                        const double distance = QPointF::dotProduct(delta, delta);
-                        if (distance < best && path.contains(p)) { best = distance; point = p; }
-                    }
-                }
+                const QPointF point = glyphSample(run.rawFont(), glyphs[i]);
                 clusters.insert(indices[i], positions[i] + point);
             }
         }
