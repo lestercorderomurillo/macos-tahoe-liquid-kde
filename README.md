@@ -165,7 +165,7 @@ Use the active app’s menus from the top bar.
 
 ### Launchpad
 
-Search for apps or browse them by category.
+Open Apps from the Dock to search by name, launch a favorite, or browse categories in grid or list view.
 
 <p align="center">
   <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Light and dark modes" width="830">

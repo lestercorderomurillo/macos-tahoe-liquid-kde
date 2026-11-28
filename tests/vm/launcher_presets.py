@@ -76,7 +76,7 @@ def main():
             result.append({'case': f'fresh-{value}', 'panel': panel, 'capsule': capsule})
             toggle()
             time.sleep(.3)
-        assert all((panel['width'], panel['height']) == (615, 526) for panel in sizes.values()), sizes
+        assert all((panel['width'], panel['height']) == (1028, 526) for panel in sizes.values()), sizes
         preset(1)
         toggle()
         for value in (1, 2, 1, 2):

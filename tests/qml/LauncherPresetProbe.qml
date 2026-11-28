@@ -284,7 +284,7 @@ Timer {
                 plasmoid.configuration.numberColumns = 6;
                 break;
             case 3:
-                verify(root.columns === 6 && root.width > inlineWidth, "configured columns resize the grid");
+                verify(root.columns === 6 && root.width < inlineWidth, "configured columns resize the grid");
                 verify(appList.viewItem.headerItem.favoritesView.count === 6, "favorites follow column count");
                 const app = appList.viewItem.currentItem;
                 verify(app !== null, "app available for its context menu");

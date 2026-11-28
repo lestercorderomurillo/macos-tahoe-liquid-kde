@@ -69,8 +69,13 @@ PlasmaCore.Dialog {
 	}
 	readonly property int iconSize: Math.round(configuredIconSize * 1.0625)
 	readonly property int columns: Plasmoid.configuration.numberColumns
-	// At 150% scale the reference column and row pitches are 171 and 151 pixels.
-	readonly property int cellSizeWidth: Math.round(configuredIconSize * 114 / 64)
+	// Compress the column pitch when the preferred grid would exceed the available screen.
+	readonly property int cellSizeWidth: {
+		const pitch = Math.round(configuredIconSize * 140 / 64);
+		const available = Plasmoid.availableScreenRect.width - gridFramePadding;
+		return available > 0 ? Math.min(pitch, Math.floor(available / columns)) : pitch;
+	}
+	readonly property int gridFramePadding: 48
 	readonly property int cellSizeHeight: Math.round(configuredIconSize * 101 / 64)
 	property int rows: plasmoid.configuration.numberOfRows
 	
@@ -174,9 +179,9 @@ PlasmaCore.Dialog {
 	FocusScope {
 		id: fs
 		focus: true
-		// The reference frame is 615 × 526 logical pixels at the default 5 × 4 grid.
+		// The reference frame is 1028 logical pixels wide at the default seven columns.
 		implicitWidth: main.clipboardMode ? Math.round(main.textSize * 60)
-			: root.cellSizeWidth * root.columns + 45 - root.margins.left - root.margins.right
+			: root.cellSizeWidth * root.columns + root.gridFramePadding - root.margins.left - root.margins.right
 		implicitHeight: main.clipboardMode
 			? Math.round(main.inlineSearchHeight + 18 + Math.max(2, Math.min(6, main.clipboardList.entries.length)) * main.textSize * 5.2)
 			: main.inlineSearchHeight + main.categoryHeight + main.gridTopSpacing
