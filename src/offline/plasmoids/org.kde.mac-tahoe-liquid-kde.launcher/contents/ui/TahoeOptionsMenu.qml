@@ -5,7 +5,7 @@ import "../../../org.kde.mac-tahoe-liquid-kde.controlcenter/contents/ui" as Cont
 Controls.MacOptionsMenu {
     id: launcherMenu
     notificationGlass: true
-    materialComponent: "popups"
+    title: "mttkde-launcher-options"
     property MouseArea outsidePress: MouseArea {
         id: dismissalArea
         parent: launcherMenu.visible ? root.contentItem : null
