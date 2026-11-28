@@ -240,10 +240,10 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### 剪贴板历史记录
 
-再次使用之前复制的文字和图片。
+在同一菜单中从应用切换到剪贴板，查找并再次使用复制过的文本和图片。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="剪贴板历史记录 · 浅色与深色模式" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="剪贴板历史记录 · 浅色与深色模式" width="1092">
 </p>
 
 <br>

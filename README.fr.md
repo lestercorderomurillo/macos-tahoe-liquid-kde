@@ -240,10 +240,10 @@ Vérifiez le niveau de la batterie et son état de charge.
 
 ### Historique du presse-papiers
 
-Réutilisez le texte et les images que vous avez copiés.
+Passez des apps au presse-papiers dans le même menu pour retrouver et réutiliser le texte et les images copiés.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Historique du presse-papiers · Modes clair et sombre" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="Historique du presse-papiers · Modes clair et sombre" width="1092">
 </p>
 
 <br>

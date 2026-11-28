@@ -243,10 +243,10 @@ Sprawdź poziom baterii i stan ładowania.
 
 ### Historia schowka
 
-Użyj ponownie skopiowanego tekstu i obrazów.
+W tym samym menu przejdź z aplikacji do schowka, aby znaleźć i ponownie wykorzystać skopiowany tekst lub obrazy.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Historia schowka · Tryb jasny i ciemny" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="Historia schowka · Tryb jasny i ciemny" width="1092">
 </p>
 
 <br>

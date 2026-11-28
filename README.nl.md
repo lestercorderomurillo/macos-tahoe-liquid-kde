@@ -243,10 +243,10 @@ Controleer het batterijniveau en de laadstatus.
 
 ### Klembordgeschiedenis
 
-Gebruik eerder gekopieerde tekst en afbeeldingen opnieuw.
+Schakel in hetzelfde menu van Apps naar het klembord om gekopieerde tekst en afbeeldingen terug te vinden en opnieuw te gebruiken.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Klembordgeschiedenis · Lichte en donkere modus" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="Klembordgeschiedenis · Lichte en donkere modus" width="1092">
 </p>
 
 <br>

@@ -240,10 +240,10 @@ Consulta el nivel de batería y el estado de carga.
 
 ### Historial del portapapeles
 
-Reutiliza texto e imágenes que hayas copiado.
+Cambia de Apps al portapapeles en el mismo menú para buscar y reutilizar texto e imágenes que hayas copiado.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Historial del portapapeles · Modos claro y oscuro" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="Historial del portapapeles · Modos claro y oscuro" width="1092">
 </p>
 
 <br>

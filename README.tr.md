@@ -243,10 +243,10 @@ Pil düzeyini ve şarj durumunu kontrol edin.
 
 ### Pano geçmişi
 
-Kopyaladığınız metinleri ve görselleri yeniden kullanın.
+Kopyaladığınız metin ve görselleri bulup yeniden kullanmak için aynı menüde uygulamalardan panoya geçin.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Pano geçmişi · Açık ve koyu modlar" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="Pano geçmişi · Açık ve koyu modlar" width="1092">
 </p>
 
 <br>

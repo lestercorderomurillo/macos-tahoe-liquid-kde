@@ -243,10 +243,10 @@ Check the battery level and charging status.
 
 ### Clipboard History
 
-Reuse text and images you copied earlier.
+Switch from Apps to Clipboard in the same menu to find and reuse copied text and images.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Clipboard History · Light and dark modes" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="Clipboard History · Light and dark modes" width="1092">
 </p>
 
 <br>

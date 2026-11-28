@@ -243,10 +243,10 @@ Controlla il livello della batteria e lo stato di carica.
 
 ### Cronologia degli appunti
 
-Riutilizza il testo e le immagini che hai copiato.
+Passa da Apps agli appunti nello stesso menu per ritrovare e riutilizzare testo e immagini copiati.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="Cronologia degli appunti · Modalità chiara e scura" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="Cronologia degli appunti · Modalità chiara e scura" width="1092">
 </p>
 
 <br>

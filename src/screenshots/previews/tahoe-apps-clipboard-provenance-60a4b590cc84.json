@@ -1,0 +1,201 @@
+{
+  "captures": [
+    {
+      "edition": "tahoe",
+      "mode": "light",
+      "window": [
+        "{d0e26bc0-85fb-46dd-9b15-ec17673ef97a}",
+        {
+          "x": 446,
+          "y": 277,
+          "width": 1028,
+          "height": 526
+        }
+      ],
+      "desktop_scale": 1,
+      "source": "bbaec76598ae033522b0a36eab567218a31b3474",
+      "installed": "c6a0f09f95b29a7113b2123afd698dab2d3dec891dd5ae62dc9e6c6c42485f9c  MenuRepresentation.qml\n158a4bcf9cb47ebc397598a749ed98a33b7646be012a2b93d0e999d201aa5539  SearchBar.qml\n3030f7b15eda07f4cb397a8a29b751a219963313eed92281f7761edcea5161d5  MenuButton.qml",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "recording_sha256": "f43438dfb595892d9ea19f677af3d6e440a88b48a1fc839b9482ebeb739b31b1",
+      "decoded_fps": 25,
+      "selected_frames_ms": [
+        [
+          58,
+          1200
+        ],
+        [
+          59,
+          40
+        ],
+        [
+          60,
+          40
+        ],
+        [
+          61,
+          40
+        ],
+        [
+          62,
+          40
+        ],
+        [
+          63,
+          40
+        ],
+        [
+          64,
+          40
+        ],
+        [
+          65,
+          40
+        ],
+        [
+          66,
+          40
+        ],
+        [
+          67,
+          40
+        ],
+        [
+          69,
+          1600
+        ],
+        [
+          85,
+          40
+        ],
+        [
+          86,
+          40
+        ],
+        [
+          87,
+          40
+        ],
+        [
+          88,
+          40
+        ],
+        [
+          89,
+          40
+        ],
+        [
+          90,
+          40
+        ],
+        [
+          91,
+          40
+        ],
+        [
+          94,
+          800
+        ]
+      ]
+    },
+    {
+      "edition": "tahoe",
+      "mode": "dark",
+      "window": [
+        "{ca43a64a-93d1-48f1-b643-5f7168123141}",
+        {
+          "x": 446,
+          "y": 277,
+          "width": 1028,
+          "height": 526
+        }
+      ],
+      "desktop_scale": 1,
+      "source": "bbaec76598ae033522b0a36eab567218a31b3474",
+      "installed": "c6a0f09f95b29a7113b2123afd698dab2d3dec891dd5ae62dc9e6c6c42485f9c  MenuRepresentation.qml\n158a4bcf9cb47ebc397598a749ed98a33b7646be012a2b93d0e999d201aa5539  SearchBar.qml\n3030f7b15eda07f4cb397a8a29b751a219963313eed92281f7761edcea5161d5  MenuButton.qml",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "recording_sha256": "038563c981337bc32aa201913d13900ead381d8c411bc501f3072c3958b930ea",
+      "decoded_fps": 25,
+      "selected_frames_ms": [
+        [
+          57,
+          1200
+        ],
+        [
+          58,
+          40
+        ],
+        [
+          59,
+          40
+        ],
+        [
+          60,
+          40
+        ],
+        [
+          61,
+          40
+        ],
+        [
+          62,
+          40
+        ],
+        [
+          63,
+          40
+        ],
+        [
+          64,
+          40
+        ],
+        [
+          65,
+          40
+        ],
+        [
+          66,
+          40
+        ],
+        [
+          68,
+          1600
+        ],
+        [
+          85,
+          40
+        ],
+        [
+          86,
+          40
+        ],
+        [
+          87,
+          40
+        ],
+        [
+          88,
+          40
+        ],
+        [
+          89,
+          40
+        ],
+        [
+          90,
+          40
+        ],
+        [
+          91,
+          40
+        ],
+        [
+          94,
+          800
+        ]
+      ]
+    }
+  ],
+  "animation": "tahoe-apps-clipboard-5238c80b84ec.gif"
+}

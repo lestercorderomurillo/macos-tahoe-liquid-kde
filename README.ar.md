@@ -243,10 +243,10 @@
 
 ### سجل الحافظة
 
-أعد استخدام النصوص والصور التي نسختها.
+انتقل من التطبيقات إلى الحافظة في القائمة نفسها للعثور على النصوص والصور المنسوخة واستخدامها مجددًا.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-clipboard-history-light-dark-84a04bc54fb0.gif" alt="سجل الحافظة · الوضعان الفاتح والداكن" width="830">
+  <img src="src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif" alt="سجل الحافظة · الوضعان الفاتح والداكن" width="1092">
 </p>
 
 <br>
