@@ -99,8 +99,8 @@ Item {
 		textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
 		elide: main.detachedSearch || main.tahoeStyle ? Text.ElideRight : Text.ElideMiddle
 		horizontalAlignment: Text.AlignHCenter
-		maximumLineCount: main.detachedSearch || main.tahoeStyle ? 1 : 2
-		wrapMode: main.detachedSearch || main.tahoeStyle ? Text.NoWrap : Text.Wrap
+		maximumLineCount: main.labelProfile.scope === "line" ? 2 : 1
+		wrapMode: maximumLineCount > 1 ? Text.WordWrap : Text.NoWrap
 	}
 
 	

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <QColor>
+#include <QElapsedTimer>
 #include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusMessage>
@@ -18,6 +19,7 @@ public:
     using Key = QPair<double, double>;
     InkPixels()
     {
+        m_age.start();
         m_flush.setSingleShot(true);
         QObject::connect(&m_flush, &QTimer::timeout, &m_flush, [this] {
             auto signal = QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.KWin"),
@@ -42,13 +44,19 @@ public:
     {
         if (m_frame.isEmpty() || !QRectF(QPointF(), m_frame.size()).contains(p)) return {};
         const Key key{p.x(), p.y()};
-        auto it = m_colors.constFind(key);
-        if (it != m_colors.cend()) return it.value();
-        if (m_colors.size() >= 2048) m_colors.clear();
-        m_colors.insert(key, QColor());
-        m_pending.append(QJsonArray{p.x(), p.y()});
-        if (!m_flush.isActive()) m_flush.start(0);
-        return {};
+        const auto now = m_age.elapsed();
+        auto it = m_colors.find(key);
+        if (it == m_colors.end()) {
+            if (m_colors.size() >= 2048) m_colors.clear();
+            it = m_colors.insert(key, Entry{});
+        }
+        // Renew on demand after compositor restarts or a discarded subscription.
+        if (it->requested < 0 || now - it->requested > 3000) {
+            it->requested = now;
+            m_pending.append(QJsonArray{p.x(), p.y()});
+            if (!m_flush.isActive()) m_flush.start(0);
+        }
+        return it->color;
     }
     bool receive(int pid, const QRect &frame, const QString &role, const QByteArray &data)
     {
@@ -61,12 +69,14 @@ public:
             auto it = m_colors.find({values[0].toDouble(), values[1].toDouble()});
             if (it == m_colors.end()) continue;
             const QColor color = QColor::fromRgb(QRgb(values[2].toInt()));
-            if (*it != color) { *it = color; changed = true; }
+            if (it->color != color) { it->color = color; changed = true; }
         }
         return changed;
     }
 private:
-    QMap<Key, QColor> m_colors;
+    struct Entry { QColor color; qint64 requested = -1; };
+    QElapsedTimer m_age;
+    QMap<Key, Entry> m_colors;
     QTimer m_flush;
     QJsonArray m_pending;
     QRect m_frame;

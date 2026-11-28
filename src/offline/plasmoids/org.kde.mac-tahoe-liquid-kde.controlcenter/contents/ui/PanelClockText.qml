@@ -32,13 +32,26 @@ Text {
     Accessible.ignored: true
     readonly property var inkProfile: ink.settings.contrastProfiles["panel.clock"]
     readonly property bool letterInk: ink.active && ink.settings.dynamicTinting && inkProfile.scope === "letter"
-    text: letterInk ? Native.AdaptiveContrast.styledRuns(clockText, clockValue, inkProfile, (r, i) => ink.forRect(r, ink.base, i)) : clockValue
-    textFormat: letterInk ? Text.StyledText : Text.PlainText
+    // Keep panel and loader geometry tied to the plain shaped date. Resolving
+    // the visible letters reads those positions and must not size the panel.
+    text: clockValue
+    textFormat: Text.PlainText
     font.family: "SF Pro Text"
     font.pixelSize: 13
     font.weight: Font.Medium
     font.letterSpacing: -0.33
-    color: ink.foreground
+    color: letterInk ? "transparent" : ink.foreground
+    Text {
+        id: coloredClock
+        anchors.fill: parent
+        visible: clockText.letterInk
+        font: clockText.font
+        color: ink.foreground
+        textFormat: Text.StyledText
+        text: visible ? Native.AdaptiveContrast.styledRuns(coloredClock, clockText.clockValue,
+            clockText.inkProfile, (r, i) => ink.forRect(r, ink.base, i)) : ""
+        Accessible.ignored: true
+    }
     Native.WallpaperInk {
         profileId: "panel.clock"
         id: ink
