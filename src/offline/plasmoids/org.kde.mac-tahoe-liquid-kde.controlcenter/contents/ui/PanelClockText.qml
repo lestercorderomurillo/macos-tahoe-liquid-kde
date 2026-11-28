@@ -32,7 +32,7 @@ Text {
     Accessible.ignored: true
     readonly property var inkProfile: ink.settings.contrastProfiles["panel.clock"]
     readonly property bool letterInk: ink.active && ink.settings.dynamicTinting && inkProfile.scope === "letter"
-    text: letterInk ? Native.AdaptiveContrast.styledRuns(clockText, clockValue, inkProfile, r => ink.forRect(r, ink.base)) : clockValue
+    text: letterInk ? Native.AdaptiveContrast.styledRuns(clockText, clockValue, inkProfile, (r, i) => ink.forRect(r, ink.base, i)) : clockValue
     textFormat: letterInk ? Text.StyledText : Text.PlainText
     font.family: "SF Pro Text"
     font.pixelSize: 13

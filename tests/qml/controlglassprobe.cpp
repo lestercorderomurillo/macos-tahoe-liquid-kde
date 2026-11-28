@@ -290,6 +290,16 @@ int main(int argc, char **argv)
     capped.add(mid);
     if (capped.tone(mid, {GlassInk::Correction::Shift, .9, 102}).red() != 237
         || capped.tone(mid, {GlassInk::Correction::Shift, .9, 112}).red() != 247) return 36;
+    GlassInk::FlipHistory history;
+    const GlassInk::CorrectionSettings flip{GlassInk::Correction::Flip};
+    const auto movingInk = [&](int gray, int glyph) {
+        GlassInk::Samples frame;
+        frame.add(QColor(gray, gray, gray));
+        return history.tone(frame, Qt::black, flip, &label, glyph);
+    };
+    if (movingInk(77, 0) != QColor(Qt::white) || movingInk(78, 1) != QColor(Qt::black)) return 38;
+    for (int i = 0; i < 20; ++i) if (movingInk(77 + i % 2, 0) != QColor(Qt::white)) return 38;
+    if (movingInk(100, 0) != QColor(Qt::black) || movingInk(78, 0) != QColor(Qt::black)) return 38;
     GlassInk::Samples gray;
     gray.add(QColor(118, 118, 118));
     if (gray.tone(Qt::white, {GlassInk::Correction::Shift, .9, 112})

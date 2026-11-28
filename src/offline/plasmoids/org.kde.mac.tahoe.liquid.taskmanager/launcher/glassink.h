@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
 #include <QColor>
+#include <QHash>
+#include <QObject>
 #include <QPointF>
 #include <QList>
 #include <QRectF>
@@ -87,7 +89,7 @@ public:
         m_samples.append({surface, weight});
     }
 
-    QColor tone(QColor base, CorrectionSettings settings = {}) const
+    QColor tone(QColor base, CorrectionSettings settings = {}, bool wasFlipped = false) const
     {
         if (!m_weight || !base.isValid() || !base.alpha()) return base;
         const double background = lightnessFromLuminance(m_luminance / m_weight);
@@ -100,7 +102,9 @@ public:
         };
 
         double best = separation(base);
-        if (best >= settings.target) return base;
+        // Once flipped, require three more L* units before returning to base.
+        const double threshold = settings.target + (settings.mode == Correction::Flip && wasFlipped ? .03 : 0.);
+        if (best >= threshold) return base;
         const Family family = familyOf(base);
         if (settings.mode == Correction::Flip) {
             QColor opposite = family == Family::Dark ? Qt::white : Qt::black;
@@ -131,6 +135,34 @@ private:
     QList<Sample> m_samples;
     double m_weight = 0.;
     double m_luminance = 0.;
+};
+
+// Each shaped run remembers its own foreground family as the surface moves.
+class FlipHistory : public QObject {
+public:
+    QColor tone(const Samples &samples, QColor base, CorrectionSettings settings,
+                const QObject *owner, int run = -1)
+    {
+        if (!owner || settings.mode != Correction::Flip) {
+            if (owner) m_runs.remove(owner);
+            return samples.tone(base, settings);
+        }
+        if (!m_connections.contains(owner)) {
+            m_connections.insert(owner, connect(owner, &QObject::destroyed, this, [this, owner] {
+                m_runs.remove(owner);
+                m_connections.remove(owner);
+            }));
+        }
+        auto &previous = m_runs[owner][run];
+        const auto result = samples.tone(base, settings, previous.flipped && previous.base == base
+                                         && previous.target == settings.target);
+        previous = {base, settings.target, result != base};
+        return result;
+    }
+private:
+    struct Decision { QColor base; double target = 0.; bool flipped = false; };
+    QHash<const QObject *, QHash<int, Decision>> m_runs;
+    QHash<const QObject *, QMetaObject::Connection> m_connections;
 };
 
 template <typename Visit>

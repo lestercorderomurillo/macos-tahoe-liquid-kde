@@ -24,6 +24,7 @@ private Q_SLOTS:
 
 private:
     QHash<const QAction *, GlassInk::Samples> m_actionSamples;
+    mutable GlassInk::FlipHistory m_history;
     QJsonObject m_profile;
     bool m_dynamicTinting = true;
     QByteArray m_grid;

@@ -13,7 +13,7 @@ Text {
         && (contrastProfile !== "widget.clock-glass-text" || clockOverlay)
         && sourceText.length > 0 && !/<[a-zA-Z][^>]*>/.test(sourceText)
     function glyphText() {
-        return AdaptiveContrast.styledRuns(label, sourceText, profile, r => ink.forRect(r, baseColor));
+        return AdaptiveContrast.styledRuns(label, sourceText, profile, (r, i) => ink.forRect(r, baseColor, i));
     }
     property string contrastProfile: ""
     property color baseColor: "black"

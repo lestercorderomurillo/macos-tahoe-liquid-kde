@@ -113,6 +113,6 @@ void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *act
     if (!m_dynamicTinting || !m_paintingSampledMenu || option->state.testFlag(QStyle::State_Selected)) return;
     for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
         const QColor base = option->palette.color(group, QPalette::Text);
-        option->palette.setColor(group, QPalette::Text, m_actionSamples.value(action).tone(base, ContrastPreset::settings(m_profile)));
+        option->palette.setColor(group, QPalette::Text, m_history.tone(m_actionSamples.value(action), base, ContrastPreset::settings(m_profile), action, int(group)));
     }
 }

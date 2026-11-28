@@ -2,6 +2,7 @@
 #pragma once
 #include "inktransition.h"
 #include "glassink.h"
+#include "glassink.h"
 #include "materialsample.h"
 #include <QObject>
 #include <QPointer>
@@ -25,7 +26,7 @@ public:
     Q_INVOKABLE QColor foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const;
     Q_INVOKABLE QColor animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
     Q_INVOKABLE QColor frameFillAt(QPointF point, QColor fallback) const;
-    Q_INVOKABLE QColor surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material, QColor overlay);
+    Q_INVOKABLE QColor surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material, QColor overlay, int run = -1);
     Q_INVOKABLE QColor animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
     Q_INVOKABLE QList<QColor> categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill, int count = 5, QColor overlay = Qt::transparent) const;
     Q_INVOKABLE QColor profileGroupForeground(QObject *item, QColor base, const QList<QColor> &surfaces, const QJsonObject &profile);
@@ -40,6 +41,7 @@ protected:
 private:
     Q_SLOT void movingControlSample(int pid, const QRect &frame, const QString &title);
     Q_SLOT void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title);
+    GlassInk::FlipHistory m_history;
     MaterialSample m_frame;
     quint64 m_revision = 0;
     QByteArray m_backdropGrid;

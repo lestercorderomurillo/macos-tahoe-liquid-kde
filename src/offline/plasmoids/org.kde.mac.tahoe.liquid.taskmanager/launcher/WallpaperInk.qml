@@ -17,11 +17,11 @@ PanelWallpaper {
     readonly property GlassSettings settings: GlassSettings {}
     readonly property var panelSource: active && item?.Window.window
         ? sampler.sourceFor(item.Window.window, Plasmoid.containment) : null
-    function forRect(rect, reference) {
+    function forRect(rect, reference, run = -1) {
         if (!panelSource) return base;
         panelSource.revision;
         if (material) material.revision;
-        return panelSource.foregroundFor(rect, base, fill, settings.contrastProfiles[profileId], material, reference);
+        return panelSource.foregroundFor(rect, base, fill, settings.contrastProfiles[profileId], material, reference, item, run);
     }
     readonly property color foreground: {
         if (!panelSource) return base;
@@ -33,6 +33,6 @@ PanelWallpaper {
         const group = profile.scope === "component" ? componentSurface : profile.scope === "bubble" ? surface : null;
         const rect = group ? AdaptiveContrast.surfaceBounds(group) : AdaptiveContrast.bounds(item);
         if (material) material.revision;
-        return panelSource.foregroundFor(rect, themeColor, fill, profile, material, group && !panelPalette ? groupReference : themeColor);
+        return panelSource.foregroundFor(rect, themeColor, fill, profile, material, group && !panelPalette ? groupReference : themeColor, item);
     }
 }

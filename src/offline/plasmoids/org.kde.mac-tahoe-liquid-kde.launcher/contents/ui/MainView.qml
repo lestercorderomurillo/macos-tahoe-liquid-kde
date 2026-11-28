@@ -180,9 +180,9 @@ Item {
             || (labelProfile.scope === "line" && label.wrapMode !== Text.NoWrap && label.maximumLineCount > 1));
     }
     function styledLabel(item, value, overlay = "transparent", fallback = main.textColor) {
-        return Tahoe.AdaptiveContrast.styledRuns(item, value, labelProfile, r =>
+        return Tahoe.AdaptiveContrast.styledRuns(item, value, labelProfile, (r, i) =>
             Tahoe.AdaptiveContrast.resolve(appBackdrop, item, fallback, materialFill(root.glassSettings),
-                "launcher.label", item, root.contentItem, fallback, undefined, undefined, overlay, r));
+                "launcher.label", item, root.contentItem, fallback, undefined, undefined, overlay, r, i));
     }
     function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth, field = null) {
         if (!root.glassSettings.dynamicTinting) return fallback;

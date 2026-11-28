@@ -20,10 +20,11 @@ QtObject {
         }
         const escape = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
         let result = "";
-        for (const run of runs) {
+        for (let index = 0; index < runs.length; ++index) {
+            const run = runs[index];
             const r = run.bounds;
             const rect = item.mapToItem(null, r.x + left, r.y + top, r.width, r.height);
-            const color = foregroundAt(rect);
+            const color = foregroundAt(rect, index);
             result += '<font color="' + color.toString() + '">' + escape(run.text) + '</font>';
         }
         return result;
@@ -50,7 +51,7 @@ QtObject {
         return item.mapToItem(null, 0, 0, item.width, item.height);
     }
 
-    function resolve(sampler, item, base, fill, profileId, bubble, component, reference, centerX, textWidth, overlay = "transparent", runBounds = null) {
+    function resolve(sampler, item, base, fill, profileId, bubble, component, reference, centerX, textWidth, overlay = "transparent", runBounds = null, run = -1) {
         if (!item || !sampler.window || !sampler.window.visible || !settings.dynamicTinting) return base;
         const profile = settings.contrastProfiles[profileId];
         if (!profile) return base;
@@ -59,7 +60,7 @@ QtObject {
         const r = runBounds ?? (surface ? surfaceBounds(surface) : bounds(item, centerX, textWidth));
         const material = bubble?.contrastMaterial ?? null;
         if (material) material.revision;
-        return sampler.surfaceForeground(item, r, surface ? reference : base, base, fill, profile, material, overlay);
+        return sampler.surfaceForeground(item, r, surface ? reference : base, base, fill, profile, material, overlay, run);
     }
 
     function foreground(sampler, item, base, fill, centerX, textWidth) {

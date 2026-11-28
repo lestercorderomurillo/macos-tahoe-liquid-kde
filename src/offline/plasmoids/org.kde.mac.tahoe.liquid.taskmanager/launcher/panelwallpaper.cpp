@@ -189,7 +189,7 @@ public:
     QColor baseForeground() const { return qGuiApp->palette().color(QPalette::Active, QPalette::WindowText); }
     quint64 revision() const { return m_revision; }
     Q_INVOKABLE QColor foregroundFor(QRectF bounds, QColor base, QColor fill, const QJsonObject &profile,
-                                     MaterialSample *material, QColor reference) const
+                                     MaterialSample *material, QColor reference, QObject *owner = nullptr, int run = -1)
     {
         if (m_window->size().isEmpty()) return base;
         GlassInk::Samples samples;
@@ -215,7 +215,7 @@ public:
                 samples.add(GlassInk::composite(m_grid.pixelColor(x, y), foreground));
             }
         });
-        const auto corrected = samples.tone(reference, ContrastPreset::settings(profile));
+        const auto corrected = m_history.tone(samples, reference, ContrastPreset::settings(profile), owner, run);
         return GlassInk::applyRoleCorrection(base, reference, corrected);
     }
     bool observes(Plasma::Containment *panel) const { return m_panel == panel; }
@@ -335,6 +335,7 @@ private:
     QTimer m_refresh;
     std::optional<WallpaperSpec> m_requested;
     quint64 m_generation = 0;
+    GlassInk::FlipHistory m_history;
     MaterialSample m_frame;
     QByteArray m_liveColors;
     QRect m_liveBounds, m_liveFrame;

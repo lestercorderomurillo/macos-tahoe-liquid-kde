@@ -88,7 +88,7 @@ QColor PopupBackdrop::frameFillAt(QPointF point, QColor fallback) const
     return painted.isValid() ? painted : fallback;
 }
 
-QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material, QColor overlay)
+QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material, QColor overlay, int run)
 {
     if (m_backdropGrid.isEmpty() || bounds.isEmpty()) return base;
     GlassInk::Samples samples;
@@ -117,7 +117,7 @@ QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor ref
         const QColor surface = GlassInk::composite(backdropAt(p), painted.isValid() ? painted : frameFillAt(p, localFill));
         samples.add(GlassInk::composite(surface, overlay));
     });
-    const auto corrected = samples.tone(reference, ContrastPreset::settings(profile));
+    const auto corrected = m_history.tone(samples, reference, ContrastPreset::settings(profile), item, run);
     return m_ink.color(item, base, GlassInk::applyRoleCorrection(base, reference, corrected));
 }
 
@@ -153,7 +153,7 @@ QColor PopupBackdrop::profileGroupForeground(QObject *item, QColor base, const Q
     if (m_backdropGrid.isEmpty()) return base;
     GlassInk::Samples samples;
     for (const auto &surface : surfaces) samples.add(surface);
-    return m_ink.color(item, base, samples.tone(base, ContrastPreset::settings(profile)));
+    return m_ink.color(item, base, m_history.tone(samples, base, ContrastPreset::settings(profile), item));
 }
 
 QRegion ControlGlass::regionFor(const QVariantList &surfaces, bool glassOnly)
