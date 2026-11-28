@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.41**. Resample Apps text tint after scrolling settles and coalesce sparse glyph snapshot requests. [Validation and coverage](release-evidence.json).
+**v0.85.42**. Reuse Apps grid delegates as they scroll into view, resetting interaction and adaptive tint state when a tile leaves the viewport. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

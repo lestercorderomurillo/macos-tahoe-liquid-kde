@@ -1,21 +1,21 @@
 {
-  "version": "0.85.41",
+  "version": "0.85.42",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Resample Apps text tint after scrolling settles and coalesce sparse glyph snapshot requests.",
+  "scope": "Reuse Apps grid delegates as they scroll into view, resetting interaction and adaptive tint state when a tile leaves the viewport.",
   "checks": [
     {
-      "command": "Flick a populated 285-app Launchpad grid against v0.85.39 in isolated plasmoidviewer, explicitly selecting identical line scope and backdrop on both sides. Two 120-frame runs improved from 58.7/58.1 to 62.8/62.7 FPS. Frame time p95 fell from 22.0/21.0 to 19.4/19.4 ms.",
+      "command": "On the RX 9070 XT, exercise 340 Apps entries and 270 grid scroll steps with adaptive sampling disabled to isolate icon rendering. Mean render and sync time fell from 4.618 to 1.371 ms and p95 from 11.481 to 5.481 ms. Five RGBA captures across different positions matched byte for byte.",
       "result": "passed"
     },
     {
-      "command": "Send 121 moving glyph requests at 16 ms intervals in isolated KWin. Reply batches fell from 24 to 9 on Wayland and 25 to 9 on X11. Both delivered the final coordinates and the exact original RGB value. Build the shared compositor code for 6.6.4, 6.7.4 and 6.8.2 Wayland and 6.7.4 X11.",
+      "command": "In the isolated full Apps popup with line scope, 285 entries, a fixed RGB backdrop and software OpenGL, 120 moving frames maintained 62.8 FPS. Frame time p95 improved from 19.9 to 18.4-18.8 ms versus the unpooled line candidate. The 25 settled labels retained their text, colors and geometry.",
       "result": "passed"
     },
     {
-      "command": "Exercise the native Golden Gate Light Apps popup and Tahoe Light clipboard interactions in isolated plasmoidviewer.",
+      "command": "Run native Apps popup interactions for Golden Gate Light and Tahoe Dark including hover, keyboard navigation, selection and context menus: both passed.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Scroll frame measurements use software OpenGL and a fixed RGB backdrop. Sparse readback measurements exercise custom letter scope. Installed custom profiles retain their scope.",
-  "source_sha256": "7f0a792386d45ca7be67b1c74cb6417fc22069d45b32ca241516b2d9a15639f9"
+  "coverage_limits": "The isolated GPU render measurement and whole-popup scroll frame measurements use different render backends and fixtures. Frame rates are workload and hardware dependent.",
+  "source_sha256": "8c47509ece7126602e7d312068dffdd2aafc9aa3966e7262dd360445af65e0ef"
 }
