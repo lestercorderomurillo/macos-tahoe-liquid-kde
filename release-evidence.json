@@ -1,18 +1,17 @@
 {
-  "version": "0.85.30",
+  "version": "0.85.31",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Use the approved continuous-corner glass contour on Settings search.",
+  "scope": "Align all numeric sliders in Acrylic Glass settings.",
   "checks": [
     {
-      "command": "Disposable KDE neon release-capture guest, candidate 57d06324: render InstallerWindow in settings mode with dark and light palettes, capture the search field, type dock and clear with Escape.",
+      "command": "Render the candidate Settings editor in the disposable KDE neon guest and compare the editor-relative x position and width of every QSlider. All 20 returned (505, 124).",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Focused Tahoe Settings captures and native search input checks. Golden Gate consumes the shared widget through its immutable Tahoe pin.",
-  "approval": "Maintainer approved both editions after reviewing the revised continuous-corner captures.",
+  "coverage_limits": "Dark Settings editor with the Golden Gate (Official) material preset. Both editions share the slider implementation.",
+  "approval": "Maintainer approved the displayed sliders.png preview for release.",
   "approved_previews": {
-    "squircle-dark.png": "fc41b81162c35678d312a12569a86794a81578d64dd5ac591d4f5ee7a04b63da",
-    "squircle-light.png": "47d40ddbde0ba1acb6fe5a1489bd35ab91ac35fe75abff6980a312aa1bd2f3f7"
+    "sliders.png": "8e60fdba3b987a4bd7aa5cdb14b22a81fad8b20e3e4c49ec52a01af95b0e460a"
   },
-  "source_sha256": "2d4fec49b48d444ad7bacfad250cffc05b5d053912fe3d9d6f5a5f591abaec40"
+  "source_sha256": "bfdcd878d9059d83a277deef72c3cebb24502b99da785ddc535c78616d431c8d"
 }
