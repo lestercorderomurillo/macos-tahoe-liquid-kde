@@ -1,30 +1,18 @@
 {
-  "version": "0.85.23",
+  "version": "0.85.24",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "e4ed0e0013e9f70ea1d830a557e6d04a926ed36e",
-  "scope": "Verify staged installation payloads, update preexisting widgets and installed Dock packages when preserving the layout, and repair stale Golden Gate preparation caches.",
+  "qualified_candidate": "83f4ddcbb19d5a5694b71d9a1a013310befa2fac",
+  "scope": "Align Firefox site permissions with the security shield in the address bar.",
+  "approval": "Maintainer approved the before-and-after light and dark comparison for publication.",
+  "approved_previews": {
+    "comparacion.png": "8e2bd9376ba8d273604e336da667c2d2ff81676110f4d9b1b32dc0a4fd77e7d2"
+  },
   "checks": [
     {
-      "command": "KDE neon Plasma 6.8.1 Wayland VM: seed four unmanaged v0.85.17 packages and personal files, damage installed contents and run the Tahoe wizard backend with layout preservation. Verify eight installed trees and four personal backups.",
-      "result": "passed"
-    },
-    {
-      "command": "Switch the isolated guest to Golden Gate defaults, damage six more installed files, and run the shared backend again. Compare all eight trees to the staged sources and confirm replacement of the six damaged files.",
-      "result": "passed"
-    },
-    {
-      "command": "Golden Gate bootstrap.prepare(): corrupt both a widget archive and a color scheme in a real prepared checkout; verify reconstruction from local Tahoe source and Golden Gate defaults.",
-      "result": "passed"
-    },
-    {
-      "command": "268 Tahoe checks covering installer choices, content fingerprints for all 71 manifest entries, ownership, staging, permissions, Kvantum, CLI, storage cleanup and translations; 64 Golden Gate bootstrap tests.",
-      "result": "passed"
-    },
-    {
-      "command": "Final cursor install, repair and uninstall probe in the same guest.",
+      "command": "KDE neon guest running Firefox 159.0.1: capture an HTTPS page with a granted site permission and measure both icon rectangles before and after applying the CSS in light and dark mode. The vertical offset fell from 6 CSS pixels to zero in each mode.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "One KDE neon Wayland guest. Both runs used the wizard backend with desktop choices and four selected widgets. Exact content comparisons cover eight installed trees. Additional sentinel checks cover six files. Other enabled phases were checked via installer exit status. Optional third-party app installation and physical hardware were not exercised in the guest.",
-  "source_sha256": "d783095a8c9eed831a84900e18c5d87f896ec57d71c5543cd3b512d4320eb269"
+  "coverage_limits": "One Firefox version in a disposable Plasma guest. Both editions use the same browser stylesheet.",
+  "source_sha256": "7195c595d471d0ce8774e12405e0759f67270e605aed6b9ecb355fab0786e79f"
 }
