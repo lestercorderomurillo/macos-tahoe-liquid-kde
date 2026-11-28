@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.31**. All 20 Acrylic Glass sliders share the same track alignment. [Validation and coverage](release-evidence.json).
+**v0.85.32**. Adaptive Contrast uses shared correction profiles and blends letter-level foregrounds across shaped text. [Reviewed captures and measurements](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/75e3870487ea30d36b33fbada805ed24c5e21260/README.md).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

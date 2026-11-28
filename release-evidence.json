@@ -1,17 +1,20 @@
 {
-  "version": "0.85.31",
+  "version": "0.85.32",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Align all numeric sliders in Acrylic Glass settings.",
+  "scope": "Shared adaptive foreground correction, visible material sampling, configurable grouping, and smooth glyph transitions.",
   "checks": [
     {
-      "command": "Render the candidate Settings editor in the disposable KDE neon guest and compare the editor-relative x position and width of every QSlider. All 20 returned (505, 124).",
+      "command": "Install Tahoe and Golden Gate in disposable Plasma 6.8.1 Wayland guests and capture 63 default/stress pairs at 125%. Compare individual device-pixel replies at adjacent glyph positions.",
+      "result": "passed"
+    },
+    {
+      "command": "Run Qt material, motion, shader, native settings and X11 rendering probes. Build the effect against KWin X11 6.6.5 and Wayland 6.7.4.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Dark Settings editor with the Golden Gate (Official) material preset. Both editions share the slider implementation.",
-  "approval": "Maintainer approved the displayed sliders.png preview for release.",
-  "approved_previews": {
-    "sliders.png": "8e60fdba3b987a4bd7aa5cdb14b22a81fad8b20e3e4c49ec52a01af95b0e460a"
-  },
-  "source_sha256": "bfdcd878d9059d83a277deef72c3cebb24502b99da785ddc535c78616d431c8d"
+  "coverage_limits": "Device-pixel transport was measured in the installed panel and launcher popups. A separate generic transparent top-level fixture did not return a sparse reply.",
+  "approval": "Maintainer approved candidate 881c87e5 for paired promotion after reviewing issue 174.",
+  "review_gallery": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/75e3870487ea30d36b33fbada805ed24c5e21260/README.md",
+  "measurements": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/75e3870487ea30d36b33fbada805ed24c5e21260/verification.md",
+  "source_sha256": "1c88deb138f01a1f85f75a825c26796cb0f2ee7872d736e69e9fc3aa0ea2e042"
 }
