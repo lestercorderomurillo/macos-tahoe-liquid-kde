@@ -256,7 +256,7 @@ Reuse text and images you copied earlier.
 View hardware, software and theme details.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="System Information · Light and dark modes" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="System Information · Light and dark modes" width="830">
 </p>
 
 <br>

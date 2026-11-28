@@ -256,7 +256,7 @@ Riutilizza il testo e le immagini che hai copiato.
 Consulta i dettagli di hardware, software e tema.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="Informazioni del sistema · Modalità chiara e scura" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="Informazioni del sistema · Modalità chiara e scura" width="830">
 </p>
 
 <br>

@@ -256,7 +256,7 @@ Finder 스타일의 창에서 파일을 탐색할 수 있습니다.
 하드웨어, 소프트웨어 및 테마 정보를 확인할 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="시스템 정보 · 밝은 모드와 어두운 모드" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="시스템 정보 · 밝은 모드와 어두운 모드" width="830">
 </p>
 
 <br>
