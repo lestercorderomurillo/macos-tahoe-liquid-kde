@@ -197,9 +197,19 @@ def stage_glass_text(package):
         indent = match["indent"]
         body, count = re.subn(r"^" + indent + r"    color:", indent + "    baseColor:",
                               match["body"], count=1, flags=re.M)
+        if not count:
+            return match[0]
+        member = re.escape(indent + "    ")
+        # Stored upstream rich-text bindings keep their markup and links.
+        if (not re.search(r"^" + member + "textFormat:", body, re.M)
+                and not package.name.endswith(".clock-glass-text")):
+            body, found = re.subn("^" + member + "text:", indent + "    sourceText:", body, count=1, flags=re.M)
+            if found:
+                body += (indent + "    textFormat: useRuns ? Text.StyledText : Text.AutoText\n"
+                         + indent + "    text: useRuns ? glyphText() : sourceText\n")
         return (indent + match["prefix"] + "NativeInk.AdaptiveWidgetText {\n"
-                + indent + f'    contrastProfile: "{profile}"\n' + body + indent + "}"
-                if count else match[0])
+                + indent + f'    contrastProfile: "{profile}"\n' + body + indent + "}")
+
 
     for file in (ui / "main.qml", *(ui / "widget").glob("*.qml")):
         if not file.is_file():
@@ -210,8 +220,8 @@ def stage_glass_text(package):
             adapted = adapted.replace("property int hour12:", "property bool adaptOverlay: false\n    property int hour12:")
             adapted = re.sub(r"(NativeInk.AdaptiveWidgetText \{.*?)(\n +)text: ([^\n]+)",
                              r"\1\2clockOverlay: root.adaptOverlay\2sourceText: \3"
-                             r"\2textFormat: letterInk ? Text.StyledText : Text.PlainText"
-                             r"\2text: letterInk ? glyphText() : sourceText", adapted, flags=re.S)
+                             r"\2textFormat: useRuns ? Text.StyledText : Text.PlainText"
+                             r"\2text: useRuns ? glyphText() : sourceText", adapted, flags=re.S)
         if package.name.endswith(".clock-glass-text") and file.name == "main.qml":
             adapted = adapted.replace("id: overlay", "id: overlay\n            adaptOverlay: true")
         if adapted != source:

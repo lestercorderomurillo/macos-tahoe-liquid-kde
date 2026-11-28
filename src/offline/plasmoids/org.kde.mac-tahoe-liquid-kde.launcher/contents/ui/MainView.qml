@@ -174,6 +174,16 @@ Item {
         return appBackdrop.categorySamples(center, radius, clip, fill,
             root.glassSettings.contrastProfiles["launcher.categories"].sampleCount, backing);
     }
+    readonly property var labelProfile: root.glassSettings.contrastProfiles["launcher.label"]
+    function useTextRuns(label) {
+        return root.glassSettings.dynamicTinting && (labelProfile.scope === "letter"
+            || (labelProfile.scope === "line" && label.wrapMode !== Text.NoWrap && label.maximumLineCount > 1));
+    }
+    function styledLabel(item, value, overlay = "transparent", fallback = main.textColor) {
+        return Tahoe.AdaptiveContrast.styledRuns(item, value, labelProfile, r =>
+            Tahoe.AdaptiveContrast.resolve(appBackdrop, item, fallback, materialFill(root.glassSettings),
+                "launcher.label", item, root.contentItem, fallback, undefined, undefined, overlay, r));
+    }
     function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth, field = null) {
         if (!root.glassSettings.dynamicTinting) return fallback;
         const sampler = detached ? searchBackdrop : appBackdrop;

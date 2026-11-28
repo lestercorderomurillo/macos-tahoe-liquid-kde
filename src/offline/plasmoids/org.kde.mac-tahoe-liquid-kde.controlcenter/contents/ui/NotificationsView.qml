@@ -26,7 +26,7 @@ Page {
                 const bottom = Math.min(point.y + area.y + area.height, scroll.y + scroll.height);
                 if (bottom > top)
                     areas.push({x:point.x+area.x, y:top, width:area.width,
-                        height:bottom-top, radius:area.radius, fill:i === 0 ? card.fillColor : undefined});
+                        height:bottom-top, radius:area.radius, fill:i === 0 ? card.fillColor : undefined, material:card.contrastMaterial});
             }
             if (card.contentItem.closeVisible)
                 // Input only: glass here would merge with the card corner it overlaps.

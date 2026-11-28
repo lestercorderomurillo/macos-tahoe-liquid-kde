@@ -87,8 +87,9 @@ T.ItemDelegate {
 				id: label
 				Layout.fillWidth: !descriptionLabel.visible
 				Layout.maximumWidth: listDelegate.width - listDelegate.leftPadding - listDelegate.rightPadding - icon.width - row.spacing
-				text: ("name" in model ? model.name : model.display)
-				textFormat: Text.PlainText
+				readonly property string sourceText: ("name" in model ? model.name : model.display)
+				text: main.useTextRuns(this) ? main.styledLabel(this, sourceText, "transparent", main.textColor) : sourceText
+				textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
 				elide: Text.ElideRight
 				wrapMode: Text.NoWrap
 				verticalAlignment: Text.AlignVCenter
@@ -101,8 +102,9 @@ T.ItemDelegate {
 				Layout.fillWidth: true
 				visible: text && showDescription
 				opacity: 0.85
-				text: model.description
-				textFormat: Text.PlainText
+				readonly property string sourceText: model.description
+				text: main.useTextRuns(this) ? main.styledLabel(this, sourceText) : sourceText
+				textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
 				font: Kirigami.Theme.smallFont
 				elide: Text.ElideRight
 				verticalAlignment: Text.AlignVCenter

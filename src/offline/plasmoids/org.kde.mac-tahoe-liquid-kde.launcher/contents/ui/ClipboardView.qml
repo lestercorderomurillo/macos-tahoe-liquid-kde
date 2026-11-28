@@ -92,8 +92,9 @@ FocusScope {
                     spacing: 2
                     Text {
                         Layout.fillWidth: true
-                        text: row.modelData.kind === "image" ? i18n("Image") + " · " + row.modelData.w + " × " + row.modelData.h : row.modelData.text.replace(/\s+/g, " ")
-                        textFormat: Text.PlainText
+                        readonly property string sourceText: row.modelData.kind === "image" ? i18n("Image") + " · " + row.modelData.w + " × " + row.modelData.h : row.modelData.text.replace(/\s+/g, " ")
+                        text: main.useTextRuns(this) ? main.styledLabel(this, sourceText, row.background.color, main.textColor) : sourceText
+                        textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
                         elide: Text.ElideRight
                         maximumLineCount: 1
                         font.family: main.textFont
@@ -102,10 +103,11 @@ FocusScope {
                     }
                     Text {
                         Layout.fillWidth: true
-                        text: (row.modelData.pinned ? i18n("Pinned") + " · " : "")
+                        readonly property string sourceText: (row.modelData.pinned ? i18n("Pinned") + " · " : "")
                             + (row.modelData.kind === "image" ? i18n("Image") : i18n("Text"))
                             + " · " + i18n("Copied %1", Qt.formatDateTime(new Date(row.modelData.ts), "h:mm ap"))
-                        textFormat: Text.PlainText
+                        text: main.useTextRuns(this) ? main.styledLabel(this, sourceText, row.background.color, main.dimmedTextColor) : sourceText
+                        textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
                         elide: Text.ElideRight
                         font.family: main.textFont
                         font.pointSize: main.textSize

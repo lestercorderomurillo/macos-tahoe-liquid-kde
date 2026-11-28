@@ -92,9 +92,29 @@ QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor ref
 {
     if (m_backdropGrid.isEmpty() || bounds.isEmpty()) return base;
     GlassInk::Samples samples;
-    GlassInk::zonePoints(bounds, profile.value(QStringLiteral("sampleCount")).toInt(15), [&](QPointF p) {
-        const QColor painted = material ? material->at(p) : QColor();
-        const QColor surface = GlassInk::composite(backdropAt(p), painted.isValid() ? painted : frameFillAt(p, fill));
+    const auto count = profile.value(QStringLiteral("sampleCount")).toInt(15);
+    const auto *control = qobject_cast<const ControlGlass *>(this);
+    const bool wholeControl = control && profile.value(QStringLiteral("scope")).toString() == QStringLiteral("component");
+    const auto visibleSurfaces = wholeControl ? control->surfaces() : QVariantList{};
+    GlassInk::zonePoints(bounds, count, [&](QPointF p) {
+        QColor localFill = fill;
+        MaterialSample *layer = material;
+        if (!visibleSurfaces.isEmpty()) {
+            bool inside = false;
+            for (const auto &shape : visibleSurfaces) {
+                const auto data = shape.toMap();
+                const QRectF rect(data.value(QStringLiteral("x")).toDouble(), data.value(QStringLiteral("y")).toDouble(),
+                                  data.value(QStringLiteral("width")).toDouble(), data.value(QStringLiteral("height")).toDouble());
+                if (!rect.contains(p) || !data.value(QStringLiteral("fill")).isValid()) continue;
+                localFill = data.value(QStringLiteral("fill")).value<QColor>();
+                layer = qobject_cast<MaterialSample *>(data.value(QStringLiteral("material")).value<QObject *>());
+                inside = true;
+                break;
+            }
+            if (!inside) return;
+        }
+        const QColor painted = layer ? layer->at(p) : QColor();
+        const QColor surface = GlassInk::composite(backdropAt(p), painted.isValid() ? painted : frameFillAt(p, localFill));
         samples.add(GlassInk::composite(surface, overlay));
     });
     const auto corrected = samples.tone(reference, ContrastPreset::settings(profile));

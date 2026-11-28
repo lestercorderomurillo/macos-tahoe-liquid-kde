@@ -24,7 +24,7 @@ public:
     void findWindowFrame(QQuickWindow *window, const QString &name);
     Q_INVOKABLE QColor at(QPointF scenePoint) const;
     Q_SLOT void invalidate();
-    Q_INVOKABLE static QVariantList glyphs(const QString &text, const QFont &font);
+    Q_INVOKABLE static QVariantList textRuns(const QString &text, const QFont &font, qreal width, int wrapMode, int alignment, bool letters);
 Q_SIGNALS:
     void changed();
     void sourceChanged();

@@ -7,19 +7,13 @@ Text {
     id: label
     property string sourceText: ""
     property bool clockOverlay: false
-    readonly property bool letterInk: clockOverlay && ink.active && ink.settings.dynamicTinting
-        && ink.settings.contrastProfiles[contrastProfile]?.scope === "letter" && !!ink.panelSource && !!ink.material
+    readonly property var profile: ink.settings.contrastProfiles[contrastProfile]
+    readonly property bool useRuns: ink.active && ink.settings.dynamicTinting && !!ink.panelSource && !!profile
+        && (profile.scope === "letter" || (profile.scope === "line" && wrapMode !== Text.NoWrap))
+        && (contrastProfile !== "widget.clock-glass-text" || clockOverlay)
+        && sourceText.length > 0 && !/<[a-zA-Z][^>]*>/.test(sourceText)
     function glyphText() {
-        const escape = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        const parts = ink.material.glyphs(sourceText, font);
-        if (!parts.length) return escape(sourceText);
-        let markup = "";
-        for (const part of parts) {
-            const p = label.mapToItem(null, part.point.x, part.point.y);
-            const color = ink.forRect(Qt.rect(p.x - 0.25, p.y - 0.25, 0.5, 0.5), baseColor);
-            markup += '<font color="' + color.toString() + '">' + escape(part.text) + '</font>';
-        }
-        return markup;
+        return AdaptiveContrast.styledRuns(label, sourceText, profile, r => ink.forRect(r, baseColor));
     }
     property string contrastProfile: ""
     property color baseColor: "black"

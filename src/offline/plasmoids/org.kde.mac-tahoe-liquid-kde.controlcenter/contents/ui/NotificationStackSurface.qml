@@ -8,6 +8,7 @@ Item {
     property bool panelHighlight: true
     property int depth: 0
     property alias contentItem: surface.contentItem
+    readonly property alias contrastMaterial: surface.contrastMaterial
     readonly property color fillColor: surface.fillColor
     readonly property real cardHeight: surface.height
     readonly property real cornerRadius: surface.cornerRadius

@@ -82,7 +82,8 @@ Item {
 
 	PlasmaComponents.Label {
 		id: appname
-		text: ("name" in model ? model.name : model.display)
+		readonly property string sourceText: ("name" in model ? model.name : model.display)
+		text: main.useTextRuns(this) ? main.styledLabel(this, sourceText) : sourceText
 		font.family: main.textFont
 		font.pointSize: main.appTextSize
 		font.weight: main.detachedSearch || main.tahoeStyle ? Font.Medium : 650
@@ -95,7 +96,7 @@ Item {
 			leftMargin: Kirigami.Units.smallSpacing
 			rightMargin: Kirigami.Units.smallSpacing
 		}
-		textFormat: Text.PlainText
+		textFormat: main.useTextRuns(this) ? Text.StyledText : Text.PlainText
 		elide: main.detachedSearch || main.tahoeStyle ? Text.ElideRight : Text.ElideMiddle
 		horizontalAlignment: Text.AlignHCenter
 		maximumLineCount: main.detachedSearch || main.tahoeStyle ? 1 : 2

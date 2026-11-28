@@ -94,44 +94,63 @@ QColor MaterialSample::at(QPointF scenePoint) const
     return m_pixels.pixelColor(x, y);
 }
 
-QVariantList MaterialSample::glyphs(const QString &text, const QFont &font)
+QVariantList MaterialSample::textRuns(const QString &text, const QFont &font, qreal width,
+                                      int wrapMode, int alignment, bool letters)
 {
-    QTextLayout layout(text, font);
+    QString content = text;
+    content.replace(QLatin1Char('\n'), QChar::LineSeparator);
+    QTextOption options;
+    options.setWrapMode(static_cast<QTextOption::WrapMode>(wrapMode));
+    options.setAlignment(Qt::Alignment(alignment) & Qt::AlignHorizontal_Mask);
+    QTextLayout layout(content, font);
+    layout.setTextOption(options);
     layout.beginLayout();
-    const auto line = layout.createLine();
-    layout.endLayout();
-    if (!line.isValid()) return {};
-    QMap<int, QPointF> clusters;
-    for (const auto &run : layout.glyphRuns(0, text.size(), QTextLayout::RetrieveAll)) {
-        const auto indices = run.stringIndexes();
-        const auto glyphs = run.glyphIndexes();
-        const auto positions = run.positions();
-        for (qsizetype i = 0; i < glyphs.size(); ++i) {
-            if (clusters.contains(indices[i])) continue;
-            const auto path = run.rawFont().pathForGlyph(glyphs[i]);
-            const auto bounds = path.boundingRect();
-            QPointF point = bounds.center();
-            // A digit's centre can be a counter. Find an interior stroke
-            // nearest the centre so the sample lands on the glass glyph.
-            if (!path.isEmpty() && !path.contains(point)) {
-                double best = std::numeric_limits<double>::infinity();
-                for (int y = 0; y < 15; ++y) for (int x = 0; x < 15; ++x) {
-                    const QPointF p(bounds.left() + bounds.width() * (x + .5) / 15,
-                                    bounds.top() + bounds.height() * (y + .5) / 15);
-                    const auto delta = p - bounds.center();
-                    const double distance = QPointF::dotProduct(delta, delta);
-                    if (distance < best && path.contains(p)) { best = distance; point = p; }
-                }
-            }
-            clusters.insert(indices[i], positions[i] + point);
-        }
+    qreal y = 0;
+    for (auto line = layout.createLine(); line.isValid(); line = layout.createLine()) {
+        line.setLineWidth(std::max(1., width));
+        line.setPosition({0, y});
+        y += line.height();
     }
+    layout.endLayout();
     QVariantList result;
-    for (auto i = clusters.begin(); i != clusters.end(); ++i) {
-        const auto next = std::next(i);
-        const auto end = next == clusters.end() ? text.size() : next.key();
-        result.append(QVariantMap{{QStringLiteral("text"), text.mid(i.key(), end - i.key())},
-            {QStringLiteral("point"), i.value()}});
+    for (int n = 0; n < layout.lineCount(); ++n) {
+        const auto line = layout.lineAt(n);
+        const int end = line.textStart() + line.textLength();
+        if (!letters) {
+            result.append(QVariantMap{{QStringLiteral("text"), text.mid(line.textStart(), line.textLength())},
+                                      {QStringLiteral("bounds"), line.naturalTextRect()}});
+            continue;
+        }
+        QMap<int, QPointF> clusters;
+        for (const auto &run : line.glyphRuns(-1, -1, QTextLayout::RetrieveAll)) {
+            const auto indices = run.stringIndexes();
+            const auto glyphs = run.glyphIndexes();
+            const auto positions = run.positions();
+            for (qsizetype i = 0; i < glyphs.size(); ++i) {
+                if (clusters.contains(indices[i])) continue;
+                const auto path = run.rawFont().pathForGlyph(glyphs[i]);
+                const auto bounds = path.boundingRect();
+                QPointF point = bounds.center();
+                if (!path.isEmpty() && !path.contains(point)) {
+                    double best = std::numeric_limits<double>::infinity();
+                    for (int y = 0; y < 15; ++y) for (int x = 0; x < 15; ++x) {
+                        const QPointF p(bounds.left() + bounds.width() * (x + .5) / 15,
+                                        bounds.top() + bounds.height() * (y + .5) / 15);
+                        const auto delta = p - bounds.center();
+                        const double distance = QPointF::dotProduct(delta, delta);
+                        if (distance < best && path.contains(p)) { best = distance; point = p; }
+                    }
+                }
+                clusters.insert(indices[i], positions[i] + point);
+            }
+        }
+        if (!clusters.contains(line.textStart())) clusters.insert(line.textStart(), line.naturalTextRect().topLeft());
+        for (auto i = clusters.begin(); i != clusters.end(); ++i) {
+            const auto next = std::next(i);
+            const int limit = next == clusters.end() ? end : next.key();
+            result.append(QVariantMap{{QStringLiteral("text"), text.mid(i.key(), limit - i.key())},
+                {QStringLiteral("bounds"), QRectF(i.value() - QPointF(.25, .25), QSizeF(.5, .5))}});
+        }
     }
     return result;
 }

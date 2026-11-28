@@ -25,12 +25,15 @@ Text {
         return bare.charAt(0).toLocaleUpperCase(clockLocale.name) + bare.slice(1);
     }
     readonly property date now: localClock.dateTime
-    text: shortName(clockLocale.dayName(now.getDay(), Locale.ShortFormat)) + " "
+    readonly property string clockValue: shortName(clockLocale.dayName(now.getDay(), Locale.ShortFormat)) + " "
         + shortName(clockLocale.monthName(now.getMonth(), Locale.ShortFormat)) + " "
         + clockLocale.toString(now, "d") + "  "
         + clockLocale.toString(now, hours + (withSeconds ? ":ss" : "") + (twelveHour ? "\u2009AP" : ""))
     Accessible.ignored: true
-    textFormat: Text.PlainText
+    readonly property var inkProfile: ink.settings.contrastProfiles["panel.clock"]
+    readonly property bool letterInk: ink.active && ink.settings.dynamicTinting && inkProfile.scope === "letter"
+    text: letterInk ? Native.AdaptiveContrast.styledRuns(clockText, clockValue, inkProfile, r => ink.forRect(r, ink.base)) : clockValue
+    textFormat: letterInk ? Text.StyledText : Text.PlainText
     font.family: "SF Pro Text"
     font.pixelSize: 13
     font.weight: Font.Medium
