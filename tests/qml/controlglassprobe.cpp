@@ -5,6 +5,8 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <QElapsedTimer>
+#include <QEventLoop>
+#include <QPropertyAnimation>
 #include <QTextOption>
 #include <QQuickWindow>
 #include <memory>
@@ -112,6 +114,38 @@ static bool checkPaintedMaterial()
     const QRectF darkTile(0,0,7,32), lightTile(10,0,20,32);
     if (tileInk(item, darkTile) != QColor(Qt::white) || tileInk(&otherLabel, darkTile) != QColor(Qt::white)
         || tileInk(item, lightTile) != base || tileInk(&otherLabel, darkTile) != QColor(Qt::white)) return false;
+    // Animate a real Qt Quick item over alternating threshold-adjacent cells.
+    // The last four cells are clearly light enough to restore the original ink.
+    for (int y = 0; y < 64; ++y) for (int x = 0; x < 64; ++x) {
+        const int value = x >= 60 ? 100 : 77 + x % 2;
+        std::fill_n(backdrop.data() + 3 * (y * 64 + x), 3, char(value));
+    }
+    if (!QMetaObject::invokeMethod(&popup, "updateBackdrop", Qt::DirectConnection,
+            Q_ARG(int, int(QCoreApplication::applicationPid())), Q_ARG(QRect, frame),
+            Q_ARG(QRect, frame), Q_ARG(QByteArray, backdrop), Q_ARG(QString, window.title()))) return false;
+    QQuickItem moving(window.contentItem());
+    moving.setSize(QSizeF(1,1));
+    QPropertyAnimation motion(&moving, "x");
+    motion.setDuration(450);
+    motion.setStartValue(0.);
+    motion.setEndValue(992.);
+    int decisions = 0;
+    bool stable = true;
+    const auto observe = [&] {
+        ++decisions;
+        const auto r = moving.mapRectToScene(moving.boundingRect());
+        const auto ink = popup.surfaceForeground(&moving, r, base, base, Qt::transparent, profile,
+                                                 nullptr, Qt::transparent, 0);
+        stable &= ink == QColor(r.center().x() < 960 ? Qt::white : Qt::black);
+    };
+    observe();
+    QObject::connect(&moving, &QQuickItem::xChanged, &moving, observe);
+    QEventLoop animation;
+    QObject::connect(&motion, &QPropertyAnimation::finished, &animation, &QEventLoop::quit);
+    motion.start();
+    animation.exec();
+    if (!stable || decisions < 4) return false;
+    std::cout << "Animated Qt Quick item: " << decisions << " observed positions; stable on gray 77/78, returned to black on gray 100.\n";
     const auto shaderPath = qEnvironmentVariable("CONTRAST_SHADER_FRAME");
     if (!shaderPath.isEmpty()) {
         const QImage gpu(shaderPath);
