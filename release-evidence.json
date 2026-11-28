@@ -1,17 +1,23 @@
 {
-  "version": "0.85.26",
+  "version": "0.85.27",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Configure Nautilus without quitting or launching the file manager.",
+  "scope": "Compact and center the About This Computer dialog and move Copy details and Report a Bug below More Info.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_nautilus_step.py (13 passed)",
+      "command": "Capture preview_about.qml in disposable KDE neon with each edition\u2019s defaults, light and dark. Verify the candidate AboutWindow.qml SHA-256 and the 360 \u00d7 543 logical pixel window geometry.",
       "result": "passed"
     },
     {
-      "command": "Run steps.nautilus.install() twice in a disposable KDE neon Plasma 6.8.1 Wayland guest running Nautilus 46.4. Verify the default folder handler, unchanged process ID and empty OpenLocations after installation, then the same process and Documents URI after reinstall.",
+      "command": "Run test_about_labels_and_surface_follow_appearance for both editions, both modes and both control styles with the built launcher module.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Focused shared installer step on KDE neon, using the Tahoe source.",
-  "source_sha256": "3d70820d6f7476fa5ccd9031562155b436c3c918c89a9d853f2d42940c80aecd"
+  "coverage_limits": "Focused QML layout and appearance on Plasma 6.8.1 Wayland with mock hardware details.",
+  "source_sha256": "6746bae2424bfa4c045cc8f42194e5c4a5c324acf5a4b744991b9f42b726ba28",
+  "qualified_candidate": "94280421232fbdca296bca7404caeeb19c8d9d66",
+  "approval": "Maintainer approved publication after reviewing both edition previews.",
+  "approved_previews": {
+    "MacGoldenGate.png": "0b75264a4abef56ba5fe15869ba89c83911d90f4a08031d17ff957bde7729c44",
+    "MacTahoe.png": "5ea8cf4fbfae39d889dc1a6ee4a18bdbeb45c7666bc8e86e26454a8169d54cae"
+  }
 }
