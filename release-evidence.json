@@ -1,18 +1,18 @@
 {
-  "version": "0.85.24",
+  "version": "0.85.25",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "83f4ddcbb19d5a5694b71d9a1a013310befa2fac",
-  "scope": "Align Firefox site permissions with the security shield in the address bar.",
-  "approval": "Maintainer approved the before-and-after light and dark comparison for publication.",
+  "qualified_candidate": "449d310e49b1ebc0a70eccdf193722df95469c66",
+  "scope": "Use notification glass and local foreground contrast for Clear History.",
+  "approval": "Maintainer approved publication after reviewing all four captures.",
   "approved_previews": {
-    "comparacion.png": "8e2bd9376ba8d273604e336da667c2d2ff81676110f4d9b1b32dc0a4fd77e7d2"
+    "comparacion.png": "79ef5e8add996218965bd534da139826a3aec18e1a243c034239c3b033091eba"
   },
   "checks": [
     {
-      "command": "KDE neon guest running Firefox 159.0.1: capture an HTTPS page with a granted site permission and measure both icon rectangles before and after applying the CSS in light and dark mode. The vertical offset fell from 6 CSS pixels to zero in each mode.",
+      "command": "Capture the installed NotificationsView in disposable KDE neon guests on Plasma 6.8.1 in light and dark modes with each edition\u2019s defaults. Verify installed QML against candidate and compare the four button crops against the previous gallery.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "One Firefox version in a disposable Plasma guest. Both editions use the same browser stylesheet.",
-  "source_sha256": "7195c595d471d0ce8774e12405e0759f67270e605aed6b9ecb355fab0786e79f"
+  "coverage_limits": "Focused appearance captures on Plasma Wayland 6.8.1.",
+  "source_sha256": "9bddb101a7e1e2471da1eeb169d6cf98bede272c01b444068246d0e3f2a3d79e"
 }
