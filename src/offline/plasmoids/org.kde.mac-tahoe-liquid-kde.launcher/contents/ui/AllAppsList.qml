@@ -150,7 +150,9 @@ ColumnLayout {
 	AppCategorySwitcher {
 		id: categorySwitcher
 
-		Layout.preferredWidth: parent.width - fs.innerPadding
+		Layout.fillWidth: true
+		Layout.leftMargin: 12
+		Layout.rightMargin: fs.innerPadding + 12
 		Layout.preferredHeight: visible ? Math.max(main.categoryHeight, implicitHeight) : 0
 		Layout.minimumHeight: Layout.preferredHeight
 		model: main.tahoeStyle ? slicedCategories : appsCategoriesList

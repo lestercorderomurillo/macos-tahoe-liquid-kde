@@ -4,6 +4,7 @@ import org.kde.kirigami as Kirigami
 Item {
     id: pill
     property alias text: label.text
+    required property font labelFont
     implicitWidth: label.implicitWidth
     implicitHeight: label.implicitHeight
 
@@ -22,12 +23,11 @@ Item {
     Text {
         id: label
         anchors.fill: parent
-        topPadding: 4
+        topPadding: 6
         bottomPadding: topPadding
-        leftPadding: 8
-        rightPadding: leftPadding
-        font.family: Kirigami.Theme.defaultFont.family
-        font.pointSize: main.appTextSize
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        font: pill.labelFont
 
         color: pill.textInk
     }
@@ -37,7 +37,7 @@ Item {
         anchors.fill: parent
         z: -1
         color: pill.baseFill
-        radius: main.tahoeStyle ? 9 : 8
+        radius: 11
         border.width: main.tahoeStyle ? 1 : 0
         border.color: Qt.rgba(1, 1, 1, pill.selected ? 0.18 : 0.08)
 

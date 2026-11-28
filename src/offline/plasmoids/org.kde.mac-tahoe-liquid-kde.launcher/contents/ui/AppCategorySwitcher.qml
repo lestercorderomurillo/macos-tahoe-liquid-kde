@@ -7,13 +7,27 @@ Item {
 
     property alias model: categorySwitcher.model
     property alias currentIndex: categorySwitcher.currentIndex
-    implicitHeight: categorySwitcher.currentItem ? categorySwitcher.currentItem.implicitHeight : 0
+    implicitHeight: Math.ceil(categoryFont.height) + 12
+
+    FontMetrics {
+        id: categoryFont
+        font.family: Kirigami.Theme.defaultFont.family
+        font.pointSize: main.appTextSize * 1.28
+    }
 
     signal categorySwitched(int index)
 
     ListView {
         id: categorySwitcher
-        spacing: 7
+        spacing: 8
+        // Share spare space between the labels. Long translations scroll at their natural width.
+        readonly property real pillPadding: {
+            if (!model || !model.length) return 10;
+            let labelsWidth = 0;
+            for (const category of model)
+                labelsWidth += Math.ceil(categoryFont.advanceWidth(category.name));
+            return Math.max(10, (width - labelsWidth - spacing * (model.length - 1)) / (2 * model.length));
+        }
         orientation: ListView.Horizontal
         interactive: contentWidth > width
         boundsBehavior: Flickable.StopAtBounds
@@ -34,13 +48,15 @@ Item {
             readonly property alias pillSamples: pill.samples
             required property var model
             required property var index
-            implicitWidth: pill.implicitWidth
+            implicitWidth: Math.ceil(categoryFont.advanceWidth(model.name)) + 2 * categorySwitcher.pillPadding
             implicitHeight: pill.implicitHeight
             height: categorySwitcher.height
 
             // ListView owns the delegate position; center its contents instead.
             CategoryPill {
                 id: pill
+                width: del.width
+                labelFont: categoryFont.font
                 anchors.verticalCenter: parent.verticalCenter
                 viewport: categorySwitcher
                 selected: categorySwitcher.currentIndex == del.index
