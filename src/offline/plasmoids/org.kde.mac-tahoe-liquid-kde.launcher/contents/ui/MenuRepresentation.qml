@@ -72,7 +72,7 @@ PlasmaCore.Dialog {
 	// Compress the column pitch when the preferred grid would exceed the available screen.
 	readonly property int cellSizeWidth: {
 		const pitch = Math.round(configuredIconSize * 140 / 64);
-		const available = Plasmoid.availableScreenRect.width - gridFramePadding;
+		const available = kicker.screenGeometry.width - gridFramePadding;
 		return available > 0 ? Math.min(pitch, Math.floor(available / columns)) : pitch;
 	}
 	readonly property int gridFramePadding: 48
