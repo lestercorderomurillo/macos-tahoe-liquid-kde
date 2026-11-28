@@ -74,12 +74,28 @@ Page {
             implicitWidth: 20; implicitHeight: 20
             Accessible.name: i18n("Clear History")
             enabled: view.history.expiredNotificationsCount > 0
-            background: Rectangle {
-                radius: 10
-                color: heading.color.r > .5 ? Qt.rgba(0,0,0,clear.hovered ? .7 : .5)
-                                           : Qt.rgba(1,1,1,clear.hovered ? .7 : .5)
+            readonly property color fillColor: disc.fillColor
+            background: ControlTile {
+                id: disc
+                padding: 0
+                materialComponent: view.standalone ? "notifications" : "control-center"
+                contentItem: Rectangle {
+                    radius: disc.cornerRadius
+                    color: Kirigami.Theme.textColor
+                    opacity: clear.down ? 0.14 : clear.hovered || clear.visualFocus ? 0.08 : 0
+                }
             }
-            contentItem: Kirigami.Icon { source: Qt.resolvedUrl("symbols/mttkde-control-notification-close.svg"); isMask: true; color: heading.color; opacity: .53 }
+            contentItem: Kirigami.Icon {
+                id: clearMark
+                source: Qt.resolvedUrl("symbols/mttkde-control-notification-close.svg")
+                isMask: true
+                color: {
+                    const popup = clear.Window.window;
+                    const base = Kirigami.Theme.textColor;
+                    return popup && typeof popup.foregroundFor === "function"
+                        ? popup.foregroundFor(clearMark, base) : base;
+                }
+            }
             onClicked: view.history.clear(Notifications.Notifications.ClearExpired)
         }
     }
