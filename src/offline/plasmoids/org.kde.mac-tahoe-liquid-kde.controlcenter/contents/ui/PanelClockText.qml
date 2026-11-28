@@ -25,18 +25,39 @@ Text {
         return bare.charAt(0).toLocaleUpperCase(clockLocale.name) + bare.slice(1);
     }
     readonly property date now: localClock.dateTime
-    text: shortName(clockLocale.dayName(now.getDay(), Locale.ShortFormat)) + " "
+    readonly property string clockValue: shortName(clockLocale.dayName(now.getDay(), Locale.ShortFormat)) + " "
         + shortName(clockLocale.monthName(now.getMonth(), Locale.ShortFormat)) + " "
         + clockLocale.toString(now, "d") + "  "
         + clockLocale.toString(now, hours + (withSeconds ? ":ss" : "") + (twelveHour ? "\u2009AP" : ""))
     Accessible.ignored: true
+    readonly property var inkProfile: ink.settings.contrastProfiles["panel.clock"]
+    readonly property bool letterInk: ink.active && ink.settings.dynamicTinting && inkProfile.scope === "letter"
+    // Keep panel and loader geometry tied to the plain shaped date. Resolving
+    // the visible letters reads those positions and must not size the panel.
+    text: clockValue
     textFormat: Text.PlainText
     font.family: "SF Pro Text"
     font.pixelSize: 13
     font.weight: Font.Medium
     font.letterSpacing: -0.33
-    color: ink.foreground
+    color: letterInk ? "transparent" : ink.foreground
+    Text {
+        id: coloredClock
+        anchors.fill: parent
+        visible: clockText.letterInk
+        font: clockText.font
+        color: ink.foreground
+        textFormat: Text.StyledText
+        readonly property var painted: visible ? Native.AdaptiveContrast.paintRuns(coloredClock, clockText.clockValue,
+            clockText.inkProfile, (r, i) => ink.forRect(r, ink.base, i)) : null
+        text: painted?.markup ?? ""
+        layer.enabled: !!painted && GraphicsInfo.api !== GraphicsInfo.Software
+        layer.smooth: true
+        layer.effect: Native.InkGradient { lines: coloredClock.painted?.lines ?? [] }
+        Accessible.ignored: true
+    }
     Native.WallpaperInk {
+        profileId: "panel.clock"
         id: ink
         item: clockText
         base: Kirigami.Theme.textColor

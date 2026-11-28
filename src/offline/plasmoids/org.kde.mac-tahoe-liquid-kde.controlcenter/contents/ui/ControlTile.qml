@@ -20,6 +20,12 @@ QQC.Pane {
     readonly property bool lightMode: Kirigami.Theme.textColor.r * 0.2126 + Kirigami.Theme.textColor.g * 0.7152 + Kirigami.Theme.textColor.b * 0.0722 < 0.5
     readonly property bool goldenGate: material.hasElement("hint-clear-surface")
     KSvg.Svg { id: material; imagePath: "dialogs/background" }
+    readonly property NativeGlass.MaterialSample contrastMaterial: NativeGlass.MaterialSample {
+        source: glassSettings.dynamicTinting && tile.visible ? tile.background : null
+    }
+    onFillColorChanged: contrastMaterial.invalidate()
+    onPanelHighlightChanged: contrastMaterial.invalidate()
+    onCornerRadiusChanged: contrastMaterial.invalidate()
     readonly property color fillColor: backgroundTint.color
     padding: 14
     background: Item {

@@ -21,7 +21,8 @@ PlasmaCore.Dialog {
         if (!adaptiveForeground) return base;
         let tile = item;
         while (tile && tile.fillColor === undefined) tile = tile.parent;
-        return Native.AdaptiveContrast.foreground(glass, item, base, tile ? tile.fillColor : "transparent");
+        return Native.AdaptiveContrast.resolve(glass, item, base, tile?.fillColor ?? "transparent",
+                "controlcenter.tile", tile, glass.window?.contentItem, item.Kirigami.Theme.textColor);
     }
     property Native.ControlGlass glass: Native.ControlGlass {
         window: popup

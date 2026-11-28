@@ -495,6 +495,9 @@ BlurEffect::BlurEffect()
 
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.plasmashell"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("requestInkPixels"), this, SLOT(slotInkPixels(int,QRect,QString,QByteArray)));
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.plasmashell"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("windowsChanged"), this, SLOT(slotGlassWindows(QString)));
 #if defined(GLASS_WAYLAND)
     m_displayCornerInput = std::make_unique<DisplayCornerInput>();
@@ -706,6 +709,7 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     for (auto &[window, data] : m_windows) {
         data.contrastTimer.invalidate();
         data.contrastGrid.clear();
+
         data.contrastColor = {};
     }
     effects->addRepaintFull();
@@ -718,6 +722,33 @@ void BlurEffect::slotDisplayCorners(const QString &json)
     m_displayCornerInput->setCorners(json);
 }
 #endif
+
+void BlurEffect::slotInkPixels(int pid, const QRect &frame, const QString &role, const QByteArray &points)
+{
+    if (!BlurConfig::dynamicTinting() || points.size() > 128 * 1024) return;
+    const auto entries = QJsonDocument::fromJson(points).array();
+    if (entries.isEmpty() || entries.size() > 2048) return;
+    for (auto *w : effects->stackingOrder()) {
+        if (w->window()->pid() != pid || w->frameGeometry().toAlignedRect() != frame) continue;
+        const auto client = w->window()->resourceClass();
+        if (client != QStringLiteral("plasmashell") && client != QStringLiteral("org.kde.plasmashell")) continue;
+        if (role != w->caption() && !(role == QStringLiteral("mttkde-panel-ink") && w->isDock())
+            && !(role == QStringLiteral("mttkde-shell-menu") && w->isPopupWindow())) continue;
+        auto &state = m_inkRequests[w];
+        if (state.inkFrame != frame || state.inkRole != role || state.inkPixels.size() + entries.size() > 2048)
+            state.inkPixels.clear();
+        state.inkFrame = frame;
+        state.inkRole = role;
+        for (const auto &entry : entries) {
+            const auto xy = entry.toArray();
+            if (xy.size() != 2 || !xy[0].isDouble() || !xy[1].isDouble()) continue;
+            const QPointF p(xy[0].toDouble(), xy[1].toDouble());
+            if (QRectF(QPointF(), frame.size()).contains(p)) state.inkPixels.insert({p.x(), p.y()}, -1);
+        }
+        effects->addRepaint(w->frameGeometry().toAlignedRect());
+        return;
+    }
+}
 
 void BlurEffect::slotGlassWindows(const QString &json)
 {
@@ -1083,6 +1114,7 @@ void BlurEffect::slotWindowDeleted(EffectWindow* w)
         effects->makeOpenGLContextCurrent();
         m_windows.erase(it);
     }
+    m_inkRequests.erase(w);
     wobblyShapes.erase(w);
 
     if (auto it = windowBlurChangedConnections.find(w); it != windowBlurChangedConnections.end()) {
@@ -1541,13 +1573,95 @@ bool BlurEffect::shouldBlur(const EffectWindow* w, int mask, const WindowPaintDa
     return true;
 }
 
-/// Delegate to ``blur()`` (which handles its own shouldBlur gate
-/// internally), then defer to KWin's default to draw the actual window
-/// content on top of the blurred background.
+// Sample installed shell text even on a fully transparent surface with no blur region.
+void BlurEffect::readInkPixels(const RenderTarget &renderTarget, const RenderViewport &viewport,
+                                EffectWindow *w, const Region &damage)
+{
+    const auto found = m_inkRequests.find(w);
+    if (found == m_inkRequests.end() || !BlurConfig::dynamicTinting()) return;
+    auto &request = found->second;
+    if (request.inkFrame != w->frameGeometry().toAlignedRect()) return;
+    // Batch a burst of paints, then sample the complete repainted window once.
+    if (request.timer.isValid() && request.timer.elapsed() < 80) {
+        if (!request.scheduled) {
+            request.scheduled = true;
+            QTimer::singleShot(80 - request.timer.elapsed(), this, [this, w] {
+                const auto it = m_inkRequests.find(w);
+                if (it == m_inkRequests.end()) return;
+                it->second.scheduled = false;
+                effects->addRepaint(w->frameGeometry().toAlignedRect());
+            });
+        }
+        return;
+    }
+    request.timer.start();
+    auto *target = renderTarget.framebuffer();
+    struct Sample { int column; QPair<double, double> key; };
+    QMap<int, QList<Sample>> rows;
+    for (auto it = request.inkPixels.cbegin(); target && it != request.inkPixels.cend(); ++it) {
+        const auto key = it.key();
+        const QPointF logical = QPointF(key.first, key.second) + w->frameGeometry().topLeft();
+        const QPoint cell(qFloor(logical.x()), qFloor(logical.y()));
+        if (!request.inkFrame.contains(cell) || !viewport.renderRect().contains(logical)) continue;
+#if defined(GLASS_X11)
+        if (!damage.contains(viewport.mapToRenderTarget(cell))) continue;
+#else
+        if (!damage.contains(viewport.mapToDeviceCoordinatesAligned(Rect(cell, QSize(1, 1))).topLeft())) continue;
+#endif
+
+        const QPointF device = viewport.mapToRenderTarget(logical);
+        const QPoint pixel(qFloor(device.x()), qFloor(device.y()));
+        if (QRect(QPoint(), target->size()).contains(pixel))
+            rows[target->size().height() - 1 - pixel.y()].append({pixel.x(), key});
+    }
+    QJsonArray changed;
+    if (!rows.isEmpty()) {
+        GLFramebuffer::pushFramebuffer(target);
+        GLint packBuffer = 0;
+        glGetIntegerv(GL_PIXEL_PACK_BUFFER_BINDING, &packBuffer);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+        const std::array<GLenum, 3> names{GL_PACK_ROW_LENGTH, GL_PACK_SKIP_ROWS, GL_PACK_SKIP_PIXELS};
+        std::array<GLint, 3> values{};
+        for (size_t i = 0; i < names.size(); ++i) {
+            glGetIntegerv(names[i], &values[i]);
+            glPixelStorei(names[i], 0);
+        }
+        for (auto row = rows.cbegin(); row != rows.cend(); ++row) {
+            int first = target->size().width(), last = 0;
+            for (const auto &sample : *row) {
+                first = std::min(first, sample.column);
+                last = std::max(last, sample.column);
+            }
+            QByteArray scanline((last - first + 1) * 4, 0);
+            glReadPixels(first, row.key(), last - first + 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, scanline.data());
+            for (const auto &sample : *row) {
+                const auto *rgb = reinterpret_cast<const uchar *>(scanline.constData()) + 4 * (sample.column - first);
+                const int color = (int(rgb[0]) << 16) | (int(rgb[1]) << 8) | rgb[2];
+                auto &old = request.inkPixels[sample.key];
+                if (old == color) continue;
+                old = color;
+                changed.append(QJsonArray{sample.key.first, sample.key.second, color});
+            }
+        }
+        for (size_t i = 0; i < names.size(); ++i) glPixelStorei(names[i], values[i]);
+        glBindBuffer(GL_PIXEL_PACK_BUFFER, packBuffer);
+        GLFramebuffer::popFramebuffer();
+    }
+    if (!changed.isEmpty()) {
+        auto reply = QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"),
+            QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+            QStringLiteral("inkPixels"));
+        reply << int(w->window()->pid()) << request.inkFrame << request.inkRole
+              << QJsonDocument(changed).toJson(QJsonDocument::Compact);
+        QDBusConnection::sessionBus().send(reply);
+    }
+}
+
 AcrylicGlassDrawWindowResult BlurEffect::drawWindow(
     const RenderTarget& renderTarget, const RenderViewport& viewport, EffectWindow* w, int mask, const Region& deviceRegion, WindowPaintData& data)
 {
     blur(renderTarget, viewport, w, mask, deviceRegion, data);
+    readInkPixels(renderTarget, viewport, w, deviceRegion);
 
 #if ACRYLIC_GLASS_KWIN_6_8
     return effects->drawWindow(renderTarget, viewport, w, mask, deviceRegion, data);
@@ -2094,164 +2208,6 @@ void BlurEffect::blur(
     const auto &gradientBottom = gradientColorForPalette(material.bottom, material.bottomDark, windowPalette);
     const float modulation = opacity * opacity;
 
-    // Foreground contrast uses the captured backdrop, never the notification's
-    // own pixels. The existing blur/material passes and saved optics are unchanged.
-    const QString resourceClass = w->window()->resourceClass();
-    const bool plasma = resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell");
-    // Native QMenus are xdg_popups on Wayland and have no client title.
-    const bool namedPopup = GlassMaterials::isControlPanel(w->caption()) || w->caption() == QStringLiteral("mttkde-apps")
-        || w->caption() == QStringLiteral("mttkde-search") || w->caption() == QStringLiteral("mttkde-options");
-    const bool notification = isProjectNotification(resourceClass, w->caption());
-    const bool shellMenu = plasma && !namedPopup && !notification && (w->isPopupMenu() || w->isDropdownMenu() || w->isMenu()
-        || (w->isPopupWindow() && !w->isAppletPopup() && !w->isTooltip()));
-    const auto caption = w->caption();
-    const bool aboutApp = (!m_aboutAppPrefix.isEmpty() || !m_aboutAppSuffix.isEmpty())
-        && caption.startsWith(m_aboutAppPrefix) && caption.endsWith(m_aboutAppSuffix)
-        && caption.size() > m_aboutAppPrefix.size() + m_aboutAppSuffix.size();
-    const bool about = plasma && (aboutApp || caption == m_aboutTitle || caption == QStringLiteral("About This Computer"));
-    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about || notification;
-    if (BlurConfig::dynamicTinting() && spatialBackdrop) {
-        const int sampleInterval = about ? 40 : 200;
-        if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
-            blurInfo.contrastTimer.start();
-            // Resolve individual labels within each compositor frame.
-            constexpr int side = 64;
-            auto &texture = m_contrastTexture;
-            auto &framebuffer = m_contrastFramebuffer;
-            if (!texture) {
-                texture = GLTexture::allocate(GL_RGBA8, QSize(side, side));
-                if (texture) {
-                    texture->setFilter(GL_LINEAR);
-                    texture->setWrapMode(GL_CLAMP_TO_EDGE);
-                    framebuffer = std::make_unique<GLFramebuffer>(texture.get());
-                }
-            }
-            if (framebuffer && framebuffer->valid()) {
-                const bool blendEnabled = glIsEnabled(GL_BLEND);
-                glDisable(GL_BLEND);
-                const auto &read = renderInfo.framebuffers[blurOffset > 0 && optics.surfaceBlur >= 0.5f ? 1 : 0];
-                ShaderManager::instance()->pushShader(m_downsamplePass.shader.get());
-                QMatrix4x4 projection;
-                projection.ortho(QRectF(0, 0, scaledBackgroundRect.width(), scaledBackgroundRect.height()));
-                m_downsamplePass.shader->setUniform(m_downsamplePass.mvpMatrixLocation, projection);
-                m_downsamplePass.shader->setUniform(m_downsamplePass.offsetLocation, 0.0f);
-                m_downsamplePass.shader->setUniform(m_downsamplePass.halfpixelLocation, QVector2D(0, 0));
-                read->colorAttachment()->bind();
-                GLFramebuffer::pushFramebuffer(framebuffer.get());
-                vbo->draw(GL_TRIANGLES, 0, 6);
-                std::array<unsigned char, 64 * 64 * 4> pixels{};
-                GLint packBuffer = 0;
-                glGetIntegerv(GL_PIXEL_PACK_BUFFER_BINDING, &packBuffer);
-                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-                const std::array<GLenum, 3> packNames{GL_PACK_ROW_LENGTH, GL_PACK_SKIP_ROWS, GL_PACK_SKIP_PIXELS};
-                std::array<GLint, 3> packValues{};
-                for (size_t i = 0; i < packNames.size(); ++i) {
-                    glGetIntegerv(packNames[i], &packValues[i]);
-                    glPixelStorei(packNames[i], 0);
-                }
-                glReadPixels(0, 0, side, side, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-                for (size_t i = 0; i < packNames.size(); ++i) glPixelStorei(packNames[i], packValues[i]);
-                glBindBuffer(GL_PIXEL_PACK_BUFFER, packBuffer);
-                GLFramebuffer::popFramebuffer();
-                ShaderManager::instance()->popShader();
-                if (blendEnabled) glEnable(GL_BLEND);
-                // Match the interior glass pass before clients composite their own fill.
-                const auto transform = material.color.transposed();
-                QByteArray colors;
-                colors.reserve(side * side * 3);
-                QVector3D total;
-                for (int row = 0; row < side; ++row) {
-                    for (int col = 0; col < side; ++col) {
-                        const auto *pixel = pixels.data() + ((side - 1 - row) * side + col) * 4;
-                        const QVector3D base(pixel[0] / 255.f, pixel[1] / 255.f, pixel[2] / 255.f);
-                        const QPointF screenPoint(backgroundRect.x() + (col + .5) * backgroundRect.width() / side,
-                                                  backgroundRect.y() + (row + .5) * backgroundRect.height() / side);
-                        const QPointF point((screenPoint.x() - w->x() - data.xTranslation()) / data.xScale(),
-                                            (screenPoint.y() - w->y() - data.yTranslation()) / data.yScale());
-                        QRectF surface(QPointF(), frameRect.size());
-                        if (!wobblySurface && !blurInfo.clientShapes.isEmpty()) {
-                            surface = {};
-                            for (const auto &shape : blurInfo.clientShapes) {
-                                if (shape.surfaceRect().contains(point)) {
-                                    surface = shape.surfaceRect();
-                                    break;
-                                }
-                            }
-                        }
-                        QVector3D rgb = base;
-                        if (surface.contains(point)) {
-                            rgb = (transform * QVector4D(base, 1)).toVector3D();
-                            if (material.gradient) {
-                                const float height = (point.y() - surface.y()) / surface.height();
-                                const auto tint = gradientOverlayAt(height, material.centerPosition,
-                                                                    gradientTop, gradientCenter, gradientBottom);
-                                rgb = rgb * (1 - tint.w()) + tint.toVector3D();
-                            }
-                            rgb = base + (rgb - base) * (modulation * centerOpacity);
-                        }
-                        for (int c = 0; c < 3; ++c) {
-                            rgb[c] = std::clamp(rgb[c], 0.f, 1.f);
-                            colors.append(char(qRound(rgb[c] * 255)));
-                        }
-                        total += rgb;
-                    }
-                }
-                if (spatialBackdrop) {
-                    const QRect frame = w->frameGeometry().toAlignedRect();
-                    if (colors != blurInfo.contrastGrid || backgroundRect != blurInfo.sampleBounds || frame != blurInfo.contrastBounds) {
-                        blurInfo.contrastGrid = colors;
-                        blurInfo.sampleBounds = backgroundRect;
-                        blurInfo.contrastBounds = frame;
-                        const auto path = QStringLiteral("/org/kde/MacTahoe/Glass");
-                        const auto interface = QStringLiteral("org.kde.MacTahoe.Glass");
-                        // Mark only this sample. The Wayland compositor owns the pointer
-                        // during a system move, so clients cannot infer its end from a release.
-                        if (about && w->isUserMove()) {
-                            auto moving = QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"),
-                                path, interface, QStringLiteral("movingControlSample"));
-                            moving << int(w->window()->pid()) << frame << caption;
-                            QDBusConnection::sessionBus().send(moving);
-                        }
-                        const auto signal = QStringLiteral("controlBackdrop");
-                        auto message = (shellMenu || about)
-                            ? QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"), path, interface, signal)
-                            : QDBusMessage::createSignal(path, interface, signal);
-                        message << int(w->window()->pid()) << frame << backgroundRect << colors
-                                << (shellMenu ? QStringLiteral("mttkde-shell-menu") : w->caption());
-                        QDBusConnection::sessionBus().send(message);
-                    }
-                }
-                if (notification) {
-                    const auto average = total / (side * side);
-                    const QColor color = QColor::fromRgbF(average.x(), average.y(), average.z());
-                    const QRect bounds = w->frameGeometry().toAlignedRect();
-                    if (color != blurInfo.contrastColor || bounds != blurInfo.contrastBounds) {
-                        blurInfo.contrastColor = color;
-                        blurInfo.contrastBounds = bounds;
-                        auto message = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
-                            QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("backdropSample"));
-                        const QJsonObject sample{{QStringLiteral("pid"), w->window()->pid()},
-                            {QStringLiteral("x"), bounds.x()}, {QStringLiteral("y"), bounds.y()},
-                            {QStringLiteral("width"), bounds.width()}, {QStringLiteral("height"), bounds.height()},
-                            {QStringLiteral("rgb"), QJsonArray{color.redF(), color.greenF(), color.blueF()}}};
-                        message << QString::fromUtf8(QJsonDocument(sample).toJson(QJsonDocument::Compact));
-                        QDBusConnection::sessionBus().send(message);
-                    }
-                }
-            }
-        } else if (!blurInfo.contrastScheduled) {
-            // One trailing repaint catches the settled frame of a transition;
-            // unchanged notifications do not keep a polling repaint loop alive.
-            blurInfo.contrastScheduled = true;
-            QTimer::singleShot(sampleInterval - blurInfo.contrastTimer.elapsed(), this, [this, w] {
-                const auto found = m_windows.find(w);
-                if (found == m_windows.end()) return;
-                found->second.contrastScheduled = false;
-                effects->addRepaint(w->frameGeometry().toAlignedRect());
-            });
-        }
-    }
-
     // 7. Resolve per-window corner radius
     // KDecoration provides the client-declared corner radius; we override
     // it with kcfg values keyed by window type (dock / popup / normal).
@@ -2523,6 +2479,143 @@ void BlurEffect::blur(
     }
 
     vbo->unbindArrays();
+
+    // Foreground contrast uses the captured backdrop, never the notification's
+    // own pixels. The existing blur/material passes and saved optics are unchanged.
+    const QString resourceClass = w->window()->resourceClass();
+    const bool plasma = resourceClass == QStringLiteral("plasmashell") || resourceClass == QStringLiteral("org.kde.plasmashell");
+    // Native QMenus are xdg_popups on Wayland and have no client title.
+    const bool namedPopup = GlassMaterials::isControlPanel(w->caption()) || w->caption() == QStringLiteral("mttkde-apps")
+        || w->caption() == QStringLiteral("mttkde-search") || w->caption() == QStringLiteral("mttkde-options");
+    const bool notification = isProjectNotification(resourceClass, w->caption());
+    const bool shellMenu = plasma && !namedPopup && !notification && (w->isPopupMenu() || w->isDropdownMenu() || w->isMenu()
+        || (w->isPopupWindow() && !w->isAppletPopup() && !w->isTooltip()));
+    const auto caption = w->caption();
+    const bool aboutApp = (!m_aboutAppPrefix.isEmpty() || !m_aboutAppSuffix.isEmpty())
+        && caption.startsWith(m_aboutAppPrefix) && caption.endsWith(m_aboutAppSuffix)
+        && caption.size() > m_aboutAppPrefix.size() + m_aboutAppSuffix.size();
+    const bool about = plasma && (aboutApp || caption == m_aboutTitle || caption == QStringLiteral("About This Computer"));
+    const auto panelMaterial = m_componentMaterials.constFind(QStringLiteral("panel"));
+    const bool panel = plasma && w->isDock() && panelMaterial != m_componentMaterials.cend() && &panelMaterial.value() == &material;
+    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about || notification || panel;
+    const QRect sampleRect = backgroundRect.intersected(w->frameGeometry().toAlignedRect());
+    if (BlurConfig::dynamicTinting() && spatialBackdrop && !sampleRect.isEmpty()) {
+        const int sampleInterval = about ? 40 : 200;
+        if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
+            blurInfo.contrastTimer.start();
+            // Resolve individual labels within each compositor frame.
+            constexpr int side = 64;
+            auto &texture = m_contrastTexture;
+            auto &framebuffer = m_contrastFramebuffer;
+            if (!texture) {
+                texture = GLTexture::allocate(GL_RGBA8, QSize(side, side));
+                if (texture) {
+                    texture->setFilter(GL_LINEAR);
+                    texture->setWrapMode(GL_CLAMP_TO_EDGE);
+                    framebuffer = std::make_unique<GLFramebuffer>(texture.get());
+                }
+            }
+            if (framebuffer && framebuffer->valid()) {
+                // Capture after the final glass and grain passes and before KWin
+                // draws the window contents. Keep pixels from undamaged cells
+                // in the previous verified grid during partial repaints.
+                framebuffer->blitFromRenderTarget(renderTarget, viewport, sampleRect, QRect(0, 0, side, side));
+                GLFramebuffer::pushFramebuffer(framebuffer.get());
+                std::array<unsigned char, 64 * 64 * 4> pixels{};
+                GLint packBuffer = 0;
+                glGetIntegerv(GL_PIXEL_PACK_BUFFER_BINDING, &packBuffer);
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+                const std::array<GLenum, 3> packNames{GL_PACK_ROW_LENGTH, GL_PACK_SKIP_ROWS, GL_PACK_SKIP_PIXELS};
+                std::array<GLint, 3> packValues{};
+                for (size_t i = 0; i < packNames.size(); ++i) {
+                    glGetIntegerv(packNames[i], &packValues[i]);
+                    glPixelStorei(packNames[i], 0);
+                }
+                glReadPixels(0, 0, side, side, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+                for (size_t i = 0; i < packNames.size(); ++i) glPixelStorei(packNames[i], packValues[i]);
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, packBuffer);
+                GLFramebuffer::popFramebuffer();
+                const bool sameGrid = blurInfo.contrastGrid.size() == side * side * 3
+                    && blurInfo.sampleBounds == sampleRect
+                    && blurInfo.contrastBounds == w->frameGeometry().toAlignedRect();
+                QByteArray colors = sameGrid ? blurInfo.contrastGrid : QByteArray(side * side * 3, 0);
+                QVector3D total;
+                bool complete = true;
+                for (int row = 0; row < side; ++row) {
+                    for (int col = 0; col < side; ++col) {
+                        const QPoint point(sampleRect.x() + (col + .5) * sampleRect.width() / side,
+                                           sampleRect.y() + (row + .5) * sampleRect.height() / side);
+#if defined(GLASS_X11)
+                        const bool painted = deviceRegion.contains((point * viewport.scale()));
+#else
+                        const bool painted = dirtyRegion.contains(point);
+#endif
+                        const int index = (row * side + col) * 3;
+                        if (painted) {
+                            const auto *rgb = pixels.data() + ((side - 1 - row) * side + col) * 4;
+                            for (int c = 0; c < 3; ++c) colors[index + c] = char(rgb[c]);
+                        } else if (!sameGrid) {
+                            complete = false;
+                        }
+                        for (int c = 0; c < 3; ++c) total[c] += uchar(colors[index + c]) / 255.f;
+                    }
+                }
+                if (complete) {
+                    const QRect frame = w->frameGeometry().toAlignedRect();
+                    if (colors != blurInfo.contrastGrid || sampleRect != blurInfo.sampleBounds || frame != blurInfo.contrastBounds) {
+                        blurInfo.contrastGrid = colors;
+                        blurInfo.sampleBounds = sampleRect;
+                        blurInfo.contrastBounds = frame;
+                        const auto path = QStringLiteral("/org/kde/MacTahoe/Glass");
+                        const auto interface = QStringLiteral("org.kde.MacTahoe.Glass");
+                        // Mark only this sample. The Wayland compositor owns the pointer
+                        // during a system move, so clients cannot infer its end from a release.
+                        if (about && w->isUserMove()) {
+                            auto moving = QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"),
+                                path, interface, QStringLiteral("movingControlSample"));
+                            moving << int(w->window()->pid()) << frame << caption;
+                            QDBusConnection::sessionBus().send(moving);
+                        }
+                        const auto signal = QStringLiteral("controlBackdrop");
+                        auto message = (shellMenu || about || panel)
+                            ? QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"), path, interface, signal)
+                            : QDBusMessage::createSignal(path, interface, signal);
+                        message << int(w->window()->pid()) << frame << sampleRect << colors
+                                << (panel ? QStringLiteral("mttkde-panel-ink")
+                                    : shellMenu ? QStringLiteral("mttkde-shell-menu") : w->caption());
+                        QDBusConnection::sessionBus().send(message);
+                    }
+                }
+                if (complete && notification) {
+                    const auto average = total / (side * side);
+                    const QColor color = QColor::fromRgbF(average.x(), average.y(), average.z());
+                    const QRect bounds = w->frameGeometry().toAlignedRect();
+                    if (color != blurInfo.contrastColor || bounds != blurInfo.contrastBounds) {
+                        blurInfo.contrastColor = color;
+                        blurInfo.contrastBounds = bounds;
+                        auto message = QDBusMessage::createSignal(QStringLiteral("/org/kde/MacTahoe/Glass"),
+                            QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("backdropSample"));
+                        const QJsonObject sample{{QStringLiteral("pid"), w->window()->pid()},
+                            {QStringLiteral("x"), bounds.x()}, {QStringLiteral("y"), bounds.y()},
+                            {QStringLiteral("width"), bounds.width()}, {QStringLiteral("height"), bounds.height()},
+                            {QStringLiteral("rgb"), QJsonArray{color.redF(), color.greenF(), color.blueF()}}};
+                        message << QString::fromUtf8(QJsonDocument(sample).toJson(QJsonDocument::Compact));
+                        QDBusConnection::sessionBus().send(message);
+                    }
+                }
+            }
+        } else if (!blurInfo.contrastScheduled) {
+            // One trailing repaint catches the settled frame of a transition;
+            // unchanged notifications do not keep a polling repaint loop alive.
+            blurInfo.contrastScheduled = true;
+            QTimer::singleShot(sampleInterval - blurInfo.contrastTimer.elapsed(), this, [this, w] {
+                const auto found = m_windows.find(w);
+                if (found == m_windows.end()) return;
+                found->second.contrastScheduled = false;
+                effects->addRepaint(w->frameGeometry().toAlignedRect());
+            });
+        }
+    }
 }
 
 // Status queries

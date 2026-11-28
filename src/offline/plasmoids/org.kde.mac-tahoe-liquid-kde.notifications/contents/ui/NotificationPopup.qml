@@ -35,7 +35,8 @@ Native.NotificationBanner {
         if (!inkSettings.dynamicTinting) return base;
         let tile = item;
         while (tile && tile.fillColor === undefined) tile = tile.parent;
-        return Native.AdaptiveContrast.foreground(inkBackdrop, item, base, tile ? tile.fillColor : "transparent");
+        return Native.AdaptiveContrast.resolve(inkBackdrop, item, base, tile?.fillColor ?? "transparent",
+                "notifications.card", tile, inkBackdrop.window?.contentItem, item.Kirigami.Theme.textColor);
     }
     mainItem: Item {
         width: banner.width; height: banner.height

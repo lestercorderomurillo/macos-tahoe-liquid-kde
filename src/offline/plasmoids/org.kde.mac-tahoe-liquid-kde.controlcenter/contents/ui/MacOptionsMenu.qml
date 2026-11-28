@@ -218,7 +218,8 @@ PlasmaCore.Dialog {
                                 : row.modelData.section ? Qt.rgba(menu.textColor.r, menu.textColor.g, menu.textColor.b, 0.55)
                                 : menu.textColor
                             color: menu.contrastSettings.dynamicTinting
-                                ? NativeGlass.AdaptiveContrast.foreground(menu.backdrop, label, baseInk, row.background.color)
+                                ? NativeGlass.AdaptiveContrast.resolve(menu.backdrop, label, baseInk, row.background.color, "menu.options", row, menu.contentItem,
+                                    row.enabled && menu.selectedIndex === row.index ? "white" : menu.textColor)
                                 : baseInk
                         }
                     }

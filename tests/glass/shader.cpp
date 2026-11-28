@@ -128,6 +128,9 @@ int main(int argc, char **argv)
         shader.setUniformValue("gradientCenter", QVector4D(0,0,0,0.02f));
         shader.setUniformValue("gradientCenterPosition", 0.55f);
         image = render();
+        const QString contrastFrame = qEnvironmentVariable("CONTRAST_SHADER_FRAME");
+        if (!contrastFrame.isEmpty())
+            require(image.save(contrastFrame), QStringLiteral("could not export rendered contrast fixture"));
         require(qRed(image.pixel(96,12)) + 40 < qRed(image.pixel(96,115)), QStringLiteral("black gradient must start at the top"));
         require(qAlpha(image.pixel(96,12)) == 255 && qAlpha(image.pixel(96,115)) == 255, QStringLiteral("gradient must not reveal sharp background at the bottom"));
         // Tint must retain fractional coverage, and excluded surfaces must

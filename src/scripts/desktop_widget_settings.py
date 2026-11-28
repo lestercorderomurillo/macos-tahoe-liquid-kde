@@ -160,9 +160,56 @@ def stage_appearance(package, variant):
 def stage_glass_text(package):
     """Adapt painted Text elements in the bundled widget, preserving each color binding."""
     ui = package / "contents/ui"
-    material = ui / "components/LiquidGlass.qml"
-    if material.is_file() and '"mttkde-widget-material"' not in (source := material.read_text()):
-        material.write_text(source.replace("Item {", 'Item {\n    objectName: "mttkde-widget-material"', 1))
+    profile = "widget." + package.name.removeprefix(PREFIX)
+    for filename in ("LiquidGlass.qml", "TextGlass.qml"):
+        material = ui / "components" / filename
+        if not material.is_file():
+            continue
+        source = material.read_text()
+        if '"mttkde-widget-material"' in source:
+            continue
+        source = source.replace("Item {", 'Item {\n    objectName: "mttkde-widget-material"', 1)
+        props = """
+    // Explicit ShaderEffectSource sizes are physical texels. Supersample small
+    // refractive surfaces and retain the native pixel density on large ones.
+    readonly property real surfaceDpr: Screen.devicePixelRatio
+    readonly property size nativeSurfaceSize: Qt.size(Math.max(1, Math.ceil(width * surfaceDpr)),
+                                                       Math.max(1, Math.ceil(height * surfaceDpr)))
+    readonly property bool supersampleSurface: nativeSurfaceSize.width * nativeSurfaceSize.height <= 1048576
+    readonly property size edgeTextureSize: Qt.size(nativeSurfaceSize.width * (supersampleSurface ? 2 : 1),
+                                                    nativeSurfaceSize.height * (supersampleSurface ? 2 : 1))
+    readonly property NativeInk.GlassSettings contrastSettings: NativeInk.GlassSettings {}
+    readonly property NativeInk.MaterialSample contrastMaterial: NativeInk.MaterialSample {
+        source: glass.contrastSettings.dynamicTinting ? glass : null
+    }
+    Connections {
+        target: glass
+        function onTintChanged() { glass.contrastMaterial.invalidate() }
+        function onTintAlphaChanged() { glass.contrastMaterial.invalidate() }
+        function onSolidColorChanged() { glass.contrastMaterial.invalidate() }
+        function onSolidModeChanged() { glass.contrastMaterial.invalidate() }
+    }
+"""
+        # Generated bindings run only on the material; foreground changes
+        # never trigger a readback of the text.
+        source = source.replace("id: glass", "id: glass" + props, 1)
+        source = source.replace("function invalidateBackdrop() {", "function invalidateBackdrop() {\n        contrastMaterial.invalidate()")
+        source = source.replace("function markDirty() {", "function markDirty() {\n        contrastMaterial.invalidate()")
+        source = source.replace("id: glassShader", """id: glassShader
+        layer.enabled: glass.supersampleSurface
+        layer.textureSize: glass.edgeTextureSize
+        layer.smooth: true
+        layer.mipmap: true""")
+        if filename == "TextGlass.qml":
+            start = source.index("id: maskSrc")
+            end = source.index("id: wallpaperTex", start)
+            mask = source[start:end].replace(
+                "Qt.size(Math.round(glass._widgetW), Math.round(glass._widgetH))",
+                "glass.nativeSurfaceSize")
+            mask = mask.replace("textureSize: glass.nativeSurfaceSize", "textureSize: glass.edgeTextureSize", 1)
+            mask = mask.replace("id: sdfTexSrc", "id: sdfTexSrc\n        format: ShaderEffectSource.RGBA16F")
+            source = source[:start] + mask + source[end:]
+        material.write_text("import org.kde.mac.tahoe.launcher as NativeInk\n" + source)
     # Upstream puts each Text declaration and its closing brace at the same
     # indentation. Match its own color, leaving nested effects and icons alone.
     element = re.compile(r"^(?P<indent> *)(?P<prefix>(?:contentItem: |delegate: )?)Text \{\n"
@@ -172,14 +219,47 @@ def stage_glass_text(package):
         indent = match["indent"]
         body, count = re.subn(r"^" + indent + r"    color:", indent + "    baseColor:",
                               match["body"], count=1, flags=re.M)
-        return (indent + match["prefix"] + "NativeInk.AdaptiveWidgetText {\n" + body + indent + "}"
-                if count else match[0])
+        if not count:
+            return match[0]
+        member = re.escape(indent + "    ")
+        # Stored upstream rich-text bindings keep their markup and links.
+        if (not re.search(r"^" + member + "textFormat:", body, re.M)
+                and not package.name.endswith(".clock-glass-text")):
+            body, found = re.subn("^" + member + "text:", indent + "    sourceText:", body, count=1, flags=re.M)
+            if found:
+                body += (indent + "    textFormat: useRuns ? Text.StyledText : Text.AutoText\n"
+                         + indent + "    text: useRuns ? glyphText() : sourceText\n")
+        return (indent + match["prefix"] + "NativeInk.AdaptiveWidgetText {\n"
+                + indent + f'    contrastProfile: "{profile}"\n' + body + indent + "}")
+
 
     for file in (ui / "main.qml", *(ui / "widget").glob("*.qml")):
         if not file.is_file():
             continue
         source = file.read_text()
-        adapted = element.sub(adapt, source)
+        adapted = element.sub(adapt, source).replace("renderType: Text.NativeRendering",
+            "renderType: GraphicsInfo.api === GraphicsInfo.Software ? Text.QtRendering : Text.CurveRendering")
+        if package.name.endswith(".clock-glass-text") and file.name == "GlassClockText.qml":
+            # Visibility feeds the ink binding, so it must depend on the source string.
+            adapted = adapted.replace("visible: text.length > 0", "visible: sourceText.length > 0")
+            adapted = adapted.replace("property int hour12:", "property bool adaptOverlay: false\n    property int hour12:")
+            # Keep the clock's implicit dimensions driven by the plain text.
+            # Its centered row positions supply the input coordinates for the ink.
+            def clock_label(match):
+                prefix, indent, value = match.groups()
+                owner = re.search(r"\bid: (\w+)", prefix).group(1)
+                return (prefix + indent + "clockOverlay: root.adaptOverlay" + indent + "sourceText: " + value
+                        + indent + "textFormat: Text.PlainText" + indent + "text: sourceText"
+                        + indent + "color: softwareInk" + owner + ".visible ? \"transparent\" : baseColor"
+                        + indent + "Text {" + indent + "    id: softwareInk" + owner
+                        + indent + "    anchors.fill: parent" + indent + "    font: parent.font"
+                        + indent + "    visible: parent.useRuns && GraphicsInfo.api === GraphicsInfo.Software"
+                        + indent + "    textFormat: Text.StyledText"
+                        + indent + "    text: visible ? parent.glyphText() : \"\"" + indent + "}")
+            adapted = re.sub(r"(NativeInk.AdaptiveWidgetText \{.*?)(\n +)text: ([^\n]+)",
+                             clock_label, adapted, flags=re.S)
+        if package.name.endswith(".clock-glass-text") and file.name == "main.qml":
+            adapted = adapted.replace("id: overlay", "id: overlay\n            adaptOverlay: true")
         if adapted != source:
             file.write_text("import org.kde.mac.tahoe.launcher as NativeInk\n" + adapted)
 

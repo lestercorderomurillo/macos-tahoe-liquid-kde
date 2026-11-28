@@ -10,11 +10,17 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTemporaryFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QPushButton>
 #include <QDir>
+#include <QDialogButtonBox>
+#include <QPlainTextEdit>
+#include <QTimer>
 #include <QStandardPaths>
 #include <QLabel>
 #include <QSpinBox>
@@ -40,6 +46,7 @@ template <class T> static T *control(KCModule *module, const QString &name)
 
 int main(int argc, char **argv)
 {
+    if (qEnvironmentVariableIsSet("TEST_ADAPTIVE_CONTRAST")) QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
     QApplication app(argc, argv);
     const auto *clipboardBefore = app.clipboard()->mimeData();
     require(argc == 5, QStringLiteral("plugin, preset JSON, saved selection and tint required"));
@@ -72,6 +79,62 @@ int main(int argc, char **argv)
     };
     auto module = open();
     require(app.clipboard()->mimeData() == clipboardBefore, QStringLiteral("opening the editor changed the clipboard"));
+    if (qEnvironmentVariableIsSet("TEST_ADAPTIVE_CONTRAST")) {
+        const QByteArray custom = R"({"version":1,"extends":"default","components":{"notifications.card":{"scope":"bubble","correction":"shift","sampleCount":21,"maxChannelShift255":112,"targetSeparationLstar":33}}})";
+        for (bool create : {true, false}) {
+            QTimer::singleShot(0, [&app, custom, create] {
+                auto *dialog = app.activeModalWidget();
+                require(dialog, QStringLiteral("contrast editor missing"));
+                auto *selector = dialog->findChild<QComboBox *>(QStringLiteral("contrastPresetSelector"));
+                auto *editor = dialog->findChild<QPlainTextEdit *>(QStringLiteral("contrastJson"));
+                auto *buttons = dialog->findChild<QDialogButtonBox *>();
+                require(selector && editor && buttons, QStringLiteral("contrast editor controls missing"));
+                if (create) {
+                    selector->setCurrentIndex(1);
+                    selector->activated(1);
+                    editor->setPlainText(QString::fromUtf8(custom));
+                    QTemporaryFile invalid(QDir::tempPath() + QStringLiteral("/invalid-XXXXXX.json"));
+                    require(invalid.open(), QStringLiteral("could not create invalid import"));
+                    invalid.write(QByteArray(custom).replace("21", "0"));
+                    invalid.close();
+                    QTimer::singleShot(0, [&app, &invalid] {
+                        auto *picker = qobject_cast<QFileDialog *>(app.activeModalWidget());
+                        require(picker, QStringLiteral("import did not open a file picker"));
+                        picker->selectFile(invalid.fileName());
+                        require(QMetaObject::invokeMethod(picker, "accept", Qt::QueuedConnection),
+                                QStringLiteral("could not confirm import file"));
+                        QObject::connect(picker, &QDialog::accepted, &app, [&app] {
+                            QTimer::singleShot(0, [&app] {
+                                auto *warning = qobject_cast<QMessageBox *>(app.activeModalWidget());
+                                require(warning && warning->text().contains(QStringLiteral("notifications.card.sampleCount")),
+                                        QStringLiteral("invalid field was not identified"));
+                                warning->accept();
+                            });
+                        });
+                    });
+                    QPushButton *importButton = nullptr;
+                    for (auto *button : buttons->buttons()) {
+                        if (button->text().startsWith(QStringLiteral("Import"))) importButton = qobject_cast<QPushButton *>(button);
+                    }
+                    require(importButton, QStringLiteral("missing import action"));
+                    importButton->click();
+                    require(editor->toPlainText() == QString::fromUtf8(custom) && selector->currentIndex() == 1,
+                            QStringLiteral("invalid import replaced the current edit"));
+                } else {
+                    require(selector->currentIndex() == 1 && QJsonDocument::fromJson(editor->toPlainText().toUtf8())
+                        == QJsonDocument::fromJson(custom), QStringLiteral("custom contrast override was lost"));
+                }
+                buttons->button(create ? QDialogButtonBox::Ok : QDialogButtonBox::Cancel)->click();
+            });
+            control<QPushButton>(module.get(), QStringLiteral("editAdaptiveContrast"))->click();
+            if (create) {
+                module->save();
+                module = open();
+            }
+        }
+        qWarning("adaptive contrast save/reopen verified");
+        return 0;
+    }
     const auto capture = qEnvironmentVariable("GLASS_KCM_CAPTURE");
     if (!capture.isEmpty()) {
         if (qEnvironmentVariableIsSet("GLASS_KCM_CAPTURE_PRESET")) {

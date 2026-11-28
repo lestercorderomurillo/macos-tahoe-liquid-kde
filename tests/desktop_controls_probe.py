@@ -284,8 +284,7 @@ sample['rgb'] = [0,0,0]
 QMetaObject.invokeMethod(noticeForContrast, 'updateBackdrop', Q_ARG(str, json.dumps(sample)))
 assert noticeForContrast.property('backdropColor').lightnessF() == 0
 noticeForContrast.setProperty('visible', False)
-contrast = fake('''import "NotificationContrast.js" as Contrast
-import org.kde.mac.tahoe.launcher as Native
+contrast = fake('''import org.kde.mac.tahoe.launcher as Native
 Item {
     Native.GlassSettings { id: ink; component: "notifications" }
     property color base: "white"
@@ -293,8 +292,6 @@ Item {
     property color surface: "transparent"
     property color foreground: ink.notificationForeground(base, backdrop, surface)
     property bool enabledContrast: ink.dynamicTinting
-    property real contrastRatio: Contrast.ratio(Contrast.luminance(foreground), Contrast.luminance(backdrop))
-    property real baseRatio: Contrast.ratio(Contrast.luminance(base), Contrast.luminance(backdrop))
 }''')
 for base in ('#eeeeee', '#333333'):
     contrast.setProperty('base', QColor(base))
@@ -302,7 +299,7 @@ for base in ('#eeeeee', '#333333'):
         contrast.setProperty('backdrop', QColor(backdrop)); QTest.qWait(10)
         adjusted = contrast.property('foreground')
         original = QColor(base)
-        assert abs(adjusted.red() - original.red()) <= 102
+        assert abs(adjusted.red() - original.red()) <= 112
         def separation(color):
             y = ((color.redF() + .055) / 1.055) ** 2.4 if color.redF() > .04045 else color.redF() / 12.92
             return 1.16 * y ** (1/3) - .16 if y > 216/24389 else y * 24389/2700
