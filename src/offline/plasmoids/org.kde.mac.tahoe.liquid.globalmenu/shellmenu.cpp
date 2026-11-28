@@ -6,14 +6,52 @@
 #include <QApplication>
 #include <QDBusConnection>
 #include <QPainter>
+#include <QPaintEvent>
 #include <QWindow>
 #include <algorithm>
 #include <cmath>
 
+// Obtain ink coverage from the installed style, including mnemonic underlines,
+// combined glyphs, shortcut alignment and the selected row's font.
+static QImage menuInk(const QMenu *menu, QStyleOptionMenuItem option)
+{
+    const qreal scale = menu->devicePixelRatioF();
+    const QSize size(qCeil(option.rect.width() * scale), qCeil(option.rect.height() * scale));
+    const auto paint = [&](QColor color) {
+        QImage image(size, QImage::Format_ARGB32_Premultiplied);
+        image.setDevicePixelRatio(scale);
+        image.fill(Qt::transparent);
+        for (auto role : {QPalette::Text, QPalette::WindowText, QPalette::ButtonText, QPalette::HighlightedText})
+            option.palette.setColor(role, color);
+        QPainter painter(&image);
+        painter.translate(-option.rect.topLeft());
+        menu->style()->drawControl(QStyle::CE_MenuItem, &option, &painter, menu);
+        return image;
+    };
+    auto light = paint(Qt::white);
+    const auto dark = paint(Qt::black);
+    for (int y = 0; y < size.height(); ++y) {
+        auto *dst = reinterpret_cast<QRgb *>(light.scanLine(y));
+        const auto *src = reinterpret_cast<const QRgb *>(dark.constScanLine(y));
+        for (int x = 0; x < size.width(); ++x) {
+            const int coverage = qBound(0, qGray(dst[x]) - qGray(src[x]), 255);
+            dst[x] = qRgba(coverage, coverage, coverage, coverage);
+        }
+    }
+    return light;
+}
+
 ShellMenu::ShellMenu(QWidget *parent) : QMenu(parent)
 {
+    m_gradientTimer.setInterval(16);
+    m_gradientTimer.setSingleShot(true);
+    connect(&m_gradientTimer, &QTimer::timeout, this, [this] { update(); });
+    connect(this, &QMenu::aboutToHide, this, [this] { m_gradients.clear(); m_gradientTimer.stop(); });
     setProperty("_mttkde_shell_menu", true);
     connect(this, &QMenu::aboutToShow, this, &ShellMenu::reloadTinting);
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("inkPixels"), this, SLOT(pixelReply(int,QRect,QString,QByteArray)));
     QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/org/kde/MacTahoe/Glass"),
         QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("changed"), this, SLOT(reloadTinting()));
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
@@ -21,11 +59,21 @@ ShellMenu::ShellMenu(QWidget *parent) : QMenu(parent)
         QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray,QString)));
 }
 
+void ShellMenu::pixelReply(int pid, const QRect &frame, const QString &role, const QByteArray &data)
+{
+    if (m_pixels.receive(pid, frame, role, data)) update();
+}
+
 void ShellMenu::reloadTinting()
 {
     const auto config = KSharedConfig::openConfig(QStringLiteral("kwinrc"));
     config->reparseConfiguration();
-    m_dynamicTinting = config->group(QStringLiteral("Effect-liquidglass")).readEntry("DynamicTinting", true);
+    const auto group = config->group(QStringLiteral("Effect-liquidglass"));
+    m_dynamicTinting = group.readEntry("DynamicTinting", true);
+    const auto saved = group.readEntry("AdaptiveContrastPreset", QByteArray());
+    QJsonObject profiles;
+    if (ContrastPreset::resolve(saved.isEmpty() ? ContrastPreset::empty() : QJsonDocument::fromJson(saved).object(), profiles).isEmpty())
+        m_profile = profiles.value(QStringLiteral("menu.native")).toObject();
     if (!m_dynamicTinting) m_grid.clear();
     update();
 }
@@ -43,6 +91,7 @@ void ShellMenu::updateBackdrop(int pid, const QRect &frame, const QRect &bounds,
     m_sampledScreen = screen();
     m_sampledScale = devicePixelRatioF();
     m_sampledPalette = palette().cacheKey();
+    m_pixels.locate(frame, role);
     m_grid = grid;
     update();
 }
@@ -80,7 +129,20 @@ void ShellMenu::paintEvent(QPaintEvent *event)
                                                qBound(0, int(point.y() * side / height()), side - 1));
             return GlassInk::composite(QColor(channel(0), channel(1), channel(2)), fill);
         };
+        // Paint the style's selected material over the panel before sampling it.
+        if (auto *active = activeAction()) {
+            QStyleOptionMenuItem selected;
+            QMenu::initStyleOption(&selected, active);
+            selected.rect = actionGeometry(active);
+            selected.text.clear();
+            selected.icon = {};
+            selected.checked = false;
+            QPainter painter(&panel);
+            painter.scale(double(side) / width(), double(side) / height());
+            style()->drawControl(QStyle::CE_MenuItem, &selected, &painter, this);
+        }
         m_actionSamples.clear();
+        m_letterImages.clear();
         for (auto *action : actions()) {
             const QRect row = actionGeometry(action);
             if (row.isEmpty() || action->isSeparator()) continue;
@@ -89,21 +151,83 @@ void ShellMenu::paintEvent(QPaintEvent *event)
             const int inset = style()->pixelMetric(QStyle::PM_SmallIconSize) + 8;
             const QRect text = style()->visualRect(layoutDirection(), row,
                 QRect(row.left() + inset, row.top(), textWidth, row.height()));
-            m_actionSamples.insert(action, GlassInk::sample(GlassInk::label, text.center(),
-                QSizeF(textWidth * .4, fontMetrics().height() * .22), surfaceAt));
+            const auto scope = m_profile.value(QStringLiteral("scope")).toString();
+            const auto bounds = scope == QLatin1String("component") ? rect() : scope == QLatin1String("line") ? text : row;
+            GlassInk::Samples samples;
+            GlassInk::zonePoints(bounds, m_profile.value(QStringLiteral("sampleCount")).toInt(15),
+                [&](QPointF point) { samples.add(surfaceAt(point)); });
+            m_actionSamples.insert(action, samples);
+            if (scope != QLatin1String("letter")) continue;
+            QStyleOptionMenuItem item;
+            QMenu::initStyleOption(&item, action);
+            item.rect = row;
+            QImage ink = menuInk(this, item);
+            const qreal scale = ink.devicePixelRatio();
+            const auto role = item.state.testFlag(QStyle::State_Selected) ? QPalette::HighlightedText : QPalette::Text;
+            const QColor base = item.palette.color(role);
+            // Qt has already shaped the label. Separate its painted clusters at
+            // empty columns; a ligature or joined stroke retains continuous ink.
+            QVector<int> peak(ink.width(), -1);
+            for (int x = 0; x < ink.width(); ++x) {
+                int best = 0;
+                for (int y = 0; y < ink.height(); ++y) {
+                    const int alpha = qAlpha(ink.pixel(x, y));
+                    if (alpha > best) { best = alpha; peak[x] = y; }
+                }
+            }
+            int count = 0;
+            QList<qreal> centers;
+            QList<QColor> targets;
+            for (int x = 0; x < ink.width();) {
+                if (peak[x] < 0) { ++x; continue; }
+                const int first = x;
+                while (x < ink.width() && peak[x] >= 0) ++x;
+                const int center = (first + x - 1) / 2;
+                const auto point = QPointF(row.topLeft()) + QPointF((center + .5) / scale, (peak[center] + .5) / scale);
+                auto pixel = m_pixels.at(point);
+                GlassInk::Samples sample;
+                if (pixel.isValid()) {
+                    const auto local = panel.pixelColor(qBound(0, int(point.x() * side / width()), side - 1),
+                                                       qBound(0, int(point.y() * side / height()), side - 1));
+                    sample.add(GlassInk::composite(pixel, local));
+                } else sample.add(surfaceAt(point));
+                centers.append((center + .5) / scale);
+                targets.append(m_history.tone(sample, base, ContrastPreset::settings(m_profile), action, 3 + count++));
+            }
+            if (count) {
+                auto &track = m_gradients[action];
+                track.setTarget(GlassInk::smoothGlyphColors(targets));
+                QPainter painter(&ink);
+                painter.setCompositionMode(QPainter::CompositionMode_SourceIn);
+                painter.fillRect(QRect(QPoint(), row.size()), track.brush(row.width(), centers));
+                painter.end();
+                m_letterImages.insert(action, ink);
+                if (track.animating() && !m_gradientTimer.isActive()) m_gradientTimer.start();
+            }
         }
         m_paintingSampledMenu = true;
     }
     QMenu::paintEvent(event);
+    if (m_paintingSampledMenu && !m_letterImages.isEmpty()) {
+        QPainter painter(this);
+        painter.setClipRegion(event->region());
+        for (auto it = m_letterImages.cbegin(); it != m_letterImages.cend(); ++it)
+            painter.drawImage(actionGeometry(it.key()).topLeft(), it.value());
+    }
     m_paintingSampledMenu = false;
 }
 
 void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *action) const
 {
     QMenu::initStyleOption(option, action);
-    if (!m_dynamicTinting || !m_paintingSampledMenu || option->state.testFlag(QStyle::State_Selected)) return;
+    if (!m_dynamicTinting || !m_paintingSampledMenu) return;
+    if (m_letterImages.contains(const_cast<QAction *>(action))) {
+        option->text.clear();
+        return;
+    }
+    const auto role = option->state.testFlag(QStyle::State_Selected) ? QPalette::HighlightedText : QPalette::Text;
     for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
-        const QColor base = option->palette.color(group, QPalette::Text);
-        option->palette.setColor(group, QPalette::Text, m_actionSamples.value(action).tone(base));
+        const QColor base = option->palette.color(group, role);
+        option->palette.setColor(group, role, m_history.tone(m_actionSamples.value(action), base, ContrastPreset::settings(m_profile), action, int(group)));
     }
 }

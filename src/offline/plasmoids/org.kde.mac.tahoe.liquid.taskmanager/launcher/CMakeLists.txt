@@ -25,9 +25,10 @@ qt_add_qml_module(mactahoelauncher
     VERSION 1.0
     PLUGIN_TARGET mactahoelauncher
     OUTPUT_DIRECTORY "${launcher_module_dir}"
-    QML_FILES AdaptiveWidgetText.qml AdaptiveContrast.qml DockIcon.qml DockCell.qml DockMetrics.qml WallpaperInk.qml
-    SOURCES appearancecontrol.h launcherapplications.h notificationbanner.cpp notificationbanner.h launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h clipboardmodel.h controlglass.cpp controlglass.h glasssettings.cpp glasssettings.h panelwallpaper.cpp panelwallpaper.h
+    QML_FILES InkGradient.qml AdaptiveWidgetText.qml AdaptiveContrast.qml DockIcon.qml DockCell.qml DockMetrics.qml WallpaperInk.qml
+    SOURCES inkcolorramp.h materialsample.cpp materialsample.h appearancecontrol.h launcherapplications.h notificationbanner.cpp notificationbanner.h launchersearchpopup.cpp launchersearchpopup.h iconthemewatcher.h clipboardmodel.h controlglass.cpp controlglass.h glasssettings.cpp glasssettings.h panelwallpaper.cpp panelwallpaper.h
 )
+qt_add_resources(mactahoelauncher "ink_gradient" PREFIX "/org/kde/mac/tahoe/ink" FILES inkgradient.frag.qsb)
 target_compile_definitions(mactahoelauncher PRIVATE QT_NO_CAST_FROM_ASCII QT_NO_CAST_TO_ASCII)
 # Only the scanner is needed from Qt Wayland. PlasmaQuick owns the client;
 # linking it here also pulls unused Wayland metatypes into QML registration.

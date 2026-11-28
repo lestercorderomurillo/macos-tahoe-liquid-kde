@@ -5,6 +5,21 @@ import org.kde.plasma.core as PlasmaCore
 
 Text {
     id: label
+    renderType: GraphicsInfo.api === GraphicsInfo.Software ? Text.QtRendering : Text.CurveRendering
+    property string sourceText: ""
+    property bool clockOverlay: false
+    readonly property var profile: ink.settings.contrastProfiles[contrastProfile]
+    readonly property bool useRuns: ink.active && ink.settings.dynamicTinting && !!ink.panelSource && !!profile
+        && (profile.scope === "letter" || (profile.scope === "line" && wrapMode !== Text.NoWrap))
+        && (contrastProfile !== "widget.clock-glass-text" || clockOverlay)
+        && sourceText.length > 0 && !/<[a-zA-Z][^>]*>/.test(sourceText)
+    readonly property var painted: useRuns ? AdaptiveContrast.paintRuns(label, sourceText, profile,
+        (r, i) => ink.forRect(r, baseColor, i)) : null
+    function glyphText() { return painted?.markup ?? sourceText; }
+    layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
+    layer.smooth: true
+    layer.effect: InkGradient { lines: label.painted?.lines ?? [] }
+    property string contrastProfile: ""
     property color baseColor: "black"
     readonly property Item glass: {
         for (let parent = label.parent; parent; parent = parent.parent) {
@@ -19,9 +34,12 @@ Text {
     WallpaperInk {
         id: ink
         item: label
+        profileId: label.contrastProfile
+        surface: label.glass ?? label
+        material: label.glass?.contrastMaterial ?? null
         base: label.baseColor
         panelPalette: false
-        active: label.inPanel || (!!label.glass && !label.glass.solidMode)
+        active: label.visible && (label.inPanel || !!label.glass)
         fill: label.glass ? Qt.rgba(label.glass.tint.r, label.glass.tint.g,
             label.glass.tint.b, label.glass.tintAlpha) : "transparent"
     }

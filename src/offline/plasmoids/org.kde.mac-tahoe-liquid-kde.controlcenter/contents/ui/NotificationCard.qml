@@ -101,43 +101,84 @@ Item {
                     lineHeightMode: Text.FixedHeight; lineHeight: 16
                     maximumLineCount: 1; elide: Text.ElideRight
                 }
-                ControlLabel {
-                    baseForeground: row.Kirigami.Theme.textColor
-                    id: description
-                    objectName: "notificationBody"
+                Item {
+                    id: bodyFrame
                     Layout.fillWidth: true
-                    readonly property int restingLines: Math.min(measure.lineCount, row.compact || row.model.isGroup ? 2 : 100)
-                    Layout.preferredHeight: restingLines * 16
-                    text: {
-                        // Read the aggregate role as well, so a new message in
-                        // an existing collapsed group refreshes its preview.
-                        const body = row.model.body || "";
-                        const revision = row.previewRevision;
-                        if (!row.model.isGroup || row.model.isGroupExpanded) return body;
-                        for (let i = 0; i < row.previewHistory.count; ++i) {
-                            const index = row.previewHistory.index(i, 0);
-                            if (String(row.previewHistory.data(index, Notifications.Notifications.IdRole)) === String(row.model.notificationId))
-                                return row.previewHistory.data(index, Notifications.Notifications.BodyRole) || "";
+                    Layout.preferredHeight: description.restingLines * description.lineHeight
+                    visible: (!row.model.isGroup || !row.model.isGroupExpanded) && description.text.length > 0
+                    readonly property bool lineInk: visible && Native.AdaptiveContrast.settings.dynamicTinting
+                        && Native.AdaptiveContrast.settings.contrastProfiles["notifications.card"]?.scope === "line"
+                    ControlLabel {
+                        baseForeground: row.Kirigami.Theme.textColor
+                        id: description
+                        objectName: "notificationBody"
+                        anchors.fill: parent
+                        readonly property int restingLines: Math.min(measure.lineCount, row.compact || row.model.isGroup ? 2 : 100)
+                        opacity: bodyFrame.lineInk ? 0 : 1
+                        text: {
+                            // Read the aggregate role as well, so a new message in
+                            // an existing collapsed group refreshes its preview.
+                            const body = row.model.body || "";
+                            const revision = row.previewRevision;
+                            if (!row.model.isGroup || row.model.isGroupExpanded) return body;
+                            for (let i = 0; i < row.previewHistory.count; ++i) {
+                                const index = row.previewHistory.index(i, 0);
+                                if (String(row.previewHistory.data(index, Notifications.Notifications.IdRole)) === String(row.model.notificationId))
+                                    return row.previewHistory.data(index, Notifications.Notifications.BodyRole) || "";
+                            }
+                            return "";
                         }
-                        return "";
-                    }
-                    visible: (!row.model.isGroup || !row.model.isGroupExpanded) && text.length > 0
-                    textFormat: Text.StyledText
-                    color: row.foregroundFor(this)
-                    font.family: "SF Pro Display"; font.pixelSize: 13; font.weight: Font.Normal
-                    lineHeightMode: Text.FixedHeight; lineHeight: 16
-                    wrapMode: Text.WordWrap
-                    maximumLineCount: restingLines
-                    rightPadding: more.visible ? more.width + 4 : 0
-                    elide: Text.ElideRight
-                    onLinkActivated: link => Qt.openUrlExternally(link)
-                    Text {
-                        id: measure
-                        visible: false
-                        width: description.width; text: description.text
-                        font: description.font; textFormat: description.textFormat
-                        wrapMode: Text.WordWrap
+                        textFormat: Text.StyledText
+                        color: row.foregroundFor(this)
+                        font.family: "SF Pro Display"; font.pixelSize: 13; font.weight: Font.Normal
                         lineHeightMode: Text.FixedHeight; lineHeight: 16
+                        wrapMode: Text.WordWrap
+                        maximumLineCount: restingLines
+                        rightPadding: more.visible ? more.width + 4 : 0
+                        elide: Text.ElideRight
+                        onLinkActivated: link => Qt.openUrlExternally(link)
+                        Text {
+                            id: measure
+                            visible: false
+                            width: description.width; text: description.text
+                            font: description.font; textFormat: description.textFormat
+                            wrapMode: Text.WordWrap
+                            lineHeightMode: Text.FixedHeight; lineHeight: 16
+                        }
+                    }
+                    // Clip copies of the same shaped, elided layout. The original label
+                    // owns accessibility and link activation at its real coordinates.
+                    Repeater {
+                        model: bodyFrame.lineInk ? description.lineCount : 0
+                        delegate: Item {
+                            id: strip
+                            required property int index
+                            y: index * description.lineHeight
+                            width: bodyFrame.width
+                            height: Math.min(description.lineHeight, bodyFrame.height - y)
+                            clip: true
+                            Text {
+                                y: -strip.y
+                                width: description.width
+                                height: description.height
+                                text: description.text
+                                textFormat: description.textFormat
+                                font: description.font
+                                renderType: description.renderType
+                                wrapMode: description.wrapMode
+                                maximumLineCount: description.maximumLineCount
+                                lineHeight: description.lineHeight
+                                lineHeightMode: description.lineHeightMode
+                                rightPadding: description.rightPadding
+                                elide: description.elide
+                                verticalAlignment: description.verticalAlignment
+                                horizontalAlignment: description.horizontalAlignment
+                                color: row.foregroundFor(strip)
+                                linkColor: description.linkColor
+                                enabled: false
+                                Accessible.ignored: true
+                            }
+                        }
                     }
                 }
             }

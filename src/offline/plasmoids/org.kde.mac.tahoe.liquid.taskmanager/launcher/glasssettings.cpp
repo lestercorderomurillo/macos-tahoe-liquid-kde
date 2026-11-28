@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "glasssettings.h"
-#include "glassink.h"
+#include "contrastpreset.h"
 #include <KConfigGroup>
 #include <KWindowEffects>
 #include <QRegion>
@@ -28,6 +28,7 @@ class GlassSettingsStore : public QObject
     Q_OBJECT
 public:
     bool dynamicTinting = true;
+    QJsonObject profiles = ContrastPreset::defaults();
     QJsonObject materials;
     QJsonObject assets;
     Plasma::Theme theme;
@@ -170,7 +171,12 @@ public Q_SLOTS:
         QJsonObject paths;
         if (file.open(QIODevice::ReadOnly)) paths = QJsonDocument::fromJson(file.readAll()).object();
         const bool tinting = group.readEntry("DynamicTinting", true);
-        if (current == materials && paths == assets && dynamicTinting == tinting) return;
+        const auto savedPreset = group.readEntry("AdaptiveContrastPreset", QByteArray());
+        auto resolved = profiles;
+        ContrastPreset::resolve(savedPreset.isEmpty() ? ContrastPreset::empty()
+            : QJsonDocument::fromJson(savedPreset).object(), resolved);
+        if (resolved == profiles && current == materials && paths == assets && dynamicTinting == tinting) return;
+        profiles = resolved;
         dynamicTinting = tinting;
         materials = current;
         assets = paths;
@@ -202,6 +208,10 @@ bool GlassSettings::dynamicTinting() const
 GlassSettings::GlassSettings(QObject *parent) : QObject(parent)
 {
     connect(GlassSettingsStore::instance(), &GlassSettingsStore::changed, this, &GlassSettings::changed);
+}
+QJsonObject GlassSettings::contrastProfiles() const
+{
+    return GlassSettingsStore::instance()->profiles;
 }
 GlassSettings::~GlassSettings()
 {
@@ -272,7 +282,7 @@ QColor GlassSettings::notificationForeground(QColor base, QColor backdrop, QColo
     if (!dynamicTinting()) return base;
     GlassInk::Samples local;
     if (backdrop.alpha()) local.add(GlassInk::composite(backdrop, fill));
-    return local.tone(base);
+    return local.tone(base, ContrastPreset::settings(contrastProfiles().value(QStringLiteral("notifications.card")).toObject()));
 }
 
 QColor GlassSettings::animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop,

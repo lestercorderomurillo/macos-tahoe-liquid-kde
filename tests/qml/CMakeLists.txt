@@ -41,6 +41,8 @@ qt_add_qml_module(launcherinteraction
 target_link_libraries(launcherinteraction PRIVATE Qt6::Quick Qt6::Test)
 
 add_executable(controlglassprobe controlglassprobe.cpp
+    "${LAUNCHER_NATIVE_SOURCE}/launcher/materialsample.cpp"
+    "${LAUNCHER_NATIVE_SOURCE}/launcher/materialsample.h"
     "${LAUNCHER_NATIVE_SOURCE}/launcher/controlglass.cpp"
     "${LAUNCHER_NATIVE_SOURCE}/launcher/controlglass.h")
 set_target_properties(controlglassprobe PROPERTIES AUTOMOC ON)

@@ -190,6 +190,7 @@ PlasmoidItem {
     }
 
     Native.WallpaperInk {
+        profileId: "panel.menu"
         id: menuInk
         item: root
         base: root.Kirigami.Theme.textColor
@@ -199,6 +200,7 @@ PlasmoidItem {
     component TopBarDelegate: MenuDelegate {
         id: menuLabel
         Native.WallpaperInk {
+        profileId: "panel.menu"
             id: labelInk
             item: menuLabel.contentItem
             base: menuLabel.baseForeground

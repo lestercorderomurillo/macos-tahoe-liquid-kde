@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
+#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/inkpixels.h"
 
-#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/glassink.h"
+#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/contrastpreset.h"
+#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/glyphgradient.h"
 #include <QImage>
 #include <QMenu>
 #include <QPointer>
@@ -23,7 +25,14 @@ private Q_SLOTS:
     void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &grid, const QString &role);
 
 private:
+    InkPixels m_pixels;
+    Q_SLOT void pixelReply(int pid, const QRect &frame, const QString &role, const QByteArray &data);
+    QHash<const QAction *, GlassInk::GradientTrack> m_gradients;
+    QTimer m_gradientTimer;
+    QHash<QAction *, QImage> m_letterImages;
     QHash<const QAction *, GlassInk::Samples> m_actionSamples;
+    mutable GlassInk::FlipHistory m_history;
+    QJsonObject m_profile;
     bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;

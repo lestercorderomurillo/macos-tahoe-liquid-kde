@@ -17,7 +17,7 @@ RowLayout {
             textField.text.length ? Math.max(1, textField.contentWidth) : placeholderMetrics.advanceWidth) / 2,
         "transparent", detachedWindow,
         goldenGateCapsule ? "white" : main.textColor,
-        textField.text.length ? textField.contentWidth : placeholderMetrics.advanceWidth)
+        textField.text.length ? textField.contentWidth : placeholderMetrics.advanceWidth, searchFieldBar)
     TextMetrics {
         id: placeholderMetrics
         font: textField.font

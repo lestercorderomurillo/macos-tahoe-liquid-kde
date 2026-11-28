@@ -2,6 +2,7 @@
 #pragma once
 #include "inktransition.h"
 #include <QObject>
+#include <QJsonObject>
 #include <QPointer>
 #include <QSizeF>
 #include <QWindow>
@@ -19,6 +20,7 @@ class GlassSettings : public QObject
     Q_PROPERTY(QSizeF displayCorners READ displayCorners WRITE setDisplayCorners NOTIFY changed)
     Q_PROPERTY(QString frameSource READ frameSource WRITE setFrameSource NOTIFY changed)
     Q_PROPERTY(quint64 inkRevision READ inkRevision NOTIFY inkChanged)
+    Q_PROPERTY(QJsonObject contrastProfiles READ contrastProfiles NOTIFY changed)
     Q_PROPERTY(bool dynamicTinting READ dynamicTinting NOTIFY changed)
     Q_PROPERTY(qreal lightOpacity READ lightOpacity NOTIFY changed)
     Q_PROPERTY(qreal darkOpacity READ darkOpacity NOTIFY changed)
@@ -33,6 +35,7 @@ public:
     void setFrameSource(const QString &source);
     void setComponent(const QString &component);
     void setWindow(QWindow *window);
+    QJsonObject contrastProfiles() const;
     bool dynamicTinting() const;
     quint64 inkRevision() const { return m_inkRevision; }
     Q_INVOKABLE QColor animatedNotificationForeground(QObject *item, QWindow *window, QColor base, QColor backdrop, QColor fill);

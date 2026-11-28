@@ -368,10 +368,17 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
                  "--size", "1280x1024"],
                 env=env, stdout=log, stderr=log, start_new_session=True,
             )
+            # The probe has 26 timed phases. Bound stalls as well as total time.
             deadline = time.monotonic() + 20
+            hard_deadline = time.monotonic() + 60
+            phase_count = 0
             popup_roles = {}
-            while time.monotonic() < deadline:
+            while time.monotonic() < min(deadline, hard_deadline):
                 output = log_path.read_text()
+                phases = output.count("PROBE_PHASE ")
+                if phases > phase_count:
+                    phase_count = phases
+                    deadline = time.monotonic() + 20
                 if "PROBE_PHASE 2 " in output:
                     for name in ("app",):
                         if name not in popup_roles:
@@ -1034,8 +1041,8 @@ def test_control_center_glass_regions(launcher_popup_module, scale):
     """Floating controls blur and receive input only inside their rounded islands."""
     result = subprocess.run(
         [str(launcher_popup_module.parent / 'controlglassprobe')],
-        env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_SCALE_FACTOR=str(scale),
-                 DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/no-control-glass-test-bus'),
+        env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+                 QT_SCALE_FACTOR=str(scale), DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/no-control-glass-test-bus'),
         capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
     assert 'CONTROL_GLASS_REGIONS_OK' in result.stdout

@@ -65,6 +65,7 @@ in rec {
     fileset = lib.fileset.unions [
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.globalmenu")
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/backdropgeometry.h")
+      (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/contrastpreset.h")
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glassink.h")
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/inktransition.h")
     ];
@@ -74,7 +75,15 @@ in rec {
     propagatedBuildInputs = [ task-manager ];
   };
   task-manager = buildPlugin "task-manager" (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager") {};
-  acrylic-glass = buildPlugin "acrylic-glass" (offline + "/kwin-effects/acrylic-glass") {
+  acrylic-glass = buildPlugin "acrylic-glass" (lib.fileset.toSource {
+    root = offline;
+    fileset = lib.fileset.unions [
+      (offline + "/kwin-effects/acrylic-glass")
+      (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/contrastpreset.h")
+      (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glassink.h")
+    ];
+  }) {
+    sourceRoot = "source/kwin-effects/acrylic-glass";
     postInstall = ''
       mkdir -p "$out/share/kwin/effects" "$out/share/locale"
       cp -r ${offline + "/kwin-effects/acrylic-glass/locale"}/. "$out/share/locale/"

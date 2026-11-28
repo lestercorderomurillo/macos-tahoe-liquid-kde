@@ -28,6 +28,8 @@ public:
     void defaults() override;
 
 private:
+    QJsonObject m_contrastPreset;
+    void editContrast();
     void applyPreset(int index);
     void selectComponent(int index);
     void captureComponent();

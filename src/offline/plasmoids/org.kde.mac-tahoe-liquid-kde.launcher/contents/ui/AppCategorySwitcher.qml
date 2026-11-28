@@ -23,8 +23,15 @@ Item {
         highlightMoveDuration: 50
         anchors.fill: parent
 
+        readonly property var visibleSamples: {
+            const result = [];
+            for (const child of contentItem.children)
+                if (child.pillSamples) result.push(...child.pillSamples);
+            return result;
+        }
         delegate: Item {
             id: del
+            readonly property alias pillSamples: pill.samples
             required property var model
             required property var index
             implicitWidth: pill.implicitWidth

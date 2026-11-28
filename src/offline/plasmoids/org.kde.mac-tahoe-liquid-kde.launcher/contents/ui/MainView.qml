@@ -155,8 +155,10 @@ Item {
                        (top.g * top.a + base.g * remaining) / alpha,
                        (top.b * top.a + base.b * remaining) / alpha, alpha);
     }
-    function categoryForeground(item, samples) {
-        return root.glassSettings.dynamicTinting ? appBackdrop.groupForeground(item, textColor, samples) : textColor;
+    function categoryForeground(item, view, samples) {
+        const profile = root.glassSettings.contrastProfiles["launcher.categories"];
+        return root.glassSettings.dynamicTinting ? appBackdrop.profileGroupForeground(item, textColor,
+            profile.scope === "component" ? view.visibleSamples : samples, profile) : textColor;
     }
     function categorySamples(label, view, backing) {
         if (!root.glassSettings.dynamicTinting || !root.visible) return [];
@@ -165,18 +167,29 @@ Item {
         for (let ancestor = label; ancestor; ancestor = ancestor.parent) {
             ancestor.x; ancestor.y;
         }
-        const fill = layerOver(materialFill(root.glassSettings), backing);
+        const fill = materialFill(root.glassSettings);
         const center = label.mapToItem(root.contentItem, label.width / 2, label.height / 2);
         const radius = Qt.size(Math.min(label.contentWidth, label.width) * 0.4, 0);
         const clip = view.mapToItem(root.contentItem, Qt.rect(0, 0, view.width, view.height));
-        return appBackdrop.categorySamples(center, radius, clip, fill);
+        return appBackdrop.categorySamples(center, radius, clip, fill,
+            root.glassSettings.contrastProfiles["launcher.categories"].sampleCount, backing);
     }
-    function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth) {
+    readonly property var labelProfile: root.glassSettings.contrastProfiles["launcher.label"]
+    function useTextRuns(label) {
+        return root.glassSettings.dynamicTinting && (labelProfile.scope === "letter"
+            || (labelProfile.scope === "line" && label.wrapMode !== Text.NoWrap && label.maximumLineCount > 1));
+    }
+    function labelPaint(item, value, overlay = "transparent", fallback = main.textColor) {
+        return Tahoe.AdaptiveContrast.paintRuns(item, value, labelProfile, (r, i) =>
+            Tahoe.AdaptiveContrast.resolve(appBackdrop, item, fallback, materialFill(root.glassSettings),
+                "launcher.label", item, root.contentItem, fallback, undefined, undefined, overlay, r, i));
+    }
+    function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth, field = null) {
         if (!root.glassSettings.dynamicTinting) return fallback;
         const sampler = detached ? searchBackdrop : appBackdrop;
         const settings = detached ? searchMaterial : root.glassSettings;
-        return Tahoe.AdaptiveContrast.foreground(sampler, item, fallback,
-            layerOver(materialFill(settings), overlay), sampleX, textWidth);
+        return Tahoe.AdaptiveContrast.resolve(sampler, item, fallback, materialFill(settings),
+            field ? "launcher.search" : "launcher.label", field ?? item, sampler.window.contentItem, fallback, sampleX, textWidth, overlay);
     }
 	readonly property color textColor: glassPalette.Kirigami.Theme.textColor
 	readonly property string textFont: Kirigami.Theme.defaultFont.family

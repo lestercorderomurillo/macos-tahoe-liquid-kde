@@ -207,6 +207,7 @@ public:
     bool blocksDirectScanout() const override;
 
 public Q_SLOTS:
+    void slotInkPixels(int pid, const QRect &frame, const QString &role, const QByteArray &points);
     void slotGlassWindows(const QString &json);
 #if defined(GLASS_WAYLAND)
     void slotDisplayCorners(const QString &json);
@@ -483,6 +484,15 @@ private:
     };
     QMap<EffectWindow*, WobblyConnections> windowWobblyConnections;
     std::unordered_map<EffectWindow*, WobblyShapeTracker> wobblyShapes;
+    struct InkRequest {
+        QRect inkFrame;
+        QString inkRole;
+        QMap<QPair<double, double>, int> inkPixels;
+        QElapsedTimer timer;
+        bool scheduled = false;
+    };
+    void readInkPixels(const RenderTarget &target, const RenderViewport &viewport, EffectWindow *w, const Region &damage);
+    std::unordered_map<EffectWindow *, InkRequest> m_inkRequests;
     std::unordered_map<EffectWindow*, BlurEffectData> m_windows;
 
 #if !ACRYLIC_GLASS_WAYLAND_BACKGROUND_EFFECT_V1
