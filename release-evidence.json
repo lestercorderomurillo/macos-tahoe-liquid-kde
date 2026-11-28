@@ -1,29 +1,25 @@
 {
-  "version": "0.85.46",
+  "version": "0.85.47",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Apps and Clipboard share a wide seven-column launcher frame and animate between views.",
+  "scope": "The seven-column Apps launcher shows larger icons and four complete rows in a taller frame.",
   "checks": [
     {
-      "command": "Open the installed launcher in both editions in a disposable KDE neon Plasma 6.8.1 Wayland guest. Measure the 1028 \u00d7 526 logical pixel popup through KWin and record Ctrl+4 and Ctrl+1 switching content in place in light and dark mode.",
-      "result": "passed"
-    },
-    {
-      "command": "python3 -m pytest -q -rs tests/test_launcher_presets.py::test_clipboard_launcher_integration (both native integration cases passed in an isolated test home)",
+      "command": "Install the shared launcher in each edition of a disposable KDE neon Plasma 6.8.1 Wayland guest, verify the installed MenuRepresentation.qml against the approved source, open Applications in light and dark mode and measure its frame using KWin. All four frames measured 1028 by 634 logical pixels.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Rendered captures cover KDE neon on Wayland. The native X11 integration cases cover Tahoe light and Golden Gate dark.",
+  "coverage_limits": "Rendered checks cover both editions on KDE neon Wayland at 2x display scale.",
   "captures": [
     {
-      "path": "src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif",
-      "sha256": "6fa6a235c9bd317b87c7936dc8b84d94db30583a84de5975faf9950816452c0d",
+      "path": "src/screenshots/previews/tahoe-launchpad-light-f113df42ee71.png",
+      "sha256": "f113df42ee71a94ed36a36ed865dc0001d82d6ad024aaaa69e5dc4ef17237def",
       "reviewed": true
     },
     {
-      "path": "src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif",
-      "sha256": "5238c80b84ec3992d10ac755171be5e2324e5ba6f4015d52a0ecb7137b31dcb3",
+      "path": "src/screenshots/previews/tahoe-launchpad-dark-b1859c1047d3.png",
+      "sha256": "b1859c1047d3eed1607bc0cee283d69c9d3ffd078c86e310d61e1764e6dee368",
       "reviewed": true
     }
   ],
-  "source_sha256": "4b2fda14048bd7052e64302c1fd8f6a167df62c9d1ff2f61f3734a318e7d64e2"
+  "source_sha256": "557f5f4f2388dde3de11a48b0af8bbd521a4600c52b7fa49b56f9d644533e1d0"
 }

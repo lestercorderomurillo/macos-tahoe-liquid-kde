@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.46**. Apps and Clipboard share a wide seven-column launcher frame and animate between views. [Validation and coverage](release-evidence.json).
+**v0.85.47**. The seven-column Apps launcher shows larger icons and four complete rows in a taller frame. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
