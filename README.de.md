@@ -253,7 +253,7 @@ Verwende kopierte Texte und Bilder erneut.
 Sieh dir Details zu Hardware, Software und Design an.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="Systeminformationen · Heller und dunkler Modus" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e54ddba85572.gif" alt="Systeminformationen · Heller und dunkler Modus" width="392">
 </p>
 
 <br>

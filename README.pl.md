@@ -256,7 +256,7 @@ Użyj ponownie skopiowanego tekstu i obrazów.
 Sprawdź szczegóły sprzętu, oprogramowania i motywu.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="Informacje o systemie · Tryb jasny i ciemny" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e54ddba85572.gif" alt="Informacje o systemie · Tryb jasny i ciemny" width="392">
 </p>
 
 <br>

@@ -597,57 +597,59 @@
           "edition": "tahoe",
           "mode": "light",
           "case": "system-information",
-          "window": "About This Computer (preview)",
-          "source": "94280421232fbdca296bca7404caeeb19c8d9d66",
+          "window": "About This Computer",
+          "resource_class": "org.kde.plasmashell",
           "geometry": {
             "x": 780,
-            "y": 250,
+            "y": 283,
             "width": 360,
             "height": 543
           },
-          "wallpaper": "MacTahoe",
-          "approved_preview": "MacTahoe.png",
-          "approved_preview_sha256": "5ea8cf4fbfae39d889dc1a6ee4a18bdbeb45c7666bc8e86e26454a8169d54cae",
-          "preview_crop": [
-            0,
-            0,
-            500,
-            731
+          "crop": [
+            1528,
+            534,
+            2312,
+            1684
           ],
-          "sha256": "766dbc3eb7def3d8f57a39bcfe651ac40a150ae2ea1e51d77bcf566ff34fbb7b"
+          "scale": 2,
+          "source": "1d615c7160fcf386d6e1a6d0fb91729f4e7394a0",
+          "entry_point": "Installed Plasma panel system menu",
+          "desktop_sha256": "92a7227d3d0f313741f1ad88f72d070473c2d2eeea7df4316878d18a87b4d992",
+          "sha256": "d6526d8a0cf8b4d7d167014c59298e6e6b65b581b567c839adefd1c39546b9f2"
         },
         {
           "edition": "tahoe",
           "mode": "dark",
           "case": "system-information",
-          "window": "About This Computer (preview)",
-          "source": "94280421232fbdca296bca7404caeeb19c8d9d66",
+          "window": "About This Computer",
+          "resource_class": "org.kde.plasmashell",
           "geometry": {
             "x": 780,
-            "y": 250,
+            "y": 283,
             "width": 360,
             "height": 543
           },
-          "wallpaper": "MacTahoe",
-          "approved_preview": "MacTahoe.png",
-          "approved_preview_sha256": "5ea8cf4fbfae39d889dc1a6ee4a18bdbeb45c7666bc8e86e26454a8169d54cae",
-          "preview_crop": [
-            500,
-            0,
-            1000,
-            731
+          "crop": [
+            1528,
+            534,
+            2312,
+            1684
           ],
-          "sha256": "b2fb3b1e4632a10558cd32cf43be9122992a5d085d21606cabaef45a4b977e83"
+          "scale": 2,
+          "source": "1d615c7160fcf386d6e1a6d0fb91729f4e7394a0",
+          "entry_point": "Installed Plasma panel system menu",
+          "desktop_sha256": "922765dc08a3106aaa3dad4a580dbff14fc4efcd99aa69587892305fa9a8941d",
+          "sha256": "f9d53928cc30d00703b17fee9777d4145dd30a558a1484f57a276ea45ba2c49e"
         }
       ],
       "sources": [
-        "src/screenshots/previews/tahoe-system-information-light-766dbc3eb7de.webp",
-        "src/screenshots/previews/tahoe-system-information-dark-b2fb3b1e4632.webp"
+        "src/screenshots/previews/tahoe-system-information-light-1edd762a816f.webp",
+        "src/screenshots/previews/tahoe-system-information-dark-b2990df81a36.webp"
       ],
-      "gif": "src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif",
+      "gif": "src/screenshots/previews/tahoe-system-information-light-dark-e54ddba85572.gif",
       "dimensions": [
-        500,
-        731
+        784,
+        1150
       ]
     },
     "wi-fi": {

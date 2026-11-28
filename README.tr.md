@@ -256,7 +256,7 @@ Kopyaladığınız metinleri ve görselleri yeniden kullanın.
 Donanım, yazılım ve tema ayrıntılarını görüntüleyin.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="Sistem Bilgisi · Açık ve koyu modlar" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e54ddba85572.gif" alt="Sistem Bilgisi · Açık ve koyu modlar" width="392">
 </p>
 
 <br>

@@ -105,25 +105,23 @@ def photograph_desktop(vm, edition, mode, guest, snapshot, save, taken):
     )
     save(im, record, "context")
     vm.key("esc")
-    vm.action("launch", "about")
-    vm.action(
-        "arrange",
-        json.dumps(
-            {
-                "About This Computer (preview)": {
-                    "x": 720,
-                    "y": 160,
-                    "width": 400,
-                    "height": 740,
-                }
-            }
-        ),
-    )
-    im, record = snapshot()
-    require(
-        any("About This Computer" in w["caption"] for w in visible(record)),
-        "Missing system information",
-    )
+    # Use the installed panel applet. KWin identifies its glass by window class.
+    vm.click(28, 29)
+    time.sleep(0.55)
+    vm.key("down")
+    vm.key("ret")
+    vm.move(*vm.profile["pointer"])
+    for _ in range(10):
+        time.sleep(0.3)
+        im, record = snapshot()
+        if any(
+            w["active"] and w["caption"] == "About This Computer"
+            and w["resourceClass"] in ("plasmashell", "org.kde.plasmashell")
+            for w in visible(record)
+        ):
+            break
+    else:
+        raise RuntimeError("Installed System Information window did not receive focus")
     save(im, record, "about")
     vm.action("clean-desktop")
     for page in INSTALLER_PAGES:

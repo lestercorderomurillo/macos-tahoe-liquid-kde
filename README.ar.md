@@ -256,7 +256,7 @@
 اطّلع على تفاصيل الأجهزة والبرامج والسمة.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="معلومات النظام · الوضعان الفاتح والداكن" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e54ddba85572.gif" alt="معلومات النظام · الوضعان الفاتح والداكن" width="392">
 </p>
 
 <br>

@@ -256,7 +256,7 @@ Finder 風のウィンドウでファイルを閲覧できます。
 ハードウェア、ソフトウェア、テーマの詳細を確認できます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="システム情報 · ライトモードとダークモード" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e54ddba85572.gif" alt="システム情報 · ライトモードとダークモード" width="392">
 </p>
 
 <br>

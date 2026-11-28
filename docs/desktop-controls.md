@@ -27,7 +27,7 @@ Validation and precise hardware/SDK coverage are recorded in
 [release-evidence.json](../release-evidence.json). Historical README photographs
 retain their original source and are not evidence for these new controls.
 
-[Light preview](../src/screenshots/previews/tahoe-control-center-light-e7755f5f44ef.webp) · [Dark preview](../src/screenshots/previews/tahoe-control-center-dark-c79bc1595893.webp) · [Capture provenance](../src/screenshots/previews/tahoe-aligned-gallery-9b86c7311674.json)
+[Light preview](../src/screenshots/previews/tahoe-control-center-light-e7755f5f44ef.webp) · [Dark preview](../src/screenshots/previews/tahoe-control-center-dark-c79bc1595893.webp) · [Capture provenance](../src/screenshots/previews/tahoe-aligned-gallery-af692deb5504.json)
 
 Typography uses the bundled SF Pro Text face: 13 logical pixels for labels and
 11 for secondary captions. Original monochrome symbols use consistent 18-pixel

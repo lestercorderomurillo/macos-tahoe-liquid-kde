@@ -253,7 +253,7 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 查看硬件、软件和主题信息。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="系统信息 · 浅色与深色模式" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e54ddba85572.gif" alt="系统信息 · 浅色与深色模式" width="392">
 </p>
 
 <br>

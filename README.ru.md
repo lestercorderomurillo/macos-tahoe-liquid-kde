@@ -253,7 +253,7 @@
 Просматривайте сведения об оборудовании, программах и теме оформления.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="Информационная система · Светлый и тёмный режимы" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e54ddba85572.gif" alt="Информационная система · Светлый и тёмный режимы" width="392">
 </p>
 
 <br>
