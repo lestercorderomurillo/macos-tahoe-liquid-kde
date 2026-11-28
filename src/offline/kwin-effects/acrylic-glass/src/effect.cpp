@@ -745,7 +745,7 @@ void BlurEffect::slotInkPixels(int pid, const QRect &frame, const QString &role,
             const QPointF p(xy[0].toDouble(), xy[1].toDouble());
             if (QRectF(QPointF(), frame.size()).contains(p)) state.inkPixels.insert({p.x(), p.y()}, -1);
         }
-        effects->addRepaint(w->frameGeometry().toAlignedRect());
+        if (!deferInkRepaint(w, state)) effects->addRepaint(w->frameGeometry().toAlignedRect());
         return;
     }
 }
@@ -1573,6 +1573,26 @@ bool BlurEffect::shouldBlur(const EffectWindow* w, int mask, const WindowPaintDa
     return true;
 }
 
+// A scrolling Apps grid changes many glyph positions between snapshots. Merge
+// incoming requests and damage into one trailing repaint of the latest frame.
+bool BlurEffect::deferInkRepaint(EffectWindow *w, InkRequest &request)
+{
+    const int interval = request.inkRole == QStringLiteral("mttkde-apps") ? 250 : 80;
+    if (!request.timer.isValid()) return false;
+    const auto remaining = interval - request.timer.elapsed();
+    if (remaining <= 0) return false;
+    if (!request.scheduled) {
+        request.scheduled = true;
+        QTimer::singleShot(std::chrono::milliseconds(remaining), Qt::PreciseTimer, this, [this, w] {
+            const auto it = m_inkRequests.find(w);
+            if (it == m_inkRequests.end()) return;
+            it->second.scheduled = false;
+            effects->addRepaint(w->frameGeometry().toAlignedRect());
+        });
+    }
+    return true;
+}
+
 // Sample installed shell text even on a fully transparent surface with no blur region.
 void BlurEffect::readInkPixels(const RenderTarget &renderTarget, const RenderViewport &viewport,
                                 EffectWindow *w, const Region &damage)
@@ -1581,19 +1601,7 @@ void BlurEffect::readInkPixels(const RenderTarget &renderTarget, const RenderVie
     if (found == m_inkRequests.end() || !BlurConfig::dynamicTinting()) return;
     auto &request = found->second;
     if (request.inkFrame != w->frameGeometry().toAlignedRect()) return;
-    // Batch a burst of paints, then sample the complete repainted window once.
-    if (request.timer.isValid() && request.timer.elapsed() < 80) {
-        if (!request.scheduled) {
-            request.scheduled = true;
-            QTimer::singleShot(80 - request.timer.elapsed(), this, [this, w] {
-                const auto it = m_inkRequests.find(w);
-                if (it == m_inkRequests.end()) return;
-                it->second.scheduled = false;
-                effects->addRepaint(w->frameGeometry().toAlignedRect());
-            });
-        }
-        return;
-    }
+    if (deferInkRepaint(w, request)) return;
     request.timer.start();
     auto *target = renderTarget.framebuffer();
     struct Sample { int column; QPair<double, double> key; };

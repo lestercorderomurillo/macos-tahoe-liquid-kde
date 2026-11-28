@@ -491,6 +491,7 @@ private:
         QElapsedTimer timer;
         bool scheduled = false;
     };
+    bool deferInkRepaint(EffectWindow *w, InkRequest &request);
     void readInkPixels(const RenderTarget &target, const RenderViewport &viewport, EffectWindow *w, const Region &damage);
     std::unordered_map<EffectWindow *, InkRequest> m_inkRequests;
     std::unordered_map<EffectWindow*, BlurEffectData> m_windows;

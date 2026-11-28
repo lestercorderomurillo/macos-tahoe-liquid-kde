@@ -1,21 +1,21 @@
 {
-  "version": "0.85.40",
+  "version": "0.85.41",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Skip hidden glass rendering behind fully opaque fullscreen clients.",
+  "scope": "Resample Apps text tint after scrolling settles and coalesce sparse glyph snapshot requests.",
   "checks": [
     {
-      "command": "KWin 6.7.4 hardware frame log on a 1920x1080 virtual Wayland output, AMD Radeon integrated GPU, Golden Gate material, fullscreen Qt Quick animation. Previous effect-on median render time 4.83 ms versus 2.02 ms off. Candidate effect-on medians 2.030 and 2.032 ms versus 2.036 and 2.079 ms off. All four candidate windows sustained 60 FPS.",
+      "command": "Flick a populated 285-app Launchpad grid against v0.85.39 in isolated plasmoidviewer, explicitly selecting identical line scope and backdrop on both sides. Two 120-frame runs improved from 58.7/58.1 to 62.8/62.7 FPS. Frame time p95 fell from 22.0/21.0 to 19.4/19.4 ms.",
       "result": "passed"
     },
     {
-      "command": "On native isolated KWin X11 and Wayland, all 614400 opaque fullscreen pixels matched effect-off; the transparent fullscreen control retained glass on 546240 pixels. Partial damage and full repaint matched on both backends.",
+      "command": "Send 121 moving glyph requests at 16 ms intervals in isolated KWin. Reply batches fell from 24 to 9 on Wayland and 25 to 9 on X11. Both delivered the final coordinates and the exact original RGB value. Build the shared compositor code for 6.6.4, 6.7.4 and 6.8.2 Wayland and 6.7.4 X11.",
       "result": "passed"
     },
     {
-      "command": "Compile the effect for the 6.6.4, 6.7.4 and 6.8.2 Wayland SDKs and native 6.7.4 X11.",
+      "command": "Exercise the native Golden Gate Light Apps popup and Tahoe Light clipboard interactions in isolated plasmoidviewer.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The frame log measures an opaque fullscreen animation on a virtual output. It does not establish the cost of every installed desktop component, game, driver or refresh rate.",
-  "source_sha256": "6521120830a53e75fedf08828747a209d8350efda018974559aa7f37ca7ae2d9"
+  "coverage_limits": "Scroll frame measurements use software OpenGL and a fixed RGB backdrop. Sparse readback measurements exercise custom letter scope. Installed custom profiles retain their scope.",
+  "source_sha256": "7f0a792386d45ca7be67b1c74cb6417fc22069d45b32ca241516b2d9a15639f9"
 }
