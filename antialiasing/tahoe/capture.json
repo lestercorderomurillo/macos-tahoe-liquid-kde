@@ -1,0 +1,19 @@
+{
+  "edition": "tahoe",
+  "component": "Glass Text Clock",
+  "source": "d670a8de",
+  "session": "plasmashell 6.8.1",
+  "backend": "Wayland",
+  "scale": 1.25,
+  "geometry": {
+    "x": 800,
+    "y": 304,
+    "width": 304,
+    "height": 224
+  },
+  "installed_widget": "40c1c3446a92a224c95fc35ba746829a12cac1d82ee3bba0ee5a48e77d760f4a",
+  "sha256": {
+    "default": "5b98a9fb1170b4d97d37f2829563893de6766caa6548aa5a6badd1793a7cc55d",
+    "stress": "fb2dedebc1cbe6e844ac85c7a5771da64e12ec0d2851df73ba999b0139de8c8d"
+  }
+}
