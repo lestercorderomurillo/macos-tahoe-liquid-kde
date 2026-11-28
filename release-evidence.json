@@ -1,29 +1,20 @@
 {
-  "version": "0.85.33",
+  "version": "0.85.34",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Retain the approved Launchpad and exercise its two installer choices in the native wizard navigation regression.",
+  "scope": "Shared adaptive contrast with material-aware sampling, per-component JSON presets and smooth glyph transitions.",
   "checks": [
     {
-      "command": "Capture Launchpad and its options in both editions on Plasma 6.8.1 Wayland in light and dark appearance. Measure the 615 × 526 default frame and exercise dismissal through the underlying textbox, category tab, application and blank space.",
+      "command": "Install both editions on Plasma 6.8.1 Wayland and capture 126 default and stress views. Verify sparse device-pixel samples in the panel and the installed launcher.",
       "result": "passed"
     },
     {
-      "command": "Build Acrylic Glass with the Plasma 6.6, 6.7 and 6.8 SDKs. On 6.7 run tests/acrylic_glass_capture.py with --compositor x11 --identity GradientProbe --material golden-gate --expect changed --popup-islands.",
-      "result": "passed"
-    },
-    {
-      "command": "Run the focused launcher preset, edition transition, plasmoid settings and release screenshot regressions. Verify the generated component manifest.",
-      "result": "passed"
-    },
-    {
-      "command": "pytest -q tests/test_installer_wizard.py -k native_wizard_navigation_preserves (both edition cases passed in an isolated offscreen Qt session).",
+      "command": "Run the integrated launcher and clipboard interactions in each edition. Compile the material classification against KWin X11 6.6.5 and Wayland 6.7.4. Verify X11 Control Center rendering, widget staging, native preset settings and gradient measurements.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Visual review covers the default grid and light and dark appearances on Wayland. The X11 pixel check exercises compositor rendering. The hidden Search AI popup has no user entry point.",
-  "approval": "Maintainer approved the paired light and dark Notification Center glass preview.",
-  "approved_previews": {
-    "notification-glass-preview.png": "f381ff87afcffdf8ef62179405b22bc210670b185afaac22dbe226daf1c655de"
-  },
-  "source_sha256": "3bdf0299fbf390b3f752ac9b6253810b3af8d8be982e751bb23623425a16ca9f"
+  "coverage_limits": "Sparse sampling was demonstrated on the installed panel and launcher. A separate generic transparent top-level fixture remains unverified.",
+  "approval": "Maintainer explicitly approved paired release of the integrated Launchpad and menus at a8dc6781b78aa87ba7a2dccfb7b9889b0fe92d9a.",
+  "review_gallery": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/04d1edc66fea1ee4aaff6faf91ff9ae5b01223e9/README.md",
+  "measurements": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/04d1edc66fea1ee4aaff6faf91ff9ae5b01223e9/verification.md",
+  "source_sha256": "636ab98c289312aac5af82d7dc38d57e8e77b7a95ef6dc701e987e86d8ba7c91"
 }
