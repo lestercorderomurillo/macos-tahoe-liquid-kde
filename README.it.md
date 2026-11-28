@@ -297,7 +297,7 @@ Il colore del testo si adatta allo sfondo per mantenere leggibili le etichette.
 - **Effetti di vetro:** Disfusione, rifrazione e tonalità regolabili, con testo che si adatta allo sfondo nei menu supportati.
 - **- Il porto:** Applications pin, zoom hover, badge di notifica e nascondigli configurabili. Il Dock ti segue tra le mostre.
 - **Barretta menù e Centro di controllo:** Menù globali di app e controlli sistemi rapidi, con impostazioni della barra dei menu condivise su tutti i display.
-- **- Pad di lancio:** Cerca app, scorri le categorie e salva i preferiti in uno dei due layout.
+- **- Pad di lancio:** Cerca app, scorri le categorie e salva i preferiti.
 - **Widget desktop:** Aggiungi e organizza i widget di Liquid Glass sul tuo desktop.
 - **Notifiche:** Banner di vetro e storia raggruppata, con azioni veloci e risposte in cui le app li supportano.
 - **Storia della clipboard:** Trova e riutilizza il testo copiato, le immagini e i punti di pin che vuoi conservare.

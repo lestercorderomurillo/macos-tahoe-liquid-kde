@@ -294,7 +294,7 @@ A cor do texto se adapta ao fundo para manter os rótulos legíveis.
 - **Efeitos de vidro:** Desfoque, refração e tonalidade ajustáveis, com texto que se adapta ao fundo nos menus compatíveis.
 - **Dock:** Aplicativos fixados, ampliação ao passar o ponteiro, indicadores de notificação e ocultação configurável. O Dock acompanha você de uma tela para outra.
 - **Barra de menus e Central de Controle:** Menus globais de aplicativos e controles rápidos do sistema, com configurações da barra de menus compartilhadas entre telas.
-- **Launchpad:** Busque aplicativos, navegue por categorias e salve favoritos em um dos dois layouts.
+- **Launchpad:** Busque aplicativos, navegue por categorias e salve favoritos.
 - **Widgets da área de trabalho:** Adicione widgets Liquid Glass diretamente à área de trabalho.
 - **Notificações:** Banners de vidro e histórico agrupado, com ações rápidas e respostas nos aplicativos compatíveis.
 - **Histórico da área de transferência:** Encontre e reutilize textos e imagens copiados e fixe os itens que deseja guardar.

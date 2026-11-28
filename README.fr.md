@@ -294,7 +294,7 @@ La couleur du texte s’adapte au fond pour garder les libellés lisibles.
 - **Effets de verre :** Flou, réfraction et teinte réglables, avec du texte qui s’adapte à l’arrière-plan dans les menus compatibles.
 - **Dock :** Applications épinglées, agrandissement au survol, badges de notification et masquage configurable. Le Dock vous suit d’un écran à l’autre.
 - **Barre de menus et Centre de contrôle :** Menus globaux des applications et réglages rapides du système, avec des paramètres de barre de menus partagés entre les écrans.
-- **Launchpad :** Recherchez des applications, parcourez les catégories et enregistrez vos favoris dans l’une des deux dispositions.
+- **Launchpad :** Recherchez des applications, parcourez les catégories et enregistrez vos favoris.
 - **Widgets de bureau :** Ajoutez des widgets Liquid Glass directement sur votre bureau.
 - **Notifications :** Bannières en verre et historique groupé, avec actions rapides et réponses dans les applications compatibles.
 - **Historique du presse-papiers :** Retrouvez et réutilisez le texte et les images copiés, et épinglez les éléments à conserver.

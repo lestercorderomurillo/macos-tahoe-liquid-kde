@@ -33,7 +33,7 @@ Item {
 	readonly property bool searching: searchText !== ""
 	readonly property var searchBar: detachedSearch ? detachedSearchBar : inlineSearchBar
 	onSearchTextChanged: runnerModel.query = clipboardMode ? "" : searchText
-	readonly property bool detachedSearch: kicker.launcherPreset === 2 && !clipboardMode
+	readonly property bool detachedSearch: false // Reserved for the future Search AI popup.
 	readonly property bool tahoeStyle: !detachedSearch
 	readonly property real inlineSearchHeight: 40
 	readonly property real searchPopupHeight: searchPopup.height

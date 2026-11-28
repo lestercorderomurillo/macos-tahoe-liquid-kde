@@ -5,8 +5,7 @@ pixels of corner extent and a separate 5-pixel content inset. The blue selection
 retains its measured 8-pixel corners on the 24-pixel reference row. The same
 shape is used in light and dark mode, without changing either edition's material.
 
-Tahoe installs launcher preset 1; Golden Gate installs preset 2. An explicit
-launcher choice changes the layout independently of the edition's menu material.
+Both editions install the Tahoe launcher layout and use their own menu material.
 The MacTahoe Qt style delegates ordinary widgets and material colors to Kvantum;
 its menu adapter separates the outer curve from the content padding.
 

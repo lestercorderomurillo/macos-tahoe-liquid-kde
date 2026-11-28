@@ -15,24 +15,12 @@ Timer {
     property bool finished: false
     property int eventLoopDelay: 0
     property int phase: -2
-    property int expectedPreset: 1
+    property int legacyPreset: 1
     property bool expectedGoldenGate: false
     property bool expectedDark: false
     property real inlineHeight: 0
     property real inlineWidth: 0
-    property size initialPopupSize
-    property color originalForeground: "transparent"
     property double dismissalDeadline: 0
-    property int rapidWaits: 0
-    property int resizeWaits: 0
-    property Timer rapidPresets: Timer {
-        interval: 30; repeat: true
-        property int changes: 0
-        onTriggered: {
-            plasmoid.configuration.launcherPreset = ++changes % 2 ? 1 : 2;
-            if (changes === 10) stop();
-        }
-    }
     property Window outsideProbe: Window {
         width: 100
         height: 100
@@ -55,14 +43,6 @@ Timer {
         }
         return false;
     }
-    function verifyCapsulePosition() {
-        verify(Math.abs(searchPopup.width - root.width * 0.617) <= 1,
-               "capsule width follows the current app panel after native resize feedback");
-        verify(searchPopup.hideOnWindowDeactivate === undefined || !searchPopup.hideOnWindowDeactivate,
-               "native popup leaves dismissal to the launcher focus group on every Plasma version");
-        verify(searchPopup.y + searchPopup.height < root.y, "search above app panel");
-        verify(Math.abs(searchPopup.x + searchPopup.width / 2 - root.x - root.width / 2) < 2, "capsule centered");
-    }
     function verifyCategoryPills() {
         const view = appList.testCategories.testView;
         verify(view.count > 0, "categories available");
@@ -82,7 +62,7 @@ Timer {
                 : (pill.selected ? 0.62 : 0.46);
             verify(Math.abs(pill.testBackground.color.a - alpha) < 0.005,
                    "category opacity follows edition and mode");
-            const tahoe = kicker.launcherPreset === 1;
+            const tahoe = main.tahoeStyle;
             verify(pill.testBackground.border.width === (tahoe ? 1 : 0),
                    "Tahoe glass edge follows preset 1 in either edition");
             const position = pill.mapToItem(view, 0, 0);
@@ -133,12 +113,6 @@ Timer {
         }
         return null;
     }
-    function menuAction(menu, name) {
-        for (const item of menu.content) {
-            if (item.objectName === name) return item;
-        }
-        throw new Error("missing menu action: " + name);
-    }
     function verifyPopupSize() {
         verify(Math.abs(fs.width - fs.implicitWidth) < 1 && Math.abs(fs.height - fs.implicitHeight) < 1,
                "native geometry feedback cannot retain the previous preset dimensions: " + fs.width + "/" + fs.implicitWidth);
@@ -159,11 +133,11 @@ Timer {
             eventLoopDelay = 0;
         }
         let state = LauncherInteraction.menuState();
-        verify(state.actions && state.actions.length === 9, "both presets include clipboard in the rendered options menu");
+        verify(state.actions && state.actions.length === 5, "options menu includes clipboard");
         verify(state.actions[0].separator && state.actions[0].text === "View content as",
-               "view heading exists in both presets");
-        verify(state.actions[4].separator && state.actions[4].text === "Launcher preset",
-               "preset heading exists in both presets");
+               "view heading exists in both editions");
+        verify(state.actions[4].text === "Clipboard",
+               "clipboard follows the view choices");
         const anchor = button.mapToGlobal(button.width, button.height);
         verify(Math.abs(state.rect.y - anchor.y) <= 2 && Math.abs(state.rect.x + state.rect.width - anchor.x) <= 2,
                "menu opens below the button aligned with its right edge: " + JSON.stringify(state.rect) + " anchor " + anchor);
@@ -195,7 +169,7 @@ Timer {
     }
     function verifySearchContrast(search) {
         const stronger = expectedGoldenGate && (!expectedDark || main.detachedSearch);
-        const tahoe = kicker.launcherPreset === 1;
+        const tahoe = main.tahoeStyle;
         verify(search.textField.placeholderText === (tahoe ? "Applications" : "Apps"),
                "reference heading follows the selected preset");
         verify(search.testMenuButton.testButton.contentItem.opacity === (tahoe ? 0 : 1),
@@ -210,7 +184,7 @@ Timer {
     }
     onTriggered: {
         try {
-            console.log("PROBE_PHASE", phase, root.visible, kicker.launcherPreset, root.width, root.height, searchPopup.width, searchPopup.height, root.active, main.popupHasFocus, searchBar.textField.activeFocus);
+            console.log("PROBE_PHASE", phase, root.visible, plasmoid.configuration.launcherPreset, root.width, root.height, searchPopup.width, searchPopup.height, root.active, main.popupHasFocus, searchBar.textField.activeFocus);
             console.log("PROBE_GEOMETRY", root.x, root.y, searchPopup.x, searchPopup.y);
             switch (phase++) {
             case -2:
@@ -223,7 +197,6 @@ Timer {
                 verify(plasmoid.status === PlasmaCore.Types.HiddenStatus, "opening Apps keeps the backing applet hidden");
                 verify(searchBar.textField.activeFocus, "opening focuses the search input");
                 verify(!main.detachedSearch || searchPopup.visible, "opening shows the capsule");
-                initialPopupSize = Qt.size(root.width, root.height);
                 kicker.toggleDockApps();
                 verify(!root.visible, "a second activation closes the same popup");
                 kicker.testAppsPin = false;
@@ -232,8 +205,7 @@ Timer {
             case 0:
                 root.title = "Launcher app role probe";
                 searchPopup.title = "Launcher search role probe";
-                verify(kicker.launcherPreset === expectedPreset, "edition default");
-                plasmoid.configuration.launcherPreset = 1;
+                plasmoid.configuration.launcherPreset = legacyPreset;
                 plasmoid.configuration.launcherPosition = 2;
                 root.visible = true;
                 break;
@@ -242,7 +214,7 @@ Timer {
                 verify(plasmoid.status === PlasmaCore.Types.RequiresAttentionStatus, "standalone Apps remains visible while open");
                 verifyPopupSize();
                 verifyCategoryPills();
-                if (kicker.launcherPreset === 1) {
+                if (main.tahoeStyle) {
                     verify(verifyTahoeHover(appList.viewItem), "a real Tahoe app tile was exercised");
                     verify(appList.selectedIsAllApps, "Tahoe opens the app browser");
                     verify(appList.viewItem.headerItem.favoritesView.count === root.columns,
@@ -269,9 +241,6 @@ Timer {
                     appList.updateShowedModel(category.modelIndex);
                     verify(appList.currentModel === appList.allAppsModel && appList.selectedIsAllApps,
                            "clicking selected Tahoe capsule restores all apps");
-                    const options = searchBar.testMenuButton.testMenu;
-                    verify(options.content[0].section && options.content[4].section,
-                           "Tahoe menu separates view choices from presets");
                     verifyOptionsMenu(searchBar);
                 }
                 verify(glassPalette.Kirigami.Theme.colorSet === Kirigami.Theme.Window, "labels use the popup color set");
@@ -293,163 +262,40 @@ Timer {
                 root.height += 60;
                 searchBar.textField.text = "terminal";
                 verify(runnerModel.query === "terminal", "search reaches runner");
-                LauncherInteraction.click(searchBar.testMenuButton.testButton);
-                LauncherInteraction.choose(6);
+                plasmoid.configuration.launcherPreset = 2;
                 break;
             case 2:
-                verify(root.visible && searchPopup.visible, "both detached popups visible");
                 verifyPopupSize();
-                verifyOptionsMenu(searchBar);
-                verify(root.width !== presetProbe.inlineWidth, "Golden Gate applies its own width");
-                if (expectedPreset === 2) {
-                    verify(root.width === initialPopupSize.width && root.height === initialPopupSize.height,
-                           "Golden Gate restores its initial size after switching presets");
-                }
-                verify(searchBar.parent === detachedSearchSlot, "detached field parent");
-                verifyOptionsIcon(searchBar);
-                verifySearchContrast(searchBar);
-                verify(Qt.colorEqual(searchBar.textField.color, expectedGoldenGate ? "white" : main.textColor),
-                       "detached search uses its edition's capsule foreground");
-                verify(searchBar.textField.text === "terminal", "query survives preset change");
-                verify(!inlineSearchSlot.visible && inlineSearchSlot.Layout.preferredHeight === 40, "detached preset hides its inline search row");
-                verifyCapsulePosition();
-                menuAction(searchBar.testMenuButton.testMenu, "list").clicked();
-                verify(plasmoid.configuration.showAllAppsInList, "list option works");
-                searchBar.testMenuButton.testMenu.openRelative();
-                // A late compositor configure can report the previous preset
-                // after the new bindings have already finished updating.
-                root.width = presetProbe.inlineWidth;
-                root.height = presetProbe.inlineHeight;
+                verify(root.width === inlineWidth && root.height === inlineHeight, "late resize restored");
+                verify(root.visible && !searchPopup.visible, "legacy preset keeps a single window");
+                verify(searchBar.textField.text === "terminal", "legacy preset preserves inline query");
+                searchBar.textField.clear();
+                plasmoid.configuration.numberColumns = 6;
                 break;
             case 3:
-                // A native configure is asynchronous, including under fractional
-                // scaling. Bound the wait without requesting another resize.
-                if ((Math.abs(fs.width - fs.implicitWidth) >= 1 || Math.abs(fs.height - fs.implicitHeight) >= 1)
-                        && ++resizeWaits < 5) { --phase; break; }
-                verify(root.visible && searchPopup.visible && main.menuOpen, "options menu keeps popups open");
-                verifyPopupSize();
-                verify(root.width > presetProbe.inlineWidth, "late old geometry is repaired without another preset change");
-                LauncherInteraction.choose(5);
-                break;
-            case 4:
-                verify(root.visible && !searchPopup.visible, "switch back hides capsule");
-                verify(searchBar.parent === inlineSearchSlot, "field returns inside panel");
-                verifyPopupSize();
-                verify(root.height === presetProbe.inlineHeight, "inline height restored");
-                verify(root.width === presetProbe.inlineWidth, "Tahoe applies its own width");
-                verify(searchBar.textField.text === "terminal", "query survives round trip");
-                plasmoid.configuration.launcherPreset = 2;
-                break;
-            case 5:
-                outsideProbe.show();
-                focusOutside();
-                break;
-            case 6:
-                if (awaitingDismissal()) break;
-                verify(!root.visible && !searchPopup.visible && searchBar.textField.text === "", "outside focus closes both popups and resets query");
-                outsideProbe.close();
-                plasmoid.configuration.showAllAppsInList = false;
-                plasmoid.configuration.showAllAppsInGrid = true;
-                root.visible = true;
-                break;
-            case 7:
-                verify(root.columns === 7, "Golden Gate starts with seven columns");
-                verifyCategoryPills();
-                verify(searchBar.textField.font.pointSize > main.appTextSize, "search text has its own hierarchy");
-                const view = appList.viewItem;
-                console.log("PROBE_CATEGORIES", JSON.stringify(appList.appsCategoriesList.map(c => ({name: c.name, modelIndex: c.modelIndex, isAllApps: c.isAllApps}))),
-                            appList.selectedModelIndex, appList.selectedIsAllApps, globalFavorites.count);
-                verify(view.headerItem !== null, "favorites row shown above all apps");
-                verify(view.headerItem.favoritesView.count === 7, "favorites limited to one row");
-                verify(view.contentY <= view.headerItem.y, "opening shows the favorites header");
-                plasmoid.configuration.goldenGateColumns = 6;
-                break;
-            case 8:
-                verify(appList.viewItem.headerItem.favoritesView.count === 6, "favorites follow the column setting");
-                verifyCapsulePosition();
-                root.x += 40;
-                root.y += 30;
-                break;
-            case 9:
-                verifyCapsulePosition();
-                originalForeground = glassPalette.Kirigami.Theme.textColor;
-                glassPalette.Kirigami.Theme.textColor = "#182838";
-                break;
-            case 10:
-                verifyOptionsIcon(inlineSearchBar);
-                verifyOptionsIcon(detachedSearchBar);
-                glassPalette.Kirigami.Theme.textColor = "#e8d8c8";
-                break;
-            case 11:
-                verifyOptionsIcon(inlineSearchBar);
-                verifyOptionsIcon(detachedSearchBar);
-                glassPalette.Kirigami.Theme.textColor = originalForeground;
-                root.visible = false;
-                // Plasma's panel/desktop can share a transient chain with the
-                // launcher. QWindow.active stays true when that parent takes focus.
-                outsideProbe.show();
-                root.transientParent = outsideProbe;
-                plasmoid.configuration.launcherPreset = 1;
-                root.visible = true;
-                break;
-            case 12:
-                verify(root.visible, "inline popup stays open with a transient parent");
-                verify(searchBar.textField.activeFocus, "reopened inline search has focus");
-                focusOutside();
-                break;
-            case 13:
-                if (awaitingDismissal()) break;
-                verify(!root.visible, "focusing the parent closes the inline launcher");
-                plasmoid.configuration.launcherPreset = 2;
-                root.visible = true;
-                break;
-            case 14:
-                verify(root.visible && searchPopup.visible, "detached popups reopen with a transient parent");
-                verify(searchBar.textField.activeFocus, "reopened detached search has focus");
-                root.requestActivate();
-                break;
-            case 15:
-                verify(root.visible && searchPopup.visible, "moving focus to app panel keeps both popups open");
-                main.focusSearch();
-                break;
-            case 16:
-                verify(root.visible && searchPopup.visible, "moving focus to search keeps both popups open");
+                verify(root.columns === 6 && root.width > inlineWidth, "configured columns resize the grid");
+                verify(appList.viewItem.headerItem.favoritesView.count === 6, "favorites follow column count");
                 const app = appList.viewItem.currentItem;
                 verify(app !== null, "app available for its context menu");
                 app.openActionMenu(app, 10, 10);
                 break;
-            case 17:
-                verify(root.visible && searchPopup.visible && appList.viewItem.currentItem.testActionMenu.opened,
-                       "app context menu keeps both popups open");
+            case 4:
+                verify(root.visible && appList.viewItem.currentItem.testActionMenu.opened,
+                       "app context menu keeps the launcher open");
                 appList.viewItem.currentItem.testActionMenu.menu.close();
-                break;
-            case 18:
-                focusOutside();
-                break;
-            case 19:
-                if (awaitingDismissal()) break;
-                verify(!root.visible && !searchPopup.visible, "focusing the parent closes both detached popups");
-                plasmoid.configuration.launcherPreset = 1;
-                break;
-            case 20:
+                root.visible = false;
+                outsideProbe.show();
+                root.transientParent = outsideProbe;
                 root.visible = true;
                 break;
-            case 21:
-                verifyPopupSize();
-                verify(root.width === presetProbe.inlineWidth, "hidden preset change resizes on reopening");
-                rapidPresets.start();
+            case 5:
+                verify(searchBar.textField.activeFocus, "reopened inline search takes focus");
+                focusOutside();
                 break;
-            case 22:
-                if (rapidPresets.running && ++rapidWaits < 10) {
-                    --phase;
-                    break;
-                }
-                verify(!rapidPresets.running && kicker.launcherPreset === 2, "last rapid preset selection wins");
-                break;
-            case 23:
-                // The final selection queues native capsule positioning.
-                verifyPopupSize();
-                verifyCapsulePosition();
+            case 6:
+                if (awaitingDismissal()) break;
+                verify(!root.visible && !searchPopup.visible, "outside focus dismisses launcher");
+                outsideProbe.close();
                 console.log("LAUNCHER_PROBE_OK");
                 finished = true;
                 break;

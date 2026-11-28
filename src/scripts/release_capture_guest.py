@@ -137,8 +137,8 @@ def setup(repo, profile, edition, scope=None):
     packages = run('dpkg-query', '-W', '-f=${Package}=${Version}\n')
     run('sudo', 'timedatectl', 'set-ntp', 'false')
     run('sudo', 'timedatectl', 'set-timezone', profile['timezone'])
-    package, preset, _ = EDITIONS[edition]
-    (repo / 'src/scripts/defaults.json').write_text(json.dumps({'wallpaper': package, 'launcher_preset': preset}) + '\n')
+    package = EDITIONS[edition][0]
+    (repo / 'src/scripts/defaults.json').write_text(json.dumps({'wallpaper': package, 'launcher_preset': 1}) + '\n')
     from steps import rounded_corners
     cached_archive = Path('/opt/mttkde-capture') / rounded_corners.ARCHIVE.name
     if cached_archive.is_file():
@@ -406,7 +406,7 @@ def capture(repo, profile, edition, requested, case):
         'if(w.type==="org.kde.mac-tahoe-liquid-kde.launcher"){'
         'w.currentConfigGroup=["General"];presets.push(Number(w.readConfig("launcherPreset")));}}));'
         'print(JSON.stringify(presets));'))
-    if presets != [EDITIONS[edition][1]]:
+    if presets != [1]:
         raise RuntimeError(f'Wrong launcher preset: {presets}')
     run('sudo', 'date', '--set', profile['clock'])
     wait_for_dock_geometry()
@@ -447,7 +447,7 @@ def capture(repo, profile, edition, requested, case):
         expected = 1
     elif case == 'launcher':
         chosen = [w for w in shell if w['appletPopup']]
-        expected = EDITIONS[edition][1]
+        expected = 1
     elif case == 'topbar':
         chosen = [w for w in shell if w['type'] == 2 and w['geometry']['y'] == 0]
         expected = 1
@@ -489,7 +489,7 @@ def capture(repo, profile, edition, requested, case):
                 raise RuntimeError(f'Glass setting changed before capture: {key}')
     identity = run('qdbus6', 'org.kde.KWin', '/Effects', 'org.kde.kwin.Effects.debug', 'liquidglass', '')
     return dict(material_values=captured_material, sha256=digest(target), appearance=state, effect_build=identity, crop=crop,
-                wallpaper=EDITIONS[edition][0], wallpaper_uri=wallpaper[0], launcher_preset=presets[0], windows=observed,
+                wallpaper=EDITIONS[edition][0], wallpaper_uri=wallpaper[0], launcher_preset=presets[0], launcher_layout="tahoe", windows=observed,
                 files_pixels=pixels, stable_frames=True, window_verified=True,
                 installer_page=installer_state['page'] if installer_state else None,
                 installer_edition=installer_state['edition'] if installer_state else None)

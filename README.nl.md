@@ -297,7 +297,7 @@ De tekstkleur past zich aan de achtergrond aan zodat labels leesbaar blijven.
 - **Glas effecten:** Verstelbare vervaagbaarheid, breuk en tinting, met tekst die zich aanpast aan de achtergrond in ondersteunde menu's.
 - **- Ik ben er niet .** Pinned apps, hover zoom, kennisgeving badges en configureerbare verstoppen. De Dock volgt je tussen de schijven.
 - **Menubar en Centrum van besturing:** Globale appmenüs en snelle systeemcontroles, met gedeelde menubalkeninstellingen op verschillende displays.
-- **Startpad:** Zoek apps, blader categorieën en bewaren favorieten in een van de twee lay-outs.
+- **Startpad:** Zoek apps, blader categorieën en bewaren favorieten.
 - **Desktop widgets:** Voeg de bundelde Liquid Glass-widgets toe en regel ze op je desktop.
 - **Meldingen:** Glasbanner en geaggregeerde geschiedenis, met snelle acties en antwoorden waar apps ze ondersteunen.
 - **Verleden van het clipboard:** Zoek en gebruik gekopieerde tekst en afbeeldingen opnieuw en pin items die je wilt bewaren.

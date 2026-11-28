@@ -297,7 +297,7 @@ Text adjusts to the background so labels stay readable.
 - **Glass effects:** Adjustable blur, refraction and tint, with text that adapts to the background in supported menus.
 - **Dock:** Pinned apps, hover zoom, notification badges and configurable hiding. The Dock follows you between displays.
 - **Menu bar and Control Center:** Global app menus and quick system controls, with shared menu bar settings across displays.
-- **Launchpad:** Search apps, browse categories and save favorites in either of two layouts.
+- **Launchpad:** Search apps, browse categories and save favorites.
 - **Desktop widgets:** Add and arrange the bundled Liquid Glass widgets on your desktop.
 - **Notifications:** Glass banners and grouped history, with quick actions and replies where apps support them.
 - **Clipboard history:** Find and reuse copied text and images, and pin items you want to keep.
