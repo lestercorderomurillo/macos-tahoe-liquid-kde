@@ -667,15 +667,19 @@ class SettingsSearch(QLineEdit):
         else:
             super().keyPressEvent(event)
 
+    # Search keeps a visible focus outline while editing with mouse or keyboard.
+    keyboard_focus = True
+
     def paintEvent(self, event):
-        super().paintEvent(event)
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        paint_glass_control(self, painter)
         painter.setPen(QPen(self.palette().placeholderText().color(), 1.25,
                             Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
         y = self.height() / 2 - 1
         painter.drawEllipse(QPointF(14, y), 3.5, 3.5)
         painter.drawLine(QPointF(16.5, y + 2.5), QPointF(19, y + 5))
+        painter.end()
+        super().paintEvent(event)
 
 
 def finder_window_size():
@@ -2358,8 +2362,6 @@ class InstallerWindow(OpaqueSurface):
         field_surface = "rgba(255, 255, 255, 163)" if light else "rgba(255, 255, 255, 22)"
         hover = "rgba(94, 134, 175, 28)" if light else "rgba(153, 182, 226, 32)"
         row_hover = "rgba(36, 36, 36, 26)" if light else "rgba(222, 222, 222, 26)"
-        search_surface = "rgba(40, 69, 95, 24)" if light else "rgba(255, 255, 255, 24)"
-        search_focus = "rgba(255, 255, 255, 168)" if light else "rgba(255, 255, 255, 32)"
         separator = "#e2e7ec" if light else "#3b4049"
         panel_surface = "#f0f3f6" if light else "#30343d"
         if self.settings_mode:
@@ -2432,10 +2434,9 @@ class InstallerWindow(OpaqueSurface):
             }}
             QToolButton[iconStyleChoice="true"]:focus:!checked {{ border-color: {muted}; }}
             QLineEdit#settingsSearch {{
-                background: {search_surface}; color: {foreground};
-                border: 1px solid transparent; border-radius: 7px; padding: 4px 6px;
+                background: transparent; color: {foreground};
+                border: 1px solid transparent; padding: 4px 6px;
             }}
-            QLineEdit#settingsSearch:focus {{ background: {search_focus}; border-color: {self.accent}; }}
             QLineEdit#widgetSettingField {{
                 background: {field_surface}; color: {foreground};
                 border: 1px solid {separator}; border-radius: 8px; padding: 3px 6px;
