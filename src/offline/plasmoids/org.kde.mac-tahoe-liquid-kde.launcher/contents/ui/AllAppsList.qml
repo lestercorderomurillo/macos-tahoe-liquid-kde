@@ -151,6 +151,7 @@ ColumnLayout {
 		id: categorySwitcher
 
 		Layout.fillWidth: true
+		Layout.topMargin: main.detachedSearch ? 8 : 0
 		Layout.leftMargin: 12
 		Layout.rightMargin: fs.innerPadding + 12
 		Layout.preferredHeight: visible ? Math.max(main.categoryHeight, implicitHeight) : 0
