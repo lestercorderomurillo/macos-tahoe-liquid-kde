@@ -1,5 +1,5 @@
 import org.kde.mac.tahoe.launcher as Ink
-import QtQuick 2.12
+import QtQuick 2.15
 import Qt5Compat.GraphicalEffects
 import org.kde.plasma.components 3.0 as PlasmaComponents
 import org.kde.kirigami as Kirigami
@@ -22,6 +22,17 @@ Item {
 
 	property bool isDraging: false
 	property bool highlighted: false
+	property bool pooled: false
+
+	GridView.onPooled: {
+		pooled = true;
+		highlighted = false;
+		if (isDraging && kicker.dragSource === gridDelegate) kicker.resetDragSource();
+		isDraging = false;
+		if (actionMenu.opened) actionMenu.menu.close();
+		appBackdrop.forgetForeground(appname);
+	}
+	GridView.onReused: pooled = false
 
 	property bool hasActionList: ((model.favoriteId !== null) || (("hasActionList" in model) && (model.hasActionList !== null)))
 		
@@ -84,7 +95,7 @@ Item {
 	PlasmaComponents.Label {
 		id: appname
 		readonly property string sourceText: ("name" in model ? model.name : model.display)
-		readonly property var runs: main.labelRuns(this, sourceText)
+		readonly property var runs: pooled ? null : main.labelRuns(this, sourceText)
 		readonly property var painted: runs ? main.labelPaint(this, sourceText, runs) : null
 		text: painted?.markup ?? sourceText
 		layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
@@ -93,7 +104,7 @@ Item {
 		font.family: main.textFont
 		font.pointSize: main.appTextSize
 		font.weight: main.detachedSearch || main.tahoeStyle ? Font.Medium : 650
-		color: main.labelColor(appname)
+		color: pooled ? main.textColor : main.labelColor(appname)
 		anchors {
 			top: appicon.bottom
 			left: parent.left
@@ -210,6 +221,7 @@ Item {
 	}
 	Transition {
 		id: highlight
+		enabled: !gridDelegate.pooled
 		ColorAnimation {duration: 100 }
 		PropertyAnimation {properties: 'opacity'; duration: 100; easing.type: Easing.OutQuart}
 	}

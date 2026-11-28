@@ -173,6 +173,12 @@ private:
 // Each shaped run remembers its own foreground family as the surface moves.
 class FlipHistory : public QObject {
 public:
+    void forget(const QObject *owner)
+    {
+        m_runs.remove(owner);
+        disconnect(m_connections.take(owner));
+    }
+
     QColor tone(const Samples &samples, QColor base, CorrectionSettings settings,
                 const QObject *owner, int run = -1)
     {

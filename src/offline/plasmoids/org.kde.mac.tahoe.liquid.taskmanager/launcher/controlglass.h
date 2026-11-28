@@ -25,6 +25,8 @@ public:
     quint64 backdropRevision() const { return m_revision; }
     Q_INVOKABLE QColor foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const;
     Q_INVOKABLE QColor animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
+    // A pooled launcher delegate now represents another application.
+    Q_INVOKABLE void forgetForeground(QObject *item) { m_history.forget(item); m_ink.forget(item); }
     Q_INVOKABLE QColor frameFillAt(QPointF point, QColor fallback) const;
     Q_INVOKABLE QColor surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material, QColor overlay, int run = -1);
     Q_INVOKABLE QColor animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);

@@ -13,6 +13,7 @@ GridView {
 
     readonly property int columns: root.columns
 
+    reuseItems: true
     focus: true
     clip: true
     currentIndex: count > 0 ? 0 : -1

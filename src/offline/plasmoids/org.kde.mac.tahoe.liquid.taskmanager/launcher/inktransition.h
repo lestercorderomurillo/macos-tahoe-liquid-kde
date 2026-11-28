@@ -50,6 +50,14 @@ public:
         m_settledAt = 0;
     }
 
+    void forget(const QObject *item)
+    {
+        const auto it = m_tracks.find(item);
+        if (it == m_tracks.end()) return;
+        disconnect(it->destroyed);
+        m_tracks.erase(it);
+    }
+
     void moved()
     {
         const auto now = m_clock.elapsed();
