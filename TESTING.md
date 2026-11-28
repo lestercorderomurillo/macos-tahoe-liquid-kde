@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.25**. Clear History uses the notification glass material and local foreground contrast in both light and dark modes. [Validation and coverage](release-evidence.json).
+**v0.85.26**. Installing the Nautilus configuration leaves a background instance windowless and preserves an open folder on reinstall. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

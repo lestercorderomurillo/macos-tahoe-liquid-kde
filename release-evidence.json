@@ -1,18 +1,17 @@
 {
-  "version": "0.85.25",
+  "version": "0.85.26",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "449d310e49b1ebc0a70eccdf193722df95469c66",
-  "scope": "Use notification glass and local foreground contrast for Clear History.",
-  "approval": "Maintainer approved publication after reviewing all four captures.",
-  "approved_previews": {
-    "comparacion.png": "79ef5e8add996218965bd534da139826a3aec18e1a243c034239c3b033091eba"
-  },
+  "scope": "Configure Nautilus without quitting or launching the file manager.",
   "checks": [
     {
-      "command": "Capture the installed NotificationsView in disposable KDE neon guests on Plasma 6.8.1 in light and dark modes with each edition\u2019s defaults. Verify installed QML against candidate and compare the four button crops against the previous gallery.",
+      "command": "python3 -m pytest tests/test_nautilus_step.py (13 passed)",
+      "result": "passed"
+    },
+    {
+      "command": "Run steps.nautilus.install() twice in a disposable KDE neon Plasma 6.8.1 Wayland guest running Nautilus 46.4. Verify the default folder handler, unchanged process ID and empty OpenLocations after installation, then the same process and Documents URI after reinstall.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Focused appearance captures on Plasma Wayland 6.8.1.",
-  "source_sha256": "9bddb101a7e1e2471da1eeb169d6cf98bede272c01b444068246d0e3f2a3d79e"
+  "coverage_limits": "Focused shared installer step on KDE neon, using the Tahoe source.",
+  "source_sha256": "3d70820d6f7476fa5ccd9031562155b436c3c918c89a9d853f2d42940c80aecd"
 }
