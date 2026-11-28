@@ -8,12 +8,25 @@
 #include <QRectF>
 #include <QSizeF>
 #include <algorithm>
+#include <array>
 #include <cmath>
 
 namespace GlassInk {
 inline double luminance(const QColor &color)
 {
     const auto linear = [](double x) { return x <= .04045 ? x / 12.92 : std::pow((x + .055) / 1.055, 2.4); };
+    if (color.spec() == QColor::Rgb) {
+        // QColor stores RGB channels at 16-bit precision, including the
+        // composited samples. Use Qt's own conversion at each table entry.
+        static const auto channels = [linear] {
+            std::array<double, 65536> values;
+            for (unsigned i = 0; i < values.size(); ++i)
+                values[i] = linear(QColor::fromRgba64(i, 0, 0, 65535).redF());
+            return values;
+        }();
+        const auto rgb = color.rgba64();
+        return .2126 * channels[rgb.red()] + .7152 * channels[rgb.green()] + .0722 * channels[rgb.blue()];
+    }
     return .2126 * linear(color.redF()) + .7152 * linear(color.greenF()) + .0722 * linear(color.blueF());
 }
 

@@ -1,17 +1,21 @@
 {
-  "version": "0.85.37",
+  "version": "0.85.38",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Reuse Launchpad label layouts during scrolling and adaptive tint updates.",
+  "scope": "Accelerate dynamic tint contrast calculations with an exact 16-bit RGB luminance lookup.",
   "checks": [
     {
-      "command": "Qt Quick letter-scope fixture, 1500 movements. Layout calls fell from 1502 to 1. The serialized markup and gradient data matched at every position. Median time per 300 moves fell from 30 to 22 ms.",
+      "command": "Compare the original and optimized luminance for all 65536 channel levels, permuted independently across RGB. Check extended RGB, HSL, CMYK and invalid colors.",
       "result": "passed"
     },
     {
-      "command": "pytest tests/test_launcher_presets.py::test_native_launcher_popup_presets[MacGoldenGate-Light-1] tests/test_launcher_presets.py::test_clipboard_launcher_integration[MacTahoe-Light-1]: both passed.",
+      "command": "Benchmark 1400 mixed translucent and opaque contrast decisions with 15 samples each. The median fell from 76.46 ms to 30.13 ms across three runs and resulting RGBA hashes matched.",
+      "result": "passed"
+    },
+    {
+      "command": "pytest tests/test_launcher_presets.py::test_control_center_glass_regions: both native control glass probes passed.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The CPU benchmark covers label geometry and painting data. It does not measure desktop or game FPS.",
-  "source_sha256": "55cb62e454bdbefa48f45bba7a0a0c71ee2cad6073466ce7f3fb398125b52f43"
+  "coverage_limits": "CPU contrast workload on the local Qt 6 build. Whole-session FPS depends on the scene and renderer.",
+  "source_sha256": "51c7c2540b4fb1992a168bd42578580f145471ed90b6b0b9319c000e61358fea"
 }
