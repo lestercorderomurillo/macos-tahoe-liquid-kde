@@ -5,6 +5,7 @@ import org.kde.plasma.core as PlasmaCore
 
 Text {
     id: label
+    renderType: GraphicsInfo.api === GraphicsInfo.Software ? Text.QtRendering : Text.CurveRendering
     property string sourceText: ""
     property bool clockOverlay: false
     readonly property var profile: ink.settings.contrastProfiles[contrastProfile]

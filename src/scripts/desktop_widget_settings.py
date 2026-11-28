@@ -170,6 +170,14 @@ def stage_glass_text(package):
             continue
         source = source.replace("Item {", 'Item {\n    objectName: "mttkde-widget-material"', 1)
         props = """
+    // Explicit ShaderEffectSource sizes are physical texels. Supersample small
+    // refractive surfaces and retain the native pixel density on large ones.
+    readonly property real surfaceDpr: Screen.devicePixelRatio
+    readonly property size nativeSurfaceSize: Qt.size(Math.max(1, Math.ceil(width * surfaceDpr)),
+                                                       Math.max(1, Math.ceil(height * surfaceDpr)))
+    readonly property bool supersampleSurface: nativeSurfaceSize.width * nativeSurfaceSize.height <= 1048576
+    readonly property size edgeTextureSize: Qt.size(nativeSurfaceSize.width * (supersampleSurface ? 2 : 1),
+                                                    nativeSurfaceSize.height * (supersampleSurface ? 2 : 1))
     readonly property NativeInk.GlassSettings contrastSettings: NativeInk.GlassSettings {}
     readonly property NativeInk.MaterialSample contrastMaterial: NativeInk.MaterialSample {
         source: glass.contrastSettings.dynamicTinting ? glass : null
@@ -187,6 +195,20 @@ def stage_glass_text(package):
         source = source.replace("id: glass", "id: glass" + props, 1)
         source = source.replace("function invalidateBackdrop() {", "function invalidateBackdrop() {\n        contrastMaterial.invalidate()")
         source = source.replace("function markDirty() {", "function markDirty() {\n        contrastMaterial.invalidate()")
+        source = source.replace("id: glassShader", """id: glassShader
+        layer.enabled: glass.supersampleSurface
+        layer.textureSize: glass.edgeTextureSize
+        layer.smooth: true
+        layer.mipmap: true""")
+        if filename == "TextGlass.qml":
+            start = source.index("id: maskSrc")
+            end = source.index("id: wallpaperTex", start)
+            mask = source[start:end].replace(
+                "Qt.size(Math.round(glass._widgetW), Math.round(glass._widgetH))",
+                "glass.nativeSurfaceSize")
+            mask = mask.replace("textureSize: glass.nativeSurfaceSize", "textureSize: glass.edgeTextureSize", 1)
+            mask = mask.replace("id: sdfTexSrc", "id: sdfTexSrc\n        format: ShaderEffectSource.RGBA16F")
+            source = source[:start] + mask + source[end:]
         material.write_text("import org.kde.mac.tahoe.launcher as NativeInk\n" + source)
     # Upstream puts each Text declaration and its closing brace at the same
     # indentation. Match its own color, leaving nested effects and icons alone.
@@ -215,7 +237,8 @@ def stage_glass_text(package):
         if not file.is_file():
             continue
         source = file.read_text()
-        adapted = element.sub(adapt, source)
+        adapted = element.sub(adapt, source).replace("renderType: Text.NativeRendering",
+            "renderType: GraphicsInfo.api === GraphicsInfo.Software ? Text.QtRendering : Text.CurveRendering")
         if package.name.endswith(".clock-glass-text") and file.name == "GlassClockText.qml":
             # Visibility feeds the ink binding, so it must depend on the source string.
             adapted = adapted.replace("visible: text.length > 0", "visible: sourceText.length > 0")
