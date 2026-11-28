@@ -2381,8 +2381,11 @@ void BlurEffect::blur(
         && caption.startsWith(m_aboutAppPrefix) && caption.endsWith(m_aboutAppSuffix)
         && caption.size() > m_aboutAppPrefix.size() + m_aboutAppSuffix.size();
     const bool about = plasma && (aboutApp || caption == m_aboutTitle || caption == QStringLiteral("About This Computer"));
-    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about || notification;
-    if (BlurConfig::dynamicTinting() && spatialBackdrop) {
+    const auto panelMaterial = m_componentMaterials.constFind(QStringLiteral("panel"));
+    const bool panel = plasma && w->isDock() && panelMaterial != m_componentMaterials.cend() && &panelMaterial.value() == &material;
+    const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about || notification || panel;
+    const QRect sampleRect = backgroundRect.intersected(w->frameGeometry().toAlignedRect());
+    if (BlurConfig::dynamicTinting() && spatialBackdrop && !sampleRect.isEmpty()) {
         const int sampleInterval = about ? 40 : 200;
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
             blurInfo.contrastTimer.start();
@@ -2402,7 +2405,7 @@ void BlurEffect::blur(
                 // Capture after the final glass and grain passes and before KWin
                 // draws the window contents. Keep pixels from undamaged cells
                 // in the previous verified grid during partial repaints.
-                framebuffer->blitFromRenderTarget(renderTarget, viewport, backgroundRect, QRect(0, 0, side, side));
+                framebuffer->blitFromRenderTarget(renderTarget, viewport, sampleRect, QRect(0, 0, side, side));
                 GLFramebuffer::pushFramebuffer(framebuffer.get());
                 std::array<unsigned char, 64 * 64 * 4> pixels{};
                 GLint packBuffer = 0;
@@ -2419,15 +2422,15 @@ void BlurEffect::blur(
                 glBindBuffer(GL_PIXEL_PACK_BUFFER, packBuffer);
                 GLFramebuffer::popFramebuffer();
                 const bool sameGrid = blurInfo.contrastGrid.size() == side * side * 3
-                    && blurInfo.sampleBounds == backgroundRect
+                    && blurInfo.sampleBounds == sampleRect
                     && blurInfo.contrastBounds == w->frameGeometry().toAlignedRect();
                 QByteArray colors = sameGrid ? blurInfo.contrastGrid : QByteArray(side * side * 3, 0);
                 QVector3D total;
                 bool complete = true;
                 for (int row = 0; row < side; ++row) {
                     for (int col = 0; col < side; ++col) {
-                        const QPoint point(backgroundRect.x() + (col + .5) * backgroundRect.width() / side,
-                                           backgroundRect.y() + (row + .5) * backgroundRect.height() / side);
+                        const QPoint point(sampleRect.x() + (col + .5) * sampleRect.width() / side,
+                                           sampleRect.y() + (row + .5) * sampleRect.height() / side);
 #if defined(GLASS_X11)
                         const bool painted = deviceRegion.contains((point * viewport.scale()));
 #else
@@ -2445,9 +2448,9 @@ void BlurEffect::blur(
                 }
                 if (complete) {
                     const QRect frame = w->frameGeometry().toAlignedRect();
-                    if (colors != blurInfo.contrastGrid || backgroundRect != blurInfo.sampleBounds || frame != blurInfo.contrastBounds) {
+                    if (colors != blurInfo.contrastGrid || sampleRect != blurInfo.sampleBounds || frame != blurInfo.contrastBounds) {
                         blurInfo.contrastGrid = colors;
-                        blurInfo.sampleBounds = backgroundRect;
+                        blurInfo.sampleBounds = sampleRect;
                         blurInfo.contrastBounds = frame;
                         const auto path = QStringLiteral("/org/kde/MacTahoe/Glass");
                         const auto interface = QStringLiteral("org.kde.MacTahoe.Glass");
@@ -2460,11 +2463,12 @@ void BlurEffect::blur(
                             QDBusConnection::sessionBus().send(moving);
                         }
                         const auto signal = QStringLiteral("controlBackdrop");
-                        auto message = (shellMenu || about)
+                        auto message = (shellMenu || about || panel)
                             ? QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"), path, interface, signal)
                             : QDBusMessage::createSignal(path, interface, signal);
-                        message << int(w->window()->pid()) << frame << backgroundRect << colors
-                                << (shellMenu ? QStringLiteral("mttkde-shell-menu") : w->caption());
+                        message << int(w->window()->pid()) << frame << sampleRect << colors
+                                << (panel ? QStringLiteral("mttkde-panel-ink")
+                                    : shellMenu ? QStringLiteral("mttkde-shell-menu") : w->caption());
                         QDBusConnection::sessionBus().send(message);
                     }
                 }

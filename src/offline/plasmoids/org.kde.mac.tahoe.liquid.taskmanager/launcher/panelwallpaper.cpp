@@ -10,6 +10,8 @@
 #include <QQmlProperty>
 #include <QPointer>
 #include <QDir>
+#include <QDBusConnection>
+#include "backdropgeometry.h"
 #include <QEvent>
 #include <QFutureWatcher>
 #include <QGuiApplication>
@@ -159,6 +161,11 @@ public:
     PanelInk(QQuickWindow *window, Plasma::Containment *panel)
         : QObject(window), m_window(window), m_panel(panel)
     {
+        if (panel->containmentType() != Plasma::Containment::Desktop)
+            QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/org/kde/MacTahoe/Glass"),
+                QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("controlBackdrop"),
+                this, SLOT(panelBackdrop(int,QRect,QRect,QByteArray,QString)));
+        connect(&m_frame, &MaterialSample::changed, this, [this] { ++m_revision; Q_EMIT changed(); });
         m_refresh.setSingleShot(true);
         connect(&m_refresh, &QTimer::timeout, this, &PanelInk::refresh);
         connect(&m_settings, &GlassSettings::changed, this, [this] {
@@ -191,6 +198,17 @@ public:
             const QColor foreground = rendered.isValid() ? rendered : fill;
             if (foreground.isValid() && foreground.alpha() == 255) {
                 samples.add(foreground);
+            } else if (!m_liveColors.isEmpty() && m_liveFrame == m_window->geometry()) {
+                const auto cell = [&](double pos, int origin, int size) { return std::clamp(int((pos - origin) * 64 / size), 0, 63); };
+                const auto point = p + m_liveFrame.topLeft();
+                const int index = 3 * (64 * cell(point.y(), m_liveBounds.y(), m_liveBounds.height())
+                                      + cell(point.x(), m_liveBounds.x(), m_liveBounds.width()));
+                const auto *rgb = reinterpret_cast<const uchar *>(m_liveColors.constData()) + index;
+                QColor surface(rgb[0], rgb[1], rgb[2]);
+                const auto frame = m_frame.at(p);
+                if (frame.isValid()) surface = GlassInk::composite(surface, frame);
+                const auto scrim = QColor::fromRgbF(0, 0, 0, PanelWallpaper::scrimOpacityAt(p.y() / m_window->height()));
+                samples.add(GlassInk::composite(GlassInk::composite(surface, scrim), foreground));
             } else if (!m_grid.isNull()) {
                 const int x = std::clamp(int(p.x() * m_grid.width() / m_window->width()), 0, m_grid.width() - 1);
                 const int y = std::clamp(int(p.y() * m_grid.height() / m_window->height()), 0, m_grid.height() - 1);
@@ -207,6 +225,18 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void schedule() { m_refresh.start(0); }
+    void panelBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &rgb, const QString &role)
+    {
+        if (role != u"mttkde-panel-ink" || pid != QCoreApplication::applicationPid() || !m_settings.dynamicTinting()
+            || frame != m_window->geometry() || bounds.isEmpty() || rgb.size() != 64 * 64 * 3) return;
+        m_frame.findWindowFrame(m_window, QStringLiteral("widgets/panel-background"));
+        if (m_liveColors == rgb && m_liveBounds == bounds && m_liveFrame == frame) return;
+        m_liveColors = rgb;
+        m_liveBounds = bounds;
+        m_liveFrame = frame;
+        ++m_revision;
+        Q_EMIT changed();
+    }
 
 private:
     bool eventFilter(QObject *object, QEvent *event) override
@@ -223,6 +253,7 @@ private:
         ++m_generation;
         m_requested.reset();
         m_grid = {};
+        m_liveColors.clear();
         ++m_revision;
         Q_EMIT changed();
     }
@@ -304,6 +335,9 @@ private:
     QTimer m_refresh;
     std::optional<WallpaperSpec> m_requested;
     quint64 m_generation = 0;
+    MaterialSample m_frame;
+    QByteArray m_liveColors;
+    QRect m_liveBounds, m_liveFrame;
     QImage m_grid;
     quint64 m_revision = 0;
 };
