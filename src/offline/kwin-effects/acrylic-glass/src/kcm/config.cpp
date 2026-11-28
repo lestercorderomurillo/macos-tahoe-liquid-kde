@@ -40,6 +40,7 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
         setParent(parent);
     ui.setupUi(widget());
     auto *contrast = new QPushButton(i18n("Adaptive Contrast presets…"), widget());
+    contrast->setObjectName(QStringLiteral("editAdaptiveContrast"));
     ui.presetGroupForm->addRow(contrast);
     connect(contrast, &QPushButton::clicked, this, &LiquidGlassEffectConfig::editContrast);
     const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
@@ -236,12 +237,23 @@ void LiquidGlassEffectConfig::editContrast()
     dialog.setWindowTitle(i18n("Adaptive Contrast presets"));
     auto *layout = new QVBoxLayout(&dialog);
     auto *selector = new QComboBox(&dialog);
+    selector->setObjectName(QStringLiteral("contrastPresetSelector"));
     selector->addItem(i18n("Default"));
     selector->addItem(i18n("Custom"));
     selector->setCurrentIndex(m_contrastPreset == ContrastPreset::empty() ? 0 : 1);
-    layout->addWidget(selector);
+    auto *fields = new QFormLayout;
+    layout->addLayout(fields);
+    fields->addRow(i18n("Preset"), selector);
+    auto *components = new QComboBox(&dialog);
+    components->addItems(ContrastPreset::defaults().keys());
+    fields->addRow(i18n("Component"), components);
     auto *edit = new QPlainTextEdit(&dialog);
+    edit->setObjectName(QStringLiteral("contrastJson"));
     layout->addWidget(edit);
+    connect(components, &QComboBox::textActivated, &dialog, [edit](const QString &component) {
+        edit->moveCursor(QTextCursor::Start);
+        edit->find(QLatin1Char('"') + component + QLatin1Char('"'));
+    });
     const auto show = [&](const QJsonObject &preset) {
         edit->setPlainText(QString::fromUtf8(QJsonDocument(preset).toJson()));
     };
