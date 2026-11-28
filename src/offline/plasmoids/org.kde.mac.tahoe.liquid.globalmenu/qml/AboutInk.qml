@@ -14,6 +14,6 @@ QtObject {
     required property color fill
     required property bool tintEnabled
     function foregroundFor(item, base = preferred) {
-        return tintEnabled ? NativeGlass.AdaptiveContrast.foreground(sampler, item, base, fill) : base;
+        return tintEnabled ? NativeGlass.AdaptiveContrast.resolve(sampler, item, base, fill, "about.window", window.contentItem, window.contentItem, preferred) : base;
     }
 }

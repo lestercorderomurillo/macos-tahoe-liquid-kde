@@ -17,6 +17,7 @@ Item {
     readonly property var appearance: clock?.plasmoid?.configuration
 
     Native.WallpaperInk {
+        profileId: "panel.clock"
         id: stockInk
         item: calendar.face
         base: calendar.Kirigami.Theme.textColor

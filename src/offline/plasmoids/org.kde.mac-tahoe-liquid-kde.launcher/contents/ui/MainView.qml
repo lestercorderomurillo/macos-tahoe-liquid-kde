@@ -155,8 +155,10 @@ Item {
                        (top.g * top.a + base.g * remaining) / alpha,
                        (top.b * top.a + base.b * remaining) / alpha, alpha);
     }
-    function categoryForeground(item, samples) {
-        return root.glassSettings.dynamicTinting ? appBackdrop.groupForeground(item, textColor, samples) : textColor;
+    function categoryForeground(item, view, samples) {
+        const profile = root.glassSettings.contrastProfiles["launcher.categories"];
+        return root.glassSettings.dynamicTinting ? appBackdrop.profileGroupForeground(item, textColor,
+            profile.scope === "component" ? view.visibleSamples : samples, profile) : textColor;
     }
     function categorySamples(label, view, backing) {
         if (!root.glassSettings.dynamicTinting || !root.visible) return [];
@@ -169,14 +171,15 @@ Item {
         const center = label.mapToItem(root.contentItem, label.width / 2, label.height / 2);
         const radius = Qt.size(Math.min(label.contentWidth, label.width) * 0.4, 0);
         const clip = view.mapToItem(root.contentItem, Qt.rect(0, 0, view.width, view.height));
-        return appBackdrop.categorySamples(center, radius, clip, fill);
+        return appBackdrop.categorySamples(center, radius, clip, fill,
+            root.glassSettings.contrastProfiles["launcher.categories"].sampleCount);
     }
-    function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth) {
+    function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth, field = null) {
         if (!root.glassSettings.dynamicTinting) return fallback;
         const sampler = detached ? searchBackdrop : appBackdrop;
         const settings = detached ? searchMaterial : root.glassSettings;
-        return Tahoe.AdaptiveContrast.foreground(sampler, item, fallback,
-            layerOver(materialFill(settings), overlay), sampleX, textWidth);
+        return Tahoe.AdaptiveContrast.resolve(sampler, item, fallback, layerOver(materialFill(settings), overlay),
+            field ? "launcher.search" : "launcher.label", field ?? item, sampler.window.contentItem, fallback, sampleX, textWidth);
     }
 	readonly property color textColor: glassPalette.Kirigami.Theme.textColor
 	readonly property string textFont: Kirigami.Theme.defaultFont.family

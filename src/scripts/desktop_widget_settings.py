@@ -160,9 +160,34 @@ def stage_appearance(package, variant):
 def stage_glass_text(package):
     """Adapt painted Text elements in the bundled widget, preserving each color binding."""
     ui = package / "contents/ui"
-    material = ui / "components/LiquidGlass.qml"
-    if material.is_file() and '"mttkde-widget-material"' not in (source := material.read_text()):
-        material.write_text(source.replace("Item {", 'Item {\n    objectName: "mttkde-widget-material"', 1))
+    profile = "widget." + package.name.removeprefix(PREFIX)
+    for filename in ("LiquidGlass.qml", "TextGlass.qml"):
+        material = ui / "components" / filename
+        if not material.is_file():
+            continue
+        source = material.read_text()
+        if '"mttkde-widget-material"' in source:
+            continue
+        source = source.replace("Item {", 'Item {\n    objectName: "mttkde-widget-material"', 1)
+        props = """
+    readonly property NativeInk.GlassSettings contrastSettings: NativeInk.GlassSettings {}
+    readonly property NativeInk.MaterialSample contrastMaterial: NativeInk.MaterialSample {
+        source: glass.contrastSettings.dynamicTinting ? glass : null
+    }
+    Connections {
+        target: glass
+        function onTintChanged() { glass.contrastMaterial.invalidate() }
+        function onTintAlphaChanged() { glass.contrastMaterial.invalidate() }
+        function onSolidColorChanged() { glass.contrastMaterial.invalidate() }
+        function onSolidModeChanged() { glass.contrastMaterial.invalidate() }
+    }
+"""
+        # Generated bindings run only on the material; foreground changes
+        # never trigger a readback of the text.
+        source = source.replace("id: glass", "id: glass" + props, 1)
+        source = source.replace("function invalidateBackdrop() {", "function invalidateBackdrop() {\n        contrastMaterial.invalidate()")
+        source = source.replace("function markDirty() {", "function markDirty() {\n        contrastMaterial.invalidate()")
+        material.write_text("import org.kde.mac.tahoe.launcher as NativeInk\n" + source)
     # Upstream puts each Text declaration and its closing brace at the same
     # indentation. Match its own color, leaving nested effects and icons alone.
     element = re.compile(r"^(?P<indent> *)(?P<prefix>(?:contentItem: |delegate: )?)Text \{\n"
@@ -172,7 +197,8 @@ def stage_glass_text(package):
         indent = match["indent"]
         body, count = re.subn(r"^" + indent + r"    color:", indent + "    baseColor:",
                               match["body"], count=1, flags=re.M)
-        return (indent + match["prefix"] + "NativeInk.AdaptiveWidgetText {\n" + body + indent + "}"
+        return (indent + match["prefix"] + "NativeInk.AdaptiveWidgetText {\n"
+                + indent + f'    contrastProfile: "{profile}"\n' + body + indent + "}"
                 if count else match[0])
 
     for file in (ui / "main.qml", *(ui / "widget").glob("*.qml")):
@@ -180,6 +206,14 @@ def stage_glass_text(package):
             continue
         source = file.read_text()
         adapted = element.sub(adapt, source)
+        if package.name.endswith(".clock-glass-text") and file.name == "GlassClockText.qml":
+            adapted = adapted.replace("property int hour12:", "property bool adaptOverlay: false\n    property int hour12:")
+            adapted = re.sub(r"(NativeInk.AdaptiveWidgetText \{.*?)(\n +)text: ([^\n]+)",
+                             r"\1\2clockOverlay: root.adaptOverlay\2sourceText: \3"
+                             r"\2textFormat: letterInk ? Text.StyledText : Text.PlainText"
+                             r"\2text: letterInk ? glyphText() : sourceText", adapted, flags=re.S)
+        if package.name.endswith(".clock-glass-text") and file.name == "main.qml":
+            adapted = adapted.replace("id: overlay", "id: overlay\n            adaptOverlay: true")
         if adapted != source:
             file.write_text("import org.kde.mac.tahoe.launcher as NativeInk\n" + adapted)
 

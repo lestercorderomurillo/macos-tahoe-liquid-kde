@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "panelwallpaper.h"
-#include "glassink.h"
+#include "contrastpreset.h"
+#include "materialsample.h"
 #include "glasssettings.h"
 
 #include <PlasmaActivities/Consumer>
@@ -180,14 +181,24 @@ public:
     }
     QColor baseForeground() const { return qGuiApp->palette().color(QPalette::Active, QPalette::WindowText); }
     quint64 revision() const { return m_revision; }
-    Q_INVOKABLE QColor foregroundFor(QRectF bounds, QColor base, QColor fill) const
+    Q_INVOKABLE QColor foregroundFor(QRectF bounds, QColor base, QColor fill, const QJsonObject &profile,
+                                     MaterialSample *material, QColor reference) const
     {
-        if (m_grid.isNull() || m_window->size().isEmpty()) return base;
-        return GlassInk::sample(GlassInk::label, bounds.center(), bounds.size() * .4, [&](QPointF p) {
-            const int x = std::clamp(int(p.x() * m_grid.width() / m_window->width()), 0, m_grid.width() - 1);
-            const int y = std::clamp(int(p.y() * m_grid.height() / m_window->height()), 0, m_grid.height() - 1);
-            return GlassInk::composite(m_grid.pixelColor(x, y), fill);
-        }).tone(base);
+        if (m_window->size().isEmpty()) return base;
+        GlassInk::Samples samples;
+        GlassInk::zonePoints(bounds, profile.value(u"sampleCount"_s).toInt(15), [&](QPointF p) {
+            const QColor rendered = material ? material->at(p) : QColor();
+            const QColor foreground = rendered.isValid() ? rendered : fill;
+            if (foreground.isValid() && foreground.alpha() == 255) {
+                samples.add(foreground);
+            } else if (!m_grid.isNull()) {
+                const int x = std::clamp(int(p.x() * m_grid.width() / m_window->width()), 0, m_grid.width() - 1);
+                const int y = std::clamp(int(p.y() * m_grid.height() / m_window->height()), 0, m_grid.height() - 1);
+                samples.add(GlassInk::composite(m_grid.pixelColor(x, y), foreground));
+            }
+        });
+        const auto corrected = samples.tone(reference, ContrastPreset::settings(profile));
+        return GlassInk::applyRoleCorrection(base, reference, corrected);
     }
     bool observes(Plasma::Containment *panel) const { return m_panel == panel; }
 

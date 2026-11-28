@@ -1,0 +1,115 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+#include "materialsample.h"
+#include <QGlyphRun>
+#include <QPainterPath>
+#include <QTextLayout>
+#include <QMap>
+#include <limits>
+
+MaterialSample::MaterialSample(QObject *parent) : QObject(parent)
+{
+    m_timer.setSingleShot(true);
+    connect(&m_timer, &QTimer::timeout, this, &MaterialSample::capture);
+}
+
+void MaterialSample::setSource(QQuickItem *item)
+{
+    if (m_source == item) return;
+    if (m_source) disconnect(m_source, nullptr, this, nullptr);
+    m_source = item;
+    m_pixels = {};
+    m_pending.clear();
+    if (item) {
+        connect(item, &QQuickItem::windowChanged, this, &MaterialSample::invalidate);
+        connect(item, &QQuickItem::visibleChanged, this, &MaterialSample::invalidate);
+        connect(item, &QQuickItem::widthChanged, this, &MaterialSample::invalidate);
+        connect(item, &QQuickItem::heightChanged, this, &MaterialSample::invalidate);
+        connect(item, &QObject::destroyed, this, [this] {
+            m_pixels = {};
+            ++m_revision;
+            Q_EMIT changed();
+        });
+    }
+    invalidate();
+    ++m_revision;
+    Q_EMIT sourceChanged();
+    Q_EMIT changed();
+}
+
+void MaterialSample::invalidate()
+{
+    m_dirty = true;
+    if (!m_pending && !m_timer.isActive()) m_timer.start(16);
+}
+
+void MaterialSample::capture()
+{
+    if (!m_source || !m_source->window() || !m_source->isVisible() || !m_source->window()->isVisible()
+        || m_source->size().isEmpty()) return;
+    m_dirty = false;
+    // Qt scales the requested logical size with the render window's DPR.
+    m_pending = m_source->grabToImage();
+    if (!m_pending) return;
+    connect(m_pending.data(), &QQuickItemGrabResult::ready, this, [this] {
+        const auto image = m_pending->image();
+        m_pending.clear();
+        if (image != m_pixels) {
+            m_pixels = image;
+            ++m_revision;
+            Q_EMIT changed();
+        }
+        if (m_dirty) invalidate();
+    });
+}
+
+QColor MaterialSample::at(QPointF scenePoint) const
+{
+    if (!m_source || m_pixels.isNull() || m_source->size().isEmpty()) return {};
+    const auto local = m_source->mapFromScene(scenePoint);
+    if (!m_source->boundingRect().contains(local)) return {};
+    const int x = qBound(0, int(local.x() * m_pixels.width() / m_source->width()), m_pixels.width() - 1);
+    const int y = qBound(0, int(local.y() * m_pixels.height() / m_source->height()), m_pixels.height() - 1);
+    return m_pixels.pixelColor(x, y);
+}
+
+QVariantList MaterialSample::glyphs(const QString &text, const QFont &font)
+{
+    QTextLayout layout(text, font);
+    layout.beginLayout();
+    const auto line = layout.createLine();
+    layout.endLayout();
+    if (!line.isValid()) return {};
+    QMap<int, QPointF> clusters;
+    for (const auto &run : layout.glyphRuns(0, text.size(), QTextLayout::RetrieveAll)) {
+        const auto indices = run.stringIndexes();
+        const auto glyphs = run.glyphIndexes();
+        const auto positions = run.positions();
+        for (qsizetype i = 0; i < glyphs.size(); ++i) {
+            if (clusters.contains(indices[i])) continue;
+            const auto path = run.rawFont().pathForGlyph(glyphs[i]);
+            const auto bounds = path.boundingRect();
+            QPointF point = bounds.center();
+            // A digit's centre can be a counter. Find an interior stroke
+            // nearest the centre so the sample lands on the glass glyph.
+            if (!path.isEmpty() && !path.contains(point)) {
+                double best = std::numeric_limits<double>::infinity();
+                for (int y = 0; y < 15; ++y) for (int x = 0; x < 15; ++x) {
+                    const QPointF p(bounds.left() + bounds.width() * (x + .5) / 15,
+                                    bounds.top() + bounds.height() * (y + .5) / 15);
+                    const auto delta = p - bounds.center();
+                    const double distance = QPointF::dotProduct(delta, delta);
+                    if (distance < best && path.contains(p)) { best = distance; point = p; }
+                }
+            }
+            clusters.insert(indices[i], positions[i] + point);
+        }
+    }
+    QVariantList result;
+    for (auto i = clusters.begin(); i != clusters.end(); ++i) {
+        const auto next = std::next(i);
+        const auto end = next == clusters.end() ? text.size() : next.key();
+        result.append(QVariantMap{{QStringLiteral("text"), text.mid(i.key(), end - i.key())},
+            {QStringLiteral("point"), i.value()}});
+    }
+    return result;
+}

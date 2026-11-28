@@ -110,7 +110,7 @@ int main(int argc, char **argv)
             const double after = std::abs(GlassInk::lightness(tone) - surface);
             if ((before >= .33 && tone != base) || after < before
                 || GlassInk::familyOf(tone) != GlassInk::familyOf(base)
-                || tone.alpha() != base.alpha() || std::abs(tone.red() - base.red()) > 102) return 27;
+                || tone.alpha() != base.alpha() || std::abs(tone.red() - base.red()) > 112) return 27;
         }
     }
     if (localTone(Qt::black, Qt::black).red() != 78 || localTone(Qt::white, Qt::white).red() != 163
@@ -133,6 +133,19 @@ int main(int argc, char **argv)
     GlassInk::Samples weighted;
     weighted.add(Qt::white, .65); weighted.add(Qt::black, .35);
     if (centered.tone(theme) != weighted.tone(theme)) return 25;
+    GlassInk::Samples mostlyDark, mostlyLight;
+    for (int i = 0; i < 15; ++i) {
+        mostlyDark.add(i == 0 ? Qt::white : Qt::black);
+        mostlyLight.add(i == 0 ? Qt::black : Qt::white);
+    }
+    if (mostlyDark.tone(theme) == mostlyLight.tone(theme)) return 32;
+    GlassInk::Samples black;
+    black.add(Qt::black);
+    if (black.tone(Qt::black, {GlassInk::Correction::Flip}) != QColor(Qt::white)) return 33;
+    GlassInk::Samples gray;
+    gray.add(QColor(118, 118, 118));
+    if (gray.tone(Qt::white, {GlassInk::Correction::Shift, .9, 112})
+        != QColor(Qt::white)) return 34;
     const auto margin = GlassInk::sample(GlassInk::label, {}, QSizeF(10, 10),
         [](QPointF point) { return point.isNull() ? QColor(Qt::white) : QColor(); });
     if (margin.tone(theme) != overWhite) return 26;

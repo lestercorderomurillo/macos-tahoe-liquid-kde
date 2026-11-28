@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QRegion>
+#include <QJsonObject>
 #include <QVariantList>
 #include <QWindow>
 #include <qqmlregistration.h>
@@ -22,8 +23,10 @@ public:
     quint64 backdropRevision() const { return m_revision; }
     Q_INVOKABLE QColor foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const;
     Q_INVOKABLE QColor animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
+    Q_INVOKABLE QColor surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile);
     Q_INVOKABLE QColor animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
-    Q_INVOKABLE QList<QColor> categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill) const;
+    Q_INVOKABLE QList<QColor> categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill, int count = 5) const;
+    Q_INVOKABLE QColor profileGroupForeground(QObject *item, QColor base, const QList<QColor> &surfaces, const QJsonObject &profile);
     Q_INVOKABLE QColor groupForeground(QObject *item, QColor base, const QList<QColor> &surfaces);
     Q_INVOKABLE QColor backdropAt(QPointF point) const;
 Q_SIGNALS:

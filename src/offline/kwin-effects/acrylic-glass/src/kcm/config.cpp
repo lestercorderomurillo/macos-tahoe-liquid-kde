@@ -3,6 +3,11 @@
     SPDX-License-Identifier: GPL-2.0-or-later
 */
 #include "config.h"
+#include "../../../../plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/contrastpreset.h"
+#include <QFileDialog>
+#include <QSaveFile>
+#include <QMessageBox>
+#include <QPlainTextEdit>
 #include "glassconfig.h"
 #include "presets.h"
 #include "../componentmaterials.h"
@@ -34,6 +39,9 @@ LiquidGlassEffectConfig::LiquidGlassEffectConfig(QObject* parent, const KPluginM
     if (this->parent() != parent)
         setParent(parent);
     ui.setupUi(widget());
+    auto *contrast = new QPushButton(i18n("Adaptive Contrast presets…"), widget());
+    ui.presetGroupForm->addRow(contrast);
+    connect(contrast, &QPushButton::clicked, this, &LiquidGlassEffectConfig::editContrast);
     const auto presets = QJsonDocument::fromJson(materialPresetsJson).array();
     int row = 0;
     for (const auto &entry : presets) {
@@ -222,11 +230,102 @@ void LiquidGlassEffectConfig::selectComponent(int index)
     showComponent();
 }
 
+void LiquidGlassEffectConfig::editContrast()
+{
+    QDialog dialog(widget());
+    dialog.setWindowTitle(i18n("Adaptive Contrast presets"));
+    auto *layout = new QVBoxLayout(&dialog);
+    auto *selector = new QComboBox(&dialog);
+    selector->addItem(i18n("Default"));
+    selector->addItem(i18n("Custom"));
+    selector->setCurrentIndex(m_contrastPreset == ContrastPreset::empty() ? 0 : 1);
+    layout->addWidget(selector);
+    auto *edit = new QPlainTextEdit(&dialog);
+    layout->addWidget(edit);
+    const auto show = [&](const QJsonObject &preset) {
+        edit->setPlainText(QString::fromUtf8(QJsonDocument(preset).toJson()));
+    };
+    const auto defaults = [] {
+        auto preset = ContrastPreset::empty();
+        preset.insert(QStringLiteral("components"), ContrastPreset::defaults());
+        return preset;
+    };
+    auto custom = m_contrastPreset == ContrastPreset::empty() ? defaults() : m_contrastPreset;
+    const auto read = [&](QJsonObject &document) {
+        QJsonParseError error;
+        const auto parsed = QJsonDocument::fromJson(edit->toPlainText().toUtf8(), &error);
+        QJsonObject profiles;
+        const QString problem = error.error == QJsonParseError::NoError
+            ? ContrastPreset::resolve(parsed.object(), profiles) : error.errorString();
+        if (!problem.isEmpty()) {
+            QMessageBox::warning(&dialog, dialog.windowTitle(), i18n("Invalid contrast preset: %1", problem));
+            return false;
+        }
+        document = parsed.object();
+        return true;
+    };
+    const auto select = [&](int index) {
+        edit->setReadOnly(index == 0);
+        show(index == 0 ? defaults() : custom);
+    };
+    select(selector->currentIndex());
+    connect(selector, &QComboBox::activated, &dialog, [&](int index) {
+        if (!index && !edit->isReadOnly() && !read(custom)) {
+            selector->setCurrentIndex(1);
+            return;
+        }
+        select(index);
+    });
+    auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+    layout->addWidget(buttons);
+    auto *import = buttons->addButton(i18n("Import JSON…"), QDialogButtonBox::ActionRole);
+    connect(import, &QPushButton::clicked, &dialog, [&] {
+        const auto path = QFileDialog::getOpenFileName(&dialog, import->text(), {}, QStringLiteral("JSON (*.json)"));
+        if (path.isEmpty()) return;
+        QFile file(path);
+        if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::warning(&dialog, import->text(), file.errorString());
+            return;
+        }
+        const auto previous = edit->toPlainText();
+        edit->setPlainText(QString::fromUtf8(file.readAll()));
+        if (!read(custom)) { edit->setPlainText(previous); return; }
+        selector->setCurrentIndex(1);
+        select(1);
+    });
+    auto *exportButton = buttons->addButton(i18n("Export JSON…"), QDialogButtonBox::ActionRole);
+    connect(exportButton, &QPushButton::clicked, &dialog, [&] {
+        QJsonObject preset;
+        if (!read(preset)) return;
+        const auto path = QFileDialog::getSaveFileName(&dialog, exportButton->text(), {}, QStringLiteral("JSON (*.json)"));
+        if (path.isEmpty()) return;
+        QSaveFile file(path);
+        const auto bytes = QJsonDocument(preset).toJson();
+        if (!file.open(QIODevice::WriteOnly) || file.write(bytes) != bytes.size() || !file.commit())
+            QMessageBox::warning(&dialog, exportButton->text(), file.errorString());
+    });
+    connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    connect(buttons, &QDialogButtonBox::accepted, &dialog, [&] {
+        QJsonObject preset = ContrastPreset::empty();
+        if (selector->currentIndex() && !read(preset)) return;
+        if (m_contrastPreset != preset) {
+            m_contrastPreset = preset;
+            setNeedsSave(true);
+        }
+        dialog.accept();
+    });
+    dialog.resize(640, 480);
+    dialog.exec();
+}
+
 void LiquidGlassEffectConfig::load()
 {
     KCModule::load();
     const KConfigGroup group(BlurConfig::self()->config(), QStringLiteral("Effect-liquidglass"));
     const int index = ui.kcfg_MaterialPreset->currentIndex();
+    const auto saved = QJsonDocument::fromJson(group.readEntry("AdaptiveContrastPreset", QByteArray())).object();
+    QJsonObject resolved;
+    m_contrastPreset = ContrastPreset::resolve(saved, resolved).isEmpty() ? saved : ContrastPreset::empty();
     m_activePresetIndex = index;
     m_profiles = QJsonDocument::fromJson(group.readEntry("ComponentMaterialProfiles", QString()).toUtf8()).object();
     m_materials = GlassMaterials::read(group, presetAt(index), index != 0, presetAt(0).value(QStringLiteral("values")).toObject());
@@ -237,6 +336,7 @@ void LiquidGlassEffectConfig::load()
 void LiquidGlassEffectConfig::defaults()
 {
     KCModule::defaults();
+    m_contrastPreset = ContrastPreset::empty();
     m_profiles = {};
     m_materials = {};
     applyPreset(ui.kcfg_MaterialPreset->currentIndex());
@@ -271,6 +371,7 @@ void LiquidGlassEffectConfig::save()
     // KConfigSkeleton removes entries equal to schema defaults. Retain the
     // selection explicitly, using stable IDs rather than combo-box positions.
     auto group = BlurConfig::self()->config()->group(QStringLiteral("Effect-liquidglass"));
+    group.writeEntry("AdaptiveContrastPreset", QJsonDocument(m_contrastPreset).toJson(QJsonDocument::Compact));
     group.writeEntry("MaterialPreset", ui.kcfg_MaterialPreset->presetValue());
     const auto general = m_materials.value(QStringLiteral("general")).toObject();
     for (auto it = general.begin(); it != general.end(); ++it) {

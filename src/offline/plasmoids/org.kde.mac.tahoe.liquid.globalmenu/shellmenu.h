@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
-#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/glassink.h"
+#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/contrastpreset.h"
 #include <QImage>
 #include <QMenu>
 #include <QPointer>
@@ -24,6 +24,7 @@ private Q_SLOTS:
 
 private:
     QHash<const QAction *, GlassInk::Samples> m_actionSamples;
+    QJsonObject m_profile;
     bool m_dynamicTinting = true;
     QByteArray m_grid;
     QRect m_bounds;

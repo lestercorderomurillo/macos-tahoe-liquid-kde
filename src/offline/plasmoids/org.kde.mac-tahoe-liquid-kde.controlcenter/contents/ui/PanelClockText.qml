@@ -37,6 +37,7 @@ Text {
     font.letterSpacing: -0.33
     color: ink.foreground
     Native.WallpaperInk {
+        profileId: "panel.clock"
         id: ink
         item: clockText
         base: Kirigami.Theme.textColor

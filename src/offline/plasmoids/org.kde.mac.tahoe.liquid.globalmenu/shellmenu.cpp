@@ -25,7 +25,12 @@ void ShellMenu::reloadTinting()
 {
     const auto config = KSharedConfig::openConfig(QStringLiteral("kwinrc"));
     config->reparseConfiguration();
-    m_dynamicTinting = config->group(QStringLiteral("Effect-liquidglass")).readEntry("DynamicTinting", true);
+    const auto group = config->group(QStringLiteral("Effect-liquidglass"));
+    m_dynamicTinting = group.readEntry("DynamicTinting", true);
+    const auto saved = group.readEntry("AdaptiveContrastPreset", QByteArray());
+    QJsonObject profiles;
+    if (ContrastPreset::resolve(saved.isEmpty() ? ContrastPreset::empty() : QJsonDocument::fromJson(saved).object(), profiles).isEmpty())
+        m_profile = profiles.value(QStringLiteral("menu.native")).toObject();
     if (!m_dynamicTinting) m_grid.clear();
     update();
 }
@@ -89,8 +94,12 @@ void ShellMenu::paintEvent(QPaintEvent *event)
             const int inset = style()->pixelMetric(QStyle::PM_SmallIconSize) + 8;
             const QRect text = style()->visualRect(layoutDirection(), row,
                 QRect(row.left() + inset, row.top(), textWidth, row.height()));
-            m_actionSamples.insert(action, GlassInk::sample(GlassInk::label, text.center(),
-                QSizeF(textWidth * .4, fontMetrics().height() * .22), surfaceAt));
+            const auto scope = m_profile.value(QStringLiteral("scope")).toString();
+            const auto bounds = scope == QLatin1String("component") ? rect() : scope == QLatin1String("line") ? text : row;
+            GlassInk::Samples samples;
+            GlassInk::zonePoints(bounds, m_profile.value(QStringLiteral("sampleCount")).toInt(15),
+                [&](QPointF point) { samples.add(surfaceAt(point)); });
+            m_actionSamples.insert(action, samples);
         }
         m_paintingSampledMenu = true;
     }
@@ -104,6 +113,6 @@ void ShellMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *act
     if (!m_dynamicTinting || !m_paintingSampledMenu || option->state.testFlag(QStyle::State_Selected)) return;
     for (auto group : {QPalette::Active, QPalette::Inactive, QPalette::Disabled}) {
         const QColor base = option->palette.color(group, QPalette::Text);
-        option->palette.setColor(group, QPalette::Text, m_actionSamples.value(action).tone(base));
+        option->palette.setColor(group, QPalette::Text, m_actionSamples.value(action).tone(base, ContrastPreset::settings(m_profile)));
     }
 }

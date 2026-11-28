@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "controlglass.h"
-#include "glassink.h"
+#include "contrastpreset.h"
 #include "backdropgeometry.h"
 #include <KWindowEffects>
 #include <QEvent>
@@ -79,6 +79,17 @@ QColor PopupBackdrop::animatedForegroundAt(QObject *item, QPointF point, QSizeF 
     return m_ink.color(item, base, foregroundAt(point, radius, base, fill));
 }
 
+QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile)
+{
+    if (m_backdropGrid.isEmpty() || bounds.isEmpty()) return base;
+    GlassInk::Samples samples;
+    GlassInk::zonePoints(bounds, profile.value(QStringLiteral("sampleCount")).toInt(15), [&](QPointF p) {
+        samples.add(GlassInk::composite(backdropAt(p), fill));
+    });
+    const auto corrected = samples.tone(reference, ContrastPreset::settings(profile));
+    return m_ink.color(item, base, GlassInk::applyRoleCorrection(base, reference, corrected));
+}
+
 QColor PopupBackdrop::animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill)
 {
     QColor target = base;
@@ -90,11 +101,11 @@ QColor PopupBackdrop::animatedLabelForeground(QObject *item, QPointF point, QSiz
     return m_ink.color(item, base, target);
 }
 
-QList<QColor> PopupBackdrop::categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill) const
+QList<QColor> PopupBackdrop::categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill, int count) const
 {
     QList<QColor> surfaces;
     if (m_backdropGrid.isEmpty()) return surfaces;
-    GlassInk::forEachPoint(GlassInk::categoryRow, point, radius, [&](QPointF p, double) {
+    GlassInk::forEachPoint({std::clamp(count, 1, 256), 1}, point, radius, [&](QPointF p, double) {
         if (p.x() >= viewport.left() && p.x() < viewport.right())
             surfaces.append(GlassInk::composite(backdropAt(p), fill));
     });
@@ -103,10 +114,15 @@ QList<QColor> PopupBackdrop::categorySamples(QPointF point, QSizeF radius, QRect
 
 QColor PopupBackdrop::groupForeground(QObject *item, QColor base, const QList<QColor> &surfaces)
 {
+    return profileGroupForeground(item, base, surfaces, {});
+}
+
+QColor PopupBackdrop::profileGroupForeground(QObject *item, QColor base, const QList<QColor> &surfaces, const QJsonObject &profile)
+{
     if (m_backdropGrid.isEmpty()) return base;
     GlassInk::Samples samples;
     for (const auto &surface : surfaces) samples.add(surface);
-    return m_ink.color(item, base, samples.tone(base));
+    return m_ink.color(item, base, samples.tone(base, ContrastPreset::settings(profile)));
 }
 
 QRegion ControlGlass::regionFor(const QVariantList &surfaces, bool glassOnly)
