@@ -2500,10 +2500,12 @@ void BlurEffect::blur(
     const bool spatialBackdrop = (plasma && namedPopup) || shellMenu || about || notification || panel;
     const QRect sampleRect = backgroundRect.intersected(w->frameGeometry().toAlignedRect());
     if (BlurConfig::dynamicTinting() && spatialBackdrop && !sampleRect.isEmpty()) {
-        const int sampleInterval = about ? 40 : 200;
+        constexpr int movingAboutInterval = 250;
+        constexpr int settledInterval = 500;
+        const int sampleInterval = about && w->isUserMove() ? movingAboutInterval : settledInterval;
         if (!blurInfo.contrastTimer.isValid() || blurInfo.contrastTimer.elapsed() >= sampleInterval) {
             blurInfo.contrastTimer.start();
-            // Resolve individual labels within each compositor frame.
+            // Keep the spatial resolution independent of the sampling interval.
             constexpr int side = 64;
             auto &texture = m_contrastTexture;
             auto &framebuffer = m_contrastFramebuffer;
@@ -2557,7 +2559,9 @@ void BlurEffect::blur(
                         } else if (!sameGrid) {
                             complete = false;
                         }
-                        for (int c = 0; c < 3; ++c) total[c] += uchar(colors[index + c]) / 255.f;
+                        if (notification) {
+                            for (int c = 0; c < 3; ++c) total[c] += uchar(colors[index + c]) / 255.f;
+                        }
                     }
                 }
                 if (complete) {
