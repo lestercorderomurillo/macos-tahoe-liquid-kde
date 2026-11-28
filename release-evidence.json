@@ -1,17 +1,18 @@
 {
-  "version": "0.85.29",
+  "version": "0.85.30",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Restore the normal installer window size when the ready page opens.",
+  "scope": "Use the approved continuous-corner glass contour on Settings search.",
   "checks": [
     {
-      "command": "python3 -m pytest tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion (both editions passed)",
+      "command": "Disposable KDE neon release-capture guest, candidate 57d06324: render InstallerWindow in settings mode with dark and light palettes, capture the search field, type dock and clear with Escape.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Offscreen Qt wizard with simulated backend completion.",
-  "approval": "Maintainer approved publication after reviewing the 900 x 680 Tahoe completion window.",
+  "coverage_limits": "Focused Tahoe Settings captures and native search input checks. Golden Gate consumes the shared widget through its immutable Tahoe pin.",
+  "approval": "Maintainer approved both editions after reviewing the revised continuous-corner captures.",
   "approved_previews": {
-    "ready.png": "b8f1e89416ec2300d0474a43ad657c0573dccca02125b38c5f92e83de1c1cc4d"
+    "squircle-dark.png": "fc41b81162c35678d312a12569a86794a81578d64dd5ac591d4f5ee7a04b63da",
+    "squircle-light.png": "47d40ddbde0ba1acb6fe5a1489bd35ab91ac35fe75abff6980a312aa1bd2f3f7"
   },
-  "source_sha256": "fa2263365265f338f44ba0ee6c431fc37b6b2dcfa6c10e6e8c3c2c314fc92de9"
+  "source_sha256": "2d4fec49b48d444ad7bacfad250cffc05b5d053912fe3d9d6f5a5f591abaec40"
 }
