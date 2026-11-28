@@ -846,7 +846,12 @@ def validate(repo: Path, ref: str, bundle: Path, *, reviewed: bool = True) -> di
         require(record['appearance']['Plasma'] == 'MacTahoeLiquidKde-' + mode.capitalize(), f'Wrong appearance: {name}')
         verify_icon_appearance(name, record)
         require(record['wallpaper'] == EDITIONS[edition][0], f'Wrong wallpaper: {name}')
-        require(record['launcher_preset'] == EDITIONS[edition][1], f'Wrong launcher preset: {name}')
+        # Older captures record the edition-specific preset used for their frame.
+        if 'launcher_layout' in record:
+            require(record['launcher_layout'] == 'tahoe' and record['launcher_preset'] == 1,
+                    f'Wrong launcher layout: {name}')
+        else:
+            require(record['launcher_preset'] == EDITIONS[edition][1], f'Wrong launcher preset: {name}')
         require(record.get('stable_frames') is True, f'Unsettled capture: {name}')
         require(record.get('window_verified') is True, f'Unverified window: {name}')
         if case == 'dock' and git(repo, 'ls-tree', source, '--',
@@ -1003,8 +1008,9 @@ def verify_committed(repo: Path, ref: str, *, tahoe: Path | None = None) -> dict
         target = pin['commit']
         require(git(source_repo, 'show', target + ':VERSION') == version, 'Golden Gate pin/version mismatch')
         require(commit_id(source_repo, 'v' + version) == target, 'Golden Gate must pin the published Tahoe release tag')
+        launcher_frame = record['capture_manifest']['frames']['golden-gate-light-launcher']
         require(json.loads(blob(repo, ref, 'defaults.json')) ==
-                {'wallpaper': EDITIONS[edition][0], 'launcher_preset': EDITIONS[edition][1]},
+                {'wallpaper': EDITIONS[edition][0], 'launcher_preset': launcher_frame['launcher_preset']},
                 'Golden Gate defaults differ from the capture recipe')
     assets_entry = git(source_repo, 'ls-tree', target, '--', 'src/installer/assets/sources.json')
     if assets_entry and git(source_repo, 'ls-tree', target, '--', 'component-hashes.json'):

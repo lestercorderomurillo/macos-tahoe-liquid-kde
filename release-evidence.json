@@ -1,24 +1,25 @@
 {
   "version": "0.85.32",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Shared adaptive foreground correction, visible material sampling, configurable grouping, and smooth glyph transitions.",
+  "scope": "Use the Tahoe Launchpad layout in both editions and Notification Center glass inside launcher options.",
   "checks": [
     {
-      "command": "Install Tahoe and Golden Gate in disposable Plasma 6.8.1 Wayland guests and capture 63 default/stress pairs at 125%. Compare individual device-pixel replies at adjacent glyph positions.",
+      "command": "Capture Launchpad and its options in both editions on Plasma 6.8.1 Wayland in light and dark appearance. Measure the 615 × 526 default frame and exercise dismissal through the underlying textbox, category tab, application and blank space.",
       "result": "passed"
     },
     {
-      "command": "Run Qt material, motion, shader, native settings and X11 rendering probes. Build the effect against KWin X11 6.6.5 and Wayland 6.7.4.",
+      "command": "Build Acrylic Glass with the Plasma 6.6, 6.7 and 6.8 SDKs. On 6.7 run tests/acrylic_glass_capture.py with --compositor x11 --identity GradientProbe --material golden-gate --expect changed --popup-islands.",
       "result": "passed"
     },
     {
-      "command": "Compare all first-install widget files with the approved candidate, test repeat staging, verify the same shaped-glyph coordinates before and after caching, and run both launcher presets and the Control Center X11 render probe.",
+      "command": "Run the focused launcher preset, edition transition, plasmoid settings and release screenshot regressions. Verify the generated component manifest.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Device-pixel transport was measured in the installed panel and launcher popups. A separate generic transparent top-level fixture did not return a sparse reply.",
-  "approval": "Maintainer approved candidate 881c87e5 for paired promotion after reviewing issue 174.",
-  "review_gallery": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/75e3870487ea30d36b33fbada805ed24c5e21260/README.md",
-  "measurements": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/75e3870487ea30d36b33fbada805ed24c5e21260/verification.md",
-  "source_sha256": "aa12454c2318be3cfe60322fb19969008fd775aa37d972ff24ceb2de48d2ebf1"
+  "coverage_limits": "Visual review covers the default grid and light and dark appearances on Wayland. The X11 pixel check exercises compositor rendering. The hidden Search AI popup has no user entry point.",
+  "approval": "Maintainer approved the paired light and dark Notification Center glass preview.",
+  "approved_previews": {
+    "notification-glass-preview.png": "f381ff87afcffdf8ef62179405b22bc210670b185afaac22dbe226daf1c655de"
+  },
+  "source_sha256": "611983709fcbf542e2091788ff97bf49f63e705fc263f686857f57a4bd1ced43"
 }

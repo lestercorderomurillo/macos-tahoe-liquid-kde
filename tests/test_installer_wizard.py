@@ -42,7 +42,8 @@ def test_new_wizard_uses_source_defaults_after_other_edition(monkeypatch, tmp_pa
     monkeypatch.setattr(cli, "CONFIG_FILE", config)
     expected = "golden" if edition == "MacGoldenGate" else "tahoe"
     selected = choices.defaults()
-    assert selected["wallpaper"] == selected["launcher"] == expected
+    assert selected["wallpaper"] == expected
+    assert selected["launcher"] == "tahoe"
     assert selected["appearance"] == "auto"
     assert selected["window_controls"] == ("glassy" if edition == "MacGoldenGate" else "flat")
     assert selected["reset_layout"]
@@ -169,7 +170,7 @@ def test_layout_uses_explicit_launcher_and_independent_panels(monkeypatch, tmp_p
     monkeypatch.setenv("MTTKDE_WIZARD_OPTIONS", json.dumps(choices.defaults() | {
         "launcher": "golden", "panel": False, "dock": True}))
     script = layout._layout_script_with_launchers(layout.LAYOUT_SCRIPT, ["applications:example.desktop"], "icontasks")
-    assert "var mttkdeLauncherPreset = 2;" in script
+    assert choices.selected()["launcher"] == "tahoe"
     assert "var mttkdeTopPanel = false;" in script and "var mttkdeDock = true;" in script
     assert "applications:example.desktop" in script
 

@@ -123,7 +123,7 @@ def test_apps_form_covers_the_config_and_preserves_editions_and_file_urls(monkey
     legacy = set(re.findall(r"\bproperty\s+\w+\s+cfg_(\w+)", (ui / "ConfigGeneral.qml").read_text()))
     assert legacy == {key for page in prefs.FORMS.values() for key in page} == prefs.DEFAULTS.keys()
     image = "file:///home/tester/my%20icon.svg"
-    changes = {"launcherPreset": 0, "customButtonImage": image, "goldenGateColumns": 8,
+    changes = {"customButtonImage": image, "numberColumns": 8,
                "activationShortcut": "Meta+Shift+F11"}
 
     def evaluate(script):
@@ -132,13 +132,12 @@ def test_apps_form_covers_the_config_and_preserves_editions_and_file_urls(monkey
         assert request["hasShortcut"]
         assert "activationShortcut" not in request["defaults"]
         assert request["changes"] == changes
-        return json.dumps({18: changes | {"numberColumns": "5", "floating": "false"}})
+        return json.dumps({18: changes | {"floating": "false"}})
 
     monkeypatch.setattr(plasmoid_settings, "_evaluate_plasma_script", evaluate)
     values = plasmoid_settings.apply("launcher", 18, changes)
-    assert values["launcherPreset"] == 0
     assert values["customButtonImage"] == image
-    assert values["goldenGateColumns"] == 8 and values["numberColumns"] == 5
+    assert values["numberColumns"] == 8
     assert values["floating"] is False
     assert values["activationShortcut"] == "Meta+Shift+F11"
 

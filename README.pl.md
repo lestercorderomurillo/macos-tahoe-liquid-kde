@@ -297,7 +297,7 @@ Kolor tekstu dostosowuje się do tła, by etykiety pozostały czytelne.
 - **Efekty szkła:** Ustawiona rozmycie, odbicie i odbarwienie, z tekstem dostosowanym do tła w obsługiwanych menu.
 - **- Wydarzenie:** Aplikacje wpisane, hover zoom, odznaki powiadomienia i konfigurowalne ukrywanie. Dock śledzi cię między wyświetlaczami.
 - **Pętli menu i centrum sterowania:** Globalne menu aplikacji i szybkie sterowanie systemem, z udostępnieniem ustawień pasma menu na wyświetlaczach.
-- **- Wyrzut:** Poszukaj aplikacji, przeglądaj kategorie i zapisz ulubione w jednym z dwóch układów.
+- **- Wyrzut:** Poszukaj aplikacji, przeglądaj kategorie i zapisz ulubione.
 - **Widgety do pracy:** Dodaj i zorganizuj pakiety widżetów Liquid Glass na komputerze.
 - **Powiadomienia:** Szklane banery i zgrupowana historia, z szybkimi działaniami i odpowiedziami, gdzie aplikacje je wspierają.
 - **Historia płyty:** Znajdź i ponownie użyj kopiowanego tekstu i obrazów oraz przyciskaj elementy, które chcesz zachować.

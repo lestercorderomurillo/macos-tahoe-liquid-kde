@@ -19,7 +19,7 @@ Timer {
                 root.visible = true;
             } else if (phase === 0) {
                 LauncherInteraction.click(main.searchBar.testMenuButton.testButton);
-                for (let i = 0; i < 5; ++i) LauncherInteraction.key(Qt.Key_Down);
+                for (let i = 0; i < 3; ++i) LauncherInteraction.key(Qt.Key_Down);
                 LauncherInteraction.key(Qt.Key_Return);
                 verify(main.clipboardMode, "options menu opens clipboard history");
             } else if (phase === 1) {

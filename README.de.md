@@ -294,7 +294,7 @@ Die Textfarbe passt sich dem Hintergrund an, damit Beschriftungen lesbar bleiben
 - **Glaseffekte:** Einstellbare Unschärfe, Lichtbrechung und Tönung. In unterstützten Menüs passt sich die Schrift dem Hintergrund an.
 - **Dock:** Angeheftete Apps, Vergrößerung beim Darüberfahren, Benachrichtigungsabzeichen und einstellbares Ausblenden. Das Dock folgt dir von Bildschirm zu Bildschirm.
 - **Menüleiste und Kontrollzentrum:** Globale Anwendungsmenüs und schnelle Systemeinstellungen. Die Einstellungen der Menüleiste werden zwischen Bildschirmen geteilt.
-- **Launchpad:** Apps suchen, Kategorien durchstöbern und Favoriten speichern. Zwei Anordnungen stehen zur Wahl.
+- **Launchpad:** Apps suchen, Kategorien durchstöbern und Favoriten speichern.
 - **Desktop-Widgets:** Liquid-Glass-Widgets direkt auf dem Desktop platzieren.
 - **Benachrichtigungen:** Glasbanner und gruppierter Verlauf mit Schnellaktionen und Antworten in unterstützten Apps.
 - **Zwischenablageverlauf:** Kopierte Texte und Bilder wiederfinden, erneut verwenden und bei Bedarf anheften.

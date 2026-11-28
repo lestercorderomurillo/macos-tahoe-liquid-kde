@@ -63,7 +63,7 @@ Item {
                 radius: height / 2
             }
         }
-        onClicked: activeMenu.openRelative()
+        onClicked: menuOpen ? activeMenu.close() : activeMenu.openRelative()
     }
 
     TahoeOptionsMenu {
@@ -91,22 +91,6 @@ Item {
                 Plasmoid.configuration.showAllAppsInList = true;
                 Plasmoid.configuration.showAllAppsInGrid = false;
             }
-        },
-        PlasmaExtras.MenuItem { separator: true },
-        PlasmaExtras.MenuItem { text: i18n("Launcher preset"); section: true },
-        PlasmaExtras.MenuItem {
-            objectName: "preset1"
-            text: i18n("Tahoe")
-            checkable: true
-            checked: kicker.launcherPreset === 1
-            onClicked: Plasmoid.configuration.launcherPreset = 1
-        },
-        PlasmaExtras.MenuItem {
-            objectName: "preset2"
-            text: i18n("Golden Gate")
-            checkable: true
-            checked: kicker.launcherPreset === 2
-            onClicked: Plasmoid.configuration.launcherPreset = 2
         },
         PlasmaExtras.MenuItem { separator: true },
         PlasmaExtras.MenuItem {

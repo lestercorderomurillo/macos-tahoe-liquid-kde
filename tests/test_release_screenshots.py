@@ -190,6 +190,18 @@ def test_old_loaded_effect_is_rejected_even_when_every_frame_agrees(capture):
         shots.validate(repo, ref, bundle, reviewed=False)
 
 
+def test_shared_launcher_capture_accepts_only_the_tahoe_layout(capture):
+    repo, ref, bundle, manifest = capture
+    frame = manifest['frames']['golden-gate-light-launcher']
+    frame.update(launcher_layout='tahoe', launcher_preset=1)
+    write_json(bundle / 'manifest.json', manifest)
+    shots.validate(repo, ref, bundle, reviewed=False)
+    frame['launcher_preset'] = 2
+    write_json(bundle / 'manifest.json', manifest)
+    with pytest.raises(ValueError, match='Wrong launcher layout'):
+        shots.validate(repo, ref, bundle, reviewed=False)
+
+
 @pytest.mark.parametrize('failure', ['missing', 'changed', 'incomplete-review', 'wrong-review', 'rejected', 'wrong-vm', 'wrong-preset'])
 def test_incomplete_or_changed_captures_block(capture, failure):
     repo, ref, bundle, manifest = capture

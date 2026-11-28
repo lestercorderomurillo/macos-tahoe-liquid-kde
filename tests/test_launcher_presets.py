@@ -43,7 +43,7 @@ def test_installed_launcher_uses_edition_default_without_changing_source(
     installed = tmp_path / "installed" / widget.name / "contents/config/main.xml"
     ns = {"k": "http://www.kde.org/standards/kcfg/1.0"}
     root = ET.parse(installed)
-    assert root.find(".//k:entry[@name='defaultLauncherPreset']/k:default", ns).text == str(preset)
+    assert root.find(".//k:entry[@name='defaultLauncherPreset']/k:default", ns).text == "1"
     assert root.find(".//k:entry[@name='launcherPreset']/k:default", ns).text == "0"
     assert (widget / "contents/config/main.xml").read_bytes() == original
     view = installed.parent.parent / "ui/MainView.qml"
@@ -67,14 +67,11 @@ def test_invalid_edition_preset_falls_back_to_tahoe(tmp_path, monkeypatch, raw):
     "look-and-feel/MacTahoeLiquidKde-Dark/contents/layouts/org.kde.plasma.desktop-layout.js",
 ])
 @pytest.mark.parametrize("presets", [[1, 2], [2, 1], [0, None]])
-@pytest.mark.parametrize("edition_preset", [None, 1, 2])
-def test_panel_rebuild_preserves_explicit_presets_per_screen(repo, relative, presets, edition_preset):
+def test_panel_rebuild_installs_tahoe_on_every_screen(repo, relative, presets):
     node = shutil.which("node")
     if not node:
         pytest.skip("Node.js required to execute Plasma layout scripts")
     script = (repo / "src/offline" / relative).read_text()
-    if edition_preset is not None:
-        script = f"var mttkdeLauncherPreset = {edition_preset};\n" + script
     harness = r'''
 const assert = require('node:assert/strict');
 const saved = PRESETS;
@@ -107,10 +104,9 @@ const docks = created.filter(p => p.location === 'bottom');
 assert.ok(docks.length);
 for (const dock of docks) {
     const launcher = dock.items.find(w => w.type === 'org.kde.mac-tahoe-liquid-kde.launcher');
-    const expected = EDITION ?? saved[dock.screen];
-    assert.equal(launcher.config.launcherPreset, expected === 1 || expected === 2 ? expected : undefined);
+    assert.equal(launcher.config.launcherPreset, 1);
 }
-'''.replace("EDITION", json.dumps(edition_preset))
+'''
     result = subprocess.run([node, "-e", harness + script + assertions],
                             capture_output=True, text=True, timeout=10)
     assert result.returncode == 0, result.stderr
@@ -281,9 +277,8 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
     (tmp_path / "config/plasmarc").write_text(f"[Theme]\nname=MacTahoeLiquidKde-{mode}\n")
     shutil.copy2(repo / f"src/offline/color-schemes/MacTahoeLiquidKde{mode}.colors",
                  tmp_path / "config/kdeglobals")
-    monkeypatch.setattr(launcher_defaults, "default_launcher_preset", lambda: preset)
     defaults = tmp_path / "defaults.json"
-    defaults.write_text(json.dumps({"wallpaper": edition}))
+    defaults.write_text(json.dumps({"wallpaper": edition, "launcher_preset": preset}))
     monkeypatch.setattr(launcher_defaults, "DEFAULTS_FILE", defaults)
     launcher_defaults.apply_launcher_default(package)
     ui = package / "contents/ui"
@@ -315,7 +310,7 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
     if clipboard_daemon:
         main.write_text(source[:end] + "ClipboardLauncherProbe {}\n" + source[end:])
     else:
-        main.write_text(source[:end] + f"LauncherPresetProbe {{ expectedPreset: {preset}; "
+        main.write_text(source[:end] + f"LauncherPresetProbe {{ legacyPreset: {preset}; "
                         f"expectedGoldenGate: {golden_gate}; expectedDark: {dark}; eventLoopDelay: {event_loop_delay} }}\n" + source[end:])
     for name, original, replacement in (
         ("AllAppsList.qml", "ColumnLayout {", "ColumnLayout { property alias testCategories: categorySwitcher"),
@@ -385,7 +380,7 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
                     phase_count = phases
                     deadline = time.monotonic() + 20
                 if "PROBE_PHASE 2 " in output:
-                    for name in ("app", "search"):
+                    for name in ("app",):
                         if name not in popup_roles:
                             role = subprocess.run(
                                 ["xprop", "-name", f"Launcher {name} role probe", "_NET_WM_WINDOW_TYPE"],
@@ -402,7 +397,6 @@ def test_native_launcher_popup_presets(repo, tmp_path, monkeypatch, launcher_pop
             return
         assert "LAUNCHER_PROBE_OK" in output, output
         assert "LAUNCHER_PROBE_FAILED" not in output, output
-        assert "_KDE_NET_WM_WINDOW_TYPE_APPLET_POPUP" in popup_roles.get("search", ""), popup_roles
         assert any(role in popup_roles.get("app", "") for role in (
             "_NET_WM_WINDOW_TYPE_DIALOG", "_KDE_NET_WM_WINDOW_TYPE_APPLET_POPUP")), popup_roles
         assert "_NET_WM_WINDOW_TYPE_DOCK" not in popup_roles["app"], popup_roles

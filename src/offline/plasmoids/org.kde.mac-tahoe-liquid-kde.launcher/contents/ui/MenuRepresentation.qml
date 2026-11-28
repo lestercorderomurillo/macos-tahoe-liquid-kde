@@ -15,7 +15,6 @@ PlasmaCore.Dialog {
 		window: root
 		frameSource: main.goldenGateEdition && !main.clipboardMode ? "dialogs/launcher-apps" : ""
 	}
-	readonly property bool goldenGate: kicker.launcherPreset === 2
 
 	objectName: "popupWindow"
 	type: PlasmaCore.Dialog.AppletPopup
@@ -68,20 +67,11 @@ PlasmaCore.Dialog {
 			default: return 64
 		}
 	}
-	readonly property int iconSize: Math.round(configuredIconSize * (goldenGate ? 1.3125 : (main.tahoeStyle ? 1.0625 : 1)))
-
-	property int columns: goldenGate ? Plasmoid.configuration.goldenGateColumns : Plasmoid.configuration.numberColumns
-
-	// Reference proportions: 7 columns, icons 60% of the column pitch,
-	// and a row pitch slightly shorter than the column pitch.
-	property int cellSizeHeight: goldenGate ? Math.round(configuredIconSize * 1.9375) : main.tahoeStyle ? Math.round(configuredIconSize * 1.625) : iconSize
-								+ Kirigami.Units.gridUnit * 2
-								+ (2 * Math.max(
-												highlightItemSvg.margins.top + highlightItemSvg.margins.bottom,
-												highlightItemSvg.margins.left + highlightItemSvg.margins.right
-												)
-								  )
-	property int cellSizeWidth: goldenGate ? Math.round(configuredIconSize * 2.1875) : main.tahoeStyle ? Math.round(configuredIconSize * 1.84375) : cellSizeHeight
+	readonly property int iconSize: Math.round(configuredIconSize * 1.0625)
+	readonly property int columns: Plasmoid.configuration.numberColumns
+	// At 150% scale the reference column and row pitches are 171 and 151 pixels.
+	readonly property int cellSizeWidth: Math.round(configuredIconSize * 114 / 64)
+	readonly property int cellSizeHeight: Math.round(configuredIconSize * 101 / 64)
 	property int rows: plasmoid.configuration.numberOfRows
 	
 	property bool openingSearchFocus: false
@@ -184,13 +174,13 @@ PlasmaCore.Dialog {
 	FocusScope {
 		id: fs
 		focus: true
-		implicitWidth: main.clipboardMode ? Math.round(main.textSize * 60) : root.cellSizeWidth * root.columns + innerPadding * 2
-			- (root.goldenGate ? dialogSvg.margins.left + dialogSvg.margins.right : 0)
-		// Searchbar + separator + categories + grid
-		implicitHeight: main.clipboardMode ? Math.round(main.inlineSearchHeight + 18 + Math.max(2, Math.min(6, main.clipboardList.entries.length)) * main.textSize * 5.2) : root.goldenGate
-			? innerPadding * 3 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows
-				- dialogSvg.margins.top - dialogSvg.margins.bottom
-			: main.inlineSearchHeight + 2 + 12 + main.categoryHeight + main.gridTopSpacing + root.cellSizeHeight * rows + innerPadding - (main.tahoeStyle ? 1 : 0)
+		// The reference frame is 615 × 526 logical pixels at the default 5 × 4 grid.
+		implicitWidth: main.clipboardMode ? Math.round(main.textSize * 60)
+			: root.cellSizeWidth * root.columns + 45 - root.margins.left - root.margins.right
+		implicitHeight: main.clipboardMode
+			? Math.round(main.inlineSearchHeight + 18 + Math.max(2, Math.min(6, main.clipboardList.entries.length)) * main.textSize * 5.2)
+			: main.inlineSearchHeight + main.categoryHeight + main.gridTopSpacing
+				+ root.cellSizeHeight * root.rows + 37 - root.margins.top - root.margins.bottom
 		// Let Dialog follow the content size. Equal, changing min/max hints
 		// can leave Wayland constrained to the previous preset's configure.
 		width: implicitWidth
@@ -202,7 +192,7 @@ PlasmaCore.Dialog {
 		Component.onCompleted: Qt.callLater(root.syncSize)
 		
 		// We want the MainView to have an uniform margin through different plasma themes
-		property real innerPadding: main.clipboardMode ? 15 : root.goldenGate ? root.configuredIconSize * 0.375 : 15
+		property real innerPadding: 15
 
 		Item {
 			id: mainItem
@@ -213,7 +203,7 @@ PlasmaCore.Dialog {
 
 			MainView {
 				id: main
-				width: mainItem.width - fs.innerPadding * (root.goldenGate && !main.clipboardMode ? 2 : 1)
+				width: mainItem.width - fs.innerPadding
 				height: mainItem.height - fs.innerPadding * (main.tahoeStyle ? 1 : 2)
 				x: fs.innerPadding
 				y: main.tahoeStyle ? 8 : fs.innerPadding

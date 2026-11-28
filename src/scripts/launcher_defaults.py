@@ -91,8 +91,7 @@ def _edition_defaults() -> dict:
 
 
 def default_launcher_preset() -> int:
-    preset = _edition_defaults().get("launcher_preset")
-    return preset if type(preset) is int and preset in (1, 2) else 1
+    return 1
 
 
 def apply_launcher_default(package: Path) -> None:

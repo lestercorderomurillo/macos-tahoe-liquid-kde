@@ -294,7 +294,7 @@ El texto se ajusta al fondo para que las etiquetas sigan siendo legibles.
 - **Efectos de cristal:** Desenfoque, refracción y tinte ajustables, con texto que se adapta al fondo en los menús compatibles.
 - **Dock:** Aplicaciones fijadas, ampliación al pasar el puntero, insignias de notificación y ocultación configurable. El Dock te sigue entre pantallas.
 - **Barra de menús y Centro de control:** Menús globales de aplicaciones y controles rápidos del sistema, con ajustes de la barra de menús compartidos entre pantallas.
-- **Launchpad:** Busca aplicaciones, explora categorías y guarda tus favoritas en cualquiera de sus dos diseños.
+- **Launchpad:** Busca aplicaciones, explora categorías y guarda tus favoritas.
 - **Widgets de escritorio:** Añade widgets de Liquid Glass directamente al escritorio.
 - **Notificaciones:** Avisos de cristal e historial agrupado, con acciones rápidas y respuestas en las aplicaciones compatibles.
 - **Historial del portapapeles:** Busca y reutiliza texto e imágenes copiados y fija los elementos que quieras conservar.

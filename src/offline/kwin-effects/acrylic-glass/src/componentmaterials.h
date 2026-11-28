@@ -71,7 +71,8 @@ inline double number(const QJsonObject &v, const char *key, double fallback, dou
 
 inline bool isControlPanel(const QString &caption)
 {
-    return caption == QStringLiteral("mttkde-control-center") || caption == QStringLiteral("mttkde-wifi")
+    return caption == QStringLiteral("mttkde-control-center") || caption == QStringLiteral("mttkde-launcher-options")
+        || caption == QStringLiteral("mttkde-wifi")
         || caption == QStringLiteral("mttkde-bluetooth") || caption == QStringLiteral("mttkde-battery") || caption == QStringLiteral("mttkde-calendar");
 }
 

@@ -8,7 +8,6 @@ from launcher_defaults import LAUNCHER_ID
 FORMS = {
     "General": {
         "launcherApplication": "Open from Apps",
-        "launcherPreset": "Launcher layout",
         "launcherPosition": "Launcher position",
         "floating": "Floating launcher",
         "offsetX": "Distance from screen edge",
@@ -23,7 +22,6 @@ FORMS = {
     "Grids and lists": {
         "appsIconSize": "Grid icon size",
         "numberColumns": "Tahoe columns",
-        "goldenGateColumns": "Golden Gate columns",
         "numberOfRows": "Grid rows",
         "compactListItems": "Compact list items",
         "showListItemDescription": "Show list item descriptions",
@@ -31,7 +29,6 @@ FORMS = {
     },
 }
 CHOICES = {
-    "launcherPreset": {0: "Edition default", 1: "Tahoe", 2: "Golden Gate"},
     "launcherPosition": {0: "Near the Apps button", 1: "Panel center", 2: "Screen center"},
     "appsIconSize": dict(enumerate(("Small", "Medium", "Large", "Huge"))),
 }
@@ -39,7 +36,6 @@ RANGES = {
     "offsetX": (0, 100),
     "offsetY": (0, 100),
     "numberColumns": (4, 8),
-    "goldenGateColumns": (4, 8),
     "numberOfRows": (4, 8),
 }
 

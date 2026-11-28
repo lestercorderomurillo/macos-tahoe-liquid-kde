@@ -287,8 +287,6 @@ def capture(repo: Path, ref: str, image: Path, output: Path, reuse: Path | None 
                                 vm.action('clean-desktop')
                             elif any(f'{edition}-{mode}-{case}' in pending for case in CASES
                                    if not case.startswith('installer-')):
-                                vm.action('plasma', 'panels().forEach(p=>p.widgets().forEach(w=>{if(w.type==="org.kde.mac-tahoe-liquid-kde.launcher")'
-                                          '{w.currentConfigGroup=["General"];w.writeConfig("launcherPreset",' + str(EDITIONS[edition][1]) + ');}}));')
                                 vm.action('launcher')
                                 shot('launcher')
                                 vm.key('esc')

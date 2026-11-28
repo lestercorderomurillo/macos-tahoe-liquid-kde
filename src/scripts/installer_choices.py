@@ -25,7 +25,7 @@ ENUMS = {
     "icon_appearance": ("auto", "light", "dark"),
     "color": tuple(COLORS),
     "wallpaper": (*WALLPAPERS, "keep", "custom"),
-    "launcher": ("tahoe", "golden", "keep"),
+    "launcher": ("tahoe", "keep"),
     "files": ("nautilus", "dolphin", "keep"),
     "shadows": ("none", "soft", "medium", "hard"),
     "window_controls": ("flat", "glassy"),
@@ -74,7 +74,7 @@ def defaults() -> dict:
     edition = "golden" if edition_name() == "MacGoldenGate" else "tahoe"
     return dict(
         appearance="auto", icons="regular", icon_appearance="auto", color="blue", wallpaper=edition,
-        wallpaper_explicit=True, wallpaper_path="", launcher="keep" if launcher_preference().exists() else edition, panel=True, dock=True, reset_layout=True,
+        wallpaper_explicit=True, wallpaper_path="", launcher="keep" if launcher_preference().exists() else "tahoe", panel=True, dock=True, reset_layout=True,
         acrylic_glass=True, rounded_corners=True, shadows="medium", fonts=True, firefox=True,
         window_controls="glassy" if edition == "golden" else "flat", button_position="left",
         files="nautilus", nautilus_bookmarks=True, plymouth=True, glass_style="official" if edition == "golden" else "classic",
@@ -90,6 +90,8 @@ def validate(value: object) -> dict:
     if not isinstance(value, dict) or set(value) - defaults().keys():
         raise ValueError("Invalid installer choices")
     result = defaults() | value
+    if result["launcher"] == "golden":
+        result["launcher"] = "tahoe"
     for key, allowed in ENUMS.items():
         if result[key] not in allowed:
             raise ValueError(f"Invalid choice: {key}")

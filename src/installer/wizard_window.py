@@ -1431,7 +1431,6 @@ class InstallerWindow(OpaqueSurface):
                 self.defaults["desktop_widget_selection"] + active_desktop_widgets()))
         self.defaults["wallpaper_explicit"] = False
         self.choices = dict(self.defaults)
-        self.theme_launcher = "golden" if self.defaults["launcher"] == "golden" else "tahoe"
         self.theme_icon_style = self.defaults["icons"]
         self.theme_wallpaper = self.defaults["wallpaper"]
         self.edition = "Golden Gate" if bridge.editionName == "MacGoldenGate" else "Tahoe"
@@ -2219,8 +2218,6 @@ class InstallerWindow(OpaqueSurface):
             self.panel_frames["glass_style"].setVisible(self.show_glass_style())
         if key == "launcher" and key in self.choice_widgets:
             if self.settings_mode:
-                if value != "keep":
-                    self.theme_launcher = value
                 self.keep_launcher.setChecked(value == "keep")
                 for _, button in self.choice_widgets[key]:
                     button.setEnabled(value != "keep")
@@ -3519,13 +3516,10 @@ class InstallerWindow(OpaqueSurface):
     def page_launcher(self):
         choice = self.choices["launcher"]
         if self.settings_mode:
-            if choice != "keep":
-                self.theme_launcher = choice
-            self.keep_launcher = self.keep_switch("launcher", "Use my launcher", lambda: self.theme_launcher)
+            self.keep_launcher = self.keep_switch("launcher", "Use my launcher", lambda: "tahoe")
             self.body.addWidget(self.keep_launcher)
             mode = "dark" if self.surface_color.lightnessF() <= .5 else "light"
-            layouts = [(value, label, "", picture(f"launcher-{value}-{mode}.jpg", 210, 117))
-                       for value, label in (("tahoe", "Tahoe"), ("golden", "Golden Gate"))]
+            layouts = [("tahoe", "Tahoe", "", picture(f"launcher-tahoe-{mode}.jpg", 210, 117))]
             group = self.cards("launcher", layouts, default_first=False)
             for button in group.buttons():
                 button.setMaximumWidth(210)
@@ -3535,7 +3529,7 @@ class InstallerWindow(OpaqueSurface):
             self.launcher_art.setObjectName("launcherArtwork")
             self.body.addWidget(self.launcher_art, alignment=Qt.AlignmentFlag.AlignHCenter)
             self.body.addSpacing(8)
-            self.radio("launcher", [("tahoe", "Tahoe"), ("golden", "Golden Gate"), ("keep", "Use my launcher")])
+            self.radio("launcher", [("tahoe", "Tahoe"), ("keep", "Use my launcher")])
         self.launcher_warning = self.label("")
         self.launcher_warning.setObjectName("detail")
         self.launcher_warning.setFont(relative_font(self, .85))
@@ -4171,7 +4165,7 @@ class InstallerWindow(OpaqueSurface):
             title = self.t("Removing {edition}" if self.action == "uninstall" else "Installing {edition}").format(edition=self.edition)
             context = self.t("{appearance} appearance · {launcher} launcher").format(
                 appearance=self.t(self.choices["appearance"].capitalize()),
-                launcher=self.choices["launcher"].replace("golden", "Golden Gate").replace("tahoe", "Tahoe"))
+                launcher=self.choices["launcher"].replace("tahoe", "Tahoe"))
             text = title + '\n' + context + '\n\n' + self.bridge.summary.text(self.t)
             if self.bridge.statusMessage:
                 text += '\n\n' + self.bridge.statusMessage

@@ -297,7 +297,7 @@ Metin rengi arka plana uyum sağlayarak etiketlerin okunaklı kalmasını sağla
 - **Cam etkisi:** Düzenlenebilir bulanıklık, kırılma ve renk, desteklenen menülerdeki arka planda uyum sağlayan metin ile.
 - **- Ne ?** Bağlanmış uygulamalar, hover zoom, bildirim rozetleri ve yapılandırılabilir saklanma. Dock sizi göstergeler arasında takip ediyor.
 - **Menü çubuğu ve Kontrol Merkezi:** Küresel uygulama menüleri ve hızlı sistem kontrolleri, ekranlardaki paylaşılan menü çubuğu ayarları ile.
-- **Başlatma tabanı:** Uygulamaları arayın, kategorileri tarayın ve iki düzenden herhangi birinde favorileri kaydetin.
+- **Başlatma tabanı:** Uygulamaları arayın, kategorileri tarayın ve favorileri kaydetin.
 - **Masaüstü widgetleri:** Masaüstünüzde paketli Liquid Glass widgetlerini ekleyin ve düzenleyin.
 - **İletişimler:** Cam pankartlar ve gruplanmış geçmiş, uygulamaların desteklediği hızlı eylemler ve cevaplar ile.
 - **Kayıt tablosu geçmişi:** Kopyalandığınız metinleri, resimleri ve saklamak istediğiniz eşyaları bul ve tekrar kullanın.
