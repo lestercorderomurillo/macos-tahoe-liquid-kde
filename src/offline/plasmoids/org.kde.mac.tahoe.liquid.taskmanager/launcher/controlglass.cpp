@@ -15,6 +15,7 @@
 
 PopupBackdrop::PopupBackdrop(QObject *parent) : QObject(parent)
 {
+    connect(&m_frame, &MaterialSample::changed, this, &PopupBackdrop::notifyBackdropChanged);
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray,QString)));
@@ -45,6 +46,8 @@ void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bou
     if (dragging && !m_lastFrame.isEmpty() && frame.topLeft() != m_lastFrame.topLeft()) m_ink.moved();
     if (!dragging) m_ink.stationary();
     m_lastFrame = frame;
+    if (title == QStringLiteral("mttkde-apps") || title == QStringLiteral("mttkde-search"))
+        m_frame.findWindowFrame(qobject_cast<QQuickWindow *>(m_window.data()), QStringLiteral("dialogs/background"));
     m_sampleBounds = bounds.translated(-frame.topLeft());
     m_gridSide = colors.size() == 64 * 64 * 3 ? 64 : 8;
     m_backdropGrid = colors;
@@ -79,13 +82,20 @@ QColor PopupBackdrop::animatedForegroundAt(QObject *item, QPointF point, QSizeF 
     return m_ink.color(item, base, foregroundAt(point, radius, base, fill));
 }
 
-QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material)
+QColor PopupBackdrop::frameFillAt(QPointF point, QColor fallback) const
+{
+    const auto painted = m_frame.at(point);
+    return painted.isValid() ? painted : fallback;
+}
+
+QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material, QColor overlay)
 {
     if (m_backdropGrid.isEmpty() || bounds.isEmpty()) return base;
     GlassInk::Samples samples;
     GlassInk::zonePoints(bounds, profile.value(QStringLiteral("sampleCount")).toInt(15), [&](QPointF p) {
         const QColor painted = material ? material->at(p) : QColor();
-        samples.add(GlassInk::composite(backdropAt(p), painted.isValid() ? painted : fill));
+        const QColor surface = GlassInk::composite(backdropAt(p), painted.isValid() ? painted : frameFillAt(p, fill));
+        samples.add(GlassInk::composite(surface, overlay));
     });
     const auto corrected = samples.tone(reference, ContrastPreset::settings(profile));
     return m_ink.color(item, base, GlassInk::applyRoleCorrection(base, reference, corrected));
@@ -102,13 +112,13 @@ QColor PopupBackdrop::animatedLabelForeground(QObject *item, QPointF point, QSiz
     return m_ink.color(item, base, target);
 }
 
-QList<QColor> PopupBackdrop::categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill, int count) const
+QList<QColor> PopupBackdrop::categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill, int count, QColor overlay) const
 {
     QList<QColor> surfaces;
     if (m_backdropGrid.isEmpty()) return surfaces;
     GlassInk::forEachPoint({std::clamp(count, 1, 256), 1}, point, radius, [&](QPointF p, double) {
         if (p.x() >= viewport.left() && p.x() < viewport.right())
-            surfaces.append(GlassInk::composite(backdropAt(p), fill));
+            surfaces.append(GlassInk::composite(GlassInk::composite(backdropAt(p), frameFillAt(p, fill)), overlay));
     });
     return surfaces;
 }
@@ -154,6 +164,7 @@ void PopupBackdrop::setWindow(QWindow *window)
 {
     if (m_window == window) return;
     if (m_window) disconnect(m_window, &QWindow::visibleChanged, this, nullptr);
+    m_frame.setSource(nullptr);
     m_window = window;
     m_ink.observe(window);
     const auto clear = [this] {

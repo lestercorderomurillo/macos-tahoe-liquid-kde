@@ -24,9 +24,10 @@ public:
     quint64 backdropRevision() const { return m_revision; }
     Q_INVOKABLE QColor foregroundAt(QPointF point, QSizeF radius, QColor base, QColor fill) const;
     Q_INVOKABLE QColor animatedForegroundAt(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
-    Q_INVOKABLE QColor surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material);
+    Q_INVOKABLE QColor frameFillAt(QPointF point, QColor fallback) const;
+    Q_INVOKABLE QColor surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material, QColor overlay);
     Q_INVOKABLE QColor animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill);
-    Q_INVOKABLE QList<QColor> categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill, int count = 5) const;
+    Q_INVOKABLE QList<QColor> categorySamples(QPointF point, QSizeF radius, QRectF viewport, QColor fill, int count = 5, QColor overlay = Qt::transparent) const;
     Q_INVOKABLE QColor profileGroupForeground(QObject *item, QColor base, const QList<QColor> &surfaces, const QJsonObject &profile);
     Q_INVOKABLE QColor groupForeground(QObject *item, QColor base, const QList<QColor> &surfaces);
     Q_INVOKABLE QColor backdropAt(QPointF point) const;
@@ -39,6 +40,7 @@ protected:
 private:
     Q_SLOT void movingControlSample(int pid, const QRect &frame, const QString &title);
     Q_SLOT void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title);
+    MaterialSample m_frame;
     quint64 m_revision = 0;
     QByteArray m_backdropGrid;
     int m_gridSide = 8;

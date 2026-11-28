@@ -25,7 +25,7 @@ QtObject {
         return item.mapToItem(null, 0, 0, item.width, item.height);
     }
 
-    function resolve(sampler, item, base, fill, profileId, bubble, component, reference, centerX, textWidth) {
+    function resolve(sampler, item, base, fill, profileId, bubble, component, reference, centerX, textWidth, overlay = "transparent") {
         if (!item || !sampler.window || !sampler.window.visible || !settings.dynamicTinting) return base;
         const profile = settings.contrastProfiles[profileId];
         if (!profile) return base;
@@ -34,7 +34,7 @@ QtObject {
         const r = surface ? surfaceBounds(surface) : bounds(item, centerX, textWidth);
         const material = bubble?.contrastMaterial ?? null;
         if (material) material.revision;
-        return sampler.surfaceForeground(item, r, surface ? reference : base, base, fill, profile, material);
+        return sampler.surfaceForeground(item, r, surface ? reference : base, base, fill, profile, material, overlay);
     }
 
     function foreground(sampler, item, base, fill, centerX, textWidth) {

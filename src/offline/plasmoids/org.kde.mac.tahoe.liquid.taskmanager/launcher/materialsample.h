@@ -21,8 +21,9 @@ public:
     QQuickItem *source() const { return m_source; }
     void setSource(QQuickItem *source);
     quint64 revision() const { return m_revision; }
+    void findWindowFrame(QQuickWindow *window, const QString &name);
     Q_INVOKABLE QColor at(QPointF scenePoint) const;
-    Q_INVOKABLE void invalidate();
+    Q_SLOT void invalidate();
     Q_INVOKABLE static QVariantList glyphs(const QString &text, const QFont &font);
 Q_SIGNALS:
     void changed();

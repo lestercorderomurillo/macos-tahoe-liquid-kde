@@ -20,6 +20,8 @@ void MaterialSample::setSource(QQuickItem *item)
     m_pixels = {};
     m_pending.clear();
     if (item) {
+        if (item->metaObject()->indexOfSignal("repaintNeeded()") >= 0)
+            connect(item, SIGNAL(repaintNeeded()), this, SLOT(invalidate()));
         connect(item, &QQuickItem::windowChanged, this, &MaterialSample::invalidate);
         connect(item, &QQuickItem::visibleChanged, this, &MaterialSample::invalidate);
         connect(item, &QQuickItem::widthChanged, this, &MaterialSample::invalidate);
@@ -34,6 +36,26 @@ void MaterialSample::setSource(QQuickItem *item)
     ++m_revision;
     Q_EMIT sourceChanged();
     Q_EMIT changed();
+}
+
+void MaterialSample::findWindowFrame(QQuickWindow *window, const QString &name)
+{
+    if (!window || !window->contentItem()) { setSource(nullptr); return; }
+    auto items = window->contentItem()->childItems();
+    auto *content = window->property("mainItem").value<QQuickItem *>();
+    while (!items.isEmpty()) {
+        auto *item = items.takeFirst();
+        if (item == content || !item->isVisible()) continue;
+        const auto path = item->property("imagePath").toString();
+        const auto original = item->property("_mttkde_glass_source").toString();
+        if ((path == name || original == name) && item->width() >= window->width() * .8
+            && item->height() >= window->height() * .8 && item->childItems().isEmpty()) {
+            setSource(item);
+            return;
+        }
+        items.append(item->childItems());
+    }
+    setSource(nullptr);
 }
 
 void MaterialSample::invalidate()

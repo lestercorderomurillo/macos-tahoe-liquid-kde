@@ -167,19 +167,19 @@ Item {
         for (let ancestor = label; ancestor; ancestor = ancestor.parent) {
             ancestor.x; ancestor.y;
         }
-        const fill = layerOver(materialFill(root.glassSettings), backing);
+        const fill = materialFill(root.glassSettings);
         const center = label.mapToItem(root.contentItem, label.width / 2, label.height / 2);
         const radius = Qt.size(Math.min(label.contentWidth, label.width) * 0.4, 0);
         const clip = view.mapToItem(root.contentItem, Qt.rect(0, 0, view.width, view.height));
         return appBackdrop.categorySamples(center, radius, clip, fill,
-            root.glassSettings.contrastProfiles["launcher.categories"].sampleCount);
+            root.glassSettings.contrastProfiles["launcher.categories"].sampleCount, backing);
     }
     function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth, field = null) {
         if (!root.glassSettings.dynamicTinting) return fallback;
         const sampler = detached ? searchBackdrop : appBackdrop;
         const settings = detached ? searchMaterial : root.glassSettings;
-        return Tahoe.AdaptiveContrast.resolve(sampler, item, fallback, layerOver(materialFill(settings), overlay),
-            field ? "launcher.search" : "launcher.label", field ?? item, sampler.window.contentItem, fallback, sampleX, textWidth);
+        return Tahoe.AdaptiveContrast.resolve(sampler, item, fallback, materialFill(settings),
+            field ? "launcher.search" : "launcher.label", field ?? item, sampler.window.contentItem, fallback, sampleX, textWidth, overlay);
     }
 	readonly property color textColor: glassPalette.Kirigami.Theme.textColor
 	readonly property string textFont: Kirigami.Theme.defaultFont.family
