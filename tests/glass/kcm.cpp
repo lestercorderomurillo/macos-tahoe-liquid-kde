@@ -15,6 +15,9 @@
 #include <QJsonObject>
 #include <QPushButton>
 #include <QDir>
+#include <QDialogButtonBox>
+#include <QPlainTextEdit>
+#include <QTimer>
 #include <QStandardPaths>
 #include <QLabel>
 #include <QSpinBox>
@@ -72,6 +75,35 @@ int main(int argc, char **argv)
     };
     auto module = open();
     require(app.clipboard()->mimeData() == clipboardBefore, QStringLiteral("opening the editor changed the clipboard"));
+    if (qEnvironmentVariableIsSet("TEST_ADAPTIVE_CONTRAST")) {
+        const QByteArray custom = R"({"version":1,"extends":"default","components":{"notifications.card":{"scope":"bubble","correction":"shift","sampleCount":21,"maxChannelShift255":112,"targetSeparationLstar":33}}})";
+        for (bool create : {true, false}) {
+            QTimer::singleShot(0, [&app, custom, create] {
+                auto *dialog = app.activeModalWidget();
+                require(dialog, QStringLiteral("contrast editor missing"));
+                auto *selector = dialog->findChild<QComboBox *>(QStringLiteral("contrastPresetSelector"));
+                auto *editor = dialog->findChild<QPlainTextEdit *>(QStringLiteral("contrastJson"));
+                auto *buttons = dialog->findChild<QDialogButtonBox *>();
+                require(selector && editor && buttons, QStringLiteral("contrast editor controls missing"));
+                if (create) {
+                    selector->setCurrentIndex(1);
+                    selector->activated(1);
+                    editor->setPlainText(QString::fromUtf8(custom));
+                } else {
+                    require(selector->currentIndex() == 1 && QJsonDocument::fromJson(editor->toPlainText().toUtf8())
+                        == QJsonDocument::fromJson(custom), QStringLiteral("custom contrast override was lost"));
+                }
+                buttons->button(create ? QDialogButtonBox::Ok : QDialogButtonBox::Cancel)->click();
+            });
+            control<QPushButton>(module.get(), QStringLiteral("editAdaptiveContrast"))->click();
+            if (create) {
+                module->save();
+                module = open();
+            }
+        }
+        qWarning("adaptive contrast save/reopen verified");
+        return 0;
+    }
     const auto capture = qEnvironmentVariable("GLASS_KCM_CAPTURE");
     if (!capture.isEmpty()) {
         if (qEnvironmentVariableIsSet("GLASS_KCM_CAPTURE_PRESET")) {
