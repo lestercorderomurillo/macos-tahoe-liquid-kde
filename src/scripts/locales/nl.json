@@ -1794,5 +1794,10 @@
   "View logs": "Logboek tonen",
   "Warning": "Waarschuwing",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "Test het installatieprogramma eerst in een virtuele machine met dezelfde distributie en Plasma-versie voordat je het op je pc uitvoert.",
-  "kded6 service (optional)": "kded6 gezondheid (zacht)"
+  "kded6 service (optional)": "kded6 gezondheid (zacht)",
+  "Adaptive Contrast presets…": "Voorinstellingen voor adaptief contrast…",
+  "Adaptive Contrast presets": "Voorinstellingen voor adaptief contrast",
+  "Invalid contrast preset: %1": "Ongeldige contrastvoorinstelling: %1",
+  "Import JSON…": "JSON importeren…",
+  "Export JSON…": "JSON exporteren…"
 }

@@ -8,6 +8,12 @@ msgstr "इस कंप्यूटर के बारे में"
 msgid "Adaptive Contrast"
 msgstr "अनुकूलनात्मक विपरीत"
 
+msgid "Adaptive Contrast presets"
+msgstr "अनुकूली कंट्रास्ट प्रीसेट"
+
+msgid "Adaptive Contrast presets…"
+msgstr "अनुकूली कंट्रास्ट प्रीसेट…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "ग्लास बनावट में बारीक अनाज जोड़ें। 0 अनाज को निष्क्रिय करता है।"
 
@@ -113,8 +119,14 @@ msgstr "कोने"
 msgid "Could not apply background transparency: %1"
 msgstr "पृष्ठभूमि पारदर्शिता लागू नहीं कर सकाः %1"
 
+msgid "Custom"
+msgstr "कस्टम"
+
 msgid "Dark mode"
 msgstr "अंधेरे मोड"
+
+msgid "Default"
+msgstr "पूर्वन्यस्त"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "ग्रेडिएंट सक्षम करें"
+
+msgid "Export JSON…"
+msgstr "JSON निर्यात करें…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "पृष्ठभूमि धुंधलापन को पारदर्शी खिड़की फ्रेम और शीर्षक बारों तक बढ़ाएं।"
@@ -149,8 +164,14 @@ msgstr "प्रकाश शक्ति"
 msgid "Highlight width (px)"
 msgstr "हाइलाइट चौड़ाई (px)"
 
+msgid "Import JSON…"
+msgstr "JSON आयात करें…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "किनारे हाइलाइट की तीव्रता. 0 इसे अक्षम करता है।"
+
+msgid "Invalid contrast preset: %1"
+msgstr "अमान्य कंट्रास्ट प्रीसेट: %1"
 
 msgid "Light mode"
 msgstr "प्रकाश मोड"

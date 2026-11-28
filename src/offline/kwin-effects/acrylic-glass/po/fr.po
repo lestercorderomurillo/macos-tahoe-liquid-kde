@@ -8,6 +8,12 @@ msgstr "À propos de cet ordinateur"
 msgid "Adaptive Contrast"
 msgstr "Contraste adaptatif"
 
+msgid "Adaptive Contrast presets"
+msgstr "Préréglages de contraste adaptatif"
+
+msgid "Adaptive Contrast presets…"
+msgstr "Préréglages de contraste adaptatif…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Ajoute un grain fin à la texture du verre. 0 désactive le grain."
 
@@ -113,8 +119,14 @@ msgstr "Coins"
 msgid "Could not apply background transparency: %1"
 msgstr "Impossible d’appliquer la transparence d’arrière-plan : %1"
 
+msgid "Custom"
+msgstr "Personnalisé"
+
 msgid "Dark mode"
 msgstr "Mode sombre"
+
+msgid "Default"
+msgstr "Par défaut"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Lanceur"
 
 msgid "Enable gradient"
 msgstr "Activer le dégradé"
+
+msgid "Export JSON…"
+msgstr "Exporter au format JSON…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Étend le flou d’arrière-plan aux cadres translucides et aux barres de titre des fenêtres."
@@ -149,8 +164,14 @@ msgstr "Intensité des reflets"
 msgid "Highlight width (px)"
 msgstr "Largeur des reflets (px)"
 
+msgid "Import JSON…"
+msgstr "Importer un fichier JSON…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "Intensité du reflet au bord. 0 le désactive."
+
+msgid "Invalid contrast preset: %1"
+msgstr "Préréglage de contraste non valide : %1"
 
 msgid "Light mode"
 msgstr "Mode clair"

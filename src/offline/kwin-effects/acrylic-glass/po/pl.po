@@ -8,6 +8,12 @@ msgstr "O tym komputerze"
 msgid "Adaptive Contrast"
 msgstr "Adapcyjny kontrast"
 
+msgid "Adaptive Contrast presets"
+msgstr "Ustawienia wstępne kontrastu adaptacyjnego"
+
+msgid "Adaptive Contrast presets…"
+msgstr "Ustawienia wstępne kontrastu adaptacyjnego…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Dodaj drobne ziarna do szkła. 0 wyłącza ziarna."
 
@@ -113,8 +119,14 @@ msgstr "Węgi"
 msgid "Could not apply background transparency: %1"
 msgstr "Nie można zastosować przejrzystości tła: %1"
 
+msgid "Custom"
+msgstr "Własny"
+
 msgid "Dark mode"
 msgstr "Mód ciemny"
+
+msgid "Default"
+msgstr "Domyślne"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "Włącz gradient"
+
+msgid "Export JSON…"
+msgstr "Eksportuj JSON…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Rozszerzyć rozmycie tła na przejrzystych ram okna i paski tytułowe."
@@ -149,8 +164,14 @@ msgstr "Wyświetlacz"
 msgid "Highlight width (px)"
 msgstr "Wysoka szerokość (px)"
 
+msgid "Import JSON…"
+msgstr "Importuj JSON…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "Intensywność obróżniania. 0 go wyłącza."
+
+msgid "Invalid contrast preset: %1"
+msgstr "Nieprawidłowe ustawienie wstępne kontrastu: %1"
 
 msgid "Light mode"
 msgstr "Tryb światła"

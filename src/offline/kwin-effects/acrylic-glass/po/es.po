@@ -8,6 +8,12 @@ msgstr "Acerca de este equipo"
 msgid "Adaptive Contrast"
 msgstr "Contraste adaptativo"
 
+msgid "Adaptive Contrast presets"
+msgstr "Preajustes de contraste adaptativo"
+
+msgid "Adaptive Contrast presets…"
+msgstr "Preajustes de contraste adaptativo…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Añadir grano fino a la textura del vidrio. 0 desactiva el grano."
 
@@ -113,8 +119,14 @@ msgstr "Las esquinas"
 msgid "Could not apply background transparency: %1"
 msgstr "No se puede aplicar la transparencia de fondo: %1"
 
+msgid "Custom"
+msgstr "Archivo elegido"
+
 msgid "Dark mode"
 msgstr "Modo oscuro"
+
+msgid "Default"
+msgstr "Predeterminada"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "Habilitar el gradiente"
+
+msgid "Export JSON…"
+msgstr "Exportar JSON…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Extenda el borrado de fondo a los marcos translúcidos de las ventanas y las barras de título."
@@ -149,8 +164,14 @@ msgstr "Fuente de resaltación"
 msgid "Highlight width (px)"
 msgstr "Ancho de resalta (px)"
 
+msgid "Import JSON…"
+msgstr "Importar JSON…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "La intensidad del punto de inflexión. 0 lo desactiva."
+
+msgid "Invalid contrast preset: %1"
+msgstr "Preajuste de contraste no válido: %1"
 
 msgid "Light mode"
 msgstr "Modo de luz"

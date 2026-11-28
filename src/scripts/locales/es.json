@@ -1794,5 +1794,10 @@
   "View logs": "Ver registros",
   "Warning": "Advertencia",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "Prueba el instalador en una máquina virtual con tu distribución y versión de Plasma antes de ejecutarlo en tu PC.",
-  "kded6 service (optional)": "Servicio kded6 (opcional)"
+  "kded6 service (optional)": "Servicio kded6 (opcional)",
+  "Adaptive Contrast presets…": "Preajustes de contraste adaptativo…",
+  "Adaptive Contrast presets": "Preajustes de contraste adaptativo",
+  "Invalid contrast preset: %1": "Preajuste de contraste no válido: %1",
+  "Import JSON…": "Importar JSON…",
+  "Export JSON…": "Exportar JSON…"
 }

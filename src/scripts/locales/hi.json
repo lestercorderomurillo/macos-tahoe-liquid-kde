@@ -1794,5 +1794,10 @@
   "View logs": "लॉग देखें",
   "Warning": "चेतावनी",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "अपने पीसी पर इंस्टॉलर चलाने से पहले उसे उसी वितरण और Plasma संस्करण वाली वर्चुअल मशीन में जाँचें।",
-  "kded6 service (optional)": "kded6 स्वास्थ्य (मौखिक)"
+  "kded6 service (optional)": "kded6 स्वास्थ्य (मौखिक)",
+  "Adaptive Contrast presets…": "अनुकूली कंट्रास्ट प्रीसेट…",
+  "Adaptive Contrast presets": "अनुकूली कंट्रास्ट प्रीसेट",
+  "Invalid contrast preset: %1": "अमान्य कंट्रास्ट प्रीसेट: %1",
+  "Import JSON…": "JSON आयात करें…",
+  "Export JSON…": "JSON निर्यात करें…"
 }

@@ -1794,5 +1794,10 @@
   "dependency package transaction failed — refusing to continue": "Pakettransaktion für Abhängigkeiten fehlgeschlagen — Fortsetzung abgelehnt",
   "Kvantum bundled-source marker installed": "Markierung für mitgelieferten Kvantum-Quellcode installiert",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "Teste das Installationsprogramm zuerst in einer virtuellen Maschine mit deiner Distribution und Plasma-Version, bevor du es auf deinem PC ausführst.",
-  "No initialized Firefox profiles found — run Firefox once, then reinstall": "Keine initialisierten Firefox-Profile gefunden — Firefox einmal starten, dann erneut installieren"
+  "No initialized Firefox profiles found — run Firefox once, then reinstall": "Keine initialisierten Firefox-Profile gefunden — Firefox einmal starten, dann erneut installieren",
+  "Adaptive Contrast presets…": "Voreinstellungen für adaptiven Kontrast…",
+  "Adaptive Contrast presets": "Voreinstellungen für adaptiven Kontrast",
+  "Invalid contrast preset: %1": "Ungültige Kontrastvoreinstellung: %1",
+  "Import JSON…": "JSON importieren…",
+  "Export JSON…": "JSON exportieren…"
 }

@@ -8,6 +8,12 @@ msgstr "Sobre este computador"
 msgid "Adaptive Contrast"
 msgstr "Contraste adaptativo"
 
+msgid "Adaptive Contrast presets"
+msgstr "Predefinições de contraste adaptativo"
+
+msgid "Adaptive Contrast presets…"
+msgstr "Predefinições de contraste adaptativo…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Adiciona granulação fina à textura do vidro. 0 desativa a granulação."
 
@@ -113,8 +119,14 @@ msgstr "Cantos"
 msgid "Could not apply background transparency: %1"
 msgstr "Não foi possível aplicar a transparência do fundo: %1"
 
+msgid "Custom"
+msgstr "Arquivo escolhido"
+
 msgid "Dark mode"
 msgstr "Modo escuro"
+
+msgid "Default"
+msgstr "Padrão"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Lançador"
 
 msgid "Enable gradient"
 msgstr "Ativar gradiente"
+
+msgid "Export JSON…"
+msgstr "Exportar JSON…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Estende o desfoque do fundo às molduras e barras de título translúcidas das janelas."
@@ -149,8 +164,14 @@ msgstr "Intensidade do brilho"
 msgid "Highlight width (px)"
 msgstr "Largura do brilho (px)"
 
+msgid "Import JSON…"
+msgstr "Importar JSON…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "Intensidade do brilho na borda. 0 o desativa."
+
+msgid "Invalid contrast preset: %1"
+msgstr "Predefinição de contraste inválida: %1"
 
 msgid "Light mode"
 msgstr "Modo claro"

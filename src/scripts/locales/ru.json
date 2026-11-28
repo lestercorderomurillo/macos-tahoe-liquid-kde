@@ -1794,5 +1794,10 @@
   "View logs": "Показать журнал",
   "Warning": "Предупреждение",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "Прежде чем запускать установщик на своём ПК, проверьте его в виртуальной машине с тем же дистрибутивом и той же версией Plasma.",
-  "kded6 service (optional)": "состояние kded6 (мягкая)"
+  "kded6 service (optional)": "состояние kded6 (мягкая)",
+  "Adaptive Contrast presets…": "Предустановки адаптивного контраста…",
+  "Adaptive Contrast presets": "Предустановки адаптивного контраста",
+  "Invalid contrast preset: %1": "Недопустимая предустановка контраста: %1",
+  "Import JSON…": "Импортировать JSON…",
+  "Export JSON…": "Экспортировать JSON…"
 }

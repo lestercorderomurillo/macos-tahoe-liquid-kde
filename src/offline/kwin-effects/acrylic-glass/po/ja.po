@@ -8,6 +8,12 @@ msgstr "このコンピュータについて"
 msgid "Adaptive Contrast"
 msgstr "適応する対照"
 
+msgid "Adaptive Contrast presets"
+msgstr "適応型コントラストのプリセット"
+
+msgid "Adaptive Contrast presets…"
+msgstr "適応型コントラストのプリセット…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "グラス質に細粒を加え 0 は粒を無効にする"
 
@@ -113,8 +119,14 @@ msgstr "角"
 msgid "Could not apply background transparency: %1"
 msgstr "背景透明性適用できない: %1"
 
+msgid "Custom"
+msgstr "カスタム"
+
 msgid "Dark mode"
 msgstr "ダークモード"
+
+msgid "Default"
+msgstr "デフォルト"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "格レーデントを有効にする"
+
+msgid "Export JSON…"
+msgstr "JSON をエクスポート…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "背景の模糊を透明な窓枠とタイトルバーに拡張します"
@@ -149,8 +164,14 @@ msgstr "強調力"
 msgid "Highlight width (px)"
 msgstr "ハイライト幅 (px)"
 
+msgid "Import JSON…"
+msgstr "JSON をインポート…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "極点の強度で 0 が遮断されます"
+
+msgid "Invalid contrast preset: %1"
+msgstr "コントラストのプリセットが無効です: %1"
 
 msgid "Light mode"
 msgstr "ライトモード"

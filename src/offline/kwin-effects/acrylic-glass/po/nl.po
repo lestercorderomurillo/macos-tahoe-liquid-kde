@@ -8,6 +8,12 @@ msgstr "Over deze computer"
 msgid "Adaptive Contrast"
 msgstr "Aanpassend contrast"
 
+msgid "Adaptive Contrast presets"
+msgstr "Voorinstellingen voor adaptief contrast"
+
+msgid "Adaptive Contrast presets…"
+msgstr "Voorinstellingen voor adaptief contrast…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Voeg fijn graan toe aan de glastectuur. 0 maakt het graan niet meer werkbaar."
 
@@ -113,8 +119,14 @@ msgstr "Hoeken"
 msgid "Could not apply background transparency: %1"
 msgstr "Niet in staat was om achtergrondtransparantie toe te passen: %1"
 
+msgid "Custom"
+msgstr "Aangepast"
+
 msgid "Dark mode"
 msgstr "Donkere modus"
+
+msgid "Default"
+msgstr "Standaard"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "Gradiënt in staat stellen"
+
+msgid "Export JSON…"
+msgstr "JSON exporteren…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Verleng de achtergrondvervaagbaarheid tot doorzichtige raamrammen en titelbalken."
@@ -149,8 +164,14 @@ msgstr "Hoger lichtsterkte"
 msgid "Highlight width (px)"
 msgstr "Hoogtepuntenbreedte (px)"
 
+msgid "Import JSON…"
+msgstr "JSON importeren…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "Intensiteit van de rand highlight. 0 maakt het niet meer mogelijk."
+
+msgid "Invalid contrast preset: %1"
+msgstr "Ongeldige contrastvoorinstelling: %1"
 
 msgid "Light mode"
 msgstr "Lichtmodus"

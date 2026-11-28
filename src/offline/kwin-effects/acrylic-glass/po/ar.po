@@ -8,6 +8,12 @@ msgstr "عن هذا الكمبيوتر"
 msgid "Adaptive Contrast"
 msgstr "التباين المتكيف"
 
+msgid "Adaptive Contrast presets"
+msgstr "إعدادات التباين التكيفي المسبقة"
+
+msgid "Adaptive Contrast presets…"
+msgstr "إعدادات التباين التكيفي المسبقة…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "إضافة الحبوب الجميلة إلى النسيج الزجاجي 0 يمنع الحبوب"
 
@@ -113,8 +119,14 @@ msgstr "الزوايا"
 msgid "Could not apply background transparency: %1"
 msgstr "لم يتمكن من تطبيق الشفافية الخلفية: %1"
 
+msgid "Custom"
+msgstr "مخصّص"
+
 msgid "Dark mode"
 msgstr "وضع الظلام"
+
+msgid "Default"
+msgstr "المبدئيّ"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "تمكين التراجع"
+
+msgid "Export JSON…"
+msgstr "تصدير JSON…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "تمديد الضباب الخلفي إلى إطارات النافذة الشفافة وعبارات العنوان."
@@ -149,8 +164,14 @@ msgstr "قوة التركيز"
 msgid "Highlight width (px)"
 msgstr "عرض الضوء (px)"
 
+msgid "Import JSON…"
+msgstr "استيراد JSON…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "كثافة الجهاز الضخم، 0 يمنعها"
+
+msgid "Invalid contrast preset: %1"
+msgstr "إعداد التباين المسبق غير صالح: %1"
 
 msgid "Light mode"
 msgstr "وضع الضوء"

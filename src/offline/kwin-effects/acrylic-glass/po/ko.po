@@ -8,6 +8,12 @@ msgstr "이 컴퓨터 에 관한 것"
 msgid "Adaptive Contrast"
 msgstr "적응적 인 대조"
 
+msgid "Adaptive Contrast presets"
+msgstr "적응형 대비 사전 설정"
+
+msgid "Adaptive Contrast presets…"
+msgstr "적응형 대비 사전 설정…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "유리 질서에 미세한 곡물을 추가하면 0은 곡물을 비활성화합니다."
 
@@ -113,8 +119,14 @@ msgstr "코너"
 msgid "Could not apply background transparency: %1"
 msgstr "배경 투명성을 적용할 수 없었습니다: %1"
 
+msgid "Custom"
+msgstr "사용자 정의"
+
 msgid "Dark mode"
 msgstr "어두운 모드"
+
+msgid "Default"
+msgstr "기본값"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "가속도를 허용"
+
+msgid "Export JSON…"
+msgstr "JSON 내보내기…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "배경 흐릿함을 투명한 창자 프레임과 타이틀 바로 확장한다."
@@ -149,8 +164,14 @@ msgstr "강조력"
 msgid "Highlight width (px)"
 msgstr "하이라이트 너비 (px)"
 
+msgid "Import JSON…"
+msgstr "JSON 가져오기…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "가장자리의 강도가 강조됩니다. 0는 그것을 비활성화합니다."
+
+msgid "Invalid contrast preset: %1"
+msgstr "잘못된 대비 사전 설정: %1"
 
 msgid "Light mode"
 msgstr "빛 모드"

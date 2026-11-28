@@ -1794,5 +1794,10 @@
   "View logs": "查看日志",
   "Warning": "警告",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "在自己的电脑上运行安装程序之前，请先在使用相同发行版和 Plasma 版本的虚拟机中测试。",
-  "kded6 service (optional)": "kded6 服务（可选）"
+  "kded6 service (optional)": "kded6 服务（可选）",
+  "Adaptive Contrast presets…": "自适应对比度预设…",
+  "Adaptive Contrast presets": "自适应对比度预设",
+  "Invalid contrast preset: %1": "无效的对比度预设：%1",
+  "Import JSON…": "导入 JSON…",
+  "Export JSON…": "导出 JSON…"
 }

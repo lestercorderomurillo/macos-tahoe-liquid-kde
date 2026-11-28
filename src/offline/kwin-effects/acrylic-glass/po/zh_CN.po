@@ -8,6 +8,12 @@ msgstr "关于本机"
 msgid "Adaptive Contrast"
 msgstr "适应性对比"
 
+msgid "Adaptive Contrast presets"
+msgstr "自适应对比度预设"
+
+msgid "Adaptive Contrast presets…"
+msgstr "自适应对比度预设…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "为玻璃纹理添加细微颗粒。设为 0 可关闭颗粒效果。"
 
@@ -113,8 +119,14 @@ msgstr "角落"
 msgid "Could not apply background transparency: %1"
 msgstr "无法应用背景透明度: %1"
 
+msgid "Custom"
+msgstr "所选文件"
+
 msgid "Dark mode"
 msgstr "黑暗模式"
+
+msgid "Default"
+msgstr "默认"
 
 msgid "Dock"
 msgstr "程序坞"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "启用梯度"
+
+msgid "Export JSON…"
+msgstr "导出 JSON…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "将背景模糊扩展到半透明的窗框和标题栏。"
@@ -149,8 +164,14 @@ msgstr "突出强度"
 msgid "Highlight width (px)"
 msgstr "突出宽度 (px)"
 
+msgid "Import JSON…"
+msgstr "导入 JSON…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "边缘亮度. 0 关闭它."
+
+msgid "Invalid contrast preset: %1"
+msgstr "无效的对比度预设：%1"
 
 msgid "Light mode"
 msgstr "灯光模式"

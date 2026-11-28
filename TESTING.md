@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.34**. Both editions use shared adaptive contrast profiles and smooth letter-level foregrounds. [Installed component captures and measurements](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/04d1edc66fea1ee4aaff6faf91ff9ae5b01223e9/README.md).
+**v0.85.35**. Both editions use shared adaptive contrast profiles and smooth letter-level foregrounds. [Installed component captures and measurements](https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/04d1edc66fea1ee4aaff6faf91ff9ae5b01223e9/README.md).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

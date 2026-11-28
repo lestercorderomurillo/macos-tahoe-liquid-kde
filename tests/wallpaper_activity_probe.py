@@ -64,7 +64,7 @@ PlasmoidItem {
     stage_configuration_route(packages / CALENDAR)
     # Observe one production weekday label with the bundled Follow System default.
     main = packages / CALENDAR / "contents/ui/main.qml"
-    label = "text: root.weekdayShort[index]"
+    label = "sourceText: root.weekdayShort[index]"
     source = main.read_text()
     assert source.count(label) == 1
     main.write_text(source.replace(label, label + """

@@ -1794,5 +1794,10 @@
   "View logs": "عرض السجلات",
   "Warning": "تحذير",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "قبل تشغيل برنامج التثبيت على حاسوبك، اختبره في آلة افتراضية تستخدم التوزيعة نفسها وإصدار Plasma نفسه.",
-  "kded6 service (optional)": "kded6 الصحة (رقيقة)"
+  "kded6 service (optional)": "kded6 الصحة (رقيقة)",
+  "Adaptive Contrast presets…": "إعدادات التباين التكيفي المسبقة…",
+  "Adaptive Contrast presets": "إعدادات التباين التكيفي المسبقة",
+  "Invalid contrast preset: %1": "إعداد التباين المسبق غير صالح: %1",
+  "Import JSON…": "استيراد JSON…",
+  "Export JSON…": "تصدير JSON…"
 }

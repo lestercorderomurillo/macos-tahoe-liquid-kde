@@ -8,6 +8,12 @@ msgstr "Über diesen Computer"
 msgid "Adaptive Contrast"
 msgstr "Adaptiver Kontrast"
 
+msgid "Adaptive Contrast presets"
+msgstr "Voreinstellungen für adaptiven Kontrast"
+
+msgid "Adaptive Contrast presets…"
+msgstr "Voreinstellungen für adaptiven Kontrast…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Fügt der Glastextur eine feine Körnung hinzu. 0 deaktiviert die Körnung."
 
@@ -113,8 +119,14 @@ msgstr "Ecken"
 msgid "Could not apply background transparency: %1"
 msgstr "Hintergrundtransparenz konnte nicht angewendet werden: %1"
 
+msgid "Custom"
+msgstr "Gewählte Datei"
+
 msgid "Dark mode"
 msgstr "Dunkler Modus"
+
+msgid "Default"
+msgstr "Standard"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Anwendungsstarter"
 
 msgid "Enable gradient"
 msgstr "Farbverlauf aktivieren"
+
+msgid "Export JSON…"
+msgstr "JSON exportieren…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Erweitert die Hintergrundunschärfe auf durchscheinende Fensterrahmen und Titelleisten."
@@ -149,8 +164,14 @@ msgstr "Glanzstärke"
 msgid "Highlight width (px)"
 msgstr "Glanzbreite (px)"
 
+msgid "Import JSON…"
+msgstr "JSON importieren…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "Stärke des Glanzlichts am Rand. 0 deaktiviert es."
+
+msgid "Invalid contrast preset: %1"
+msgstr "Ungültige Kontrastvoreinstellung: %1"
 
 msgid "Light mode"
 msgstr "Heller Modus"

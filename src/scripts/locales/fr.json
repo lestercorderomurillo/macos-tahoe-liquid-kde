@@ -1794,5 +1794,10 @@
   "dependency package transaction failed — refusing to continue": "Échec de la transaction des paquets de dépendances — poursuite refusée",
   "Kvantum bundled-source marker installed": "Marqueur des sources Kvantum fournies installé",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "Avant de lancer le programme d’installation sur votre PC, testez-le dans une machine virtuelle avec votre distribution et votre version de Plasma.",
-  "No initialized Firefox profiles found — run Firefox once, then reinstall": "Aucun profil Firefox initialisé trouvé — lancez Firefox une fois, puis réinstallez"
+  "No initialized Firefox profiles found — run Firefox once, then reinstall": "Aucun profil Firefox initialisé trouvé — lancez Firefox une fois, puis réinstallez",
+  "Adaptive Contrast presets…": "Préréglages de contraste adaptatif…",
+  "Adaptive Contrast presets": "Préréglages de contraste adaptatif",
+  "Invalid contrast preset: %1": "Préréglage de contraste non valide : %1",
+  "Import JSON…": "Importer un fichier JSON…",
+  "Export JSON…": "Exporter au format JSON…"
 }

@@ -67,6 +67,8 @@ in rec {
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/backdropgeometry.h")
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/contrastpreset.h")
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glassink.h")
+      (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/glyphgradient.h")
+      (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/inkpixels.h")
       (offline + "/plasmoids/org.kde.mac.tahoe.liquid.taskmanager/launcher/inktransition.h")
     ];
   }) {

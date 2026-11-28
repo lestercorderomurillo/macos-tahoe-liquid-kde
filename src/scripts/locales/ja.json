@@ -1794,5 +1794,10 @@
   "View logs": "ログを表示",
   "Warning": "警告",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "お使いの PC でインストーラーを実行する前に、同じディストリビューションと Plasma バージョンの仮想マシンでテストしてください。",
-  "kded6 service (optional)": "kded6 健康 (柔らかい)"
+  "kded6 service (optional)": "kded6 健康 (柔らかい)",
+  "Adaptive Contrast presets…": "適応型コントラストのプリセット…",
+  "Adaptive Contrast presets": "適応型コントラストのプリセット",
+  "Invalid contrast preset: %1": "コントラストのプリセットが無効です: %1",
+  "Import JSON…": "JSON をインポート…",
+  "Export JSON…": "JSON をエクスポート…"
 }

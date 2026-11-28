@@ -1794,5 +1794,10 @@
   "View logs": "Günlükleri göster",
   "Warning": "Uyarı",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "Yükleyiciyi bilgisayarınızda çalıştırmadan önce aynı dağıtımı ve Plasma sürümünü kullanan bir sanal makinede deneyin.",
-  "kded6 service (optional)": "kded6 Sağlık (yumuşak)"
+  "kded6 service (optional)": "kded6 Sağlık (yumuşak)",
+  "Adaptive Contrast presets…": "Uyarlanabilir karşıtlık önayarları…",
+  "Adaptive Contrast presets": "Uyarlanabilir karşıtlık önayarları",
+  "Invalid contrast preset: %1": "Geçersiz karşıtlık önayarı: %1",
+  "Import JSON…": "JSON içe aktar…",
+  "Export JSON…": "JSON dışa aktar…"
 }

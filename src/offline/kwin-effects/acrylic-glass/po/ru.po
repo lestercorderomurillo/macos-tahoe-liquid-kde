@@ -8,6 +8,12 @@ msgstr "Об этом компьютере"
 msgid "Adaptive Contrast"
 msgstr "Адаптивный контраст"
 
+msgid "Adaptive Contrast presets"
+msgstr "Предустановки адаптивного контраста"
+
+msgid "Adaptive Contrast presets…"
+msgstr "Предустановки адаптивного контраста…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Мелкое зерно в текстуре стекла. 0 отключает зерно."
 
@@ -113,8 +119,14 @@ msgstr "Углы"
 msgid "Could not apply background transparency: %1"
 msgstr "Не удалось применить прозрачность фона: %1"
 
+msgid "Custom"
+msgstr "Особый"
+
 msgid "Dark mode"
 msgstr "Тёмный режим"
+
+msgid "Default"
+msgstr "По умолчанию"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/меню запуска"
 
 msgid "Enable gradient"
 msgstr "Включить градиент"
+
+msgid "Export JSON…"
+msgstr "Экспортировать JSON…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Размытие фона распространяется на полупрозрачные рамки и заголовки окон."
@@ -149,8 +164,14 @@ msgstr "Сила блика"
 msgid "Highlight width (px)"
 msgstr "Ширина блика (пикс.)"
 
+msgid "Import JSON…"
+msgstr "Импортировать JSON…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "Интенсивность подсветки края. 0 отключает её."
+
+msgid "Invalid contrast preset: %1"
+msgstr "Недопустимая предустановка контраста: %1"
 
 msgid "Light mode"
 msgstr "Светлый режим"

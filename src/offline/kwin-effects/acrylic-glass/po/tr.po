@@ -8,6 +8,12 @@ msgstr "Bu Bilgisayar Hakkında"
 msgid "Adaptive Contrast"
 msgstr "Adaptatif Karşılık"
 
+msgid "Adaptive Contrast presets"
+msgstr "Uyarlanabilir karşıtlık önayarları"
+
+msgid "Adaptive Contrast presets…"
+msgstr "Uyarlanabilir karşıtlık önayarları…"
+
 msgid "Add fine grain to the glass texture. 0 disables grain."
 msgstr "Cam dokuya ince tahıl ekleyin. 0 tahılları devre dışı bırakır."
 
@@ -113,8 +119,14 @@ msgstr "Köşeler"
 msgid "Could not apply background transparency: %1"
 msgstr "Arka plan şeffaflığı uygulanamadı: %1"
 
+msgid "Custom"
+msgstr "Özel"
+
 msgid "Dark mode"
 msgstr "Karanlık mod"
+
+msgid "Default"
+msgstr "Öntanımlı"
 
 msgid "Dock"
 msgstr "Dock"
@@ -124,6 +136,9 @@ msgstr "Dock/Launcher"
 
 msgid "Enable gradient"
 msgstr "Geziyi etkinleştir"
+
+msgid "Export JSON…"
+msgstr "JSON dışa aktar…"
 
 msgid "Extend background blur to translucent window frames and title bars."
 msgstr "Arka plan bulanıklığını, şeffaf pencereler çerçevesine ve başlık çubuğalarına uzatın."
@@ -149,8 +164,14 @@ msgstr "Yüksek kuvvet"
 msgid "Highlight width (px)"
 msgstr "Uyarı genişliği (px)"
 
+msgid "Import JSON…"
+msgstr "JSON içe aktar…"
+
 msgid "Intensity of the edge highlight. 0 disables it."
 msgstr "Kenarlık yoğunluğu onu devre dışı bırakıyor."
+
+msgid "Invalid contrast preset: %1"
+msgstr "Geçersiz karşıtlık önayarı: %1"
 
 msgid "Light mode"
 msgstr "Işık modusu"

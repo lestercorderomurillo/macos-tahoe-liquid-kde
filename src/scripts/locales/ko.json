@@ -1794,5 +1794,10 @@
   "View logs": "로그 보기",
   "Warning": "경고",
   "Test the installer in a virtual machine with your distribution and Plasma version before running it on your PC.": "PC에서 설치 프로그램을 실행하기 전에 같은 배포판과 Plasma 버전을 사용하는 가상 머신에서 먼저 테스트하세요.",
-  "kded6 service (optional)": "kded6 건강 (무연)"
+  "kded6 service (optional)": "kded6 건강 (무연)",
+  "Adaptive Contrast presets…": "적응형 대비 사전 설정…",
+  "Adaptive Contrast presets": "적응형 대비 사전 설정",
+  "Invalid contrast preset: %1": "잘못된 대비 사전 설정: %1",
+  "Import JSON…": "JSON 가져오기…",
+  "Export JSON…": "JSON 내보내기…"
 }
