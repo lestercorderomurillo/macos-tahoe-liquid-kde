@@ -243,10 +243,21 @@ def stage_glass_text(package):
             # Visibility feeds the ink binding, so it must depend on the source string.
             adapted = adapted.replace("visible: text.length > 0", "visible: sourceText.length > 0")
             adapted = adapted.replace("property int hour12:", "property bool adaptOverlay: false\n    property int hour12:")
+            # Keep the clock's implicit dimensions driven by the plain text.
+            # Its centered row positions supply the input coordinates for the ink.
+            def clock_label(match):
+                prefix, indent, value = match.groups()
+                owner = re.search(r"\bid: (\w+)", prefix).group(1)
+                return (prefix + indent + "clockOverlay: root.adaptOverlay" + indent + "sourceText: " + value
+                        + indent + "textFormat: Text.PlainText" + indent + "text: sourceText"
+                        + indent + "color: softwareInk" + owner + ".visible ? \"transparent\" : baseColor"
+                        + indent + "Text {" + indent + "    id: softwareInk" + owner
+                        + indent + "    anchors.fill: parent" + indent + "    font: parent.font"
+                        + indent + "    visible: parent.useRuns && GraphicsInfo.api === GraphicsInfo.Software"
+                        + indent + "    textFormat: Text.StyledText"
+                        + indent + "    text: visible ? parent.glyphText() : \"\"" + indent + "}")
             adapted = re.sub(r"(NativeInk.AdaptiveWidgetText \{.*?)(\n +)text: ([^\n]+)",
-                             r"\1\2clockOverlay: root.adaptOverlay\2sourceText: \3"
-                             r"\2textFormat: useRuns ? Text.StyledText : Text.PlainText"
-                             r"\2text: useRuns ? glyphText() : sourceText", adapted, flags=re.S)
+                             clock_label, adapted, flags=re.S)
         if package.name.endswith(".clock-glass-text") and file.name == "main.qml":
             adapted = adapted.replace("id: overlay", "id: overlay\n            adaptOverlay: true")
         if adapted != source:
