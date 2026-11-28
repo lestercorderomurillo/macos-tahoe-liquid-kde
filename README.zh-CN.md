@@ -162,10 +162,10 @@ Tahoe 和 Golden Gate 的代码贡献者及问题报告者：
 
 ### Launchpad
 
-搜索应用，或按类别浏览。
+从程序坞打开“Apps”，即可按名称搜索、启动收藏的应用，或以网格或列表方式浏览各个类别。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · 浅色与深色模式" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · 浅色与深色模式" width="1092">
 </p>
 
 <br>

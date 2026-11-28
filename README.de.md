@@ -162,10 +162,10 @@ Greife über die obere Leiste auf die Menüs der aktiven App zu.
 
 ### Launchpad
 
-Suche Apps oder durchstöbere sie nach Kategorie.
+Öffne Apps im Dock, um nach Namen zu suchen, einen Favoriten zu starten oder Kategorien als Raster oder Liste zu durchsuchen.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Heller und dunkler Modus" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · Heller und dunkler Modus" width="1092">
 </p>
 
 <br>

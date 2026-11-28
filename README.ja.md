@@ -165,10 +165,10 @@ Dock のアイコンをデスクトップに合う色に変更できます。
 
 ### Launchpad
 
-アプリを検索したり、カテゴリ別に探したりできます。
+Dock から「Apps」を開くと、名前で検索したり、お気に入りのアプリを起動したり、カテゴリをグリッドやリストで表示したりできます。
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · ライトモードとダークモード" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · ライトモードとダークモード" width="1092">
 </p>
 
 <br>

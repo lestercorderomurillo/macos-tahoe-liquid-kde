@@ -162,10 +162,10 @@ Accédez aux menus de l’application active depuis la barre du haut.
 
 ### Launchpad
 
-Recherchez des applications ou parcourez-les par catégorie.
+Ouvrez Apps depuis le Dock pour rechercher une application par son nom, lancer un favori ou parcourir les catégories en grille ou en liste.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Modes clair et sombre" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · Modes clair et sombre" width="1092">
 </p>
 
 <br>

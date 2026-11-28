@@ -162,10 +162,10 @@
 
 ### Launchpad
 
-Ищите приложения или просматривайте их по категориям.
+Откройте Apps из Dock, чтобы найти приложение по имени, запустить избранное приложение или просмотреть категории в виде сетки или списка.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Светлый и тёмный режимы" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · Светлый и тёмный режимы" width="1092">
 </p>
 
 <br>

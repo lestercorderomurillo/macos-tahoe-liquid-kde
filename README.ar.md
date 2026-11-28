@@ -165,10 +165,10 @@
 
 ### Launchpad
 
-ابحث عن التطبيقات أو تصفحها حسب الفئة.
+افتح «التطبيقات» من Dock للبحث بالاسم أو تشغيل تطبيق مفضّل أو تصفّح الفئات في عرض الشبكة أو القائمة.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · الوضعان الفاتح والداكن" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · الوضعان الفاتح والداكن" width="1092">
 </p>
 
 <br>

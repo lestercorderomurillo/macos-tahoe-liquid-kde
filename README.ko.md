@@ -165,10 +165,10 @@ Dock 아이콘 색상을 바탕 화면에 맞춰 바꿀 수 있습니다.
 
 ### Launchpad
 
-앱을 검색하거나 카테고리별로 찾아볼 수 있습니다.
+Dock에서 Apps를 열어 이름으로 검색하거나 즐겨찾는 앱을 실행하고, 격자 또는 목록으로 카테고리를 둘러볼 수 있습니다.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · 밝은 모드와 어두운 모드" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · 밝은 모드와 어두운 모드" width="1092">
 </p>
 
 <br>

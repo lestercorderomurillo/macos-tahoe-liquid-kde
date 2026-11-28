@@ -1,0 +1,85 @@
+{
+  "captures": [
+    {
+      "edition": "tahoe",
+      "mode": "light",
+      "window": "mttkde-apps",
+      "geometry": {
+        "x": 446,
+        "y": 277,
+        "width": 1028,
+        "height": 526
+      },
+      "physical_crop": [
+        828,
+        490,
+        3012,
+        1670
+      ],
+      "desktop_scale": 2,
+      "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "installed_sha256": "549bb119c1f333d2537d0db79428b05873e2516e0a09bba9f05a00ff33f2dae0  ui/MenuRepresentation.qml\n4849df72ecdc19df7bdd7b179d4c27ccd86b68eabd7e4ce054502c4e8fc5d084  config/main.xml",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "source": "bb6ad463d57d7c260822e4043b8efc9b026fcb92",
+      "image": "src/screenshots/previews/tahoe-launchpad-light-2dd9d6ee8d28.webp",
+      "sha256": "2dd9d6ee8d281df5323da2f309db3d073faa59ba7cc21cb527ac8818f4ef70eb"
+    },
+    {
+      "edition": "tahoe",
+      "mode": "dark",
+      "window": "mttkde-apps",
+      "geometry": {
+        "x": 446,
+        "y": 277,
+        "width": 1028,
+        "height": 526
+      },
+      "physical_crop": [
+        828,
+        490,
+        3012,
+        1670
+      ],
+      "desktop_scale": 2,
+      "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
+      "installed_sha256": "549bb119c1f333d2537d0db79428b05873e2516e0a09bba9f05a00ff33f2dae0  ui/MenuRepresentation.qml\n4849df72ecdc19df7bdd7b179d4c27ccd86b68eabd7e4ce054502c4e8fc5d084  config/main.xml",
+      "plasma": "plasmashell 6.8.1",
+      "kwin": "kwin 6.8.1",
+      "source": "bb6ad463d57d7c260822e4043b8efc9b026fcb92",
+      "image": "src/screenshots/previews/tahoe-launchpad-dark-469f894c8010.webp",
+      "sha256": "469f894c8010d114a3b34d06e9b23903b10c4e01e37cdfcae30e1d8381349519"
+    }
+  ],
+  "dimensions": [
+    1092,
+    590
+  ],
+  "animation": "src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif",
+  "frame_durations_ms": [
+    2500,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    2500,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60,
+    60
+  ]
+}

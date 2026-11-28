@@ -162,10 +162,10 @@ Acesse os menus do aplicativo ativo pela barra superior.
 
 ### Launchpad
 
-Pesquise aplicativos ou navegue por categoria.
+Abra Apps pelo Dock para buscar por nome, abrir um aplicativo favorito ou explorar as categorias em grade ou lista.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Modos claro e escuro" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · Modos claro e escuro" width="1092">
 </p>
 
 <br>

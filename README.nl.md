@@ -165,10 +165,10 @@ Open de menu’s van de actieve app via de bovenbalk.
 
 ### Launchpad
 
-Zoek apps of blader per categorie.
+Open Apps vanuit het Dock om op naam te zoeken, een favoriet te starten of categorieën als raster of lijst te bekijken.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Lichte en donkere modus" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · Lichte en donkere modus" width="1092">
 </p>
 
 <br>

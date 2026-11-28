@@ -165,10 +165,10 @@ Otwieraj menu aktywnej aplikacji z górnego paska.
 
 ### Launchpad
 
-Szukaj aplikacji lub przeglądaj je według kategorii.
+Otwórz Apps w Docku, aby wyszukać aplikację po nazwie, uruchomić ulubioną aplikację lub przeglądać kategorie w widoku siatki albo listy.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · Tryb jasny i ciemny" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · Tryb jasny i ciemny" width="1092">
 </p>
 
 <br>

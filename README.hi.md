@@ -165,10 +165,10 @@ Dock के आइकन का रंग अपने डेस्कटॉप 
 
 ### Launchpad
 
-ऐप खोजें या उन्हें श्रेणी के अनुसार देखें।
+नाम से खोजने, कोई पसंदीदा ऐप खोलने या श्रेणियों को ग्रिड या सूची में देखने के लिए Dock से Apps खोलें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-52685d6c5ca9.gif" alt="Launchpad · लाइट और डार्क मोड" width="830">
+  <img src="src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif" alt="Launchpad · लाइट और डार्क मोड" width="1092">
 </p>
 
 <br>
