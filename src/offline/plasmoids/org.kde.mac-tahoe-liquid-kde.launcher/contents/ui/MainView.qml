@@ -174,6 +174,12 @@ Item {
         return appBackdrop.categorySamples(center, radius, clip, fill,
             root.glassSettings.contrastProfiles["launcher.categories"].sampleCount, backing);
     }
+    // Moving glyphs immediately leave their sampled backdrop. Keep their last
+    // tint during a flick and sample the final position when scrolling settles.
+    readonly property var appsViewport: searching ? searchList : appList.viewItem
+    readonly property Item scrollingContent: root.visible && !clipboardMode && root.glassSettings.dynamicTinting
+        && (appsViewport?.moving || appsViewport?.movedWithWheel) ? appsViewport.contentItem : null
+    readonly property color appMaterialFill: materialFill(root.glassSettings)
     readonly property var labelProfile: root.glassSettings.contrastProfiles["launcher.label"]
     function useTextRuns(label) {
         return root.visible && root.glassSettings.dynamicTinting && (labelProfile.scope === "letter"
@@ -183,16 +189,23 @@ Item {
         return useTextRuns(item) ? Tahoe.AdaptiveContrast.layoutRuns(item, value, labelProfile) : null;
     }
     function labelPaint(item, value, runs, overlay = "transparent", fallback = main.textColor) {
-        return Tahoe.AdaptiveContrast.paintRuns(item, value, labelProfile, (r, i) =>
-            Tahoe.AdaptiveContrast.resolve(appBackdrop, item, fallback, materialFill(root.glassSettings),
-                "launcher.label", item, root.contentItem, fallback, undefined, undefined, overlay, r, i), runs);
+        // Resolve shared settings once per label. Scrolling moves every glyph,
+        // but it does not change the profile, overlay or underlying material.
+        const scrolling = main.scrollingContent;
+        if (!scrolling) appBackdrop.backdropRevision;
+        const material = item.contrastMaterial ?? null;
+        if (material) material.revision;
+        const profile = labelProfile;
+        const fill = appMaterialFill;
+        return Tahoe.AdaptiveContrast.paintRuns(item, value, profile, (rect, index) =>
+            appBackdrop.surfaceForeground(item, rect, fallback, fallback, fill, profile, material, overlay, index), runs, scrolling);
     }
     function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth, field = null) {
         if (!root.glassSettings.dynamicTinting) return fallback;
         const sampler = detached ? searchBackdrop : appBackdrop;
         const settings = detached ? searchMaterial : root.glassSettings;
         return Tahoe.AdaptiveContrast.resolve(sampler, item, fallback, materialFill(settings),
-            field ? "launcher.search" : "launcher.label", field ?? item, sampler.window.contentItem, fallback, sampleX, textWidth, overlay);
+            field ? "launcher.search" : "launcher.label", field ?? item, sampler.window.contentItem, fallback, sampleX, textWidth, overlay, null, -1, field || detached ? null : main.scrollingContent);
     }
 	readonly property color textColor: glassPalette.Kirigami.Theme.textColor
 	readonly property string textFont: Kirigami.Theme.defaultFont.family

@@ -20,12 +20,14 @@ QtObject {
             align, letters);
     }
 
-    function paintRuns(item, value, profile, foregroundAt, runs = layoutRuns(item, value, profile)) {
+    function paintRuns(item, value, profile, foregroundAt, runs = layoutRuns(item, value, profile), scrollingContent = null) {
         const letters = profile.scope === "letter";
         const left = item.leftPadding ?? 0;
         const top = item.topPadding ?? 0;
         for (let ancestor = item; ancestor; ancestor = ancestor.parent) {
-            ancestor.x; ancestor.y; ancestor.rotation; ancestor.scale;
+            // Launchpad refreshes at the end of a flick.
+            if (ancestor !== scrollingContent) { ancestor.x; ancestor.y; }
+            ancestor.rotation; ancestor.scale;
         }
         const escape = s => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br>");
         const lines = [];
@@ -59,7 +61,7 @@ QtObject {
         return {markup:markup, lines:lines};
     }
 
-    function bounds(item, centerX, textWidth) {
+    function bounds(item, centerX, textWidth, scrollingContent = null) {
         const width = Math.min(item.width, textWidth ?? item.contentWidth ?? item.width);
         const height = Math.min(item.height, item.contentHeight ?? item.height);
         const left = item.leftPadding ?? 0;
@@ -68,25 +70,26 @@ QtObject {
         const x = centerX ?? (align === Qt.AlignLeft ? left + width / 2
             : align === Qt.AlignRight ? item.width - right - width / 2 : (item.width + left - right) / 2);
         for (let parent = item; parent; parent = parent.parent) {
-            parent.x; parent.y;
+            if (parent !== scrollingContent) { parent.x; parent.y; }
         }
         return item.mapToItem(null, x - width / 2, (item.height - height) / 2, width, height);
     }
 
-    function surfaceBounds(item) {
+    function surfaceBounds(item, scrollingContent = null) {
         for (let ancestor = item; ancestor; ancestor = ancestor.parent) {
-            ancestor.x; ancestor.y; ancestor.scale; ancestor.rotation;
+            if (ancestor !== scrollingContent) { ancestor.x; ancestor.y; }
+            ancestor.scale; ancestor.rotation;
         }
         return item.mapToItem(null, 0, 0, item.width, item.height);
     }
 
-    function resolve(sampler, item, base, fill, profileId, bubble, component, reference, centerX, textWidth, overlay = "transparent", runBounds = null, run = -1) {
+    function resolve(sampler, item, base, fill, profileId, bubble, component, reference, centerX, textWidth, overlay = "transparent", runBounds = null, run = -1, scrollingContent = null) {
         if (!item || !sampler.window || !sampler.window.visible || !settings.dynamicTinting) return base;
         const profile = settings.contrastProfiles[profileId];
         if (!profile) return base;
-        sampler.backdropRevision;
+        if (!scrollingContent) sampler.backdropRevision;
         const surface = profile.scope === "component" ? component : profile.scope === "bubble" ? bubble : null;
-        const r = runBounds ?? (surface ? surfaceBounds(surface) : bounds(item, centerX, textWidth));
+        const r = runBounds ?? (surface ? surfaceBounds(surface, scrollingContent) : bounds(item, centerX, textWidth, scrollingContent));
         const material = bubble?.contrastMaterial ?? null;
         if (material) material.revision;
         return sampler.surfaceForeground(item, r, surface ? reference : base, base, fill, profile, material, overlay, run);
