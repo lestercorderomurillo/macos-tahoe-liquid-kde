@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.44**. Use the approved line-scoped adaptive tint for Apps labels by default. Explicit saved scopes still take precedence. [Validation and coverage](release-evidence.json).
+**v0.85.45**. Settings saves pending live preferences before opening component installation review. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 
