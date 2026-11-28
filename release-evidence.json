@@ -1,21 +1,29 @@
 {
-  "version": "0.85.45",
+  "version": "0.85.46",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Settings saves pending live preferences before opening component installation review.",
+  "scope": "Apps and Clipboard share a wide seven-column launcher frame and animate between views.",
   "checks": [
     {
-      "command": "QT_FONT_DPI=84 python3 -m pytest tests/test_installer_wizard.py -k native_wizard_navigation (both editions passed).",
+      "command": "Open the installed launcher in both editions in a disposable KDE neon Plasma 6.8.1 Wayland guest. Measure the 1028 \u00d7 526 logical pixel popup through KWin and record Ctrl+4 and Ctrl+1 switching content in place in light and dark mode.",
       "result": "passed"
     },
     {
-      "command": "python3 -m pytest tests/test_plasmoid_settings.py (13 passed).",
-      "result": "passed"
-    },
-    {
-      "command": "Click Save in isolated X11 Plasma with a pending font installation choice. Verify Apps grid columns change from five to four and persist after reopening Settings. Save 36 additional Control Center and system menu values and compare live Plasma readback.",
+      "command": "python3 -m pytest -q -rs tests/test_launcher_presets.py::test_clipboard_launcher_integration (both native integration cases passed in an isolated test home)",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The Plasma write check covered 37 preferences. The offscreen navigation test used 84 DPI. At the host default DPI its horizontal-scroll assertion stopped the test before the Save scenario.",
-  "source_sha256": "937e5b64db8885af15b61badbd37eb4f55feba261a89e77ceee3774e4a16fe2f"
+  "coverage_limits": "Rendered captures cover KDE neon on Wayland. The native X11 integration cases cover Tahoe light and Golden Gate dark.",
+  "captures": [
+    {
+      "path": "src/screenshots/previews/tahoe-launchpad-light-dark-6fa6a235c9bd.gif",
+      "sha256": "6fa6a235c9bd317b87c7936dc8b84d94db30583a84de5975faf9950816452c0d",
+      "reviewed": true
+    },
+    {
+      "path": "src/screenshots/previews/tahoe-apps-clipboard-5238c80b84ec.gif",
+      "sha256": "5238c80b84ec3992d10ac755171be5e2324e5ba6f4015d52a0ecb7137b31dcb3",
+      "reviewed": true
+    }
+  ],
+  "source_sha256": "4b2fda14048bd7052e64302c1fd8f6a167df62c9d1ff2f61f3734a318e7d64e2"
 }
