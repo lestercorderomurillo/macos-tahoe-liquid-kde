@@ -63,7 +63,7 @@ Item {
                 radius: height / 2
             }
         }
-        onClicked: activeMenu.openRelative()
+        onClicked: menuOpen ? activeMenu.close() : activeMenu.openRelative()
     }
 
     TahoeOptionsMenu {

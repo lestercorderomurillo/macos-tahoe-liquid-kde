@@ -161,6 +161,11 @@ Timer {
         LauncherInteraction.key(Qt.Key_Down);
         LauncherInteraction.key(Qt.Key_Return);
         verify(!plasmoid.configuration.showAllAppsInList, "menu keyboard Grid action works");
+        LauncherInteraction.click(button);
+        verify(search.menuOpen, "ellipsis reopens the options");
+        LauncherInteraction.click(search.textField);
+        verify(root.visible && !search.menuOpen && search.textField.activeFocus,
+               "textbox click: launcher " + root.visible + ", menu " + search.menuOpen + ", focus " + search.textField.activeFocus);
     }
     function verifyOptionsIcon(search) {
         const icon = findIcon(search.testMenuButton.testButton.contentItem);
@@ -226,7 +231,13 @@ Timer {
                            "Tahoe capsules show Favorites and app categories");
                     const favorites = appList.slicedCategories[0];
                     verify(favorites.isFavorites, "Favorites is the first Tahoe capsule");
-                    appList.testCategories.categorySwitched(favorites.modelIndex);
+                    LauncherInteraction.click(searchBar.testMenuButton.testButton);
+                    verify(searchBar.menuOpen, "options open before the category click");
+                    const categoryTabs = appList.testCategories.testView;
+                    categoryTabs.positionViewAtBeginning();
+                    categoryTabs.forceLayout();
+                    LauncherInteraction.click(categoryTabs.itemAtIndex(0));
+                    verify(!searchBar.menuOpen && root.visible, "category click dismisses options");
                     verify(appList.currentModel === globalFavorites && !appList.selectedIsAllApps,
                            "Tahoe Favorites opens the full favorites model");
                     verify(appList.viewItem.count === globalFavorites.count && appList.viewItem.headerItem === null,

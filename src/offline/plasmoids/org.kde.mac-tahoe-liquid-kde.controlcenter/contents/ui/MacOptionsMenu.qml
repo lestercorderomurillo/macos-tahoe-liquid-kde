@@ -22,6 +22,7 @@ PlasmaCore.Dialog {
     property bool isDarkTheme: textColor.r * 0.2126 + textColor.g * 0.7152 + textColor.b * 0.0722 > 0.5
     property int preferredWidth: 154
     property bool fitContents: false
+    property string materialComponent: "control-center"
     property bool notificationGlass: false
     backgroundHints: notificationGlass ? PlasmaCore.Dialog.NoBackground : PlasmaCore.Dialog.StandardBackground
     property NativeGlass.ControlGlass glass: NativeGlass.ControlGlass {
@@ -115,7 +116,11 @@ PlasmaCore.Dialog {
             anchors.fill: parent
             active: menu.notificationGlass
             sourceComponent: Component {
-                NotificationSurface { cornerRadius: Math.min(16, height / 2) }
+                NotificationSurface {
+                    materialComponent: menu.materialComponent
+                    darkTint: goldenGate && materialComponent === "control-center" ? "white" : "black"
+                    cornerRadius: Math.min(16, height / 2)
+                }
             }
         }
         focus: true
