@@ -118,7 +118,7 @@ Item {
         title: "mttkde-calendar"
         visualParent: calendar.clock
         location: calendar.clock?.plasmoid.location ?? PlasmaCore.Types.TopEdge
-        surfaces: [{x: 0, y: 0, width: card.width, height: card.height, radius: card.cornerRadius, fill: card.fillColor}]
+        surfaces: [{x: card.x, y: card.y, width: card.width, height: card.height, radius: card.cornerRadius, fill: card.fillColor}]
         onVisibleChanged: if (visible) {
             calendar.clockTip?.hideToolTip()
             card.refresh()
@@ -127,90 +127,97 @@ Item {
             card.forceActiveFocus()
         }
 
-        mainItem: NotificationSurface {
-            panelHighlight: false
-            id: card
-            property date today: new Date()
-            property int offset: 0
-            readonly property date first: new Date(today.getFullYear(), today.getMonth() + offset, 1, 12)
-            readonly property int leading: first.getDay()
-            readonly property int count: new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate()
-            readonly property int weeks: Math.ceil((leading + count) / 7)
-            readonly property bool dark: Kirigami.Theme.backgroundColor.hslLightness < 0.5
+        mainItem: Item {
+            readonly property int topGap: popup.location === PlasmaCore.Types.TopEdge ? 6 : 0
+            width: card.width
+            height: topGap + card.height
 
-            readonly property color red: dark ? "#ff494e" : "#ff383e"
-            width: 328
-            height: 328
-            cornerRadius: 36
-            padding: 0
-            leftPadding: 0; rightPadding: 0; topPadding: 0; bottomPadding: 0
-            Accessible.role: Accessible.Grouping
-            Accessible.name: first.toLocaleDateString(Qt.locale(), "MMMM yyyy")
+            NotificationSurface {
+                y: parent.topGap
+                panelHighlight: false
+                id: card
+                property date today: new Date()
+                property int offset: 0
+                readonly property date first: new Date(today.getFullYear(), today.getMonth() + offset, 1, 12)
+                readonly property int leading: first.getDay()
+                readonly property int count: new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate()
+                readonly property int weeks: Math.ceil((leading + count) / 7)
+                readonly property bool dark: Kirigami.Theme.backgroundColor.hslLightness < 0.5
 
-            function refresh() { today = new Date() }
-            function openAgenda() {
-                popup.visible = false
-                if (calendar.clock) calendar.clock.expanded = true
-            }
-            Timer { interval: 30000; repeat: true; running: popup.visible; onTriggered: card.refresh() }
-            Keys.onLeftPressed: offset--
-            Keys.onRightPressed: offset++
-            Keys.onPressed: event => {
-                if (event.key === Qt.Key_Home) { offset = 0; event.accepted = true }
-            }
-            Keys.onEscapePressed: popup.visible = false
-            Keys.onReturnPressed: openAgenda()
-            WheelHandler {
-                onWheel: event => {
-                    if (event.angleDelta.y !== 0) card.offset += event.angleDelta.y > 0 ? -1 : 1
+                readonly property color red: dark ? "#ff494e" : "#ff383e"
+                width: 328
+                height: 328
+                cornerRadius: 36
+                padding: 0
+                leftPadding: 0; rightPadding: 0; topPadding: 0; bottomPadding: 0
+                Accessible.role: Accessible.Grouping
+                Accessible.name: first.toLocaleDateString(Qt.locale(), "MMMM yyyy")
+
+                function refresh() { today = new Date() }
+                function openAgenda() {
+                    popup.visible = false
+                    if (calendar.clock) calendar.clock.expanded = true
                 }
-            }
+                Timer { interval: 30000; repeat: true; running: popup.visible; onTriggered: card.refresh() }
+                Keys.onLeftPressed: offset--
+                Keys.onRightPressed: offset++
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_Home) { offset = 0; event.accepted = true }
+                }
+                Keys.onEscapePressed: popup.visible = false
+                Keys.onReturnPressed: openAgenda()
+                WheelHandler {
+                    onWheel: event => {
+                        if (event.angleDelta.y !== 0) card.offset += event.angleDelta.y > 0 ? -1 : 1
+                    }
+                }
 
-            Text {
-                x: 36
-                y: 36
-                text: Qt.locale().standaloneMonthName(card.first.getMonth(), Locale.LongFormat).toLocaleUpperCase()
-                color: card.red
-                font.family: Style.family
-                font.weight: Font.DemiBold
-                font.pixelSize: 20
-                TapHandler { onTapped: card.openAgenda() }
-            }
-            Grid {
-                x: 26
-                y: 64
-                columns: 7
-                spacing: 0
-                Repeater {
-                    model: 7 + card.weeks * 7
-                    delegate: Item {
-                        required property int index
-                        readonly property bool heading: index < 7
-                        readonly property int weekday: index % 7
-                        readonly property int day: index - 6 - card.leading
-                        readonly property bool valid: !heading && day > 0 && day <= card.count
-                        readonly property bool current: valid && card.offset === 0 && day === card.today.getDate()
-                        width: 39.2
-                        height: heading ? 40 : Math.min(38.4, 198 / card.weeks)
-                        Rectangle {
-                            anchors.centerIn: parent
-                            width: Math.min(36, parent.height)
-                            height: width
-                            radius: width / 2
-                            color: card.red
-                            visible: parent.current
-                        }
-                        Text {
-                            id: dayLabel
-                            anchors.centerIn: parent
-                            text: parent.heading ? Qt.locale().standaloneDayName(parent.weekday, Locale.NarrowFormat)
-                                : parent.valid ? Number(parent.day).toLocaleString(Qt.locale(), 'f', 0) : ""
-                            color: parent.current ? "white" : popup.foregroundFor(dayLabel, Kirigami.Theme.textColor)
+                Text {
+                    x: 36
+                    y: 36
+                    text: Qt.locale().standaloneMonthName(card.first.getMonth(), Locale.LongFormat).toLocaleUpperCase()
+                    color: card.red
+                    font.family: Style.family
+                    font.weight: Font.DemiBold
+                    font.pixelSize: 20
+                    TapHandler { onTapped: card.openAgenda() }
+                }
+                Grid {
+                    x: 26
+                    y: 64
+                    columns: 7
+                    spacing: 0
+                    Repeater {
+                        model: 7 + card.weeks * 7
+                        delegate: Item {
+                            required property int index
+                            readonly property bool heading: index < 7
+                            readonly property int weekday: index % 7
+                            readonly property int day: index - 6 - card.leading
+                            readonly property bool valid: !heading && day > 0 && day <= card.count
+                            readonly property bool current: valid && card.offset === 0 && day === card.today.getDate()
+                            width: 39.2
+                            height: heading ? 40 : Math.min(38.4, 198 / card.weeks)
+                            Rectangle {
+                                anchors.centerIn: parent
+                                width: Math.min(36, parent.height)
+                                height: width
+                                radius: width / 2
+                                color: card.red
+                                visible: parent.current
+                            }
+                            Text {
+                                id: dayLabel
+                                anchors.centerIn: parent
+                                text: parent.heading ? Qt.locale().standaloneDayName(parent.weekday, Locale.NarrowFormat)
+                                    : parent.valid ? Number(parent.day).toLocaleString(Qt.locale(), 'f', 0) : ""
+                                color: parent.current ? "white" : popup.foregroundFor(dayLabel, Kirigami.Theme.textColor)
 
-                            opacity: !parent.current && (parent.weekday === 0 || parent.weekday === 6) ? 0.8 : 1
-                            font.family: Style.family
-                            font.pixelSize: 20
-                            font.weight: Font.DemiBold
+                                opacity: !parent.current && (parent.weekday === 0 || parent.weekday === 6) ? 0.8 : 1
+                                font.family: Style.family
+                                font.pixelSize: 20
+                                font.weight: Font.DemiBold
+                            }
                         }
                     }
                 }

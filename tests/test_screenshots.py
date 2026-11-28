@@ -92,17 +92,17 @@ def visit(item):
         visit(child)
 visit(engine.rootObjects()[0].contentItem())
 expected = {'Chip', 'Cores', 'Memory', 'Graphics', 'Startup disk', 'Network',
-            'Serial number', 'OS', 'More Info…', 'Report a Bug…'}
+            'Serial number', 'OS', 'More Info…', 'Copy details', 'Report a Bug…'}
 assert expected <= texts, f'Missing labels: {expected - texts}'
 window = engine.rootObjects()[0]
 surface = window.findChild(QQuickItem, 'aboutGlassSurface')
 assert surface is not None
-# Every action uses the same glass background, including the icon-only Copy.
+# More Info is the single primary action.
 faces = window.findChildren(QQuickItem, 'aboutButtonFace')
-assert len(faces) == 3
+assert len(faces) == 1
 buttons = [face.parentItem().parentItem() for face in faces]
-assert [button.property('text') for button in buttons[:2]] == ['More Info…', 'Report a Bug…']
-assert not buttons[2].property('enabled'), 'Copy must wait for hardware details'
+assert [button.property('text') for button in buttons] == ['More Info…']
+assert not window.findChild(QQuickItem, 'aboutCopyLink').property('enabled'), 'Copy must wait for hardware details'
 assert window.findChild(QQuickItem, 'aboutDragArea') is not None
 window.show()
 app.processEvents()
@@ -131,7 +131,7 @@ for mode, foreground in [('white', 255), ('black', 0), ('white', 255)]:
         assert pressed.red() == (0 if foreground == 255 else 255)
         assert abs(pressed.alphaF() - (8 if foreground == 255 else 9) / 255) < .005
         button.setProperty('down', False)
-    for button in buttons[:2]:
+    for button in buttons:
         label = button.property('contentItem')
         assert label is not None and label.property('text') == button.property('text')
         assert label.isVisible() and label.implicitWidth() > 30

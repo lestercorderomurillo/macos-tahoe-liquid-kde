@@ -253,7 +253,7 @@ Reutilize textos e imagens que você copiou.
 Confira os detalhes do hardware, do software e do tema.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="Informações do sistema · Modos claro e escuro" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="Informações do sistema · Modos claro e escuro" width="830">
 </p>
 
 <br>

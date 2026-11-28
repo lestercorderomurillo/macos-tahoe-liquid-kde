@@ -4286,7 +4286,7 @@ class InstallerWindow(OpaqueSurface):
         self.page = ("removed" if self.action == "uninstall" else "done") if code == 0 else "error"
         self.render()
         if self.page == "done":
-            self.showMaximized()
+            self.showNormal()
             self.raise_()
             self.activateWindow()
 

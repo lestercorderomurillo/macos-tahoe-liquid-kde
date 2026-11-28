@@ -253,7 +253,7 @@ Réutilisez le texte et les images que vous avez copiés.
 Consultez les détails du matériel, des logiciels et du thème.
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="Informations sur le système · Modes clair et sombre" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="Informations sur le système · Modes clair et sombre" width="830">
 </p>
 
 <br>

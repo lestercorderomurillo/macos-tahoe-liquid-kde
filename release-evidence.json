@@ -1,18 +1,17 @@
 {
-  "version": "0.85.25",
+  "version": "0.85.29",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "qualified_candidate": "449d310e49b1ebc0a70eccdf193722df95469c66",
-  "scope": "Use notification glass and local foreground contrast for Clear History.",
-  "approval": "Maintainer approved publication after reviewing all four captures.",
-  "approved_previews": {
-    "comparacion.png": "79ef5e8add996218965bd534da139826a3aec18e1a243c034239c3b033091eba"
-  },
+  "scope": "Restore the normal installer window size when the ready page opens.",
   "checks": [
     {
-      "command": "Capture the installed NotificationsView in disposable KDE neon guests on Plasma 6.8.1 in light and dark modes with each edition\u2019s defaults. Verify installed QML against candidate and compare the four button crops against the previous gallery.",
+      "command": "python3 -m pytest tests/test_installer_wizard.py::test_native_wizard_navigation_preserves_choices_and_waits_for_completion (both editions passed)",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Focused appearance captures on Plasma Wayland 6.8.1.",
-  "source_sha256": "9bddb101a7e1e2471da1eeb169d6cf98bede272c01b444068246d0e3f2a3d79e"
+  "coverage_limits": "Offscreen Qt wizard with simulated backend completion.",
+  "approval": "Maintainer approved publication after reviewing the 900 x 680 Tahoe completion window.",
+  "approved_previews": {
+    "ready.png": "b8f1e89416ec2300d0474a43ad657c0573dccca02125b38c5f92e83de1c1cc4d"
+  },
+  "source_sha256": "fa2263365265f338f44ba0ee6c431fc37b6b2dcfa6c10e6e8c3c2c314fc92de9"
 }

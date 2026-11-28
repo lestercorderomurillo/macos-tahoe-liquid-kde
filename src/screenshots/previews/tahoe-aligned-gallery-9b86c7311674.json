@@ -598,50 +598,56 @@
           "mode": "light",
           "case": "system-information",
           "window": "About This Computer (preview)",
+          "source": "94280421232fbdca296bca7404caeeb19c8d9d66",
           "geometry": {
             "x": 780,
-            "y": 205,
+            "y": 250,
             "width": 360,
-            "height": 700
+            "height": 543
           },
-          "crop": [
-            1525,
-            375,
-            2315,
-            1845
+          "wallpaper": "MacTahoe",
+          "approved_preview": "MacTahoe.png",
+          "approved_preview_sha256": "5ea8cf4fbfae39d889dc1a6ee4a18bdbeb45c7666bc8e86e26454a8169d54cae",
+          "preview_crop": [
+            0,
+            0,
+            500,
+            731
           ],
-          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "d933283c69389f18927d0f85a7fe31f9122abaed2261c4f6ad61677cc034c1c7"
+          "sha256": "766dbc3eb7def3d8f57a39bcfe651ac40a150ae2ea1e51d77bcf566ff34fbb7b"
         },
         {
           "edition": "tahoe",
           "mode": "dark",
           "case": "system-information",
           "window": "About This Computer (preview)",
+          "source": "94280421232fbdca296bca7404caeeb19c8d9d66",
           "geometry": {
             "x": 780,
-            "y": 205,
+            "y": 250,
             "width": 360,
-            "height": 700
+            "height": 543
           },
-          "crop": [
-            1525,
-            375,
-            2315,
-            1845
+          "wallpaper": "MacTahoe",
+          "approved_preview": "MacTahoe.png",
+          "approved_preview_sha256": "5ea8cf4fbfae39d889dc1a6ee4a18bdbeb45c7666bc8e86e26454a8169d54cae",
+          "preview_crop": [
+            500,
+            0,
+            1000,
+            731
           ],
-          "wallpaper": "file:///home/tester/.local/share/wallpapers/MacTahoe",
-          "sha256": "46f954dd8c0c813e22769c5669aa8fe53130880b44c6708fa718afb55e652ef4"
+          "sha256": "b2fb3b1e4632a10558cd32cf43be9122992a5d085d21606cabaef45a4b977e83"
         }
       ],
       "sources": [
-        "src/screenshots/previews/tahoe-system-information-light-2346b6991e1e.webp",
-        "src/screenshots/previews/tahoe-system-information-dark-2955211d7f76.webp"
+        "src/screenshots/previews/tahoe-system-information-light-766dbc3eb7de.webp",
+        "src/screenshots/previews/tahoe-system-information-dark-b2fb3b1e4632.webp"
       ],
-      "gif": "src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif",
+      "gif": "src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif",
       "dimensions": [
-        591,
-        1100
+        500,
+        731
       ]
     },
     "wi-fi": {

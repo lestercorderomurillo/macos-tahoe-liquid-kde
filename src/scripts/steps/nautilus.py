@@ -2,7 +2,6 @@ from localization import tr
 import re
 import shutil
 import subprocess
-import time
 from pathlib import Path
 from urllib.parse import quote
 
@@ -117,70 +116,6 @@ _FINDER_GSETTINGS = (
 )
 
 
-def _nautilus_running() -> bool:
-    return run_user(
-        ["pgrep", "-x", "nautilus"],
-        check=False,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    ).returncode == 0
-
-
-def _restart_running_nautilus() -> bool:
-    if not _nautilus_running():
-        return False
-    if not have("gdbus"):
-        warn(tr('gdbus not found — skipping live Nautilus restart'))
-        return False
-    # Nautilus 50+ quits via org.gtk.Actions Activate("quit"), not the legacy
-    # Application.Quit; the ack is immediate but exit takes ~5-10s.
-    try:
-        rc = run_user(
-            [
-                "gdbus", "call", "--session",
-                "--dest", "org.gnome.Nautilus",
-                "--object-path", "/org/gnome/Nautilus",
-                "--method", "org.gtk.Actions.Activate",
-                "quit", "[]", "{}",
-            ],
-            check=False,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            timeout=10,
-        ).returncode
-    except subprocess.TimeoutExpired:
-        warn(tr('Timed out waiting for Nautilus to quit'))
-        return False
-    if rc != 0:
-        warn(tr('Live Nautilus restart skipped (gdbus rc={rc})', rc=rc))
-        return False
-    # 15s exit window — Nautilus 50.1 with multiple windows takes ~10s to
-    # drain; the 100ms poll lets the relaunch start promptly.
-    for _ in range(150):
-        if not _nautilus_running():
-            break
-        time.sleep(0.1)
-    else:
-        warn(tr('Nautilus did not exit cleanly — leaving it alone'))
-        return False
-
-    if have("gapplication"):
-        from utils import drop_privs_in_child as _drop
-        subprocess.Popen(
-            ["gapplication", "launch", "org.gnome.Nautilus"],
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            start_new_session=True,
-            preexec_fn=_drop,
-        )
-        ok(tr('Nautilus restarted'))
-        return True
-
-    warn(tr('gapplication not found — skipping Nautilus relaunch'))
-    return False
-
-
 def _apply_gsettings() -> None:
     if not have("gsettings"):
         return
@@ -212,8 +147,6 @@ def install() -> None:
     _generate_bookmarks()
     _apply_overrides()
     _apply_gsettings()
-    if _nautilus_running():
-        _restart_running_nautilus()
     ok(tr('Nautilus configured'))
 
 

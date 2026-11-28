@@ -256,7 +256,7 @@ Finder जैसी विंडो में अपनी फ़ाइलें
 हार्डवेयर, सॉफ़्टवेयर और थीम का विवरण देखें।
 
 <p align="center">
-  <img src="src/screenshots/previews/tahoe-system-information-light-dark-8ab37f94d9cc.gif" alt="सिस्टम सूचना · लाइट और डार्क मोड" width="830">
+  <img src="src/screenshots/previews/tahoe-system-information-light-dark-e307bb299c8b.gif" alt="सिस्टम सूचना · लाइट और डार्क मोड" width="830">
 </p>
 
 <br>

@@ -496,9 +496,12 @@ assert cover.bar.isVisible() and not cover.log.isVisible()
 window.advance(); window.close(); bridge.cancel()
 assert not bridge.cancelRequested and not window.close_pending
 
+original_size = window.size()
 window.showMinimized()
 bridge._running = False; bridge.finished.emit(0); app.processEvents()
-assert window.page == 'done' and window.isMaximized() and not window.isMinimized()
+assert window.page == 'done' and window.isVisible()
+assert not (window.isMaximized() or window.isMinimized() or window.isFullScreen())
+assert window.size() == original_size
 assert not window.transition_screens
 window.page = 'uninstall'; window.render(); window.advance()
 assert calls[-1][0] == 'uninstall' and window.page == 'progress'
