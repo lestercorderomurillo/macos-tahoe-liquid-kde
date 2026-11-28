@@ -190,10 +190,10 @@
       "path": "tahoe/stress/notification-history.png",
       "size": [
         454,
-        395
+        258
       ],
       "source": "881c87e526ee2a1ab13f0fa866237765a154cbe8",
-      "sha256": "af60bc48d08e66e90cf73d6627b4f861f7e1cc3b5bb38e2b9923c774b81b79da"
+      "sha256": "f8ec454cd7c3c6e3658ad219c3f9ec77804cc48b7298b4de5f0b37b4e1c695d4"
     },
     {
       "edition": "Tahoe",
