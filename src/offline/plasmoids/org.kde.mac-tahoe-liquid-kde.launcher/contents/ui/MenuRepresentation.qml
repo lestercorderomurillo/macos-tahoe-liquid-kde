@@ -67,7 +67,7 @@ PlasmaCore.Dialog {
 			default: return 64
 		}
 	}
-	readonly property int iconSize: Math.round(configuredIconSize * 1.0625)
+	readonly property int iconSize: Math.min(cellSizeWidth, Math.round(configuredIconSize * 85 / 64))
 	readonly property int columns: Plasmoid.configuration.numberColumns
 	// Compress the column pitch when the preferred grid would exceed the available screen.
 	readonly property int cellSizeWidth: {
@@ -76,7 +76,7 @@ PlasmaCore.Dialog {
 		return available > 0 ? Math.min(pitch, Math.floor(available / columns)) : pitch;
 	}
 	readonly property int gridFramePadding: 48
-	readonly property int cellSizeHeight: Math.round(configuredIconSize * 101 / 64)
+	readonly property int cellSizeHeight: Math.round(configuredIconSize * 128 / 64)
 	property int rows: plasmoid.configuration.numberOfRows
 	
 	property bool openingSearchFocus: false
