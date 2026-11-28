@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
+#include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/inkpixels.h"
 
 #include "../org.kde.mac.tahoe.liquid.taskmanager/launcher/contrastpreset.h"
 #include <QImage>
@@ -23,6 +24,9 @@ private Q_SLOTS:
     void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &grid, const QString &role);
 
 private:
+    InkPixels m_pixels;
+    Q_SLOT void pixelReply(int pid, const QRect &frame, const QString &role, const QByteArray &data);
+    QHash<QAction *, QImage> m_letterImages;
     QHash<const QAction *, GlassInk::Samples> m_actionSamples;
     mutable GlassInk::FlipHistory m_history;
     QJsonObject m_profile;

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "panelwallpaper.h"
+#include "inkpixels.h"
 #include "contrastpreset.h"
 #include "materialsample.h"
 #include "glasssettings.h"
@@ -165,6 +166,9 @@ public:
             QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"), QStringLiteral("/org/kde/MacTahoe/Glass"),
                 QStringLiteral("org.kde.MacTahoe.Glass"), QStringLiteral("controlBackdrop"),
                 this, SLOT(panelBackdrop(int,QRect,QRect,QByteArray,QString)));
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("inkPixels"), this, SLOT(pixelReply(int,QRect,QString,QByteArray)));
         connect(&m_frame, &MaterialSample::changed, this, [this] { ++m_revision; Q_EMIT changed(); });
         m_refresh.setSingleShot(true);
         connect(&m_refresh, &QTimer::timeout, this, &PanelInk::refresh);
@@ -205,6 +209,10 @@ public:
                                       + cell(point.x(), m_liveBounds.x(), m_liveBounds.width()));
                 const auto *rgb = reinterpret_cast<const uchar *>(m_liveColors.constData()) + index;
                 QColor surface(rgb[0], rgb[1], rgb[2]);
+                if (profile.value(u"scope"_s) == u"letter"_s) {
+                    const auto pixel = m_pixels.at(p);
+                    if (pixel.isValid()) surface = pixel;
+                }
                 const auto frame = m_frame.at(p);
                 if (frame.isValid()) surface = GlassInk::composite(surface, frame);
                 const auto scrim = QColor::fromRgbF(0, 0, 0, PanelWallpaper::scrimOpacityAt(p.y() / m_window->height()));
@@ -224,6 +232,10 @@ Q_SIGNALS:
     void changed();
 
 private Q_SLOTS:
+    void pixelReply(int pid, const QRect &frame, const QString &role, const QByteArray &data)
+    {
+        if (m_pixels.receive(pid, frame, role, data)) { ++m_revision; Q_EMIT changed(); }
+    }
     void schedule() { m_refresh.start(0); }
     void panelBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &rgb, const QString &role)
     {
@@ -231,6 +243,7 @@ private Q_SLOTS:
             || frame != m_window->geometry() || bounds.isEmpty() || rgb.size() != 64 * 64 * 3) return;
         m_frame.findWindowFrame(m_window, QStringLiteral("widgets/panel-background"));
         if (m_liveColors == rgb && m_liveBounds == bounds && m_liveFrame == frame) return;
+        m_pixels.locate(frame, role);
         m_liveColors = rgb;
         m_liveBounds = bounds;
         m_liveFrame = frame;
@@ -253,6 +266,7 @@ private:
         ++m_generation;
         m_requested.reset();
         m_grid = {};
+        m_pixels.locate({}, {});
         m_liveColors.clear();
         ++m_revision;
         Q_EMIT changed();
@@ -327,6 +341,7 @@ private:
         });
         job->setFuture(QtConcurrent::run(panelSamples, spec));
     }
+    InkPixels m_pixels;
     QQuickWindow *m_window;
     QPointer<Plasma::Containment> m_panel, m_desktop;
     QPointer<QObject> m_wallpaper, m_config;

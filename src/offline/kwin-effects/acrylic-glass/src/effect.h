@@ -92,6 +92,9 @@ struct BlurEffectData
     bool contrastScheduled = false;
     QColor contrastColor;
     QByteArray contrastGrid;
+    QRect inkFrame;
+    QString inkRole;
+    QMap<QPair<double, double>, int> inkPixels;
     QRect sampleBounds;
     QRect contrastBounds;
 
@@ -207,6 +210,7 @@ public:
     bool blocksDirectScanout() const override;
 
 public Q_SLOTS:
+    void slotInkPixels(int pid, const QRect &frame, const QString &role, const QByteArray &points);
     void slotGlassWindows(const QString &json);
 #if defined(GLASS_WAYLAND)
     void slotDisplayCorners(const QString &json);

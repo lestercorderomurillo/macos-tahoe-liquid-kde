@@ -18,10 +18,18 @@ PopupBackdrop::PopupBackdrop(QObject *parent) : QObject(parent)
     connect(&m_frame, &MaterialSample::changed, this, &PopupBackdrop::notifyBackdropChanged);
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("inkPixels"), this, SLOT(pixelReply(int,QRect,QString,QByteArray)));
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("controlBackdrop"), this, SLOT(updateBackdrop(int,QRect,QRect,QByteArray,QString)));
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.KWin"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("movingControlSample"), this, SLOT(movingControlSample(int,QRect,QString)));
+}
+
+void PopupBackdrop::pixelReply(int pid, const QRect &frame, const QString &role, const QByteArray &data)
+{
+    if (m_pixels.receive(pid, frame, role, data)) notifyBackdropChanged();
 }
 
 void PopupBackdrop::movingControlSample(int pid, const QRect &frame, const QString &title)
@@ -45,6 +53,7 @@ void PopupBackdrop::updateBackdrop(int pid, const QRect &frame, const QRect &bou
     }
     if (dragging && !m_lastFrame.isEmpty() && frame.topLeft() != m_lastFrame.topLeft()) m_ink.moved();
     if (!dragging) m_ink.stationary();
+    m_pixels.locate(frame, title);
     m_lastFrame = frame;
     if (title == QStringLiteral("mttkde-apps") || title == QStringLiteral("mttkde-search"))
         m_frame.findWindowFrame(qobject_cast<QQuickWindow *>(m_window.data()), QStringLiteral("dialogs/background"));
@@ -114,7 +123,8 @@ QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor ref
             if (!inside) return;
         }
         const QColor painted = layer ? layer->at(p) : QColor();
-        const QColor surface = GlassInk::composite(backdropAt(p), painted.isValid() ? painted : frameFillAt(p, localFill));
+        const QColor pixel = profile.value(QStringLiteral("scope")).toString() == QStringLiteral("letter") ? m_pixels.at(p) : QColor();
+        const QColor surface = GlassInk::composite(pixel.isValid() ? pixel : backdropAt(p), painted.isValid() ? painted : frameFillAt(p, localFill));
         samples.add(GlassInk::composite(surface, overlay));
     });
     const auto corrected = m_history.tone(samples, reference, ContrastPreset::settings(profile), item, run);
@@ -188,6 +198,7 @@ void PopupBackdrop::setWindow(QWindow *window)
     m_window = window;
     m_ink.observe(window);
     const auto clear = [this] {
+        m_pixels.locate({}, {});
         m_lastFrame = {};
         m_movingFrame = {};
         m_ink.reset();

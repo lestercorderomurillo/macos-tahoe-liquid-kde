@@ -495,6 +495,9 @@ BlurEffect::BlurEffect()
 
     QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.plasmashell"),
         QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+        QStringLiteral("requestInkPixels"), this, SLOT(slotInkPixels(int,QRect,QString,QByteArray)));
+    QDBusConnection::sessionBus().connect(QStringLiteral("org.kde.plasmashell"),
+        QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
         QStringLiteral("windowsChanged"), this, SLOT(slotGlassWindows(QString)));
 #if defined(GLASS_WAYLAND)
     m_displayCornerInput = std::make_unique<DisplayCornerInput>();
@@ -706,6 +709,7 @@ void BlurEffect::reconfigure(ReconfigureFlags flags)
     for (auto &[window, data] : m_windows) {
         data.contrastTimer.invalidate();
         data.contrastGrid.clear();
+        data.inkPixels.clear();
         data.contrastColor = {};
     }
     effects->addRepaintFull();
@@ -718,6 +722,30 @@ void BlurEffect::slotDisplayCorners(const QString &json)
     m_displayCornerInput->setCorners(json);
 }
 #endif
+
+void BlurEffect::slotInkPixels(int pid, const QRect &frame, const QString &role, const QByteArray &points)
+{
+    if (!BlurConfig::dynamicTinting() || points.size() > 128 * 1024) return;
+    const auto entries = QJsonDocument::fromJson(points).array();
+    if (entries.isEmpty() || entries.size() > 2048) return;
+    for (auto &[w, state] : m_windows) {
+        if (w->window()->pid() != pid || w->frameGeometry().toAlignedRect() != frame) continue;
+        if (role != w->caption() && !(role == QStringLiteral("mttkde-panel-ink") && w->isDock())
+            && !(role == QStringLiteral("mttkde-shell-menu") && w->isPopupWindow())) continue;
+        if (state.inkFrame != frame || state.inkRole != role || state.inkPixels.size() + entries.size() > 2048)
+            state.inkPixels.clear();
+        state.inkFrame = frame;
+        state.inkRole = role;
+        for (const auto &entry : entries) {
+            const auto xy = entry.toArray();
+            if (xy.size() != 2 || !xy[0].isDouble() || !xy[1].isDouble()) continue;
+            const QPointF p(xy[0].toDouble(), xy[1].toDouble());
+            if (QRectF(QPointF(), frame.size()).contains(p)) state.inkPixels.insert({p.x(), p.y()}, -1);
+        }
+        effects->addRepaint(w->frameGeometry().toAlignedRect());
+        return;
+    }
+}
 
 void BlurEffect::slotGlassWindows(const QString &json)
 {
@@ -2418,6 +2446,59 @@ void BlurEffect::blur(
                     glPixelStorei(packNames[i], 0);
                 }
                 glReadPixels(0, 0, side, side, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+                // Read just the scanlines containing requested glyphs from the real
+                // render target, after the material passes and before window text.
+                if (plasma && !blurInfo.inkPixels.isEmpty()
+                    && blurInfo.inkFrame == w->frameGeometry().toAlignedRect()) {
+                    auto *target = renderTarget.framebuffer();
+                    struct Sample { int column; QPair<double, double> key; };
+                    QMap<int, QList<Sample>> rows;
+                    for (auto it = blurInfo.inkPixels.cbegin(); target && it != blurInfo.inkPixels.cend(); ++it) {
+                        const auto key = it.key();
+                        const QPointF logical = QPointF(key.first, key.second) + w->frameGeometry().topLeft();
+                        const QPoint cell(qFloor(logical.x()), qFloor(logical.y()));
+                        if (!sampleRect.contains(cell)) continue;
+#if defined(GLASS_X11)
+                        if (!deviceRegion.contains(cell * viewport.scale())) continue;
+#else
+                        if (!dirtyRegion.contains(cell)) continue;
+#endif
+                        const QPointF device = viewport.mapToRenderTarget(logical);
+                        const QPoint pixel(qFloor(device.x()), qFloor(device.y()));
+                        if (QRect(QPoint(), target->size()).contains(pixel))
+                            rows[target->size().height() - 1 - pixel.y()].append({pixel.x(), key});
+                    }
+                    QJsonArray changed;
+                    if (!rows.isEmpty()) {
+                        GLFramebuffer::pushFramebuffer(target);
+                        for (auto row = rows.cbegin(); row != rows.cend(); ++row) {
+                            int first = target->size().width(), last = 0;
+                            for (const auto &sample : *row) {
+                                first = std::min(first, sample.column);
+                                last = std::max(last, sample.column);
+                            }
+                            QByteArray scanline((last - first + 1) * 4, 0);
+                            glReadPixels(first, row.key(), last - first + 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, scanline.data());
+                            for (const auto &sample : *row) {
+                                const auto *rgb = reinterpret_cast<const uchar *>(scanline.constData()) + 4 * (sample.column - first);
+                                const int color = (int(rgb[0]) << 16) | (int(rgb[1]) << 8) | rgb[2];
+                                auto &old = blurInfo.inkPixels[sample.key];
+                                if (old == color) continue;
+                                old = color;
+                                changed.append(QJsonArray{sample.key.first, sample.key.second, color});
+                            }
+                        }
+                        GLFramebuffer::popFramebuffer();
+                    }
+                    if (!changed.isEmpty()) {
+                        auto reply = QDBusMessage::createTargetedSignal(QStringLiteral("org.kde.plasmashell"),
+                            QStringLiteral("/org/kde/MacTahoe/Glass"), QStringLiteral("org.kde.MacTahoe.Glass"),
+                            QStringLiteral("inkPixels"));
+                        reply << int(w->window()->pid()) << blurInfo.inkFrame << blurInfo.inkRole
+                              << QJsonDocument(changed).toJson(QJsonDocument::Compact);
+                        QDBusConnection::sessionBus().send(reply);
+                    }
+                }
                 for (size_t i = 0; i < packNames.size(); ++i) glPixelStorei(packNames[i], packValues[i]);
                 glBindBuffer(GL_PIXEL_PACK_BUFFER, packBuffer);
                 GLFramebuffer::popFramebuffer();

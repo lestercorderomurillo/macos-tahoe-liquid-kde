@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #pragma once
+#include "inkpixels.h"
 #include "inktransition.h"
-#include "glassink.h"
 #include "glassink.h"
 #include "materialsample.h"
 #include <QObject>
@@ -39,6 +39,8 @@ protected:
     QPointer<QWindow> m_window;
     void notifyBackdropChanged();
 private:
+    InkPixels m_pixels;
+    Q_SLOT void pixelReply(int pid, const QRect &frame, const QString &role, const QByteArray &data);
     Q_SLOT void movingControlSample(int pid, const QRect &frame, const QString &title);
     Q_SLOT void updateBackdrop(int pid, const QRect &frame, const QRect &bounds, const QByteArray &colors, const QString &title);
     GlassInk::FlipHistory m_history;
