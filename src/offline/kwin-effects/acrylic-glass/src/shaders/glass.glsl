@@ -107,7 +107,8 @@ void main(void)
         vec2 snapped = (floor(lensUV / texel) + 0.5) * texel;
         col = LG_SAMPLE(texUnit, clamp(snapped, 0.0, 1.0)).rgb;
     }
-    if (rgbDriftStrength > 0.0) {
+    // The RGB split contributes only within the refractive rim.
+    if (rgbDriftStrength > 0.0 && edgeQ > 0.0) {
         col = lgApplyRgbDrift(texUnit, col, lensUV, outNorm, blurSize, rgbDriftStrength, edgeQ);
     }
     if (highlightStrength > 0.0) {

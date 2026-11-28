@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.38**. Accelerate dynamic tint contrast calculations with an exact 16-bit RGB luminance lookup. [Validation and coverage](release-evidence.json).
+**v0.85.39**. Skip invisible RGB drift samples inside the glass and duplicate full-surface copies on X11. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

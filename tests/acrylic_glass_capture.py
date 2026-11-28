@@ -419,8 +419,11 @@ def inside(output):
         if os.environ.get("MTTKDE_CAPTURE_DAMAGE"):
             (output / "damage-trigger").touch()
             capture("partial-update.png")
-            dbus("/KWin", "org.kde.KWin.reconfigure")
+            # Global reconfiguration can unload the manually enabled X11 effect.
+            # Acrylic Glass requests a full repaint when its own settings reload.
+            dbus("/Effects", "org.kde.kwin.Effects.reconfigureEffect", effect)
             capture("full-repaint.png")
+            assert effect in dbus("/Effects", "org.kde.kwin.Effects.activeEffects").splitlines()
         if os.environ.get("MTTKDE_CAPTURE_CONFLICTS"):
             installer_glass._restore_conflicting_blurs()
             assert installer_glass._conflict_state_path().read_bytes() == saved_conflicts

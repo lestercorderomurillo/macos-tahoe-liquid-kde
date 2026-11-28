@@ -2021,22 +2021,20 @@ void BlurEffect::blur(
     // A wobbly mesh can sample any point in its full deformed bounds even
     // when KWin only asks us to repaint the newly exposed strip. Capture the
     // complete surface, then clip the generated triangles to deviceRegion.
-    const Region dirtyRegion = wobblySurface ? Region(Rect(backgroundRect))
 #if defined(GLASS_X11)
-                                             : deviceRegion.intersected(deviceBackgroundRect);
-#else
-                                             : viewport.mapFromDeviceCoordinatesContained(deviceRegion) & backgroundRect;
-#endif
-    for (const Rect& dirtyRect : dirtyRegion.rects()) {
-#if defined(GLASS_X11)
-        Q_UNUSED(dirtyRect)
+    // X11 captures the full background regardless of damage fragmentation.
+    if (wobblySurface || deviceRegion.intersects(deviceBackgroundRect)) {
         renderInfo.framebuffers[0]->blitFromRenderTarget(renderTarget, viewport,
             backgroundRect, QRect(QPoint(0, 0), scaledBackgroundRect.size()));
+    }
 #else
+    const Region dirtyRegion = wobblySurface ? Region(Rect(backgroundRect))
+                                             : viewport.mapFromDeviceCoordinatesContained(deviceRegion) & backgroundRect;
+    for (const Rect& dirtyRect : dirtyRegion.rects()) {
         const QRect deviceDirtyRect = agSnapToPixelGrid(scaledRect(QRectF(dirtyRect), viewport.scale()));
         renderInfo.framebuffers[0]->blitFromRenderTarget(renderTarget, viewport, dirtyRect, deviceDirtyRect.translated(-scaledBackgroundRect.topLeft()));
-#endif
     }
+#endif
 
     // 5. Upload vertex geometry
     // First 6 vertices are the offscreen quad reused by every Kawase pass.
