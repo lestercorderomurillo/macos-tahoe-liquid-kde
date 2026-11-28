@@ -57,6 +57,6 @@ time.sleep(.5)
 run('sudo','python3',str(repo/'tests/vm/clipboard_input.py'),'29','2')
 time.sleep(.5)
 apps=[w for w in windows() if w['appletPopup'] and not w['hidden'] and 'plasmashell' in w['resourceClass']]
-assert any(w['geometry']['height']>g['height'] for w in apps),apps
+assert len(apps) == 1 and apps[0]['geometry'] == g, apps
 frame['checks']=['Ctrl+4 opens Clipboard','Enter copies selected history and closes launcher','Ctrl+1 restores applications']
 Path(str(output)+'-frame.json').write_text(json.dumps(frame,indent=2))

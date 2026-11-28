@@ -18,11 +18,11 @@ Item {
     PC3.RoundButton {
         id: button
         Accessible.role: Accessible.ButtonMenu
-        Accessible.name: i18n("Launcher options")
+        Accessible.name: main.clipboardMode ? i18n("Clipboard options") : i18n("Launcher options")
 
         flat: true
         // Make it look pressed while the menu is open
-        down: menuOpen || pressed
+        down: menuOpen || (main.clipboardMode && main.clipboardList.menuOpen) || pressed
         
         icon.name: "view-more-symbolic"
         icon.color: foregroundColor
@@ -63,7 +63,11 @@ Item {
                 radius: height / 2
             }
         }
-        onClicked: menuOpen ? activeMenu.close() : activeMenu.openRelative()
+        onClicked: {
+            if (main.clipboardMode) main.clipboardList.more(button, null);
+            else if (menuOpen) activeMenu.close();
+            else activeMenu.openRelative();
+        }
     }
 
     TahoeOptionsMenu {

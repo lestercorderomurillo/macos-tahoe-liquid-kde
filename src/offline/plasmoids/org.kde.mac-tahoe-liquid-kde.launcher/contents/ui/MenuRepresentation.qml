@@ -13,7 +13,7 @@ PlasmaCore.Dialog {
 	readonly property NativeGlass.GlassSettings glassSettings: NativeGlass.GlassSettings {
 		component: "apps"
 		window: root
-		frameSource: main.goldenGateEdition && !main.clipboardMode ? "dialogs/launcher-apps" : ""
+		frameSource: main.goldenGateEdition ? "dialogs/launcher-apps" : ""
 	}
 
 	objectName: "popupWindow"
@@ -180,11 +180,8 @@ PlasmaCore.Dialog {
 		id: fs
 		focus: true
 		// The reference frame is 1028 logical pixels wide at the default seven columns.
-		implicitWidth: main.clipboardMode ? Math.round(main.textSize * 60)
-			: root.cellSizeWidth * root.columns + root.gridFramePadding - root.margins.left - root.margins.right
-		implicitHeight: main.clipboardMode
-			? Math.round(main.inlineSearchHeight + 18 + Math.max(2, Math.min(6, main.clipboardList.entries.length)) * main.textSize * 5.2)
-			: main.inlineSearchHeight + main.categoryHeight + main.gridTopSpacing
+		implicitWidth: root.cellSizeWidth * root.columns + root.gridFramePadding - root.margins.left - root.margins.right
+		implicitHeight: main.inlineSearchHeight + main.categoryHeight + main.gridTopSpacing
 				+ root.cellSizeHeight * root.rows + 37 - root.margins.top - root.margins.bottom
 		// Let Dialog follow the content size. Equal, changing min/max hints
 		// can leave Wayland constrained to the previous preset's configure.

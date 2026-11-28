@@ -8,6 +8,7 @@ Timer {
     property int phase: -1
     property int waits: 0
     property bool processing: false
+    property rect appsFrame
     property string pinnedId: ""
     function verify(ok, message) { if (!ok) throw new Error(message); }
     onTriggered: {
@@ -18,12 +19,14 @@ Timer {
             if (phase === -1) {
                 root.visible = true;
             } else if (phase === 0) {
+                appsFrame = Qt.rect(root.x, root.y, root.width, root.height);
                 LauncherInteraction.click(main.searchBar.testMenuButton.testButton);
                 for (let i = 0; i < 3; ++i) LauncherInteraction.key(Qt.Key_Down);
                 LauncherInteraction.key(Qt.Key_Return);
                 verify(main.clipboardMode, "options menu opens clipboard history");
             } else if (phase === 1) {
                 if (!main.clipboard.available && ++waits < 20) return;
+                verify(Qt.rect(root.x, root.y, root.width, root.height) === appsFrame, "clipboard keeps the Apps frame");
                 verify(main.clipboard.available, "real daemon available");
                 verify(main.clipboard.entries.length === 3, "history loaded");
                 verify(!main.detachedSearch, "history shares its search surface");

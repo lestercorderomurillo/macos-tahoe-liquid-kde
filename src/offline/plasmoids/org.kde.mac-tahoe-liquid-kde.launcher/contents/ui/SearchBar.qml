@@ -8,7 +8,6 @@ RowLayout {
 	spacing: main.tahoeStyle ? 0 : Kirigami.Units.smallSpacing
 
     property alias textField: textField
-    property alias showMenuButton: menuButton.visible
     readonly property bool menuOpen: menuButton.menuOpen
     property bool detachedWindow: false
     readonly property bool goldenGateCapsule: main.goldenGateEdition && main.detachedSearch
@@ -107,36 +106,8 @@ RowLayout {
         }
     }
 
-    ToolButton {
-        visible: main.clipboardMode
-        Layout.preferredWidth: 28
-        Layout.preferredHeight: 28
-        Accessible.name: i18n("Clipboard options")
-        contentItem: Item {
-            Row {
-                anchors.centerIn: parent
-                spacing: 2.1
-                Repeater {
-                    model: 3
-                    Rectangle { width: 2.6; height: 2.6; radius: 1.3; color: main.dimmedTextColor }
-                }
-            }
-        }
-        background: Rectangle {
-            anchors.centerIn: parent
-            width: 22
-            height: 22
-            radius: 11
-            color: parent.hovered ? main.contrastBgColor : "transparent"
-            border.width: 1.25
-            border.color: main.dimmedTextColor
-        }
-        onClicked: main.clipboardList.more(this, null)
-    }
-
     MenuButton {
         id: menuButton
-        visible: !main.clipboardMode
         foregroundColor: searchFieldBar.textColor
         Layout.alignment: Qt.AlignVCenter
         Layout.rightMargin: main.tahoeStyle ? -3.5 : 0

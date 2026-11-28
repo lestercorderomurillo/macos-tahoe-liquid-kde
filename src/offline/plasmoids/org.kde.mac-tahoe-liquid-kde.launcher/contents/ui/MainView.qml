@@ -17,11 +17,16 @@ Item {
 	readonly property bool goldenGateEdition: false
 	readonly property bool goldenGateLight: goldenGateEdition && !isDarkTheme
 	property bool clipboardMode: false
+    property real clipboardProgress: clipboardMode ? 1 : 0
+    Behavior on clipboardProgress {
+        enabled: root.visible
+        NumberAnimation { duration: Kirigami.Units.longDuration; easing.type: Easing.InOutCubic }
+    }
     readonly property var clipboard: clipboardModel
     readonly property var clipboardList: clipboardView
     Tahoe.ClipboardModel {
         id: clipboardModel
-        active: main.clipboardMode && root.visible
+        active: root.visible && (main.clipboardMode || main.clipboardProgress > 0)
         onCopied: root.visible = false
     }
     function showClipboard(value) {
@@ -125,7 +130,6 @@ Item {
 				id: detachedSearchBar
                 detachedWindow: true
 				anchors.fill: parent
-				showMenuButton: !main.clipboardMode
 				Keys.priority: Keys.AfterItem
 				Keys.forwardTo: clipboardMode ? clipboardView : searching ? searchList : appList.viewItem
 			}
@@ -249,7 +253,6 @@ Item {
 			SearchBar {
 				id: inlineSearchBar
 				anchors.fill: parent
-				showMenuButton: !main.clipboardMode
 				Keys.priority: Keys.AfterItem
 				Keys.forwardTo: clipboardMode ? clipboardView : searching ? searchList : appList.viewItem
 			}
@@ -265,76 +268,49 @@ Item {
 			color: main.contrastBgColor
 		}
 
-		AllAppsList{
-			id: appList
-			state: "visible"
-			Layout.fillHeight: true
-			Layout.fillWidth: true
-
-			Keys.priority: Keys.AfterItem
-			Keys.forwardTo: searchBar.textField
-
-			visible: !main.clipboardMode && opacity > 0
-			states: [
-				State {
-					name: "visible"; when: (!searching && !clipboardMode)
-					PropertyChanges { target: appList; opacity: 1.0 }
-				},
-				State {
-					name: "hidden"; when: (searching || clipboardMode)
-					PropertyChanges { target: appList; opacity: 0.0}
-				}
-			]
-			transitions: [
-				Transition {
-					to: "visible"
-					PropertyAnimation {properties: 'opacity'; duration: 100; easing.type: Easing.OutQuart}
-				},
-				Transition {
-					to: "hidden"
-					PropertyAnimation {properties: 'opacity'; duration: 100; easing.type: Easing.OutQuart}
-				}
-			]
-		}
-
-        ClipboardView {
-            id: clipboardView
-            visible: main.clipboardMode
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-        }
-
-		SearchList {
-			id: searchList
-			state: "hidden"
-			visible: !main.clipboardMode && opacity > 0
-
+		Item {
 			Layout.fillWidth: true
 			Layout.fillHeight: true
+			clip: true
 
-			states: [
-				State {
-					name: "visible"; when: (searching && !clipboardMode)
-					PropertyChanges { target: searchList; opacity: 1.0 }
-				},
-				State {
-					name: "hidden"; when: (!searching || clipboardMode)
-					PropertyChanges { target: searchList; opacity: 0.0}
-				}
-			]
-			transitions: [
-				Transition {
-					to: "visible"
-					PropertyAnimation {properties: 'opacity'; duration: 100; easing.type: Easing.OutQuart}
-				},
-				Transition {
-					to: "hidden"
-					PropertyAnimation {properties: 'opacity'; duration: 100; easing.type: Easing.OutQuart}
-				}
-			]
+			Item {
+				anchors.fill: parent
+				opacity: 1 - main.clipboardProgress
+				visible: opacity > 0
+				enabled: !main.clipboardMode
+				transform: Translate { x: -16 * main.clipboardProgress }
 
-			Keys.priority: Keys.AfterItem
-			Keys.forwardTo: searchBar.textField
+				AllAppsList {
+					id: appList
+					anchors.fill: parent
+					opacity: main.searching ? 0 : 1
+					visible: opacity > 0
+					enabled: !main.searching
+					Behavior on opacity { NumberAnimation { duration: 100; easing.type: Easing.OutQuart } }
+					Keys.priority: Keys.AfterItem
+					Keys.forwardTo: searchBar.textField
+				}
+
+				SearchList {
+					id: searchList
+					anchors.fill: parent
+					opacity: main.searching ? 1 : 0
+					visible: opacity > 0
+					enabled: main.searching
+					Behavior on opacity { NumberAnimation { duration: 100; easing.type: Easing.OutQuart } }
+					Keys.priority: Keys.AfterItem
+					Keys.forwardTo: searchBar.textField
+				}
+			}
+
+			ClipboardView {
+				id: clipboardView
+				anchors.fill: parent
+				opacity: main.clipboardProgress
+				visible: opacity > 0
+				enabled: main.clipboardMode
+				transform: Translate { x: 16 * (1 - main.clipboardProgress) }
+			}
 		}
 	}
 }
