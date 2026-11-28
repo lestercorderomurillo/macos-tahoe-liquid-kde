@@ -26,7 +26,7 @@ Timer {
                 verify(!appList.visible && !searchList.visible, "applications hidden in history mode");
                 main.searchText = "second";
             } else if (phase === 2) {
-                verify(clipboardView.entries.length === 1, "query filters clipboard");
+                verify(clipboardView.entries.length === 1, "query filters clipboard: " + JSON.stringify({query:main.searchText, visible:root.visible, mode:main.clipboardMode, entries:clipboardView.entries.length, total:main.clipboard.entries.length}));
                 pinnedId = clipboardView.entries[0].id;
                 main.clipboard.pin(pinnedId, true);
             } else if (phase === 3) {

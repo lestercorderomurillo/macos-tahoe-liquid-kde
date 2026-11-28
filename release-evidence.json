@@ -10,11 +10,15 @@
     {
       "command": "Run Qt material, motion, shader, native settings and X11 rendering probes. Build the effect against KWin X11 6.6.5 and Wayland 6.7.4.",
       "result": "passed"
+    },
+    {
+      "command": "Compare all first-install widget files with the approved candidate, test repeat staging, verify the same shaped-glyph coordinates before and after caching, and run both launcher presets and the Control Center X11 render probe.",
+      "result": "passed"
     }
   ],
   "coverage_limits": "Device-pixel transport was measured in the installed panel and launcher popups. A separate generic transparent top-level fixture did not return a sparse reply.",
   "approval": "Maintainer approved candidate 881c87e5 for paired promotion after reviewing issue 174.",
   "review_gallery": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/75e3870487ea30d36b33fbada805ed24c5e21260/README.md",
   "measurements": "https://github.com/lestercorderomurillo/macos-tahoe-liquid-kde/blob/75e3870487ea30d36b33fbada805ed24c5e21260/verification.md",
-  "source_sha256": "ea2fe4a1262f2381867bd334a77803b270f695b9a60482bfe451daf7f466135d"
+  "source_sha256": "188cbdeafa1b6538b928ec848fa5ce5d2fbb8539f07e7e6d345d73b60288e6a6"
 }
