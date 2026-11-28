@@ -1,23 +1,18 @@
 {
-  "version": "0.85.27",
+  "version": "0.85.28",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Compact and center the About This Computer dialog and move Copy details and Report a Bug below More Info.",
+  "scope": "Separate the calendar card from the top panel by six logical pixels.",
   "checks": [
     {
-      "command": "Capture preview_about.qml in disposable KDE neon with each edition\u2019s defaults, light and dark. Verify the candidate AboutWindow.qml SHA-256 and the 360 \u00d7 543 logical pixel window geometry.",
-      "result": "passed"
-    },
-    {
-      "command": "Run test_about_labels_and_surface_follow_appearance for both editions, both modes and both control styles with the built launcher module.",
+      "command": "Open the panel clock in a disposable KDE neon Wayland guest and capture the installed baseline and candidate. Verify the candidate QML SHA-256, a 328 by 328 card and popup height increasing from 328 to 334 logical pixels.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Focused QML layout and appearance on Plasma 6.8.1 Wayland with mock hardware details.",
-  "source_sha256": "6746bae2424bfa4c045cc8f42194e5c4a5c324acf5a4b744991b9f42b726ba28",
-  "qualified_candidate": "94280421232fbdca296bca7404caeeb19c8d9d66",
-  "approval": "Maintainer approved publication after reviewing both edition previews.",
+  "coverage_limits": "Dark Tahoe calendar on KDE neon Wayland at 2x scale. Golden Gate uses the shared QML.",
+  "source_sha256": "4c792509ea24143ac5e51866c40347d6cd38650e267636116ca95c5ad91d93bb",
+  "qualified_candidate": "25166350e17da529556e630e9cb4ca872082938c",
+  "approval": "Maintainer approved publication of the before-and-after preview.",
   "approved_previews": {
-    "MacGoldenGate.png": "0b75264a4abef56ba5fe15869ba89c83911d90f4a08031d17ff957bde7729c44",
-    "MacTahoe.png": "5ea8cf4fbfae39d889dc1a6ee4a18bdbeb45c7666bc8e86e26454a8169d54cae"
+    "comparacion.png": "2a018082b6584a134b5104afbf92db4720d2e807d1ac1b56ca47081eafb89966"
   }
 }
