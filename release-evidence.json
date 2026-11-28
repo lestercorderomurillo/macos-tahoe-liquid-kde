@@ -1,21 +1,17 @@
 {
-  "version": "0.85.42",
+  "version": "0.85.43",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Reuse Apps grid delegates as they scroll into view, resetting interaction and adaptive tint state when a tile leaves the viewport.",
+  "scope": "Restore Apps tile paint order on reuse so two-line labels overlap adjacent rows exactly as before.",
   "checks": [
     {
-      "command": "On the RX 9070 XT, exercise 340 Apps entries and 270 grid scroll steps with adaptive sampling disabled to isolate icon rendering. Mean render and sync time fell from 4.618 to 1.371 ms and p95 from 11.481 to 5.481 ms. Five RGBA captures across different positions matched byte for byte.",
+      "command": "Compare all 600x412 RGBA pixels against the original unpooled Apps grid, using line scope and 285 entries. Forward scroll SHA-256 3de6db49f98f6f077619ae005a2d943fba3c83286e3357b97124cbd2bd2a0948 and reverse scroll ec33175509d4ee76a2defe43d2492c7fdfb7964108817f6da003eda1f57eb4e2 matched the respective references exactly. Initial frames also matched.",
       "result": "passed"
     },
     {
-      "command": "In the isolated full Apps popup with line scope, 285 entries, a fixed RGB backdrop and software OpenGL, 120 moving frames maintained 62.8 FPS. Frame time p95 improved from 19.9 to 18.4-18.8 ms versus the unpooled line candidate. The 25 settled labels retained their text, colors and geometry.",
-      "result": "passed"
-    },
-    {
-      "command": "Run native Apps popup interactions for Golden Gate Light and Tahoe Dark including hover, keyboard navigation, selection and context menus: both passed.",
+      "command": "The 120-frame Apps flick with corrected stacking recorded 17.96 ms p95 in software OpenGL. Pooling reduced delegate constructions from 284 to 133 in the scroll fixture, and all 151 reused tiles displayed the correct model and reset hover, drag and menu state.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "The isolated GPU render measurement and whole-popup scroll frame measurements use different render backends and fixtures. Frame rates are workload and hardware dependent.",
-  "source_sha256": "8c47509ece7126602e7d312068dffdd2aafc9aa3966e7262dd360445af65e0ef"
+  "coverage_limits": "Pixel equality is for the deterministic Qt Quick software fixture. Timing varies by display and workload.",
+  "source_sha256": "bada5750b1a008020bf484a41076d4b00097f40204e5c533b702b84db7a6b39b"
 }

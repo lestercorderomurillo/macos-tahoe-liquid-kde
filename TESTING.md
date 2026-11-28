@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.42**. Reuse Apps grid delegates as they scroll into view, resetting interaction and adaptive tint state when a tile leaves the viewport. [Validation and coverage](release-evidence.json).
+**v0.85.43**. Restore Apps tile paint order on reuse so two-line labels overlap adjacent rows exactly as before. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

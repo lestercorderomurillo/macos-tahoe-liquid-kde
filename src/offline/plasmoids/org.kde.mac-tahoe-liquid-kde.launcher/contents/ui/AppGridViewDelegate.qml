@@ -32,7 +32,11 @@ Item {
 		if (actionMenu.opened) actionMenu.menu.close();
 		appBackdrop.forgetForeground(appname);
 	}
-	GridView.onReused: pooled = false
+	GridView.onReused: {
+		// Match a fresh delegate's paint order where long labels meet the next row.
+		Ink.LauncherApplications.restackReusedDelegate(gridDelegate);
+		pooled = false;
+	}
 
 	property bool hasActionList: ((model.favoriteId !== null) || (("hasActionList" in model) && (model.hasActionList !== null)))
 		

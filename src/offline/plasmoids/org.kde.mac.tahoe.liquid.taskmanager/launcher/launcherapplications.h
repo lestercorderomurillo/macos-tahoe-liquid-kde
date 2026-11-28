@@ -2,6 +2,7 @@
 #pragma once
 #include <KIO/ApplicationLauncherJob>
 #include <KService>
+#include <QQuickItem>
 #include <QVariantList>
 #include <qqmlregistration.h>
 #include <algorithm>
@@ -11,6 +12,12 @@ class LauncherApplications : public QObject {
     QML_ELEMENT
     QML_SINGLETON
 public:
+    Q_INVOKABLE void restackReusedDelegate(QQuickItem *item) const {
+        if (!item || !item->parentItem()) return;
+        const auto siblings = item->parentItem()->childItems();
+        if (!siblings.isEmpty() && siblings.constLast() != item)
+            item->stackAfter(siblings.constLast());
+    }
     Q_INVOKABLE QVariantList choices() const {
         QVariantList apps;
         for (const auto &service : KService::allServices()) {
