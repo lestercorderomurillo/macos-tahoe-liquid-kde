@@ -2,6 +2,8 @@
 #pragma once
 #include <KIO/ApplicationLauncherJob>
 #include <KService>
+#include <KGlobalAccel>
+#include <QAction>
 #include <QQuickItem>
 #include <QVariantList>
 #include <qqmlregistration.h>
@@ -12,6 +14,32 @@ class LauncherApplications : public QObject {
     QML_ELEMENT
     QML_SINGLETON
 public:
+    Q_INVOKABLE void registerSearchShortcut(QQuickItem *launcher, const QString &label) {
+        // Plasma may load more than one launcher or recreate its QML engine.
+        // Keep one shortcut and let a surviving applet handle activation.
+        static QList<QQuickItem *> launchers;
+        static QAction *action = nullptr;
+        if (!launcher || launchers.contains(launcher)) return;
+        launchers.append(launcher);
+        connect(launcher, &QObject::destroyed, [launcher] {
+            launchers.removeAll(launcher);
+            if (launchers.isEmpty()) {
+                delete action;
+                action = nullptr;
+            }
+        });
+        if (action) return;
+        action = new QAction(label);
+        action->setObjectName(QStringLiteral("mac-launchpad-floating-search"));
+        connect(action, &QAction::triggered, [] {
+            if (!launchers.isEmpty())
+                QMetaObject::invokeMethod(launchers.first(), "toggleFloatingSearch");
+        });
+        const QKeySequence preferred(Qt::ALT | Qt::Key_Space);
+        const QKeySequence fallback(Qt::ALT | Qt::META | Qt::Key_Space);
+        KGlobalAccel::setGlobalShortcut(action, KGlobalAccel::isGlobalShortcutAvailable(preferred) ? preferred : fallback);
+    }
+
     Q_INVOKABLE void restackReusedDelegate(QQuickItem *item) const {
         if (!item || !item->parentItem()) return;
         const auto siblings = item->parentItem()->childItems();

@@ -5,7 +5,7 @@ import org.kde.kirigami as Kirigami
 
 RowLayout {
     id: searchFieldBar
-	spacing: main.tahoeStyle ? 0 : Kirigami.Units.smallSpacing
+	spacing: !searchFieldBar.detachedWindow ? 0 : Kirigami.Units.smallSpacing
 
     property alias textField: textField
     readonly property bool menuOpen: menuButton.menuOpen
@@ -29,10 +29,10 @@ RowLayout {
     Kirigami.Icon {
         id: searchIcon
         opacity: main.clipboardMode ? 0.68 : 1
-        scale: main.tahoeStyle && !main.clipboardMode ? 1.15 : 1
-        Layout.leftMargin: main.tahoeStyle ? 1 : 0
+        scale: !searchFieldBar.detachedWindow && !main.clipboardMode ? 1.15 : 1
+        Layout.leftMargin: !searchFieldBar.detachedWindow ? 1 : 0
         Layout.rightMargin: 0
-        Layout.preferredWidth: main.detachedSearch ? Kirigami.Units.gridUnit * 2 : (main.tahoeStyle ? 38 : Kirigami.Units.iconSizes.medium)
+        Layout.preferredWidth: searchFieldBar.detachedWindow ? Kirigami.Units.gridUnit * 2 : 38
         Layout.preferredHeight: Layout.preferredWidth
         source: main.clipboardMode ? Qt.resolvedUrl('icons/ClipboardIcon.svg') : Qt.resolvedUrl('icons/AppsIcon.svg')
         isMask: true
@@ -43,11 +43,11 @@ RowLayout {
         id: textField
         Layout.fillHeight: true
         Layout.fillWidth: true
-        Layout.leftMargin: main.tahoeStyle ? -2 : 0
-        font.family: main.tahoeStyle ? "SF Pro Display" : Kirigami.Theme.defaultFont.family
-        font.pointSize: main.textSize * (main.detachedSearch ? 2 : (main.tahoeStyle ? 2 : 1))
+        Layout.leftMargin: !searchFieldBar.detachedWindow ? -2 : 0
+        font.family: !searchFieldBar.detachedWindow ? "SF Pro Display" : Kirigami.Theme.defaultFont.family
+        font.pointSize: main.textSize * (2)
         font.weight: Kirigami.Theme.defaultFont.weight
-        font.letterSpacing: main.tahoeStyle ? -0.55 : 0
+        font.letterSpacing: !searchFieldBar.detachedWindow ? -0.55 : 0
         color: searchFieldBar.textColor
 
         Component {
@@ -68,7 +68,7 @@ RowLayout {
                     textField.text = main.searchText;
             }
         }
-        placeholderText: main.clipboardMode ? i18n("Clipboard") : main.tahoeStyle ? i18n("Applications") : i18n("Apps")
+        placeholderText: main.clipboardMode ? i18n("Clipboard") : !searchFieldBar.detachedWindow ? i18n("Applications") : i18n("Apps")
         placeholderTextColor: searchFieldBar.dimmedTextColor
         background: Rectangle{
             color: "transparent"
@@ -110,6 +110,6 @@ RowLayout {
         id: menuButton
         foregroundColor: searchFieldBar.textColor
         Layout.alignment: Qt.AlignVCenter
-        Layout.rightMargin: main.tahoeStyle ? -3.5 : 0
+        Layout.rightMargin: !searchFieldBar.detachedWindow ? -3.5 : 0
     }
 }

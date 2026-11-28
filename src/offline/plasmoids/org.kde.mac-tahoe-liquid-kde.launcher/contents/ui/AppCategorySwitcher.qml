@@ -13,7 +13,7 @@ Item {
 
     ListView {
         id: categorySwitcher
-        spacing: main.detachedSearch ? Kirigami.Units.smallSpacing * 2.5 : 7
+        spacing: 7
         orientation: ListView.Horizontal
         interactive: contentWidth > width
         boundsBehavior: Flickable.StopAtBounds

@@ -22,9 +22,9 @@ Item {
     Text {
         id: label
         anchors.fill: parent
-        topPadding: main.detachedSearch ? Kirigami.Units.smallSpacing * 1.25 : 4
+        topPadding: 4
         bottomPadding: topPadding
-        leftPadding: main.detachedSearch ? Kirigami.Units.smallSpacing * 3 : 8
+        leftPadding: 8
         rightPadding: leftPadding
         font.family: Kirigami.Theme.defaultFont.family
         font.pointSize: main.appTextSize
@@ -37,7 +37,7 @@ Item {
         anchors.fill: parent
         z: -1
         color: pill.baseFill
-        radius: main.detachedSearch ? height * 0.45 : (main.tahoeStyle ? 9 : 8)
+        radius: main.tahoeStyle ? 9 : 8
         border.width: main.tahoeStyle ? 1 : 0
         border.color: Qt.rgba(1, 1, 1, pill.selected ? 0.18 : 0.08)
 

@@ -38,13 +38,13 @@ Item {
 	readonly property bool searching: searchText !== ""
 	readonly property var searchBar: detachedSearch ? detachedSearchBar : inlineSearchBar
 	onSearchTextChanged: runnerModel.query = clipboardMode ? "" : searchText
-	readonly property bool detachedSearch: false // Reserved for the future Search AI popup.
-	readonly property bool tahoeStyle: !detachedSearch
+	readonly property bool detachedSearch: root.floatingSearch
+	readonly property bool tahoeStyle: true // Both entry points use the current Apps grid.
 	readonly property real inlineSearchHeight: 40
 	readonly property real searchPopupHeight: searchPopup.height
 	readonly property real searchPopupGap: Kirigami.Units.gridUnit * 0.75
-	readonly property real categoryHeight: detachedSearch ? Kirigami.Units.gridUnit * 16 / 9 : (tahoeStyle ? 30 : 40)
-	readonly property real gridTopSpacing: detachedSearch ? Kirigami.Units.gridUnit * 16 / 9 : (tahoeStyle ? 15 : 0)
+	readonly property real categoryHeight: 30
+	readonly property real gridTopSpacing: 15
 	// QWindow.active also includes transient parents/siblings, such as the panel.
 	readonly property bool popupHasFocus: {
 		var window = searchPopup.focusWindow;
@@ -214,7 +214,7 @@ Item {
 	readonly property color textColor: glassPalette.Kirigami.Theme.textColor
 	readonly property string textFont: Kirigami.Theme.defaultFont.family
 	readonly property real textSize: Kirigami.Theme.defaultFont.pointSize
-	readonly property real appTextSize: textSize * (detachedSearch ? 1.25 : 1)
+	readonly property real appTextSize: textSize
 	readonly property color bgColor: Kirigami.Theme.backgroundColor
 	readonly property color highlightColor: Kirigami.Theme.highlightColor
 	readonly property color highlightedTextColor: Kirigami.Theme.highlightedTextColor

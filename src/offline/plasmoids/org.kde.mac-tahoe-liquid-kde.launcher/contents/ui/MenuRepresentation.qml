@@ -9,6 +9,7 @@ import org.kde.kirigami as Kirigami
 PlasmaCore.Dialog {
 	id: root
 	title: "mttkde-apps"
+	property bool floatingSearch: false
 	property Item dockAnchor
 	readonly property NativeGlass.GlassSettings glassSettings: NativeGlass.GlassSettings {
 		component: "apps"

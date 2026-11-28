@@ -49,10 +49,21 @@ PlasmoidItem {
     function toggleDockApps(anchor) {
         const app = Plasmoid.configuration.launcherApplication;
         if (app && NativeLauncher.LauncherApplications.open(app)) return;
+        toggleAppsWindow(anchor, false);
+    }
+    function toggleFloatingSearch() {
+        toggleAppsWindow(null, true);
+    }
+    function toggleAppsWindow(anchor, floatingSearch) {
         ensureAppsWindow();
         if (appsWindow) {
             appsWindow.dockAnchor = anchor || fullRepresentationItem || kicker;
-            appsWindow.visible = !appsWindow.visible;
+            if (appsWindow.visible && appsWindow.floatingSearch === floatingSearch) {
+                appsWindow.visible = false;
+                return;
+            }
+            appsWindow.floatingSearch = floatingSearch;
+            appsWindow.visible = true;
         }
     }
     readonly property bool usesAppsPin: NativeLauncher.DockMetrics.cells.some(cell =>
@@ -241,6 +252,7 @@ PlasmoidItem {
 
     Component.onCompleted: {
         //plasmoid.setAction("menuedit", i18n("Edit Applications..."));
+        NativeLauncher.LauncherApplications.registerSearchShortcut(kicker, i18n("Launchpad Search"));
         rootModel.refreshed.connect(reset);
 
         dragHelper.dropped.connect(resetDragSource);
