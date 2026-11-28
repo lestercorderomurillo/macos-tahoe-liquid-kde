@@ -340,18 +340,17 @@ for page, key in [('firefox', 'firefox'), ('boot', 'plymouth')]:
 window.page = 'launcher'; window.render(); app.processEvents()
 options = window.content.findChildren(RadioOption)
 preview = window.content.findChild(QLabel, 'launcherArtwork')
-assert len(options) == 3 and options[0].isChecked()
-assert len({option.x() for option in options}) == 1
-assert preview.geometry().bottom() < options[0].y() < options[1].y() < options[2].y()
+assert len(options) == 2 and options[0].isChecked()
+assert options[0].x() == options[1].x()
+assert preview.geometry().bottom() < options[0].y() < options[1].y()
+selected = window.choices['launcher']
+assert selected == 'tahoe'
 original_art = preview.pixmap().toImage()
 options[0].setFocus(); QTest.keyClick(options[0], Qt.Key.Key_Down); app.processEvents()
-assert options[1].isChecked() and preview.pixmap().toImage() != original_art
-selected = window.choices['launcher']
-edition_art = preview.pixmap().toImage()
-options[2].click(); app.processEvents()
-assert window.choices['launcher'] == 'keep' and preview.pixmap().toImage() != edition_art
-options[1].click(); app.processEvents()
-assert preview.pixmap().toImage() == edition_art
+assert options[1].isChecked() and window.choices['launcher'] == 'keep'
+assert preview.pixmap().toImage() != original_art
+options[0].click(); app.processEvents()
+assert window.choices['launcher'] == selected and preview.pixmap().toImage() == original_art
 # Selection leaves the dot rail centered despite unequal button labels.
 assert abs(window.dots.mapTo(window, window.dots.rect().center()).x() - window.width()/2) <= 2
 window.page = 'wallpaper'; window.render(); window.advance(); app.processEvents()
