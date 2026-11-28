@@ -107,6 +107,7 @@ class EmbeddedEditor(QWidget):
         self.buttons = self.module.findChild(QDialogButtonBox, "glassEditorButtons")
         self.apply_button = self.buttons.button(QDialogButtonBox.StandardButton.Apply)
         self.bindings = []
+        self.slider_readouts = []
         self.body = QVBoxLayout(self)
         self.body.setContentsMargins(0, 0, 0, 0)
         self.body.setSpacing(7)
@@ -140,6 +141,9 @@ class EmbeddedEditor(QWidget):
             for control in tabs.widget(index).findChildren(QCheckBox):
                 if not any(group.isAncestorOf(control) for group in tabs.widget(index).findChildren(QGroupBox)):
                     self.add_field(card, control.text(), control)
+        readout_width = max(label.minimumWidth() for label in self.slider_readouts)
+        for label in self.slider_readouts:
+            label.setFixedWidth(readout_width)
         actions = QHBoxLayout()
         actions.addStretch()
         for role in (QDialogButtonBox.StandardButton.Reset, QDialogButtonBox.StandardButton.RestoreDefaults):
@@ -215,7 +219,8 @@ class EmbeddedEditor(QWidget):
             for col in (1, 2, 3):
                 field = grid.itemAtPosition(row, col).widget()
                 control = self.control(field)
-                table.addWidget(control, row-1, col, Qt.AlignmentFlag.AlignCenter)
+                alignment = Qt.AlignmentFlag.AlignRight if col == 3 else Qt.AlignmentFlag.AlignCenter
+                table.addWidget(control, row-1, col, alignment)
         column.addLayout(table)
         field = group.findChild(QDoubleSpinBox, "kcfg_GradientCenterPosition")
         self.add_field(column, grid.itemAtPosition(5, 0).widget().text(), field)
@@ -291,6 +296,7 @@ class EmbeddedEditor(QWidget):
         readout.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
         maximum_text = field.locale().toString(float(field.maximum()), "f", decimals) + field.suffix()
         readout.setMinimumWidth(readout.fontMetrics().horizontalAdvance(maximum_text))
+        self.slider_readouts.append(readout)
         row.addWidget(slider)
         row.addWidget(readout)
         container.setFocusProxy(slider)
