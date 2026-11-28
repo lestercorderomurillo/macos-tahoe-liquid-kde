@@ -1737,11 +1737,27 @@ void BlurEffect::blur(
     }
 
     BlurEffectData& blurInfo = it->second;
-    BlurRenderData& renderInfo = blurInfo.render[m_currentView];
-
     if (!shouldBlur(w, mask, data)) {
         return;
     }
+
+    // Decoration blur may synthesize a frame even for a fullscreen game.
+    // Skip its capture and shaders only when the client covers the entire
+    // frame. Recheck at draw time for opacity animations and buffer changes.
+    if (w->isFullScreen() && !w->decoration() && !blurInfo.content.has_value()
+        && data.opacity() == 1.0 && w->opacity() == 1.0
+        && !(mask & PAINT_WINDOW_TRANSFORMED) && !w->data(WindowForceBlurRole).toBool()
+        && !BlurConfig::roundCornersOfMaximizedWindows()) {
+        const auto *surface = w->windowItem()->surfaceItem();
+        if (surface && surface->opacity() == 1.0 && w->windowItem()->opacity() == 1.0
+            && surface->mapToScene(surface->rect()) == w->frameGeometry()) {
+            const auto opaque = surface->opaque();
+            for (const auto &rect : opaque.rects()) {
+                if (QRectF(rect).contains(QRectF(surface->rect()))) return;
+            }
+        }
+    }
+    BlurRenderData& renderInfo = blurInfo.render[m_currentView];
 
     // A single downsample with widely spaced finish taps splits backdrop
     // edges into copies. Reconstruct a compact pyramid instead, and avoid

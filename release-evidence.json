@@ -1,21 +1,21 @@
 {
-  "version": "0.85.39",
+  "version": "0.85.40",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Skip invisible RGB drift samples inside the glass and duplicate full-surface copies on X11.",
+  "scope": "Skip hidden glass rendering behind fully opaque fullscreen clients.",
   "checks": [
     {
-      "command": "On AMD Radeon integrated graphics at 1920x1080, compare 81 paired GL_TIME_ELAPSED samples of the actual core glass shader. Median 1.603 to 1.436 ms, p95 1.623 to 1.445 ms, identical RGBA pixels. For 16 X11 damage rectangles, the full-surface copy microbenchmark fell from 2.991 to 0.186 ms median with identical output.",
+      "command": "KWin 6.7.4 hardware frame log on a 1920x1080 virtual Wayland output, AMD Radeon integrated GPU, Golden Gate material, fullscreen Qt Quick animation. Previous effect-on median render time 4.83 ms versus 2.02 ms off. Candidate effect-on medians 2.030 and 2.032 ms versus 2.036 and 2.079 ms off. All four candidate windows sustained 60 FPS.",
       "result": "passed"
     },
     {
-      "command": "Build the plugin against KWin Wayland 6.6.4, 6.7.4 and 6.8.2 and native X11 6.7.4. Compare release and candidate captures of the installed candidate module in isolated KWin 6.7.4 X11 and Wayland. Effect-off, effect-on, partial and reference images matched across revisions on both backends.",
+      "command": "On native isolated KWin X11 and Wayland, all 614400 opaque fullscreen pixels matched effect-off; the transparent fullscreen control retained glass on 546240 pixels. Partial damage and full repaint matched on both backends.",
       "result": "passed"
     },
     {
-      "command": "tests/acrylic_glass_capture.py --damage --identity GlassProbe --expect changed --material golden-gate on X11 and Wayland: zero differing pixels against full repaint with the effect active. tests/test_glass_presets.py::test_native_glass_shader_pixels passed for both GLSL profiles.",
+      "command": "Compile the effect for the 6.6.4, 6.7.4 and 6.8.2 Wayland SDKs and native 6.7.4 X11.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Hardware timings cover one glass shader pass and fragmented X11 copies. Native desktop captures used virtual outputs and software rendering.",
-  "source_sha256": "6960bd4b5852c4731eb420bbd1d1c46c4223447886b38b00fb296bdf845dba58"
+  "coverage_limits": "The frame log measures an opaque fullscreen animation on a virtual output. It does not establish the cost of every installed desktop component, game, driver or refresh rate.",
+  "source_sha256": "6521120830a53e75fedf08828747a209d8350efda018974559aa7f37ca7ae2d9"
 }
