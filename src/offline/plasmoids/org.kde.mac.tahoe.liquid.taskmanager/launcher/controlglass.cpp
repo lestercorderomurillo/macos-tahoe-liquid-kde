@@ -99,7 +99,10 @@ QColor PopupBackdrop::frameFillAt(QPointF point, QColor fallback) const
 
 QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material, QColor overlay, int run)
 {
-    if (m_backdropGrid.isEmpty() || bounds.isEmpty()) return base;
+    if (!m_window || bounds.isEmpty()) return base;
+    const bool letter = profile.value(QStringLiteral("scope")).toString() == QStringLiteral("letter");
+    if (letter && m_lastFrame.isEmpty()) m_pixels.locate(m_window->geometry(), m_window->title());
+    if (!letter && m_backdropGrid.isEmpty()) return base;
     GlassInk::Samples samples;
     const auto count = profile.value(QStringLiteral("sampleCount")).toInt(15);
     const auto *control = qobject_cast<const ControlGlass *>(this);
@@ -123,12 +126,16 @@ QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor ref
             if (!inside) return;
         }
         const QColor painted = layer ? layer->at(p) : QColor();
-        const QColor pixel = profile.value(QStringLiteral("scope")).toString() == QStringLiteral("letter") ? m_pixels.at(p) : QColor();
+        const QColor pixel = letter ? m_pixels.at(p) : QColor();
+        if (!pixel.isValid() && m_backdropGrid.isEmpty() && (!painted.isValid() || painted.alpha() < 255)) return;
         const QColor surface = GlassInk::composite(pixel.isValid() ? pixel : backdropAt(p), painted.isValid() ? painted : frameFillAt(p, localFill));
         samples.add(GlassInk::composite(surface, overlay));
     });
     const auto corrected = m_history.tone(samples, reference, ContrastPreset::settings(profile), item, run);
-    return m_ink.color(item, base, GlassInk::applyRoleCorrection(base, reference, corrected));
+    const auto result = GlassInk::applyRoleCorrection(base, reference, corrected);
+    // A moving shaped label has independent run histories. Sharing the item
+    // animation track across its letters would feed one glyph into the next.
+    return run < 0 ? m_ink.color(item, base, result) : result;
 }
 
 QColor PopupBackdrop::animatedLabelForeground(QObject *item, QPointF point, QSizeF radius, QColor base, QColor fill)

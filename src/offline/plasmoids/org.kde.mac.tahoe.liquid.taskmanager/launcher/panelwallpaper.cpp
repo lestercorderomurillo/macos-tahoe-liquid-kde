@@ -62,9 +62,6 @@ QImage loadWallpaper(const QString &source, QSize screen, bool dark, int fillMod
     QImageReader reader(file);
     const auto size = reader.size();
     if (size.isEmpty() || reader.imageCount() > 1) return {};
-    // Keep native dimensions for centered and tiled images, even when the
-    // decoded copy is smaller. Qt only needs a small image for contrast.
-    if (size.width() > 512 || size.height() > 512) reader.setScaledSize(size.scaled(512, 512, Qt::KeepAspectRatio));
     reader.setAutoTransform(true);
     auto image = reader.read();
     if (!image.isNull() && fillMode >= 3) {
@@ -120,7 +117,7 @@ struct WallpaperSpec {
     bool operator==(const WallpaperSpec &) const = default;
 };
 
-QImage panelSamples(const WallpaperSpec &spec)
+std::optional<Wallpaper> panelWallpaper(const WallpaperSpec &spec)
 {
     QImage image;
     if (spec.plugin != u"org.kde.color") {
@@ -128,28 +125,7 @@ QImage panelSamples(const WallpaperSpec &spec)
         image = loadWallpaper(spec.source, spec.screen, spec.dark, spec.mode);
         if (image.isNull()) return {};
     }
-    const Wallpaper wallpaper{spec.screen, std::move(image), spec.color, spec.mode, spec.blur};
-    const QRectF panel(spec.panel);
-    QImage grid(std::min(512, spec.panel.width()), std::min(spec.panelScrim ? 16 : 288, spec.panel.height()), QImage::Format_RGB32);
-    for (int y = 0; y < grid.height(); ++y) {
-        for (int x = 0; x < grid.width(); ++x) {
-            const QPointF point(panel.x() + (x + .5) * panel.width() / grid.width(),
-                                panel.y() + (y + .5) * panel.height() / grid.height());
-            const QColor pixel = wallpaper.pixel(point);
-            if (!spec.panelScrim) {
-                grid.setPixelColor(x, y, pixel);
-                continue;
-            }
-            // Interpolate the same stops painted by the top bar's scrim.
-            const double segment = std::clamp((point.y() - panel.top()) / panel.height(), 0., 1.) * 8;
-            const double left = std::floor(segment);
-            const double right = std::min(8., left + 1);
-            QColor scrim = Qt::black;
-            scrim.setAlphaF(std::lerp(PanelWallpaper::scrimOpacityAt(left / 8), PanelWallpaper::scrimOpacityAt(right / 8), segment - left));
-            grid.setPixelColor(x, y, GlassInk::composite(pixel, scrim));
-        }
-    }
-    return grid;
+    return Wallpaper{spec.screen, std::move(image), spec.color, spec.mode, spec.blur};
 }
 
 // One observer and one result for all applets sharing this panel window.
@@ -200,27 +176,32 @@ public:
         GlassInk::zonePoints(bounds, profile.value(u"sampleCount"_s).toInt(15), [&](QPointF p) {
             const QColor rendered = material ? material->at(p) : QColor();
             const QColor foreground = rendered.isValid() ? rendered : fill;
+            QColor exact;
+            if (profile.value(u"scope"_s) == u"letter"_s && m_panel && m_panel->containmentType() != Plasma::Containment::Desktop) {
+                m_pixels.locate(m_window->geometry(), u"mttkde-panel-ink"_s);
+                exact = m_pixels.at(p);
+            }
             if (foreground.isValid() && foreground.alpha() == 255) {
                 samples.add(foreground);
-            } else if (!m_liveColors.isEmpty() && m_liveFrame == m_window->geometry()) {
-                const auto cell = [&](double pos, int origin, int size) { return std::clamp(int((pos - origin) * 64 / size), 0, 63); };
-                const auto point = p + m_liveFrame.topLeft();
-                const int index = 3 * (64 * cell(point.y(), m_liveBounds.y(), m_liveBounds.height())
-                                      + cell(point.x(), m_liveBounds.x(), m_liveBounds.width()));
-                const auto *rgb = reinterpret_cast<const uchar *>(m_liveColors.constData()) + index;
-                QColor surface(rgb[0], rgb[1], rgb[2]);
-                if (profile.value(u"scope"_s) == u"letter"_s) {
-                    const auto pixel = m_pixels.at(p);
-                    if (pixel.isValid()) surface = pixel;
+            } else if (exact.isValid() || (!m_liveColors.isEmpty() && m_liveFrame == m_window->geometry())) {
+                QColor surface = exact;
+                if (!surface.isValid()) {
+                    const auto cell = [&](double pos, int origin, int size) { return std::clamp(int((pos - origin) * 64 / size), 0, 63); };
+                    const auto point = p + m_liveFrame.topLeft();
+                    const int index = 3 * (64 * cell(point.y(), m_liveBounds.y(), m_liveBounds.height())
+                                          + cell(point.x(), m_liveBounds.x(), m_liveBounds.width()));
+                    const auto *rgb = reinterpret_cast<const uchar *>(m_liveColors.constData()) + index;
+                    surface = QColor(rgb[0], rgb[1], rgb[2]);
                 }
                 const auto frame = m_frame.at(p);
                 if (frame.isValid()) surface = GlassInk::composite(surface, frame);
                 const auto scrim = QColor::fromRgbF(0, 0, 0, PanelWallpaper::scrimOpacityAt(p.y() / m_window->height()));
                 samples.add(GlassInk::composite(GlassInk::composite(surface, scrim), foreground));
-            } else if (!m_grid.isNull()) {
-                const int x = std::clamp(int(p.x() * m_grid.width() / m_window->width()), 0, m_grid.width() - 1);
-                const int y = std::clamp(int(p.y() * m_grid.height() / m_window->height()), 0, m_grid.height() - 1);
-                samples.add(GlassInk::composite(m_grid.pixelColor(x, y), foreground));
+            } else if (m_wallpaperPixels && m_requested) {
+                QColor surface = m_wallpaperPixels->pixel(m_requested->panel.topLeft() + p);
+                if (m_requested->panelScrim) surface = GlassInk::composite(surface,
+                    QColor::fromRgbF(0, 0, 0, PanelWallpaper::scrimOpacityAt(p.y() / m_window->height())));
+                samples.add(GlassInk::composite(surface, foreground));
             }
         });
         const auto corrected = m_history.tone(samples, reference, ContrastPreset::settings(profile), owner, run);
@@ -265,7 +246,7 @@ private:
     {
         ++m_generation;
         m_requested.reset();
-        m_grid = {};
+        m_wallpaperPixels.reset();
         m_pixels.locate({}, {});
         m_liveColors.clear();
         ++m_revision;
@@ -331,15 +312,15 @@ private:
         m_requested = spec;
         // Keep the displayed ink while decoding. A superseded job cannot publish.
         const auto generation = ++m_generation;
-        auto *job = new QFutureWatcher<QImage>(this);
-        connect(job, &QFutureWatcher<QImage>::finished, this, [this, job, generation] {
+        auto *job = new QFutureWatcher<std::optional<Wallpaper>>(this);
+        connect(job, &QFutureWatcher<std::optional<Wallpaper>>::finished, this, [this, job, generation] {
             job->deleteLater();
             if (generation != m_generation) return;
-            m_grid = job->result();
+            m_wallpaperPixels = job->result();
             ++m_revision;
             Q_EMIT changed();
         });
-        job->setFuture(QtConcurrent::run(panelSamples, spec));
+        job->setFuture(QtConcurrent::run(panelWallpaper, spec));
     }
     InkPixels m_pixels;
     QQuickWindow *m_window;
@@ -354,7 +335,7 @@ private:
     MaterialSample m_frame;
     QByteArray m_liveColors;
     QRect m_liveBounds, m_liveFrame;
-    QImage m_grid;
+    std::optional<Wallpaper> m_wallpaperPixels;
     quint64 m_revision = 0;
 };
 }
