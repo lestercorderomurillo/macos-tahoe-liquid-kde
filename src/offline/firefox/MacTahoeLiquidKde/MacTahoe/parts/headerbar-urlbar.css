@@ -278,6 +278,15 @@ toolbarspring {
 	border-radius: 999px !important;
 }
 
+#urlbar #identity-box {
+	align-self: center !important;
+	height: 30px !important;
+}
+
+#identity-box > .identity-box-button {
+	margin-block: 0 !important;
+}
+
 #identity-icon-box.identity-box-button {
 	max-width: calc(30px + 13em) !important;
 }
