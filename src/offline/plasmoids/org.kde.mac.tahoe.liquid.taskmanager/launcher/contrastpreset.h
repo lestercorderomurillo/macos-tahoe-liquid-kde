@@ -18,7 +18,7 @@ inline QJsonObject defaults()
     QJsonObject profiles{
         {u"panel.clock"_s, letter}, {u"panel.menu"_s, line}, {u"panel.symbol"_s, entry(u"component"_s, 5)},
         {u"controlcenter.tile"_s, tile}, {u"notifications.card"_s, tile},
-        {u"launcher.label"_s, letter}, {u"launcher.search"_s, tile}, {u"launcher.categories"_s, entry(u"component"_s, 5)},
+        {u"launcher.label"_s, line}, {u"launcher.search"_s, tile}, {u"launcher.categories"_s, entry(u"component"_s, 5)},
         {u"menu.options"_s, tile}, {u"menu.native"_s, tile}, {u"about.window"_s, entry(u"component"_s, 45)},
         {u"widget.clock-glass-text"_s, entry(u"letter"_s, 1, u"flip"_s)}, {u"widget.photos"_s, line}
     };
