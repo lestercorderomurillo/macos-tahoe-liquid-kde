@@ -32,7 +32,9 @@ QtObject {
         sampler.backdropRevision;
         const surface = profile.scope === "component" ? component : profile.scope === "bubble" ? bubble : null;
         const r = surface ? surfaceBounds(surface) : bounds(item, centerX, textWidth);
-        return sampler.surfaceForeground(item, r, surface ? reference : base, base, fill, profile);
+        const material = bubble?.contrastMaterial ?? null;
+        if (material) material.revision;
+        return sampler.surfaceForeground(item, r, surface ? reference : base, base, fill, profile, material);
     }
 
     function foreground(sampler, item, base, fill, centerX, textWidth) {

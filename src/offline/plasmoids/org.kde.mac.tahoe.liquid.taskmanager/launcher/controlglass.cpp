@@ -79,12 +79,13 @@ QColor PopupBackdrop::animatedForegroundAt(QObject *item, QPointF point, QSizeF 
     return m_ink.color(item, base, foregroundAt(point, radius, base, fill));
 }
 
-QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile)
+QColor PopupBackdrop::surfaceForeground(QObject *item, QRectF bounds, QColor reference, QColor base, QColor fill, const QJsonObject &profile, MaterialSample *material)
 {
     if (m_backdropGrid.isEmpty() || bounds.isEmpty()) return base;
     GlassInk::Samples samples;
     GlassInk::zonePoints(bounds, profile.value(QStringLiteral("sampleCount")).toInt(15), [&](QPointF p) {
-        samples.add(GlassInk::composite(backdropAt(p), fill));
+        const QColor painted = material ? material->at(p) : QColor();
+        samples.add(GlassInk::composite(backdropAt(p), painted.isValid() ? painted : fill));
     });
     const auto corrected = samples.tone(reference, ContrastPreset::settings(profile));
     return m_ink.color(item, base, GlassInk::applyRoleCorrection(base, reference, corrected));
