@@ -237,6 +237,8 @@ def stage_glass_text(package):
         if not file.is_file():
             continue
         source = file.read_text()
+        if source.startswith("import org.kde.mac.tahoe.launcher as NativeInk\n"):
+            continue
         adapted = element.sub(adapt, source).replace("renderType: Text.NativeRendering",
             "renderType: GraphicsInfo.api === GraphicsInfo.Software ? Text.QtRendering : Text.CurveRendering")
         if package.name.endswith(".clock-glass-text") and file.name == "GlassClockText.qml":
