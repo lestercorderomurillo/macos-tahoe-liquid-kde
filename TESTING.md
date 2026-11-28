@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.47**. The seven-column Apps launcher shows larger icons and four complete rows in a taller frame. [Validation and coverage](release-evidence.json).
+**v0.85.48**. Launchpad opens a single floating search field above its seven-column grid with a global shortcut. The Dock opens the integrated search view. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

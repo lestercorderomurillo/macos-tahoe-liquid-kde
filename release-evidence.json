@@ -1,25 +1,29 @@
 {
-  "version": "0.85.47",
+  "version": "0.85.48",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "The seven-column Apps launcher shows larger icons and four complete rows in a taller frame.",
+  "scope": "Launchpad opens a single floating search field above its seven-column grid with a global shortcut. The Dock opens the integrated search view.",
   "checks": [
     {
-      "command": "Install the shared launcher in each edition of a disposable KDE neon Plasma 6.8.1 Wayland guest, verify the installed MenuRepresentation.qml against the approved source, open Applications in light and dark mode and measure its frame using KWin. All four frames measured 1028 by 634 logical pixels.",
+      "command": "Install the combined launcher in a disposable KDE neon Wayland VM, activate the registered shortcut, type into the detached field, dismiss it, and open the normal launcher through Plasma. Verify the separate search capsule and the 1028 by 634 logical pixel Apps panel in both editions and appearances.",
+      "result": "passed"
+    },
+    {
+      "command": "python3 -m pytest -q tests/test_distro_packages.py (417 passed)",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Rendered checks cover both editions on KDE neon Wayland at 2x display scale.",
+  "coverage_limits": "Plasma 6.8.1 on KDE neon Wayland. KRunner occupied Alt+Space in both guests, so the interactive checks used Meta+Alt+Space.",
   "captures": [
     {
-      "path": "src/screenshots/previews/tahoe-launchpad-light-f113df42ee71.png",
-      "sha256": "f113df42ee71a94ed36a36ed865dc0001d82d6ad024aaaa69e5dc4ef17237def",
+      "path": "src/screenshots/previews/tahoe-floating-search-light-f15fc0ed30b7.png",
+      "sha256": "f15fc0ed30b71edc35c06a2a530b24883fe6795473959e90d7563c0f827a967d",
       "reviewed": true
     },
     {
-      "path": "src/screenshots/previews/tahoe-launchpad-dark-b1859c1047d3.png",
-      "sha256": "b1859c1047d3eed1607bc0cee283d69c9d3ffd078c86e310d61e1764e6dee368",
+      "path": "src/screenshots/previews/tahoe-floating-search-dark-9d2eb72b8395.png",
+      "sha256": "9d2eb72b8395bfa32d6b3f726dd692d35d32c6a640b65a6ccb63c00c39d2fb77",
       "reviewed": true
     }
   ],
-  "source_sha256": "557f5f4f2388dde3de11a48b0af8bbd521a4600c52b7fa49b56f9d644533e1d0"
+  "source_sha256": "199ec049a1ae581da5288c1e7832b7ba3c5eb56b8fc33e49ee2a1116f896c5b7"
 }
