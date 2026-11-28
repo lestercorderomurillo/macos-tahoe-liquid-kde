@@ -1,21 +1,17 @@
 {
-  "version": "0.85.36",
+  "version": "0.85.37",
   "gallery_commit": "f09780b200b79302e7c23ef9f6f74d94748bbea3",
-  "scope": "Reduce Adaptive Contrast backdrop grid sampling to twice per second per window, or four times per second while dragging an About window.",
+  "scope": "Reuse Launchpad label layouts during scrolling and adaptive tint updates.",
   "checks": [
     {
-      "command": "Build liquidglass_x11 with KWin 6.6.5, both compositor modules with KWin 6.7.4, and liquidglass with KWin 6.8.2.",
+      "command": "Qt Quick letter-scope fixture, 1500 movements. Layout calls fell from 1502 to 1. The serialized markup and gradient data matched at every position. Median time per 300 moves fell from 30 to 22 ms.",
       "result": "passed"
     },
     {
-      "command": "Run tests/acrylic_glass_capture.py under isolated KWin 6.7.4 for Wayland (Tahoe material) and X11 (Golden Gate notification islands). Verify plugin identity, rendered pixels and X11 backdrop notification.",
-      "result": "passed"
-    },
-    {
-      "command": "Animate the same X11 notification backdrop every 35 ms for five seconds under each build. Observed 25 updates at a median 203 ms on v0.85.35 and 10 at 503 ms on the candidate. Settled RGB frame SHA-256 matched: e6594faa57f90a788d5db2d771b8b280f57f6c5e03f6807d903b9f0ed04913c1.",
+      "command": "pytest tests/test_launcher_presets.py::test_native_launcher_popup_presets[MacGoldenGate-Light-1] tests/test_launcher_presets.py::test_clipboard_launcher_integration[MacTahoe-Light-1]: both passed.",
       "result": "passed"
     }
   ],
-  "coverage_limits": "Measured X11 notification backdrop updates. Per-glyph sampling has a separate 80 ms timer. End-user desktop FPS was not measured.",
-  "source_sha256": "8e2e89f828b570753e1c371d52f23cd70d2a6fd35031a0eff56b4f8a22e95d28"
+  "coverage_limits": "The CPU benchmark covers label geometry and painting data. It does not measure desktop or game FPS.",
+  "source_sha256": "55cb62e454bdbefa48f45bba7a0a0c71ee2cad6073466ce7f3fb398125b52f43"
 }

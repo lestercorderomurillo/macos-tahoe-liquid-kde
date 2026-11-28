@@ -84,7 +84,8 @@ Item {
 	PlasmaComponents.Label {
 		id: appname
 		readonly property string sourceText: ("name" in model ? model.name : model.display)
-		readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText) : null
+		readonly property var runs: main.labelRuns(this, sourceText)
+		readonly property var painted: runs ? main.labelPaint(this, sourceText, runs) : null
 		text: painted?.markup ?? sourceText
 		layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
 		layer.smooth: true

@@ -89,7 +89,8 @@ T.ItemDelegate {
 				Layout.fillWidth: !descriptionLabel.visible
 				Layout.maximumWidth: listDelegate.width - listDelegate.leftPadding - listDelegate.rightPadding - icon.width - row.spacing
 				readonly property string sourceText: ("name" in model ? model.name : model.display)
-				readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText, "transparent", main.textColor) : null
+				readonly property var runs: main.labelRuns(this, sourceText)
+				readonly property var painted: runs ? main.labelPaint(this, sourceText, runs, "transparent", main.textColor) : null
 				text: painted?.markup ?? sourceText
 				layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
 				layer.smooth: true
@@ -108,7 +109,8 @@ T.ItemDelegate {
 				visible: text && showDescription
 				opacity: 0.85
 				readonly property string sourceText: model.description
-				readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText) : null
+				readonly property var runs: main.labelRuns(this, sourceText)
+				readonly property var painted: runs ? main.labelPaint(this, sourceText, runs) : null
 				text: painted?.markup ?? sourceText
 				layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
 				layer.smooth: true

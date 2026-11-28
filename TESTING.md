@@ -1,6 +1,6 @@
 # Installer testing
 
-**v0.85.36**. Reduce Adaptive Contrast backdrop grid sampling to twice per second per window, or four times per second while dragging an About window. [Validation and coverage](release-evidence.json).
+**v0.85.37**. Reuse Launchpad label layouts during scrolling and adaptive tint updates. [Validation and coverage](release-evidence.json).
 
 [Installer photo evidence](src/screenshots/previews/wizard-tahoe-provenance-531f633f4ff6.json).
 

@@ -10,15 +10,20 @@ QtObject {
         return paintRuns(item, value, profile, foregroundAt).markup;
     }
 
-    function paintRuns(item, value, profile, foregroundAt) {
+    function layoutRuns(item, value, profile) {
         const letters = profile.scope === "letter";
         const left = item.leftPadding ?? 0;
-        const top = item.topPadding ?? 0;
         const align = item.effectiveHorizontalAlignment ?? Qt.AlignLeft;
         const width = item.wrapMode === Text.NoWrap && align === Qt.AlignLeft
             ? 100000 : Math.max(1, item.width - left - (item.rightPadding ?? 0));
-        const runs = layout.textRuns(value, item.font, width, item.wrapMode ?? Text.NoWrap,
+        return layout.textRuns(value, item.font, width, item.wrapMode ?? Text.NoWrap,
             align, letters);
+    }
+
+    function paintRuns(item, value, profile, foregroundAt, runs = layoutRuns(item, value, profile)) {
+        const letters = profile.scope === "letter";
+        const left = item.leftPadding ?? 0;
+        const top = item.topPadding ?? 0;
         for (let ancestor = item; ancestor; ancestor = ancestor.parent) {
             ancestor.x; ancestor.y; ancestor.rotation; ancestor.scale;
         }

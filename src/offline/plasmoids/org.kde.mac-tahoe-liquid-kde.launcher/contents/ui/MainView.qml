@@ -176,13 +176,16 @@ Item {
     }
     readonly property var labelProfile: root.glassSettings.contrastProfiles["launcher.label"]
     function useTextRuns(label) {
-        return root.glassSettings.dynamicTinting && (labelProfile.scope === "letter"
+        return root.visible && root.glassSettings.dynamicTinting && (labelProfile.scope === "letter"
             || (labelProfile.scope === "line" && label.wrapMode !== Text.NoWrap && label.maximumLineCount > 1));
     }
-    function labelPaint(item, value, overlay = "transparent", fallback = main.textColor) {
+    function labelRuns(item, value) {
+        return useTextRuns(item) ? Tahoe.AdaptiveContrast.layoutRuns(item, value, labelProfile) : null;
+    }
+    function labelPaint(item, value, runs, overlay = "transparent", fallback = main.textColor) {
         return Tahoe.AdaptiveContrast.paintRuns(item, value, labelProfile, (r, i) =>
             Tahoe.AdaptiveContrast.resolve(appBackdrop, item, fallback, materialFill(root.glassSettings),
-                "launcher.label", item, root.contentItem, fallback, undefined, undefined, overlay, r, i));
+                "launcher.label", item, root.contentItem, fallback, undefined, undefined, overlay, r, i), runs);
     }
     function labelColor(item, sampleX = item.width / 2, overlay = "transparent", detached = false, fallback = main.textColor, textWidth = item.contentWidth, field = null) {
         if (!root.glassSettings.dynamicTinting) return fallback;

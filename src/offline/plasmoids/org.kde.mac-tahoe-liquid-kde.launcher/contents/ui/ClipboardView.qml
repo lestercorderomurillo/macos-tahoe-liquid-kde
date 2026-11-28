@@ -94,7 +94,8 @@ FocusScope {
                     Text {
                         Layout.fillWidth: true
                         readonly property string sourceText: row.modelData.kind === "image" ? i18n("Image") + " · " + row.modelData.w + " × " + row.modelData.h : row.modelData.text.replace(/\s+/g, " ")
-                        readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText, row.background.color, main.textColor) : null
+                        readonly property var runs: main.labelRuns(this, sourceText)
+                        readonly property var painted: runs ? main.labelPaint(this, sourceText, runs, row.background.color, main.textColor) : null
                         text: painted?.markup ?? sourceText
                         layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
                         layer.smooth: true
@@ -112,7 +113,8 @@ FocusScope {
                         readonly property string sourceText: (row.modelData.pinned ? i18n("Pinned") + " · " : "")
                             + (row.modelData.kind === "image" ? i18n("Image") : i18n("Text"))
                             + " · " + i18n("Copied %1", Qt.formatDateTime(new Date(row.modelData.ts), "h:mm ap"))
-                        readonly property var painted: main.useTextRuns(this) ? main.labelPaint(this, sourceText, row.background.color, main.dimmedTextColor) : null
+                        readonly property var runs: main.labelRuns(this, sourceText)
+                        readonly property var painted: runs ? main.labelPaint(this, sourceText, runs, row.background.color, main.dimmedTextColor) : null
                         text: painted?.markup ?? sourceText
                         layer.enabled: !!painted?.lines.length && GraphicsInfo.api !== GraphicsInfo.Software
                         layer.smooth: true
