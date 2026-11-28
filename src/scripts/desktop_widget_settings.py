@@ -217,6 +217,8 @@ def stage_glass_text(package):
         source = file.read_text()
         adapted = element.sub(adapt, source)
         if package.name.endswith(".clock-glass-text") and file.name == "GlassClockText.qml":
+            # Visibility feeds the ink binding, so it must depend on the source string.
+            adapted = adapted.replace("visible: text.length > 0", "visible: sourceText.length > 0")
             adapted = adapted.replace("property int hour12:", "property bool adaptOverlay: false\n    property int hour12:")
             adapted = re.sub(r"(NativeInk.AdaptiveWidgetText \{.*?)(\n +)text: ([^\n]+)",
                              r"\1\2clockOverlay: root.adaptOverlay\2sourceText: \3"
