@@ -10,6 +10,9 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFile>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTemporaryFile>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -43,6 +46,7 @@ template <class T> static T *control(KCModule *module, const QString &name)
 
 int main(int argc, char **argv)
 {
+    if (qEnvironmentVariableIsSet("TEST_ADAPTIVE_CONTRAST")) QCoreApplication::setAttribute(Qt::AA_DontUseNativeDialogs);
     QApplication app(argc, argv);
     const auto *clipboardBefore = app.clipboard()->mimeData();
     require(argc == 5, QStringLiteral("plugin, preset JSON, saved selection and tint required"));
@@ -89,6 +93,33 @@ int main(int argc, char **argv)
                     selector->setCurrentIndex(1);
                     selector->activated(1);
                     editor->setPlainText(QString::fromUtf8(custom));
+                    QTemporaryFile invalid(QDir::tempPath() + QStringLiteral("/invalid-XXXXXX.json"));
+                    require(invalid.open(), QStringLiteral("could not create invalid import"));
+                    invalid.write(QByteArray(custom).replace("21", "0"));
+                    invalid.close();
+                    QTimer::singleShot(0, [&app, &invalid] {
+                        auto *picker = qobject_cast<QFileDialog *>(app.activeModalWidget());
+                        require(picker, QStringLiteral("import did not open a file picker"));
+                        picker->selectFile(invalid.fileName());
+                        require(QMetaObject::invokeMethod(picker, "accept", Qt::QueuedConnection),
+                                QStringLiteral("could not confirm import file"));
+                        QObject::connect(picker, &QDialog::accepted, &app, [&app] {
+                            QTimer::singleShot(0, [&app] {
+                                auto *warning = qobject_cast<QMessageBox *>(app.activeModalWidget());
+                                require(warning && warning->text().contains(QStringLiteral("notifications.card.sampleCount")),
+                                        QStringLiteral("invalid field was not identified"));
+                                warning->accept();
+                            });
+                        });
+                    });
+                    QPushButton *importButton = nullptr;
+                    for (auto *button : buttons->buttons()) {
+                        if (button->text().startsWith(QStringLiteral("Import"))) importButton = qobject_cast<QPushButton *>(button);
+                    }
+                    require(importButton, QStringLiteral("missing import action"));
+                    importButton->click();
+                    require(editor->toPlainText() == QString::fromUtf8(custom) && selector->currentIndex() == 1,
+                            QStringLiteral("invalid import replaced the current edit"));
                 } else {
                     require(selector->currentIndex() == 1 && QJsonDocument::fromJson(editor->toPlainText().toUtf8())
                         == QJsonDocument::fromJson(custom), QStringLiteral("custom contrast override was lost"));

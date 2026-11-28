@@ -1040,8 +1040,8 @@ def test_control_center_glass_regions(launcher_popup_module, scale):
     """Floating controls blur and receive input only inside their rounded islands."""
     result = subprocess.run(
         [str(launcher_popup_module.parent / 'controlglassprobe')],
-        env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_SCALE_FACTOR=str(scale),
-                 DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/no-control-glass-test-bus'),
+        env=dict(os.environ, QT_QPA_PLATFORM='offscreen', QT_QUICK_BACKEND='software',
+                 QT_SCALE_FACTOR=str(scale), DBUS_SESSION_BUS_ADDRESS='unix:path=/tmp/no-control-glass-test-bus'),
         capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
     assert 'CONTROL_GLASS_REGIONS_OK' in result.stdout
